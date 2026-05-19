@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+
+    --primary: 263 85% 60%; /* electric purple */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 240 10% 4%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 240 4% 46%;
+
+    --accent: 217 91% 60%; /* electric blue */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 263 85% 60%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 240 12% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 263 85% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 6% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 6% 12%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 73% 45%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 6% 14%;
+    --input: 240 6% 14%;
+    --ring: 263 85% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply backdrop-blur-xl bg-background/60 border border-white/10;
+  }
+  .glass-card {
+    @apply backdrop-blur-xl bg-card/60 border border-border/40;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink;
+  }
+  .text-gradient-cool {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan via-neon-blue to-neon-purple;
+  }
+  .border-gradient {
+    position: relative;
+    background: linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
+      linear-gradient(135deg, #3b82f6, #a855f7, #ec4899) border-box;
+    border: 1px solid transparent;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .grid-noise {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .prose-content {
+    @apply max-w-none leading-relaxed text-foreground/90;
+  }
+  .prose-content h1,
+  .prose-content h2,
+  .prose-content h3 {
+    @apply font-display font-bold tracking-tight mt-10 mb-4;
+  }
+  .prose-content h1 { @apply text-4xl; }
+  .prose-content h2 { @apply text-3xl; }
+  .prose-content h3 { @apply text-2xl; }
+  .prose-content p { @apply my-5 text-lg; }
+  .prose-content a { @apply text-primary underline-offset-4 hover:underline; }
+  .prose-content blockquote {
+    @apply border-l-4 border-primary/60 pl-6 italic my-6 text-foreground/80;
+  }
+  .prose-content code {
+    @apply px-1.5 py-0.5 rounded bg-muted text-sm font-mono;
+  }
+  .prose-content pre {
+    @apply p-4 rounded-xl bg-zinc-950 text-zinc-100 overflow-x-auto my-6 text-sm;
+  }
+  .prose-content ul { @apply list-disc pl-6 my-4; }
+  .prose-content ol { @apply list-decimal pl-6 my-4; }
+  .prose-content img { @apply rounded-2xl my-6 shadow-lg; }
+}
+
+/* Loading skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Reading progress bar */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #a855f7, #ec4899);
+  z-index: 60;
+  transition: width 0.1s ease-out;
+}

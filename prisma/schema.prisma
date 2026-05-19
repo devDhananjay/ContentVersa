@@ -1,0 +1,515 @@
+// ContentVerse — Production database schema
+// Designed for blog publishing, monetization, moderation and analytics.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------- Enums ----------------------
+
+enum UserRole {
+  GUEST
+  USER
+  VERIFIED_CREATOR
+  MODERATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum BlogStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+enum ReactionType {
+  LIKE
+  LOVE
+  FIRE
+  CLAP
+  INSIGHTFUL
+}
+
+enum NotificationType {
+  APPROVAL
+  REJECTION
+  COMMENT
+  REPLY
+  LIKE
+  FOLLOW
+  MENTION
+  SYSTEM
+  TIP_RECEIVED
+  PAYOUT
+}
+
+enum RevenueSource {
+  ADS
+  SUBSCRIPTION
+  TIP
+  SPONSORED
+  AFFILIATE
+  PAID_CONTENT
+  NEWSLETTER
+}
+
+enum SubmissionDecision {
+  PENDING
+  APPROVED
+  REJECTED
+  REQUEST_CHANGES
+}
+
+enum AccountProvider {
+  CREDENTIALS
+  GOOGLE
+  GITHUB
+  EMAIL_OTP
+  PHONE_OTP
+}
+
+// ---------------------- Core User ----------------------
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  username      String   @unique
+  name          String?
+  password      String?  // optional for OAuth-only users
+  phone         String?  @unique
+  phoneVerified DateTime?
+  role          UserRole @default(USER)
+  emailVerified DateTime?
+  image         String?
+  banned        Boolean  @default(false)
+  banReason     String?
+  warnings      Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profile        Profile?
+  accounts       Account[]
+  sessions       Session[]
+  blogs          Blog[]            @relation("AuthorBlogs")
+  comments       Comment[]
+  reactions      Reaction[]
+  bookmarks      Bookmark[]
+  followers      Follower[]        @relation("Following")
+  following      Follower[]        @relation("Follower")
+  notifications  Notification[]
+  wallet         Wallet?
+  revenues       Revenue[]
+  reviews        AdminReview[]     @relation("Reviewer")
+  submissions    SubmissionQueue[]
+  achievements   UserAchievement[]
+  readingHistory ReadingHistory[]
+  tipsSent       Tip[]             @relation("Tipper")
+  tipsReceived   Tip[]             @relation("Tippee")
+
+  @@index([role])
+  @@index([createdAt])
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  bio          String?  @db.Text
+  headline     String?
+  website      String?
+  twitter      String?
+  instagram    String?
+  github       String?
+  linkedin     String?
+  youtube      String?
+  location     String?
+  coverImage   String?
+  isVerified   Boolean  @default(false)
+  totalViews   Int      @default(0)
+  totalLikes   Int      @default(0)
+  totalEarning Decimal  @default(0) @db.Decimal(12, 2)
+  streakDays   Int      @default(0)
+  lastActiveAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String          @id @default(cuid())
+  userId            String
+  provider          AccountProvider
+  providerAccountId String
+  accessToken       String?         @db.Text
+  refreshToken      String?         @db.Text
+  expiresAt         Int?
+  scope             String?
+  tokenType         String?
+  idToken           String?         @db.Text
+  createdAt         DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+// ---------------------- Content ----------------------
+
+model Category {
+  id            String        @id @default(cuid())
+  name          String        @unique
+  slug          String        @unique
+  description   String?       @db.Text
+  banner        String?
+  icon          String?
+  color         String?
+  order         Int           @default(0)
+  blogCount     Int           @default(0)
+  followerCount Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  subcategories Subcategory[]
+  blogs         Blog[]
+
+  @@index([slug])
+}
+
+model Subcategory {
+  id          String   @id @default(cuid())
+  categoryId  String
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  blogs    Blog[]
+
+  @@index([categoryId])
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  blogCount Int      @default(0)
+  createdAt DateTime @default(now())
+
+  blogs BlogTag[]
+}
+
+model Blog {
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  excerpt       String?    @db.Text
+  content       String     @db.Text
+  contentJson   Json?      // editor block JSON
+  coverImage    String?
+  ogImage       String?
+  readingTime   Int        @default(0)
+  status        BlogStatus @default(DRAFT)
+  isFeatured    Boolean    @default(false)
+  isEditorPick  Boolean    @default(false)
+  isPaid        Boolean    @default(false)
+  isSponsored   Boolean    @default(false)
+  isPremium     Boolean    @default(false)
+  views         Int        @default(0)
+  likesCount    Int        @default(0)
+  commentsCount Int        @default(0)
+  sharesCount   Int        @default(0)
+  publishedAt   DateTime?
+  scheduledFor  DateTime?
+  rejectionNote String?    @db.Text
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?  @db.Text
+  metaKeywords    String?
+  canonicalUrl    String?
+
+  authorId      String
+  categoryId    String?
+  subcategoryId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author      User             @relation("AuthorBlogs", fields: [authorId], references: [id], onDelete: Cascade)
+  category    Category?        @relation(fields: [categoryId], references: [id])
+  subcategory Subcategory?     @relation(fields: [subcategoryId], references: [id])
+  tags        BlogTag[]
+  comments    Comment[]
+  reactions   Reaction[]
+  bookmarks   Bookmark[]
+  submission  SubmissionQueue?
+  analytics   Analytics?
+  tips        Tip[]
+  history     ReadingHistory[]
+
+  @@index([authorId])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([slug])
+  @@index([categoryId])
+}
+
+model BlogTag {
+  blogId String
+  tagId  String
+
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([blogId, tagId])
+  @@index([tagId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  blogId    String
+  userId    String
+  parentId  String?
+  content   String   @db.Text
+  isHidden  Boolean  @default(false)
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  blog    Blog      @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies Comment[] @relation("CommentReplies")
+
+  @@index([blogId])
+  @@index([userId])
+}
+
+model Reaction {
+  id        String       @id @default(cuid())
+  blogId    String
+  userId    String
+  type      ReactionType
+  createdAt DateTime     @default(now())
+
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([blogId, userId, type])
+  @@index([blogId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  blogId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([blogId, userId])
+}
+
+model Follower {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followingId])
+}
+
+// ---------------------- Moderation ----------------------
+
+model SubmissionQueue {
+  id         String             @id @default(cuid())
+  blogId     String             @unique
+  authorId   String
+  decision   SubmissionDecision @default(PENDING)
+  feedback   String?            @db.Text
+  reviewerId String?
+  reviewedAt DateTime?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  blog    Blog          @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  author  User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  reviews AdminReview[]
+
+  @@index([decision])
+  @@index([authorId])
+}
+
+model AdminReview {
+  id           String             @id @default(cuid())
+  submissionId String
+  reviewerId   String
+  decision     SubmissionDecision
+  note         String?            @db.Text
+  createdAt    DateTime           @default(now())
+
+  submission SubmissionQueue @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewer   User            @relation("Reviewer", fields: [reviewerId], references: [id])
+
+  @@index([submissionId])
+}
+
+// ---------------------- Notifications ----------------------
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type     NotificationType
+  title     String
+  message   String           @db.Text
+  link      String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+}
+
+// ---------------------- Monetization ----------------------
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Decimal  @default(0) @db.Decimal(12, 2)
+  currency  String   @default("USD")
+  payoutEmail String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Revenue {
+  id        String        @id @default(cuid())
+  userId    String
+  source    RevenueSource
+  amount    Decimal       @db.Decimal(12, 2)
+  currency  String        @default("USD")
+  reference String?
+  createdAt DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([source])
+  @@index([createdAt])
+}
+
+model Tip {
+  id        String   @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  blogId     String?
+  amount     Decimal  @db.Decimal(12, 2)
+  message    String?
+  createdAt  DateTime @default(now())
+
+  from User  @relation("Tipper", fields: [fromUserId], references: [id])
+  to   User  @relation("Tippee", fields: [toUserId], references: [id])
+  blog Blog? @relation(fields: [blogId], references: [id])
+}
+
+// ---------------------- Gamification ----------------------
+
+model Achievement {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  title       String
+  description String
+  icon        String?
+
+  users UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+}
+
+// ---------------------- Analytics ----------------------
+
+model Analytics {
+  id              String  @id @default(cuid())
+  blogId          String  @unique
+  uniqueVisitors  Int     @default(0)
+  avgReadTime     Int     @default(0)
+  bounceRate      Float   @default(0)
+  ctr             Float   @default(0)
+  topReferrer     String?
+  countryStatsJson Json?
+
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+}
+
+model ReadingHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  blogId    String
+  progress  Int      @default(0)
+  readAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, blogId])
+  @@index([userId])
+}
+
+// ---------------------- CMS ----------------------
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  valueJson Json
+  updatedAt DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
