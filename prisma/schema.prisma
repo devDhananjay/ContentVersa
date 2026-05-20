@@ -99,6 +99,7 @@ model User {
   sessions       Session[]
   blogs          Blog[]            @relation("AuthorBlogs")
   comments       Comment[]
+  commentLikes   CommentLike[]
   reactions      Reaction[]
   bookmarks      Bookmark[]
   followers      Follower[]        @relation("Following")
@@ -270,6 +271,7 @@ model Blog {
   analytics   Analytics?
   tips        Tip[]
   history     ReadingHistory[]
+  polls       Poll[]
 
   @@index([authorId])
   @@index([status])
@@ -300,12 +302,27 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  blog    Blog      @relation(fields: [blogId], references: [id], onDelete: Cascade)
-  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  replies Comment[] @relation("CommentReplies")
+  blog    Blog          @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent  Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies Comment[]     @relation("CommentReplies")
+  likedBy CommentLike[]
 
   @@index([blogId])
+  @@index([userId])
+  @@index([parentId])
+}
+
+model CommentLike {
+  id        String   @id @default(cuid())
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
   @@index([userId])
 }
 
@@ -512,4 +529,49 @@ model NewsletterSubscriber {
   email     String   @unique
   verified  Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+// ---------------------- Polls & community ----------------------
+
+model Poll {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  question  String
+  blogId    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  blog    Blog?        @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  options PollOption[]
+  votes   PollVote[]
+
+  @@index([blogId])
+  @@index([isActive])
+}
+
+model PollOption {
+  id        String @id @default(cuid())
+  pollId    String
+  label     String
+  sortOrder Int    @default(0)
+
+  poll  Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes PollVote[]
+
+  @@index([pollId])
+}
+
+model PollVote {
+  id        String   @id @default(cuid())
+  pollId    String
+  optionId  String
+  voterKey  String
+  createdAt DateTime @default(now())
+
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, voterKey])
+  @@index([optionId])
 }

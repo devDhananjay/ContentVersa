@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 
 const SORTS = [
   { value: "trending", label: "Trending" },
+  { value: "trending_week", label: "Trending this week" },
+  { value: "most_read_today", label: "Most read today" },
   { value: "latest", label: "Latest" },
   { value: "liked", label: "Most Liked" },
   { value: "viewed", label: "Most Viewed" },

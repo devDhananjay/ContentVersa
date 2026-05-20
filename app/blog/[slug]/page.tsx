@@ -10,6 +10,7 @@ import { ReadingProgress } from "@/components/blog/reading-progress";
 import { Reactions } from "@/components/blog/reactions";
 import { TableOfContents } from "@/components/blog/toc";
 import { Comments } from "@/components/blog/comments";
+import { PollWidget } from "@/components/blog/poll-widget";
 import { ShareBar } from "@/components/blog/share-bar";
 import { FloatingActions } from "@/components/blog/floating-actions";
 import { BlogCard } from "@/components/blog/blog-card";
@@ -140,7 +141,9 @@ export default async function BlogPage({
                 </div>
                 <p className="text-xs text-muted-foreground flex items-center gap-2">
                   {timeAgo(blog.publishedAt)} ·
-                  <Clock className="h-3 w-3" /> {blog.readingTime} min read ·
+                  <Clock className="h-3 w-3" />
+                  <span className="font-medium">{blog.readingTime} min read</span>
+                  <span className="text-muted-foreground">·</span>
                   <Eye className="h-3 w-3" /> {formatNumber(blog.views)} ·
                   <Heart className="h-3 w-3" /> {formatNumber(blog.likes)} ·
                   <MessageCircle className="h-3 w-3" /> {formatNumber(blog.comments)}
@@ -245,9 +248,13 @@ export default async function BlogPage({
               <Button variant="gradient">Follow</Button>
             </div>
 
+            <div className="mt-14">
+              <PollWidget className="mb-10" />
+            </div>
+
             <div id="comments" className="mt-14">
               <h2 className="font-display text-2xl font-bold mb-6">Discussion</h2>
-              <Comments />
+              <Comments blogSlug={slug} initialCount={blog.comments} />
             </div>
           </div>
 

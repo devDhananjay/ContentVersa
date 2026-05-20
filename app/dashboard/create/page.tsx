@@ -7,7 +7,6 @@ import {
   Eye,
   Save,
   Send,
-  Sparkles,
   Tag,
   ImagePlus,
   Calendar,
@@ -34,6 +33,8 @@ import { renderMarkdown } from "@/components/blog/markdown";
 import { readingTime } from "@/lib/utils";
 import { uploadImage } from "@/lib/upload";
 import { useRouter } from "next/navigation";
+import { AiAssistPanel } from "@/components/dashboard/ai-assist-panel";
+import { AiImageGenerator } from "@/components/dashboard/ai-image-generator";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -411,32 +412,22 @@ export default function CreatePage() {
             </Button>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="rounded-2xl border-gradient bg-card p-5"
-          >
-            <div className="flex items-center gap-2 mb-2 text-neon-purple">
-              <Sparkles className="h-4 w-4" />
-              <p className="text-xs font-bold uppercase tracking-widest">AI Assist</p>
-            </div>
-            <p className="text-sm font-medium mb-3">Polish, brainstorm, expand.</p>
-            <div className="space-y-1.5">
-              <Button variant="outline" size="sm" className="w-full justify-start text-xs">
-                Suggest a better title
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start text-xs">
-                Generate excerpt
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start text-xs">
-                Suggest tags
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start text-xs">
-                Find a thesis
-              </Button>
-            </div>
-          </motion.div>
+          <AiAssistPanel
+            title={title}
+            excerpt={excerpt}
+            content={markdown}
+            category={category}
+            onApplyTitle={setTitle}
+            onApplyExcerpt={setExcerpt}
+            onApplySeoTitle={setSeoTitle}
+            onApplyTags={(t) => setTags((prev) => [...new Set([...prev, ...t])].slice(0, 5))}
+          />
+
+          <AiImageGenerator
+            title={title}
+            category={category}
+            onUseImage={setCover}
+          />
 
           <motion.div
             initial={{ opacity: 0, y: 8 }}

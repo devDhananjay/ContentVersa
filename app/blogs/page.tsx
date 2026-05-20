@@ -34,6 +34,10 @@ function applyFilters(
   }
   if (input.category) list = list.filter((b) => b.category === input.category);
   if (input.tag) list = list.filter((b) => b.tags.includes(input.tag!));
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
   switch (input.sort) {
     case "latest":
       list.sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
@@ -47,6 +51,29 @@ function applyFilters(
     case "editor":
       list = list.filter((b) => b.editorPick);
       break;
+    case "most_read_today": {
+      const today = todayStart.getTime();
+      list = list.filter((b) => +new Date(b.publishedAt) >= today);
+      list.sort((a, b) => b.views - a.views);
+      if (list.length < 3) {
+        list = [...all].sort((a, b) => b.views - a.views).slice(0, 12);
+      }
+      break;
+    }
+    case "trending_week": {
+      list = list.filter((b) => +new Date(b.publishedAt) >= weekAgo);
+      list.sort(
+        (a, b) =>
+          Number(!!b.trending) - Number(!!a.trending) ||
+          b.views + b.likes - (a.views + a.likes)
+      );
+      if (list.length < 3) {
+        list = [...all]
+          .filter((b) => b.trending || +new Date(b.publishedAt) >= weekAgo)
+          .sort((a, b) => b.views - a.views);
+      }
+      break;
+    }
     default:
       list.sort((a, b) => Number(!!b.trending) - Number(!!a.trending) || b.views - a.views);
   }

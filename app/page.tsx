@@ -7,6 +7,7 @@ import { LatestSection } from "@/components/home/latest-section";
 import { EditorPick } from "@/components/home/editor-pick";
 import { CommunityPosts } from "@/components/home/community-posts";
 import { WeeklyTrending } from "@/components/home/weekly-trending";
+import { QuickPollSection } from "@/components/home/quick-poll";
 import { Newsletter } from "@/components/home/newsletter";
 import { Testimonials } from "@/components/home/testimonials";
 import { getHomePageData } from "@/lib/data/home-data";
@@ -26,6 +27,7 @@ export default async function HomePage() {
       <LatestSection blogs={data.latest} />
       <EditorPick blogs={data.editorPicks} />
       <CommunityPosts posts={data.communityPosts} />
+      <QuickPollSection />
       <WeeklyTrending topics={data.weeklyTopics} />
       <Testimonials />
       <Newsletter />
