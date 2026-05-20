@@ -30,6 +30,15 @@ export default function SignInPage() {
     oauthError ? OAUTH_ERROR_MESSAGES[oauthError] || "Sign-in failed." : null
   );
 
+  React.useEffect(() => {
+    fetch("/api/auth/me", { credentials: "include" })
+      .then((r) => r.json())
+      .then((data: { user: unknown }) => {
+        if (data.user) router.replace(next);
+      })
+      .catch(() => {});
+  }, [router, next]);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -40,9 +49,14 @@ export default function SignInPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as { error?: string; role?: string };
       if (!res.ok) throw new Error(data.error || "Sign in failed");
-      router.push(next);
+      const adminRoles = ["MODERATOR", "ADMIN", "SUPER_ADMIN"];
+      const dest =
+        adminRoles.includes(data.role ?? "") && next === "/dashboard"
+          ? "/admin/moderation"
+          : next;
+      window.location.href = dest;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed");
     } finally {

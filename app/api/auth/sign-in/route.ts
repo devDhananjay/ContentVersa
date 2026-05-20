@@ -43,12 +43,18 @@ export async function POST(req: Request) {
       sub: user.id,
       email: user.email,
       username: user.username,
-      role: user.role as "USER" | "ADMIN" | "MODERATOR" | "VERIFIED_CREATOR" | "SUPER_ADMIN" | "GUEST",
+      role: user.role as
+        | "USER"
+        | "ADMIN"
+        | "MODERATOR"
+        | "VERIFIED_CREATOR"
+        | "SUPER_ADMIN"
+        | "GUEST",
       name: user.name || undefined,
       image: user.image || undefined,
     });
     await setSessionCookie(token);
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, role: user.role });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });

@@ -6,11 +6,14 @@ import { BadgeCheck, ArrowRight, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getFeaturedAuthors } from "@/lib/data/blogs";
+import type { Author } from "@/lib/data/blogs";
 import { formatNumber, getInitials } from "@/lib/utils";
 
-export function FeaturedCreators() {
-  const creators = getFeaturedAuthors(6);
+interface Props {
+  creators: Author[];
+}
+
+export function FeaturedCreators({ creators }: Props) {
   return (
     <section className="relative py-12 md:py-20 overflow-hidden">
       <div className="absolute inset-0 -z-10">
@@ -33,7 +36,7 @@ export function FeaturedCreators() {
               <span className="text-gradient">building this space.</span>
             </h2>
           </div>
-          <Link href="/creators" className="hidden md:block">
+          <Link href="/leaderboard" className="hidden md:block">
             <Button variant="outline" className="gap-2">
               All creators <ArrowRight className="h-4 w-4" />
             </Button>
@@ -55,7 +58,7 @@ export function FeaturedCreators() {
                 <div className="relative mx-auto">
                   <div className="absolute inset-0 mx-auto rounded-full bg-gradient-to-br from-neon-blue via-neon-purple to-neon-pink blur opacity-40 group-hover:opacity-80 transition-opacity h-16 w-16" />
                   <Avatar className="relative h-16 w-16 mx-auto border-2 border-background">
-                    <AvatarImage src={c.avatar} alt={c.name} />
+                    {c.avatar ? <AvatarImage src={c.avatar} alt={c.name} /> : null}
                     <AvatarFallback>{getInitials(c.name)}</AvatarFallback>
                   </Avatar>
                 </div>
@@ -65,11 +68,13 @@ export function FeaturedCreators() {
                 </div>
                 <p className="text-xs text-muted-foreground truncate">@{c.username}</p>
                 <p className="mt-2 text-xs text-muted-foreground line-clamp-2 leading-snug min-h-[2lh]">
-                  {c.bio}
+                  {c.bio || "Creator on ContentVerse"}
                 </p>
                 <div className="mt-3 flex items-center justify-center gap-2">
                   <Badge variant="secondary" className="text-[10px]">
-                    {formatNumber(c.followers)} followers
+                    {c.blogs > 0
+                      ? `${c.blogs} ${c.blogs === 1 ? "post" : "posts"}`
+                      : `${formatNumber(c.followers)} followers`}
                   </Badge>
                 </div>
                 <Button

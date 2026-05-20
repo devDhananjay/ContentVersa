@@ -5,18 +5,13 @@ import { motion } from "framer-motion";
 import { Hash, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const WEEKLY_TOPICS = [
-  { tag: "ai-agents", count: "12.4K posts", color: "from-violet-500 to-fuchsia-500" },
-  { tag: "next-15", count: "8.7K posts", color: "from-blue-500 to-cyan-500" },
-  { tag: "creator-economy", count: "6.2K posts", color: "from-pink-500 to-rose-500" },
-  { tag: "founders", count: "5.1K posts", color: "from-amber-500 to-orange-500" },
-  { tag: "design-systems", count: "4.8K posts", color: "from-emerald-500 to-teal-500" },
-  { tag: "growth-loops", count: "3.6K posts", color: "from-orange-500 to-red-500" },
-  { tag: "deep-work", count: "3.2K posts", color: "from-indigo-500 to-blue-500" },
-  { tag: "side-projects", count: "2.9K posts", color: "from-purple-500 to-pink-500" },
-];
+import type { WeeklyTopic } from "@/lib/data/home-data";
 
-export function WeeklyTrending() {
+interface Props {
+  topics: WeeklyTopic[];
+}
+
+export function WeeklyTrending({ topics }: Props) {
   return (
     <section className="container py-12 md:py-20">
       <div className="rounded-3xl border bg-card p-6 md:p-10 relative overflow-hidden">
@@ -33,7 +28,7 @@ export function WeeklyTrending() {
           </h2>
 
           <div className="flex flex-wrap gap-3">
-            {WEEKLY_TOPICS.map((topic, i) => (
+            {topics.map((topic, i) => (
               <motion.div
                 key={topic.tag}
                 initial={{ opacity: 0, scale: 0.9 }}

@@ -33,8 +33,10 @@ import { BlockEditor, type BlockEditorHandle } from "@/components/editor/block-e
 import { renderMarkdown } from "@/components/blog/markdown";
 import { readingTime } from "@/lib/utils";
 import { uploadImage } from "@/lib/upload";
+import { useRouter } from "next/navigation";
 
 export default function CreatePage() {
+  const router = useRouter();
   const editorRef = React.useRef<BlockEditorHandle>(null);
   const [title, setTitle] = React.useState("");
   const [excerpt, setExcerpt] = React.useState("");
@@ -49,6 +51,7 @@ export default function CreatePage() {
   const [allowComments, setAllowComments] = React.useState(true);
   const [saved, setSaved] = React.useState<Date | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [coverUploading, setCoverUploading] = React.useState(false);
   const [coverError, setCoverError] = React.useState<string | null>(null);
   const coverInputRef = React.useRef<HTMLInputElement>(null);
@@ -77,13 +80,59 @@ export default function CreatePage() {
     setTags((t) => [...t, v]);
   };
 
-  const onSubmitForReview = async () => {
+  const saveBlog = async (status: "DRAFT" | "PENDING") => {
+    setSubmitError(null);
+    if (!title.trim()) {
+      setSubmitError("Add a title first.");
+      return;
+    }
+    const content = (editorRef.current?.toMarkdown() ?? markdown).trim();
+    if (status === "PENDING" && content.length < 20) {
+      setSubmitError("Write at least 20 characters before submitting for review.");
+      return;
+    }
+    if (status === "DRAFT" && !content) {
+      setSubmitError("Add some content to save a draft.");
+      return;
+    }
+    if (title.trim().length < 3) {
+      setSubmitError("Title must be at least 3 characters.");
+      return;
+    }
+
     setSubmitting(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title.trim(),
+          excerpt: excerpt.trim() || undefined,
+          content,
+          coverImage: cover.trim() || undefined,
+          category: category || undefined,
+          tags,
+          premium,
+          metaTitle: seoTitle.trim() || undefined,
+          metaDescription: seoDescription.trim() || undefined,
+          status,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        throw new Error(data.error || "Could not save blog");
+      }
+      router.push(status === "PENDING" ? "/dashboard/blogs" : "/dashboard/blogs");
+      router.refresh();
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
       setSubmitting(false);
-      alert("Submitted! Your post is in moderation queue. Check My Blogs → Pending.");
-    }, 900);
+    }
   };
+
+  const onSubmitForReview = () => saveBlog("PENDING");
+  const onSaveDraft = () => saveBlog("DRAFT");
 
   return (
     <div className="container py-6 max-w-6xl">
@@ -105,7 +154,7 @@ export default function CreatePage() {
           <Button variant="ghost" className="gap-1.5">
             <Eye className="h-4 w-4" /> Preview
           </Button>
-          <Button variant="outline" className="gap-1.5">
+          <Button variant="outline" className="gap-1.5" onClick={onSaveDraft} disabled={submitting}>
             <Save className="h-4 w-4" /> Save draft
           </Button>
           <Button variant="gradient" onClick={onSubmitForReview} disabled={submitting} className="gap-1.5">
@@ -114,6 +163,12 @@ export default function CreatePage() {
           </Button>
         </div>
       </div>
+
+      {submitError ? (
+        <p className="mb-4 text-sm text-destructive rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2">
+          {submitError}
+        </p>
+      ) : null}
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
         <div>

@@ -9,19 +9,24 @@ import { CommunityPosts } from "@/components/home/community-posts";
 import { WeeklyTrending } from "@/components/home/weekly-trending";
 import { Newsletter } from "@/components/home/newsletter";
 import { Testimonials } from "@/components/home/testimonials";
+import { getHomePageData } from "@/lib/data/home-data";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const data = await getHomePageData();
+
   return (
     <>
-      <Hero />
-      <TrendingSection />
-      <FeaturedCreators />
-      <PopularCategories />
-      <AIRecommended />
-      <LatestSection />
-      <EditorPick />
-      <CommunityPosts />
-      <WeeklyTrending />
+      <Hero stats={data.stats} categories={data.categories} />
+      <TrendingSection blogs={data.trending} />
+      <FeaturedCreators creators={data.creators} />
+      <PopularCategories categories={data.categories} />
+      <AIRecommended blogs={data.aiRecommended} />
+      <LatestSection blogs={data.latest} />
+      <EditorPick blogs={data.editorPicks} />
+      <CommunityPosts posts={data.communityPosts} />
+      <WeeklyTrending topics={data.weeklyTopics} />
       <Testimonials />
       <Newsletter />
     </>

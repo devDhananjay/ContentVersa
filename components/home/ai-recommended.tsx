@@ -6,10 +6,13 @@ import { Sparkles } from "lucide-react";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getEditorPicks, getLatestBlogs } from "@/lib/data/blogs";
+import type { Blog } from "@/lib/data/blogs";
 
-export function AIRecommended() {
-  const picks = [...getEditorPicks(2), ...getLatestBlogs(2)].slice(0, 4);
+interface Props {
+  blogs: Blog[];
+}
+
+export function AIRecommended({ blogs: picks }: Props) {
   return (
     <section className="relative py-12 md:py-20 overflow-hidden">
       <div className="absolute inset-0 -z-10">

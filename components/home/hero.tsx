@@ -7,11 +7,16 @@ import { ArrowRight, Search, Sparkles, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { CATEGORIES } from "@/lib/data/categories";
+import type { CategoryWithCount } from "@/lib/data/home-data";
 
 const ROTATING_WORDS = ["Read.", "Create.", "Grow.", "Earn.", "Build."];
 
-export function Hero() {
+interface Props {
+  categories: CategoryWithCount[];
+  stats: { creators: string; readers: string; paid: string };
+}
+
+export function Hero({ categories, stats }: Props) {
   const [wordIndex, setWordIndex] = React.useState(0);
 
   React.useEffect(() => {
@@ -22,7 +27,7 @@ export function Hero() {
     return () => clearInterval(t);
   }, []);
 
-  const quickCategories = CATEGORIES.slice(0, 8);
+  const quickCategories = categories.slice(0, 8);
 
   return (
     <section className="relative overflow-hidden">
@@ -130,9 +135,9 @@ export function Hero() {
 
           <div className="mt-16 grid grid-cols-3 gap-8 md:gap-16">
             {[
-              { value: "120K+", label: "Active Creators" },
-              { value: "8.4M", label: "Monthly Readers" },
-              { value: "$2.1M", label: "Paid to Creators" },
+              { value: stats.creators, label: "Active Creators" },
+              { value: stats.readers, label: "Monthly Readers" },
+              { value: stats.paid, label: "Paid to Creators" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="font-display font-extrabold text-2xl md:text-4xl text-gradient">

@@ -2,11 +2,14 @@ import Link from "next/link";
 import { Flame, ArrowRight } from "lucide-react";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Button } from "@/components/ui/button";
-import { getTrending } from "@/lib/data/blogs";
+import type { Blog } from "@/lib/data/blogs";
 
-export function TrendingSection() {
-  const trending = getTrending(5);
-  const [first, ...rest] = trending;
+interface Props {
+  blogs: Blog[];
+}
+
+export function TrendingSection({ blogs }: Props) {
+  const [first, ...rest] = blogs;
   return (
     <section className="container py-12 md:py-20">
       <div className="flex items-end justify-between mb-8">

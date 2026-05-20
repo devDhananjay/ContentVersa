@@ -2,10 +2,13 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Button } from "@/components/ui/button";
-import { getLatestBlogs } from "@/lib/data/blogs";
+import type { Blog } from "@/lib/data/blogs";
 
-export function LatestSection() {
-  const blogs = getLatestBlogs(8);
+interface Props {
+  blogs: Blog[];
+}
+
+export function LatestSection({ blogs }: Props) {
   return (
     <section className="container py-12 md:py-20">
       <div className="flex items-end justify-between mb-8">

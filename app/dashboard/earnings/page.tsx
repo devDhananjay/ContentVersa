@@ -1,23 +1,34 @@
+import { redirect } from "next/navigation";
 import { Wallet, DollarSign, Gift, Megaphone, Crown, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { getCurrentUser } from "@/lib/auth";
+import { getDashboardDataCached } from "@/lib/data/dashboard-data";
 
-const SOURCES = [
-  { source: "Ad Revenue", icon: Megaphone, amount: 420.5, color: "from-neon-blue to-neon-cyan" },
-  { source: "Subscriptions", icon: Crown, amount: 612.0, color: "from-neon-purple to-neon-pink" },
-  { source: "Tips", icon: Coffee, amount: 84.0, color: "from-neon-orange to-neon-pink" },
-  { source: "Sponsored", icon: Gift, amount: 320.0, color: "from-emerald-500 to-teal-500" },
-];
+const ICONS = {
+  ads: Megaphone,
+  subscription: Crown,
+  tip: Coffee,
+  sponsored: Gift,
+};
 
-const PAYOUTS = [
-  { date: "2026-05-01", method: "Stripe", amount: 1240, status: "Paid" },
-  { date: "2026-04-01", method: "Stripe", amount: 980, status: "Paid" },
-  { date: "2026-03-01", method: "Stripe", amount: 720, status: "Paid" },
-  { date: "2026-02-01", method: "Stripe", amount: 540, status: "Paid" },
-];
+const COLORS: Record<string, string> = {
+  ads: "from-neon-blue to-neon-cyan",
+  subscription: "from-neon-purple to-neon-pink",
+  tip: "from-neon-orange to-neon-pink",
+  sponsored: "from-emerald-500 to-teal-500",
+};
 
-export default function EarningsPage() {
+export default async function EarningsPage() {
+  const session = await getCurrentUser();
+  if (!session) redirect("/auth/sign-in?next=/dashboard/earnings");
+
+  const data = await getDashboardDataCached(session);
+  const s = data?.stats;
+  const sources = data?.revenueSources ?? [];
+  const payouts = data?.payouts ?? [];
+
   return (
     <div className="container py-8 max-w-6xl">
       <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
@@ -26,7 +37,7 @@ export default function EarningsPage() {
             Earnings
           </h1>
           <p className="text-muted-foreground mt-1">
-            Track ads, tips, subscriptions and sponsored revenue in one place.
+            Your wallet and revenue — mapped to your account only.
           </p>
         </div>
         <Button variant="gradient" className="gap-2">
@@ -39,26 +50,34 @@ export default function EarningsPage() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Wallet balance
           </p>
-          <p className="font-display text-5xl font-extrabold mt-2 text-gradient">$1,436.50</p>
+          <p className="font-display text-5xl font-extrabold mt-2 text-gradient">
+            {s?.walletBalance ?? "$0"}
+          </p>
           <p className="text-xs text-muted-foreground mt-2">Available for payout · USD</p>
         </div>
-        <StatCard label="Lifetime earnings" value="$8,420" delta={24} icon={<DollarSign className="h-5 w-5" />} color="from-neon-purple to-neon-pink" index={0} />
-        <StatCard label="This month" value="$1,240" delta={42} icon={<Wallet className="h-5 w-5" />} color="from-neon-orange to-neon-pink" index={1} />
+        <StatCard label="Lifetime earnings" value={s?.lifetimeEarnings ?? "$0"} delta={24} icon={<DollarSign className="h-5 w-5" />} color="from-neon-purple to-neon-pink" index={0} />
+        <StatCard label="This month" value={s?.earnings ?? "$0"} delta={s?.earningsDelta ?? 0} icon={<Wallet className="h-5 w-5" />} color="from-neon-orange to-neon-pink" index={1} />
       </div>
 
       <h2 className="font-display text-xl font-bold mb-4">Revenue sources (30d)</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {SOURCES.map((s, i) => (
-          <div key={s.source} className="rounded-2xl border bg-card p-5">
-            <div className={`h-10 w-10 rounded-xl bg-gradient-to-br flex items-center justify-center text-white ${s.color}`}>
-              <s.icon className="h-5 w-5" />
+        {sources.map((row) => {
+          const Icon = ICONS[row.iconKey] ?? Gift;
+          const color = COLORS[row.iconKey] ?? "from-neon-purple to-neon-pink";
+          return (
+            <div key={row.source} className="rounded-2xl border bg-card p-5">
+              <div className={`h-10 w-10 rounded-xl bg-gradient-to-br flex items-center justify-center text-white ${color}`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <p className="text-xs uppercase tracking-widest text-muted-foreground mt-4">
+                {row.source}
+              </p>
+              <p className="font-display text-2xl font-extrabold mt-1">
+                ${row.amount.toFixed(2)}
+              </p>
             </div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mt-4">
-              {s.source}
-            </p>
-            <p className="font-display text-2xl font-extrabold mt-1">${s.amount.toFixed(2)}</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <h2 className="font-display text-xl font-bold mt-10 mb-4">Payout history</h2>
@@ -73,8 +92,8 @@ export default function EarningsPage() {
             </tr>
           </thead>
           <tbody>
-            {PAYOUTS.map((p) => (
-              <tr key={p.date} className="border-t border-border/40 text-sm">
+            {payouts.map((p) => (
+              <tr key={p.date + p.amount} className="border-t border-border/40 text-sm">
                 <td className="p-4">{p.date}</td>
                 <td className="p-4">{p.method}</td>
                 <td className="p-4 font-semibold">${p.amount.toFixed(2)}</td>

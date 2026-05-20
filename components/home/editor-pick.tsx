@@ -7,11 +7,14 @@ import { Crown, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { getEditorPicks } from "@/lib/data/blogs";
+import type { Blog } from "@/lib/data/blogs";
 import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
 
-export function EditorPick() {
-  const picks = getEditorPicks(4);
+interface Props {
+  blogs: Blog[];
+}
+
+export function EditorPick({ blogs: picks }: Props) {
   return (
     <section className="container py-12 md:py-20">
       <div className="flex items-end justify-between mb-8">

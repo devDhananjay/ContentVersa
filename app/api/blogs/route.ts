@@ -1,19 +1,41 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import { cache } from "@/lib/redis";
 import { BLOGS, searchBlogs } from "@/lib/data/blogs";
-import { prisma } from "@/lib/prisma";
+import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { readingTime, slugify } from "@/lib/utils";
 
+const coverImageSchema = z
+  .string()
+  .optional()
+  .transform((v) => {
+    const s = v?.trim();
+    if (!s) return undefined;
+    return s;
+  })
+  .refine(
+    (v) =>
+      !v ||
+      v.startsWith("/") ||
+      v.startsWith("data:image/") ||
+      /^https?:\/\//i.test(v),
+    { message: "Cover must be an uploaded image, data URL, or http(s) link" }
+  );
+
 const CreateSchema = z.object({
-  title: z.string().min(3),
+  title: z.string().trim().min(3, "Title must be at least 3 characters"),
   excerpt: z.string().optional(),
-  content: z.string().min(20),
-  coverImage: z.string().url().optional(),
+  content: z.string().min(1, "Content is required"),
+  coverImage: coverImageSchema,
   category: z.string().optional(),
   tags: z.array(z.string()).max(5).optional(),
   premium: z.boolean().optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  status: z.enum(["DRAFT", "PENDING"]).optional().default("PENDING"),
 });
 
 export async function GET(req: Request) {
@@ -52,43 +74,106 @@ export async function GET(req: Request) {
   return NextResponse.json({ data: result, count: result.length });
 }
 
+async function connectTags(blogId: string, tagSlugs: string[]) {
+  for (const raw of tagSlugs) {
+    const slug = slugify(raw);
+    if (!slug) continue;
+    const tag = await prisma.tag.upsert({
+      where: { slug },
+      create: { slug, name: raw.replace(/-/g, " ") },
+      update: {},
+    });
+    await prisma.blogTag.upsert({
+      where: { blogId_tagId: { blogId, tagId: tag.id } },
+      create: { blogId, tagId: tag.id },
+      update: {},
+    });
+  }
+}
+
 export async function POST(req: Request) {
   try {
-    const user = await requireUser();
+    const session = await requireUser();
+    if (!isDatabaseConfigured()) {
+      return NextResponse.json(
+        { error: "Database not configured. Set DATABASE_URL in .env." },
+        { status: 503 }
+      );
+    }
+
+    const authorId = await requireUserId(session);
     const body = await req.json();
     const parsed = CreateSchema.parse(body);
 
-    try {
-      const slug = `${slugify(parsed.title)}-${Date.now().toString(36)}`;
-      const blog = await prisma.blog.create({
-        data: {
-          title: parsed.title,
-          slug,
-          excerpt: parsed.excerpt || "",
-          content: parsed.content,
-          coverImage: parsed.coverImage,
-          readingTime: readingTime(parsed.content),
-          status: "PENDING",
-          isPremium: parsed.premium || false,
-          authorId: user.sub,
-          submission: { create: { authorId: user.sub } },
-        },
-      });
-      return NextResponse.json({ ok: true, blog });
-    } catch {
-      return NextResponse.json({
-        ok: true,
-        demo: true,
-        message: "Submitted for review (demo mode — DB not configured).",
-      });
+    if (parsed.status === "PENDING" && parsed.content.trim().length < 20) {
+      return NextResponse.json(
+        { error: "Write at least 20 characters before submitting for review." },
+        { status: 400 }
+      );
     }
+
+    let categoryId: string | undefined;
+    if (parsed.category) {
+      const cat = await prisma.category.findUnique({
+        where: { slug: parsed.category },
+        select: { id: true },
+      });
+      categoryId = cat?.id;
+    }
+
+    const slug = `${slugify(parsed.title)}-${Date.now().toString(36)}`;
+
+    const blog = await prisma.blog.create({
+      data: {
+        title: parsed.title,
+        slug,
+        excerpt: parsed.excerpt || "",
+        content: parsed.content,
+        coverImage: parsed.coverImage,
+        readingTime: readingTime(parsed.content),
+        status: parsed.status,
+        isPremium: parsed.premium || false,
+        metaTitle: parsed.metaTitle,
+        metaDescription: parsed.metaDescription,
+        authorId,
+        categoryId,
+        ...(parsed.status === "PENDING"
+          ? {
+              submission: {
+                create: {
+                  authorId,
+                  decision: "PENDING",
+                },
+              },
+            }
+          : {}),
+      },
+    });
+
+    if (parsed.tags?.length) {
+      await connectTags(blog.id, parsed.tags);
+    }
+
+    revalidatePath("/dashboard/blogs");
+    revalidatePath("/dashboard");
+    revalidatePath("/admin/moderation");
+
+    return NextResponse.json({ ok: true, blog: { id: blog.id, slug: blog.slug, status: blog.status } });
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+      const first = err.errors[0];
+      const message = first
+        ? `${first.path.length ? `${first.path.join(".")}: ` : ""}${first.message}`
+        : "Invalid input";
+      return NextResponse.json({ error: message, details: err.flatten() }, { status: 400 });
     }
     if (err instanceof Error && err.message === "UNAUTHENTICATED") {
       return NextResponse.json({ error: "Sign in required" }, { status: 401 });
     }
+    if (err instanceof Error && err.message === "USER_NOT_FOUND") {
+      return NextResponse.json({ error: "User account not found. Sign out and sign in again." }, { status: 400 });
+    }
+    console.error("[blogs POST]", err);
     return NextResponse.json({ error: "Failed to create blog" }, { status: 500 });
   }
 }

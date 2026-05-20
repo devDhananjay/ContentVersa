@@ -14,10 +14,10 @@ import {
   Trophy,
   Bookmark,
   LayoutDashboard,
-  Shield,
-  LogIn,
 } from "lucide-react";
 import { Logo } from "./logo";
+import { UserNav, MobileUserNav } from "@/components/auth/user-nav";
+import { AdminViewButton } from "@/components/auth/admin-view-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -111,12 +111,8 @@ export function Navbar() {
             </Badge>
           </Button>
           <ThemeToggle />
-          <Link href="/auth/sign-in">
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <LogIn className="h-4 w-4" />
-              Sign in
-            </Button>
-          </Link>
+          <AdminViewButton variant="outline" />
+          <UserNav />
         </div>
 
         <Button
@@ -161,17 +157,9 @@ export function Navbar() {
                 <LayoutDashboard className="h-4 w-4" />
                 Dashboard
               </Link>
-              <Link
-                href="/admin"
-                className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm hover:bg-muted"
-              >
-                <Shield className="h-4 w-4" />
-                Admin
-              </Link>
+              <AdminViewButton fullWidth variant="gradient" className="w-full" />
               <div className="flex gap-2 pt-2">
-                <Link href="/auth/sign-in" className="flex-1">
-                  <Button variant="outline" className="w-full">Sign in</Button>
-                </Link>
+                <MobileUserNav />
                 <Link href="/dashboard/create" className="flex-1">
                   <Button variant="gradient" className="w-full">Write</Button>
                 </Link>

@@ -13,15 +13,26 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Badge } from "@/components/ui/badge";
-import { getTrending } from "@/lib/data/blogs";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
+import { getDashboardDataCached } from "@/lib/data/dashboard-data";
 
-export default function DashboardOverview() {
-  const trending = getTrending(3);
+export default async function DashboardOverview() {
+  const session = await getCurrentUser();
+  if (!session) redirect("/auth/sign-in?next=/dashboard");
+
+  const data = await getDashboardDataCached(session);
+  const firstName = (session.name || session.username || "there").split(" ")[0];
+  const stats = data?.stats;
+  const topBlogs = data?.topBlogs ?? [];
+  const streak = stats?.streakDays ?? 0;
+  const streakFilled = Math.min(streak, 14);
+
   return (
     <div className="container py-8 max-w-6xl">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <p className="text-sm text-muted-foreground">Welcome back, Aarav.</p>
+          <p className="text-sm text-muted-foreground">Welcome back, {firstName}.</p>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight mt-1">
             Your <span className="text-gradient">studio</span> overview
           </h1>
@@ -41,10 +52,10 @@ export default function DashboardOverview() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Views (30d)" value="42.8K" delta={28} icon={<Eye className="h-5 w-5" />} color="from-neon-blue to-neon-cyan" index={0} />
-        <StatCard label="Reactions" value="3.2K" delta={12} icon={<Heart className="h-5 w-5" />} color="from-neon-pink to-neon-purple" index={1} />
-        <StatCard label="Followers" value="1,284" delta={8} icon={<Users className="h-5 w-5" />} color="from-neon-purple to-neon-pink" index={2} />
-        <StatCard label="Earnings" value="$1,240" delta={42} icon={<Wallet className="h-5 w-5" />} color="from-neon-orange to-neon-pink" index={3} />
+        <StatCard label="Views (30d)" value={stats?.views30d ?? "0"} delta={stats?.viewsDelta ?? 0} icon={<Eye className="h-5 w-5" />} color="from-neon-blue to-neon-cyan" index={0} />
+        <StatCard label="Reactions" value={stats?.reactions ?? "0"} delta={stats?.reactionsDelta ?? 0} icon={<Heart className="h-5 w-5" />} color="from-neon-pink to-neon-purple" index={1} />
+        <StatCard label="Followers" value={stats?.followers ?? "0"} delta={stats?.followersDelta ?? 0} icon={<Users className="h-5 w-5" />} color="from-neon-purple to-neon-pink" index={2} />
+        <StatCard label="Earnings" value={stats?.earnings ?? "$0"} delta={stats?.earningsDelta ?? 0} icon={<Wallet className="h-5 w-5" />} color="from-neon-orange to-neon-pink" index={3} />
       </div>
 
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -80,9 +91,9 @@ export default function DashboardOverview() {
           </div>
           <div className="mt-6 grid grid-cols-3 gap-4">
             {[
-              { label: "Avg read time", value: "4m 32s" },
-              { label: "CTR", value: "8.4%" },
-              { label: "Bounce rate", value: "23%" },
+              { label: "Avg read time", value: stats?.avgReadTime ?? "—" },
+              { label: "CTR", value: stats?.ctr ?? "—" },
+              { label: "Bounce rate", value: stats?.bounceRate ?? "—" },
             ].map((s) => (
               <div key={s.label}>
                 <p className="text-xs text-muted-foreground uppercase tracking-widest">{s.label}</p>
@@ -98,7 +109,7 @@ export default function DashboardOverview() {
               <Flame className="h-5 w-5" />
               <h3 className="font-display text-lg font-bold">Streak</h3>
             </div>
-            <p className="font-display text-5xl font-extrabold mt-2 text-gradient">12 days</p>
+            <p className="font-display text-5xl font-extrabold mt-2 text-gradient">{streak} days</p>
             <p className="text-xs text-muted-foreground mt-1">
               Keep writing daily to unlock the Marathon badge (30 days).
             </p>
@@ -108,7 +119,7 @@ export default function DashboardOverview() {
               <div
                 key={i}
                 className={
-                  i < 12
+                  i < streakFilled
                     ? "h-6 rounded bg-gradient-to-br from-neon-orange to-neon-pink"
                     : "h-6 rounded bg-muted"
                 }
@@ -124,8 +135,8 @@ export default function DashboardOverview() {
                 <Flame className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-sm">Top 5% creator this week</p>
-                <p className="text-xs text-muted-foreground">Earned 2 days ago</p>
+                <p className="font-semibold text-sm">{data?.achievements[0]?.title ?? "Keep publishing"}</p>
+                <p className="text-xs text-muted-foreground">{stats?.publishedCount ?? 0} posts live</p>
               </div>
             </div>
           </div>
@@ -141,11 +152,20 @@ export default function DashboardOverview() {
             </Button>
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {trending.map((b, i) => (
-            <BlogCard key={b.id} blog={b} index={i} />
-          ))}
-        </div>
+        {topBlogs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {topBlogs.map((b, i) => (
+              <BlogCard key={b.id} blog={b} index={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
+            <p>No posts yet.</p>
+            <Link href="/dashboard/create" className="mt-4 inline-block">
+              <Button variant="gradient">Create your first blog</Button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

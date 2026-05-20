@@ -5,13 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/blog-card";
-import { AUTHORS, BLOGS } from "@/lib/data/blogs";
+import { AUTHORS, BLOGS, type Author, type Blog } from "@/lib/data/blogs";
+import { getBlogsForProfile } from "@/lib/data/blog-db";
 import { formatNumber, getInitials } from "@/lib/utils";
 import { buildMetadata } from "@/lib/seo";
 
-export async function generateStaticParams() {
-  return AUTHORS.map((a) => ({ username: a.username }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -19,7 +18,8 @@ export async function generateMetadata({
   params: Promise<{ username: string }>;
 }): Promise<Metadata> {
   const { username } = await params;
-  const user = AUTHORS.find((a) => a.username === username);
+  const fromDb = await getBlogsForProfile(username);
+  const user = fromDb?.user ?? AUTHORS.find((a) => a.username === username);
   return buildMetadata({
     title: user ? `@${user.username}` : "Profile",
     description: user?.bio,
@@ -34,9 +34,23 @@ export default async function ProfilePage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
-  const user = AUTHORS.find((a) => a.username === username);
-  if (!user) return notFound();
-  const blogs = BLOGS.filter((b) => b.author.username === user.username);
+  const fromDb = await getBlogsForProfile(username);
+
+  let user: Author;
+  let blogs: Blog[];
+
+  if (fromDb) {
+    user = fromDb.user;
+    blogs = fromDb.blogs;
+  } else {
+    const mockUser = AUTHORS.find((a) => a.username === username);
+    if (!mockUser) return notFound();
+    user = mockUser;
+    blogs = BLOGS.filter((b) => b.author.username === user.username);
+  }
+
+  const blogCount = blogs.length;
+  const totalViews = blogs.reduce((s, b) => s + b.views, 0);
 
   return (
     <div>
@@ -70,7 +84,7 @@ export default async function ProfilePage({
         </div>
 
         <div className="mt-6 max-w-2xl">
-          <p className="text-lg text-foreground/90">{user.bio}</p>
+          <p className="text-lg text-foreground/90">{user.bio || "No bio yet."}</p>
         </div>
 
         <div className="mt-6 grid grid-cols-3 max-w-md gap-4">
@@ -81,12 +95,12 @@ export default async function ProfilePage({
             <p className="text-xs text-muted-foreground">Followers</p>
           </div>
           <div>
-            <p className="font-display text-2xl font-extrabold">{user.blogs}</p>
+            <p className="font-display text-2xl font-extrabold">{blogCount}</p>
             <p className="text-xs text-muted-foreground">Blogs</p>
           </div>
           <div>
             <p className="font-display text-2xl font-extrabold">
-              {formatNumber(blogs.reduce((s, b) => s + b.views, 0))}
+              {formatNumber(totalViews)}
             </p>
             <p className="text-xs text-muted-foreground">Total views</p>
           </div>

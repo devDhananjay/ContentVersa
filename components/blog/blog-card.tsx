@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Bookmark, Clock, Eye, Heart, MessageCircle } from "lucide-react";
+import { Clock, Eye, Heart, MessageCircle } from "lucide-react";
+import { BookmarkButton } from "@/components/blog/bookmark-button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
@@ -172,16 +173,11 @@ export function BlogCard({ blog, variant = "default", index = 0 }: BlogCardProps
             {blog.premium && <Badge variant="orange">Premium</Badge>}
             {blog.trending && <Badge variant="pink">🔥 Trending</Badge>}
           </div>
-          <button
-            type="button"
-            className="absolute top-3 right-3 h-8 w-8 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-            aria-label="Bookmark"
-          >
-            <Bookmark className="h-4 w-4" />
-          </button>
+          <BookmarkButton
+            blogRef={blog.slug}
+            className="absolute top-3 right-3 h-8 w-8 rounded-full bg-black/40 backdrop-blur text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
+            iconClassName="h-4 w-4"
+          />
         </div>
 
         <div className="p-5">

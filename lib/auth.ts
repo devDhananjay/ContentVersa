@@ -1,12 +1,11 @@
 // JWT-based auth using `jose`. Sessions stored in HTTP-only cookies.
 import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 import { cookies } from "next/headers";
-
 const SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "dev-secret-change-me-please-change-me-please"
 );
 const SESSION_COOKIE = "cv_session";
-const SESSION_TTL = 60 * 60 * 24 * 30; // 30 days
+const SESSION_TTL = 60 * 60 * 24 * 365; // 1 year — stay signed in
 
 export interface SessionUser extends JWTPayload {
   sub: string;
@@ -53,7 +52,13 @@ export async function setSessionCookie(token: string) {
 
 export async function clearSessionCookie() {
   const jar = await cookies();
-  jar.delete(SESSION_COOKIE);
+  jar.set(SESSION_COOKIE, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
 }
 
 export async function getCurrentUser(): Promise<SessionUser | null> {

@@ -14,14 +14,17 @@ import { ShareBar } from "@/components/blog/share-bar";
 import { FloatingActions } from "@/components/blog/floating-actions";
 import { BlogCard } from "@/components/blog/blog-card";
 import { renderMarkdown, extractTOC } from "@/components/blog/markdown";
-import { BLOGS, getBlogBySlug, getRecommendedFor } from "@/lib/data/blogs";
+import { BLOGS, getRecommendedFor } from "@/lib/data/blogs";
+import { getBlogBySlugHybrid, getPublishedBlogsHybrid } from "@/lib/data/blog-db";
+import { getBlogEngagement } from "@/lib/data/blog-engagement";
+import { getCurrentUser } from "@/lib/auth";
+import { resolveUserId } from "@/lib/auth/resolve-user-id";
+import { isDatabaseConfigured } from "@/lib/prisma";
 import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
 import { buildMetadata, articleJsonLd, SITE } from "@/lib/seo";
 import { CATEGORIES } from "@/lib/data/categories";
 
-export async function generateStaticParams() {
-  return BLOGS.map((b) => ({ slug: b.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -29,7 +32,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const blog = getBlogBySlug(slug);
+  const blog = await getBlogBySlugHybrid(slug);
   if (!blog) return buildMetadata({ title: "Not found", noIndex: true });
   return buildMetadata({
     title: blog.title,
@@ -49,13 +52,28 @@ export default async function BlogPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const blog = getBlogBySlug(slug);
+  const blog = await getBlogBySlugHybrid(slug);
   if (!blog) return notFound();
 
   const category = CATEGORIES.find((c) => c.slug === blog.category);
   const toc = extractTOC(blog.content);
-  const recommended = getRecommendedFor(slug, 3);
+  const allPublished = await getPublishedBlogsHybrid();
+  let recommended = allPublished
+    .filter((b) => b.slug !== slug && b.category === blog.category)
+    .slice(0, 3);
+  if (recommended.length === 0) {
+    recommended = getRecommendedFor(slug, 3);
+  }
   const url = `${SITE.url}/blog/${blog.slug}`;
+
+  let engagement = null;
+  if (isDatabaseConfigured() && blog.id) {
+    const session = await getCurrentUser();
+    const userId = session ? await resolveUserId(session) : null;
+    engagement = await getBlogEngagement(blog.id, userId);
+  }
+
+  const reactionCount = engagement?.totalReactions ?? blog.likes;
 
   const jsonLd = articleJsonLd({
     title: blog.title,
@@ -69,7 +87,12 @@ export default async function BlogPage({
   return (
     <>
       <ReadingProgress />
-      <FloatingActions likes={blog.likes} />
+      <FloatingActions
+        blogRef={blog.slug}
+        likes={reactionCount}
+        initialBookmarked={engagement?.bookmarked}
+        initialUserReaction={engagement?.userReaction}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -163,7 +186,11 @@ export default async function BlogPage({
             </div>
 
             <div className="mt-8">
-              <Reactions initialCount={blog.likes} />
+              <Reactions
+                blogRef={blog.slug}
+                initialCount={reactionCount}
+                initialUserReaction={engagement?.userReaction}
+              />
             </div>
 
             {/* Tip the creator */}

@@ -4,50 +4,14 @@ import { motion } from "framer-motion";
 import { Heart, MessageCircle, Repeat2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { AUTHORS } from "@/lib/data/blogs";
 import { getInitials } from "@/lib/utils";
+import type { CommunityPost } from "@/lib/data/home-data";
 
-const POSTS = [
-  {
-    author: AUTHORS[0],
-    content:
-      "Hot take: the best content this year isn't on legacy media. It's solo creators with newsletters of 8K people and conviction.",
-    likes: 412,
-    comments: 38,
-    reposts: 64,
-    time: "2h",
-  },
-  {
-    author: AUTHORS[2],
-    content:
-      "Just hit $30K MRR with 3 people, 1 product and zero paid acquisition. Writing the full breakdown this weekend.",
-    likes: 1_240,
-    comments: 184,
-    reposts: 312,
-    time: "5h",
-    tag: "founders",
-  },
-  {
-    author: AUTHORS[3],
-    content:
-      "Design rule I'm leaning on this year — if the page can survive without the gradient, it doesn't need the gradient.",
-    likes: 318,
-    comments: 22,
-    reposts: 41,
-    time: "8h",
-  },
-  {
-    author: AUTHORS[5],
-    content:
-      "Reading more, posting less. Best quarter for my brain in two years. There's a writer hidden in every reader.",
-    likes: 502,
-    comments: 47,
-    reposts: 78,
-    time: "1d",
-  },
-];
+interface Props {
+  posts: CommunityPost[];
+}
 
-export function CommunityPosts() {
+export function CommunityPosts({ posts }: Props) {
   return (
     <section className="container py-12 md:py-20">
       <div className="text-center mb-10">
@@ -63,7 +27,7 @@ export function CommunityPosts() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {POSTS.map((p, i) => (
+        {posts.map((p, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 16 }}
@@ -74,7 +38,9 @@ export function CommunityPosts() {
           >
             <div className="flex items-start gap-3">
               <Avatar className="h-10 w-10">
-                <AvatarImage src={p.author.avatar} alt={p.author.name} />
+                {p.author.avatar ? (
+                  <AvatarImage src={p.author.avatar} alt={p.author.name} />
+                ) : null}
                 <AvatarFallback>{getInitials(p.author.name)}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">

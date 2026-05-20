@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
-import { BLOGS, searchBlogs } from "@/lib/data/blogs";
+import type { Blog } from "@/lib/data/blogs";
+import { getPublishedBlogsHybrid } from "@/lib/data/blog-db";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -10,14 +11,26 @@ export const metadata: Metadata = buildMetadata({
   path: "/blogs",
 });
 
-function applyFilters(input: {
-  q?: string;
-  category?: string;
-  sort?: string;
-  tag?: string;
-}) {
-  let list = [...BLOGS];
-  if (input.q) list = searchBlogs(input.q);
+function applyFilters(
+  all: Blog[],
+  input: {
+    q?: string;
+    category?: string;
+    sort?: string;
+    tag?: string;
+  }
+) {
+  let list = [...all];
+  if (input.q) {
+    const term = input.q.toLowerCase();
+    list = list.filter(
+      (b) =>
+        b.title.toLowerCase().includes(term) ||
+        b.excerpt.toLowerCase().includes(term) ||
+        b.tags.some((t) => t.toLowerCase().includes(term)) ||
+        b.author.name.toLowerCase().includes(term)
+    );
+  }
   if (input.category) list = list.filter((b) => b.category === input.category);
   if (input.tag) list = list.filter((b) => b.tags.includes(input.tag!));
   switch (input.sort) {
@@ -45,7 +58,8 @@ export default async function BlogsPage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const sp = await searchParams;
-  const list = applyFilters(sp);
+  const all = await getPublishedBlogsHybrid();
+  const list = applyFilters(all, sp);
 
   return (
     <div className="container py-8 md:py-12">

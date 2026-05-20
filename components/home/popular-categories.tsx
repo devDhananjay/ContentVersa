@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import * as Lucide from "lucide-react";
-import { CATEGORIES } from "@/lib/data/categories";
+import type { CategoryWithCount } from "@/lib/data/home-data";
 import { cn } from "@/lib/utils";
 
 const TopCategoriesPicker = (icon: string) => {
@@ -12,7 +12,12 @@ const TopCategoriesPicker = (icon: string) => {
   return C ?? Lucide.Hash;
 };
 
-export function PopularCategories() {
+interface Props {
+  categories: CategoryWithCount[];
+}
+
+export function PopularCategories({ categories }: Props) {
+  const list = categories.length > 0 ? categories : [];
   return (
     <section className="container py-12 md:py-20">
       <div className="text-center mb-10">
@@ -28,7 +33,7 @@ export function PopularCategories() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-        {CATEGORIES.map((cat, i) => {
+        {list.map((cat, i) => {
           const Icon = TopCategoriesPicker(cat.icon);
           return (
             <motion.div

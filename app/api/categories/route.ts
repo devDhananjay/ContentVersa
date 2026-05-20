@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
-import { CATEGORIES } from "@/lib/data/categories";
-import { BLOGS } from "@/lib/data/blogs";
+import { getCategoriesWithCountsHybrid } from "@/lib/data/blog-db";
 import { cache } from "@/lib/redis";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const data = await cache.wrap("categories:all", 300, async () =>
-    CATEGORIES.map((c) => ({
-      ...c,
-      blogCount: BLOGS.filter((b) => b.category === c.slug).length,
-    }))
+    getCategoriesWithCountsHybrid()
   );
   return NextResponse.json({ data });
 }
