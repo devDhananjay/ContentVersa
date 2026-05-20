@@ -9,17 +9,14 @@ import {
 import { persistGoogleUser } from "@/lib/auth/google-user";
 import { isDatabaseConfigured } from "@/lib/prisma";
 import { signSession, setSessionCookie, type SessionUser } from "@/lib/auth";
+import { getAppUrl } from "@/lib/app-url";
 
 export const runtime = "nodejs";
 
 const OAUTH_STATE_COOKIE = "cv_oauth_state";
 
-function appUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-}
-
 function fail(reason: string) {
-  const url = new URL("/auth/sign-in", appUrl());
+  const url = new URL("/auth/sign-in", getAppUrl());
   url.searchParams.set("error", reason);
   return NextResponse.redirect(url);
 }
@@ -69,7 +66,7 @@ async function signInAndRedirect(
 ) {
   const token = await signSession(session);
   await setSessionCookie(token);
-  return NextResponse.redirect(new URL(next, appUrl()));
+  return NextResponse.redirect(new URL(next, getAppUrl()));
 }
 
 export async function GET(req: Request) {

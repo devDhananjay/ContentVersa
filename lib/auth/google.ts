@@ -1,3 +1,5 @@
+import { getAppUrl } from "@/lib/app-url";
+
 // Minimal Google OAuth2 helpers using `fetch`. No third-party OAuth lib needed.
 // We deliberately avoid NextAuth/Auth.js to keep ContentVerse's existing
 // JWT-cookie session model (see `lib/auth.ts`).
@@ -22,12 +24,8 @@ export function isGoogleConfigured() {
   );
 }
 
-function appUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-}
-
 export function googleRedirectUri() {
-  return `${appUrl()}/api/auth/google/callback`;
+  return `${getAppUrl()}/api/auth/google/callback`;
 }
 
 export function buildGoogleAuthUrl(state: string, next?: string) {
