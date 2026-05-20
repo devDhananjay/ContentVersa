@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
@@ -72,11 +73,13 @@ export default async function BlogsPage({
         </p>
       </div>
 
-      <BlogFilters
-        defaultQuery={sp.q}
-        defaultCategory={sp.category}
-        defaultSort={sp.sort || "trending"}
-      />
+      <Suspense fallback={<div className="h-24 rounded-2xl bg-muted/40 animate-pulse mb-8" />}>
+        <BlogFilters
+          defaultQuery={sp.q}
+          defaultCategory={sp.category}
+          defaultSort={sp.sort || "trending"}
+        />
+      </Suspense>
 
       {list.length === 0 ? (
         <div className="rounded-3xl border bg-card p-16 text-center">
