@@ -5,7 +5,9 @@ import { ArrowLeft, FileText, Eye, Mail, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ChangeUserPassword } from "@/components/admin/change-user-password";
 import { getAdminUserDetail } from "@/lib/data/admin-data";
+import { getCurrentUser } from "@/lib/auth";
 import { formatNumber, getInitials } from "@/lib/utils";
 
 const STATUS_VARIANT: Record<string, "success" | "warning" | "secondary" | "destructive"> = {
@@ -21,8 +23,10 @@ export default async function AdminUserDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const session = await getCurrentUser();
   const user = await getAdminUserDetail(id);
   if (!user) notFound();
+  const isSuperAdmin = session?.role === "SUPER_ADMIN";
 
   const byStatus = {
     published: user.blogs.filter((b) => b.status === "PUBLISHED").length,
@@ -67,8 +71,19 @@ export default async function AdminUserDetailPage({
             <Calendar className="h-4 w-4" /> Joined {user.createdAt.toLocaleDateString()}
           </p>
           {user.bio && <p className="mt-4 text-sm">{user.bio}</p>}
+          <p className="text-xs text-muted-foreground mt-2">
+            Login: {user.hasPassword ? "Email + password" : "Google OAuth only (no password set)"}
+          </p>
         </div>
       </div>
+
+      {isSuperAdmin && (
+        <ChangeUserPassword
+          userId={user.id}
+          userEmail={user.email}
+          hasPassword={user.hasPassword}
+        />
+      )}
 
       <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3">
         {[

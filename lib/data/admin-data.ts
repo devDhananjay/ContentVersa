@@ -95,6 +95,7 @@ export type AdminUserDetail = AdminUserRow & {
   followingCount: number;
   totalViews: number;
   totalLikes: number;
+  hasPassword: boolean;
   blogs: AdminBlogRow[];
 };
 
@@ -247,6 +248,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     headline: user.profile?.headline ?? null,
     totalViews: user.profile?.totalViews ?? 0,
     totalLikes: user.profile?.totalLikes ?? 0,
+    hasPassword: !!user.password,
     blogs: user.blogs.map((b) =>
       mapBlogRow({
         id: b.id,

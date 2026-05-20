@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcryptjs";
 import { UserRole } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
-import { requireAdminApi } from "@/lib/auth/require-admin-api";
+import { requireAdminApi, requireSuperAdminApi } from "@/lib/auth/require-admin-api";
 import { resolveUserId } from "@/lib/auth/resolve-user-id";
 
-const PatchSchema = z.object({
-  role: z.enum(["USER", "VERIFIED_CREATOR", "MODERATOR", "ADMIN", "SUPER_ADMIN"]),
-});
+const PatchSchema = z
+  .object({
+    role: z.enum(["USER", "VERIFIED_CREATOR", "MODERATOR", "ADMIN", "SUPER_ADMIN"]).optional(),
+    password: z.string().min(8, "Password must be at least 8 characters").optional(),
+  })
+  .refine((data) => data.role !== undefined || data.password !== undefined, {
+    message: "Provide role and/or password to update",
+  });
 
 const ELEVATED = ["ADMIN", "SUPER_ADMIN"] as const;
 
@@ -25,36 +31,65 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { role } = PatchSchema.parse(body);
+    const parsed = PatchSchema.parse(body);
 
-    if (ELEVATED.includes(role as (typeof ELEVATED)[number]) && actor.role !== "SUPER_ADMIN") {
-      return NextResponse.json(
-        { error: "Only Super Admin can assign Admin or Super Admin roles" },
-        { status: 403 }
-      );
+    const target = await prisma.user.findUnique({
+      where: { id },
+      select: { id: true, email: true, role: true },
+    });
+    if (!target) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const actorId = await resolveUserId(actor);
-    if (actorId === id && role !== "SUPER_ADMIN" && actor.role === "SUPER_ADMIN") {
-      return NextResponse.json(
-        { error: "You cannot demote your own Super Admin account" },
-        { status: 400 }
-      );
+    const updateData: { role?: UserRole; password?: string } = {};
+
+    if (parsed.role !== undefined) {
+      if (ELEVATED.includes(parsed.role as (typeof ELEVATED)[number]) && actor.role !== "SUPER_ADMIN") {
+        return NextResponse.json(
+          { error: "Only Super Admin can assign Admin or Super Admin roles" },
+          { status: 403 }
+        );
+      }
+
+      const actorId = await resolveUserId(actor);
+      if (actorId === id && parsed.role !== "SUPER_ADMIN" && actor.role === "SUPER_ADMIN") {
+        return NextResponse.json(
+          { error: "You cannot demote your own Super Admin account" },
+          { status: 400 }
+        );
+      }
+
+      updateData.role = parsed.role as UserRole;
+    }
+
+    let passwordMessage: string | undefined;
+    if (parsed.password !== undefined) {
+      await requireSuperAdminApi();
+      updateData.password = await bcrypt.hash(parsed.password, 10);
+      passwordMessage = `Password updated for ${target.email}. User can sign in with the new password.`;
     }
 
     const user = await prisma.user.update({
       where: { id },
-      data: { role: role as UserRole },
+      data: updateData,
       select: { id: true, email: true, username: true, role: true },
     });
 
     revalidatePath("/admin/users");
     revalidatePath(`/admin/users/${id}`);
 
-    return NextResponse.json({ ok: true, user });
+    return NextResponse.json({
+      ok: true,
+      user,
+      message: passwordMessage,
+    });
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+      const first = err.errors[0];
+      return NextResponse.json(
+        { error: first?.message || "Invalid input" },
+        { status: 400 }
+      );
     }
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

@@ -6,6 +6,7 @@ import { UserPlus, Loader2, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordField } from "@/components/admin/password-field";
 import {
   Dialog,
   DialogContent,
@@ -144,14 +145,11 @@ export function AddUserDialog({ isSuperAdmin }: { isSuperAdmin: boolean }) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="add-password">Password</Label>
-            <Input
+            <Label htmlFor="add-password">Password (visible while typing)</Label>
+            <PasswordField
               id="add-password"
-              type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Min. 8 characters"
-              minLength={8}
+              onChange={setPassword}
               required
             />
           </div>
