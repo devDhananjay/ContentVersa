@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/auth/firebase": {},
+    "/api/auth/google/callback": {},
+    "/api/auth/google/login": {},
+    "/api/upload": {}
+  }
+}

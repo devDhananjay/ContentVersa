@@ -15,8 +15,8 @@
 /.next/
 /out/
 
-# production
-/build
+# production (standalone deploy bundle is committed in /build for server deploy)
+# /build
 
 # misc
 .DS_Store
@@ -30,6 +30,7 @@ yarn-error.log*
 # env files
 .env
 .env*.local
+.env.vercel.check
 
 # vercel
 .vercel
