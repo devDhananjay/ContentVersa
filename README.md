@@ -39,9 +39,11 @@ ContentVerse is a full-stack creator platform built for the 2026 internet audien
 
 1. Open [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials).
 2. Create an **OAuth client ID** → application type **Web application**.
-3. Add an **Authorized redirect URI**: `http://localhost:3001/api/auth/google/callback`
-   (use your real `NEXT_PUBLIC_APP_URL` in production).
-4. Paste `Client ID` and `Client secret` into `.env`:
+3. Add **Authorized redirect URIs**:
+   - `http://localhost:3001/api/auth/google/callback` (local)
+   - `https://contentverse.co.in/api/auth/google/callback` (production)
+4. Add **Authorized JavaScript origins**: `https://contentverse.co.in`
+5. Paste `Client ID` and `Client secret` into `.env`:
    `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.
 5. Restart `npm run dev`. The "Continue with Google" button is now live.
 

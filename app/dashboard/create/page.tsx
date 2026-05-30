@@ -32,6 +32,7 @@ import { BlockEditor, type BlockEditorHandle } from "@/components/editor/block-e
 import { renderMarkdown } from "@/components/blog/markdown";
 import { readingTime } from "@/lib/utils";
 import { uploadImage } from "@/lib/upload";
+import { getSiteHostname } from "@/lib/site-config";
 import { useRouter } from "next/navigation";
 import { AiAssistPanel } from "@/components/dashboard/ai-assist-panel";
 import { AiImageGenerator } from "@/components/dashboard/ai-image-generator";
@@ -331,7 +332,7 @@ export default function CreatePage() {
                     {seoTitle || title || "Your blog title"} · ContentVerse
                   </p>
                   <p className="text-xs text-green-700 dark:text-green-500">
-                    contentverse.app › blog › your-slug
+                    {getSiteHostname()} › blog › your-slug
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
                     {seoDescription || excerpt || "Your meta description will appear here…"}

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { PRODUCTION_SITE_URL } from "@/lib/site-config";
 
 export const SITE = {
   name: "ContentVerse",
   tagline: "Read. Create. Grow.",
   description:
     "ContentVerse is the next-generation creator platform for blogs and content. Read, create and grow with a community of bold writers.",
-  url: process.env.NEXT_PUBLIC_APP_URL || "https://contentverse.app",
+  url: process.env.NEXT_PUBLIC_APP_URL || PRODUCTION_SITE_URL,
   twitter: "@contentverse",
   ogImage: "/og-default.png",
 };
