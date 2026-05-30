@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { UserRole } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { requireAdminApi, requireSuperAdminApi } from "@/lib/auth/require-admin-api";
+import { getAdminUsers } from "@/lib/data/admin-data";
 
 const ASSIGNABLE_BY_ADMIN = ["USER", "VERIFIED_CREATOR", "MODERATOR"] as const;
 
@@ -23,6 +24,48 @@ const CreateSchema = z.object({
   password: z.string().min(8),
   role: z.enum(["USER", "VERIFIED_CREATOR", "MODERATOR", "ADMIN", "SUPER_ADMIN"]),
 });
+
+export async function GET(req: Request) {
+  try {
+    await requireAdminApi();
+    if (!isDatabaseConfigured()) {
+      return NextResponse.json({ error: "Database not configured" }, { status: 503 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const email = searchParams.get("email")?.trim().toLowerCase();
+
+    if (email) {
+      const user = await prisma.user.findUnique({
+        where: { email },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          name: true,
+          role: true,
+          createdAt: true,
+        },
+      });
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+      return NextResponse.json({ user });
+    }
+
+    const users = await getAdminUsers();
+    return NextResponse.json({ users, count: users.length });
+  } catch (err) {
+    if (err instanceof Error && err.message === "FORBIDDEN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (err instanceof Error && err.message === "UNAUTHENTICATED") {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+    }
+    console.error("[admin users GET]", err);
+    return NextResponse.json({ error: "Failed to list users" }, { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
   try {
