@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { BlogStatus, User, Profile, Category, Blog as DbBlog } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
@@ -11,7 +12,8 @@ type BlogWithRelations = DbBlog & {
 
 export function mapUserToAuthor(
   user: User & { profile?: Profile | null },
-  blogCount = 0
+  blogCount = 0,
+  followers = 0
 ): Author {
   return {
     id: user.id,
@@ -26,7 +28,7 @@ export function mapUserToAuthor(
       user.role === "VERIFIED_CREATOR" ||
       user.role === "ADMIN" ||
       user.role === "SUPER_ADMIN",
-    followers: 0,
+    followers,
     blogs: blogCount,
   };
 }
@@ -55,7 +57,72 @@ export function mapDbBlogToBlog(blog: BlogWithRelations): Blog {
   };
 }
 
+/** Lite row for lists / recommendations — no heavy `content` field */
+type BlogLiteRow = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  coverImage: string | null;
+  readingTime: number;
+  views: number;
+  likesCount: number;
+  commentsCount: number;
+  publishedAt: Date | null;
+  createdAt: Date;
+  isFeatured: boolean;
+  isEditorPick: boolean;
+  isPremium: boolean;
+  author: User & { profile: Profile | null };
+  category: Category | null;
+};
+
+function mapLiteToBlog(row: BlogLiteRow): Blog {
+  const author = mapUserToAuthor(row.author);
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt || "",
+    content: "",
+    coverImage: row.coverImage || "",
+    readingTime: row.readingTime,
+    views: row.views,
+    likes: row.likesCount,
+    comments: row.commentsCount,
+    category: row.category?.slug || "technology",
+    tags: [],
+    publishedAt:
+      row.publishedAt?.toISOString().slice(0, 10) ||
+      row.createdAt.toISOString().slice(0, 10),
+    author,
+    featured: row.isFeatured,
+    editorPick: row.isEditorPick,
+    premium: row.isPremium,
+    trending: row.views > 50_000,
+  };
+}
+
 const blogInclude = {
+  author: { include: { profile: true } },
+  category: true,
+} as const;
+
+const blogLiteSelect = {
+  id: true,
+  slug: true,
+  title: true,
+  excerpt: true,
+  coverImage: true,
+  readingTime: true,
+  views: true,
+  likesCount: true,
+  commentsCount: true,
+  publishedAt: true,
+  createdAt: true,
+  isFeatured: true,
+  isEditorPick: true,
+  isPremium: true,
   author: { include: { profile: true } },
   category: true,
 } as const;
@@ -94,6 +161,18 @@ export async function getPublishedBlogsFromDb(limit?: number) {
   return rows.map(mapDbBlogToBlog);
 }
 
+/** Fast list fetch without article body */
+export async function getPublishedBlogsLiteFromDb(limit = 24) {
+  if (!isDatabaseConfigured()) return null;
+  const rows = await prisma.blog.findMany({
+    where: { status: "PUBLISHED" },
+    select: blogLiteSelect,
+    orderBy: { publishedAt: "desc" },
+    take: limit,
+  });
+  return rows.map(mapLiteToBlog);
+}
+
 export async function getBlogBySlugFromDb(slug: string) {
   if (!isDatabaseConfigured()) return null;
   const row = await prisma.blog.findUnique({
@@ -101,6 +180,30 @@ export async function getBlogBySlugFromDb(slug: string) {
     include: blogInclude,
   });
   return row ? mapDbBlogToBlog(row) : null;
+}
+
+export const getBlogBySlugHybrid = cache(async (slug: string) => {
+  const fromDb = await getBlogBySlugFromDb(slug);
+  if (fromDb) return fromDb;
+  return getMockBlogBySlug(slug) ?? null;
+});
+
+export async function getPublishedBlogsHybrid(limit?: number) {
+  const fromDb = await getPublishedBlogsFromDb(limit);
+  if (fromDb && fromDb.length > 0) return fromDb;
+  const mock = [...BLOGS].sort(
+    (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
+  );
+  return limit ? mock.slice(0, limit) : mock;
+}
+
+export async function getPublishedBlogsLiteHybrid(limit = 24) {
+  const fromDb = await getPublishedBlogsLiteFromDb(limit);
+  if (fromDb && fromDb.length > 0) return fromDb;
+  const mock = [...BLOGS].sort(
+    (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
+  );
+  return mock.slice(0, limit).map((b) => ({ ...b, content: "" }));
 }
 
 export async function getBlogsByAuthorId(authorId: string) {
@@ -122,23 +225,8 @@ export async function getBlogsByAuthorIdWithStatus(authorId: string) {
   });
 }
 
-export async function getBlogBySlugHybrid(slug: string) {
-  const fromDb = await getBlogBySlugFromDb(slug);
-  if (fromDb) return fromDb;
-  return getMockBlogBySlug(slug) ?? null;
-}
-
-export async function getPublishedBlogsHybrid(limit?: number) {
-  const fromDb = await getPublishedBlogsFromDb(limit);
-  if (fromDb && fromDb.length > 0) return fromDb;
-  const mock = [...BLOGS].sort(
-    (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
-  );
-  return limit ? mock.slice(0, limit) : mock;
-}
-
 export async function getTrendingHybrid(limit = 6) {
-  const all = await getPublishedBlogsHybrid();
+  const all = await getPublishedBlogsLiteHybrid(limit * 2);
   const trending = all.filter((b) => b.trending);
   if (trending.length >= limit) return trending.slice(0, limit);
   return all.slice(0, limit);
@@ -147,8 +235,12 @@ export async function getTrendingHybrid(limit = 6) {
 export async function getBlogsForProfile(username: string) {
   const user = await getUserByUsername(username);
   if (user) {
+    const followerCount = await prisma.follower.count({
+      where: { followingId: user.id },
+    });
     return {
-      user: mapUserToAuthor(user, user.blogs.length),
+      user: mapUserToAuthor(user, user.blogs.length, followerCount),
+      userId: user.id,
       blogs: user.blogs.map((b) => mapDbBlogToBlog(b as BlogWithRelations)),
       fromDb: true as const,
     };
@@ -165,20 +257,19 @@ export function mapDbBlogToDashboardRow(
 }
 
 export async function getFeaturedHybrid(limit = 3) {
-  const all = await getPublishedBlogsHybrid();
+  const all = await getPublishedBlogsLiteHybrid(40);
   const featured = all.filter((b) => b.featured);
   return featured.length >= limit ? featured.slice(0, limit) : all.slice(0, limit);
 }
 
 export async function getEditorPicksHybrid(limit = 4) {
-  const all = await getPublishedBlogsHybrid();
+  const all = await getPublishedBlogsLiteHybrid(40);
   const picks = all.filter((b) => b.editorPick);
   return picks.length >= limit ? picks.slice(0, limit) : all.slice(0, limit);
 }
 
 export async function getLatestHybrid(limit = 8) {
-  const all = await getPublishedBlogsHybrid();
-  return all.slice(0, limit);
+  return getPublishedBlogsLiteHybrid(limit);
 }
 
 export async function getCategoriesWithCountsHybrid() {

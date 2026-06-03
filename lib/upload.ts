@@ -1,5 +1,4 @@
-// Client-side helper for uploading an image to the local /api/upload route.
-// Returns the public URL of the stored file.
+// Client-side helper for uploading images to /api/upload
 
 export interface UploadedImage {
   url: string;
@@ -33,4 +32,28 @@ export async function uploadImage(file: File): Promise<UploadedImage> {
   }
 
   return { url: data.url, size: data.size ?? file.size, type: data.type ?? file.type };
+}
+
+/** Upload a data URL or remote image URL — returns a permanent hosted URL. */
+export async function uploadImageFromUrl(imageUrl: string): Promise<UploadedImage> {
+  if (imageUrl.includes("picsum.photos")) {
+    throw new Error(
+      "This is a placeholder image, not real AI art. Set GEMINI_API_KEY and generate again."
+    );
+  }
+
+  const res = await fetch(imageUrl);
+  if (!res.ok) throw new Error("Could not read image for upload");
+
+  const blob = await res.blob();
+  if (blob.size > MAX_UPLOAD_BYTES) {
+    throw new Error("Image is larger than 5MB.");
+  }
+
+  const ext = blob.type.split("/")[1] || "png";
+  const file = new File([blob], `ai-cover.${ext}`, {
+    type: blob.type || "image/png",
+  });
+
+  return uploadImage(file);
 }

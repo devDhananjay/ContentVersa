@@ -201,7 +201,9 @@ export default function CreatePage() {
                     fill
                     className="object-cover"
                     sizes="100vw"
-                    unoptimized={cover.startsWith("data:")}
+                    unoptimized={
+                      cover.startsWith("data:") || cover.startsWith("/uploads/")
+                    }
                   />
                   <div className="absolute top-3 right-3 flex gap-2">
                     <button

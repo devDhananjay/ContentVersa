@@ -21,22 +21,30 @@ Protected routes need cookie `cv_session` from sign-in or Google OAuth (browser)
 
 **Promote user without login:** set `bootstrapSecret` in environment = server `ADMIN_BOOTSTRAP_SECRET`, then **Admin → Promote User by Email**.
 
-## API summary (23 route files · 53 Postman requests)
+## API summary (27 route files · 60 Postman requests)
 
-| Folder | Route file | Methods |
-|--------|-----------|---------|
-| 01 Auth | auth/* | GET me, POST sign-in/sign-up/sign-out, GET google login/callback, POST firebase |
-| 02 Blogs | blogs/route.ts, blogs/[slug] | GET list (7 sort variants), POST create, GET slug |
-| 03 Reactions | blogs/[slug]/reactions | GET, POST ×5 types |
-| 04 Bookmarks | blogs/[slug]/bookmark | GET, POST |
-| 05 Comments | blogs/[slug]/comments/* | GET, POST, POST reply, POST like |
-| 06 Polls | polls/[slug] | GET, POST |
-| 07 AI | ai/assist | POST ×8 actions |
-| 08 Admin Users | admin/users/* | GET, POST, POST promote, PATCH ×3 |
-| 09 Moderation | admin/moderation | GET, POST ×3 decisions |
-| 10 Upload | upload | POST |
-| 11 Search | search | GET |
-| 12 Categories | categories | GET |
-| 13 Newsletter | newsletter | POST |
+| Folder | Routes | Methods |
+|--------|--------|---------|
+| 01 Auth | `auth/*`, `me/reading` | GET me (+ total reading time), sign-in/up, google, firebase |
+| 01b Users | `users/:username/follow` | GET follow status, POST toggle follow |
+| 02 Blogs | `blogs/*` | GET list, POST create, GET slug, **summary, recommendations, history (reading time), feedback** |
+| 03 Reactions | `blogs/[slug]/reactions` | GET, POST ×5 |
+| 04 Bookmarks | `blogs/[slug]/bookmark` | GET, POST |
+| 05 Comments | `blogs/[slug]/comments/*` | GET, POST, reply, like |
+| 06 Polls | `polls/[slug]` | GET, POST (blog polls: `blog-{slug}`) |
+| 07 AI | `ai/assist` | POST summarize, **article-summary**, seo, ideas, image, etc. |
+| 08–13 | admin, upload, search, categories, newsletter | as before |
 
-**Note:** This project has no separate backend server — all routes live under `/api/*` on the same domain. Pages like `/admin`, `/dashboard` are Next.js pages (not REST APIs).
+### New reader / AI endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/blogs/:slug/summary` | Inshorts-style short (~60 words, Gemini 1.5 Flash) |
+| GET | `/api/blogs/:slug/recommendations` | Blogs you may like |
+| GET | `/api/blogs/:slug/history` | Seconds on article + total reading time |
+| POST | `/api/blogs/:slug/history` | Heartbeat `{ seconds, progress }` (cookie `cv_reader`) |
+| GET | `/api/me/reading` | Logged-in user total reading stats |
+| GET/POST | `/api/users/:username/follow` | Follow status / toggle |
+| GET/POST | `/api/blogs/:slug/feedback` | Was this helpful? |
+
+**Note:** One Next.js app — all APIs under `/api/*` on the same domain.

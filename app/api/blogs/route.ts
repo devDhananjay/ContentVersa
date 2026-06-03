@@ -7,6 +7,7 @@ import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { readingTime, slugify } from "@/lib/utils";
+import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
 
 const coverImageSchema = z
   .string()
@@ -148,6 +149,7 @@ export async function POST(req: Request) {
     }
 
     const slug = `${slugify(parsed.title)}-${Date.now().toString(36)}`;
+    const coverImage = await normalizeCoverImageUrl(parsed.coverImage);
 
     const blog = await prisma.blog.create({
       data: {
@@ -155,7 +157,7 @@ export async function POST(req: Request) {
         slug,
         excerpt: parsed.excerpt || "",
         content: parsed.content,
-        coverImage: parsed.coverImage,
+        coverImage,
         readingTime: readingTime(parsed.content),
         status: parsed.status,
         isPremium: parsed.premium || false,

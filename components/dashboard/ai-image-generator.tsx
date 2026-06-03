@@ -6,6 +6,7 @@ import { ImagePlus, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { uploadImageFromUrl } from "@/lib/upload";
 
 export function AiImageGenerator({
   title,
@@ -18,7 +19,9 @@ export function AiImageGenerator({
 }) {
   const [prompt, setPrompt] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
   const [preview, setPreview] = React.useState<string | null>(null);
+  const [source, setSource] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   const generate = async () => {
@@ -38,17 +41,40 @@ export function AiImageGenerator({
       const data = (await res.json()) as {
         imageUrl?: string;
         prompt?: string;
+        source?: string;
         error?: string;
+        note?: string;
       };
       if (!res.ok || !data.imageUrl) {
-        throw new Error(data.error || "Generation failed");
+        throw new Error(data.error || data.note || "Generation failed");
+      }
+      if (data.imageUrl.includes("picsum.photos")) {
+        throw new Error(
+          "Gemini image failed. Add GEMINI_API_KEY to .env and restart the server."
+        );
       }
       if (data.prompt && !prompt) setPrompt(data.prompt);
       setPreview(data.imageUrl);
+      setSource(data.source || null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
+      setPreview(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const useAsCover = async () => {
+    if (!preview) return;
+    setError(null);
+    setUploading(true);
+    try {
+      const { url } = await uploadImageFromUrl(preview);
+      onUseImage(url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not set cover");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -59,7 +85,7 @@ export function AiImageGenerator({
         <h3 className="font-display font-semibold text-sm">AI Image Generator</h3>
       </div>
       <p className="text-xs text-muted-foreground">
-        Describe your cover art — we generate a preview you can use instantly.
+        Gemini creates your cover — we upload it so it always shows on the blog.
       </p>
       <div className="space-y-1.5">
         <Label htmlFor="img-prompt" className="text-xs">
@@ -100,14 +126,24 @@ export function AiImageGenerator({
               unoptimized
             />
           </div>
+          {source && (
+            <p className="text-[10px] text-muted-foreground text-center">
+              {source === "gemini" ? "Gemini AI" : "Preview"}
+            </p>
+          )}
           <Button
             type="button"
             variant="gradient"
             size="sm"
             className="w-full"
-            onClick={() => onUseImage(preview)}
+            disabled={uploading}
+            onClick={useAsCover}
           >
-            Use as cover image
+            {uploading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Use as cover image"
+            )}
           </Button>
         </div>
       )}

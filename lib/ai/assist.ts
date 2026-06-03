@@ -1,10 +1,27 @@
 /**
- * AI writing helpers — uses OpenAI when OPENAI_API_KEY is set,
- * otherwise returns smart heuristic suggestions (works offline / demo).
+ * AI writing helpers — Gemini (primary), OpenAI (fallback),
+ * then smart heuristics when no API key is set.
  */
+
+import { callGeminiText, callGeminiImage, isGeminiConfigured } from "@/lib/ai/gemini";
+import {
+  countWords,
+  trimSummaryWords,
+  trimToWordCount,
+  SHORTS_SUMMARY_MIN_WORDS,
+  SHORTS_SUMMARY_MAX_WORDS,
+  SHORTS_SLOGAN_WORDS,
+} from "@/lib/utils";
+import {
+  buildStructuredLocalSummary,
+  finalizeArticleSummary,
+  getSummaryWordTargets,
+  markdownToPlainText,
+} from "@/lib/ai/article-summary";
 
 export type AiAction =
   | "summarize"
+  | "article-summary"
   | "seo-title"
   | "blog-ideas"
   | "excerpt"
@@ -21,6 +38,8 @@ type AssistInput = {
   category?: string;
   imagePrompt?: string;
 };
+
+export type AiSource = "gemini" | "openai" | "local";
 
 async function callOpenAI(system: string, user: string): Promise<string | null> {
   const key = process.env.OPENAI_API_KEY?.trim();
@@ -51,10 +70,32 @@ async function callOpenAI(system: string, user: string): Promise<string | null> 
   return data.choices?.[0]?.message?.content?.trim() || null;
 }
 
+async function callAiText(
+  system: string,
+  user: string,
+  maxTokens = 512
+): Promise<{ text: string | null; source: AiSource }> {
+  if (isGeminiConfigured()) {
+    const gemini = await callGeminiText(system, user, maxTokens);
+    if (gemini) return { text: gemini, source: "gemini" };
+  }
+  const openai = await callOpenAI(system, user);
+  if (openai) return { text: openai, source: "openai" };
+  return { text: null, source: "local" };
+}
+
 function firstSentence(text: string, max = 160) {
   const s = text.replace(/\s+/g, " ").trim();
   if (s.length <= max) return s;
   return s.slice(0, max).replace(/\s+\S*$/, "") + "…";
+}
+
+function wordCount(text: string) {
+  return text.split(/\s+/).filter(Boolean).length;
+}
+
+function heuristicArticleSummary(title: string, content: string, _excerpt?: string) {
+  return buildStructuredLocalSummary(content, title);
 }
 
 function heuristicAssist(input: AssistInput): string | string[] {
@@ -64,6 +105,12 @@ function heuristicAssist(input: AssistInput): string | string[] {
   const cat = input.category || "technology";
 
   switch (input.action) {
+    case "article-summary":
+      if (!content && !input.excerpt) {
+        return "Add article text first.";
+      }
+      return heuristicArticleSummary(title, content, input.excerpt);
+
     case "summarize":
       if (!content) return "Add some body text first, then we can summarize it.";
       return firstSentence(content, 280);
@@ -118,22 +165,34 @@ function heuristicAssist(input: AssistInput): string | string[] {
 
 export async function runAiAssist(
   input: AssistInput
-): Promise<{ result: string | string[]; source: "openai" | "local" }> {
+): Promise<{ result: string | string[]; source: AiSource }> {
+  const contentLimit = input.action === "article-summary" ? 14000 : 8000;
   const userPayload = JSON.stringify({
     title: input.title,
     excerpt: input.excerpt,
-    content: input.content?.slice(0, 4000),
+    content: input.content?.slice(0, contentLimit),
     category: input.category,
     imagePrompt: input.imagePrompt,
   });
 
   if (input.action === "generate-image") {
-    return { result: buildPlaceholderImageUrl(input.imagePrompt || input.title || ""), source: "local" };
+    const prompt =
+      input.imagePrompt?.trim() ||
+      `Blog cover: ${input.title || "ContentVerse article"}, ${input.category || "technology"} theme`;
+    if (isGeminiConfigured()) {
+      const image = await callGeminiImage(prompt);
+      if (image) return { result: image, source: "gemini" };
+    }
+    return { result: buildPlaceholderImageUrl(prompt), source: "local" };
   }
 
   const prompts: Record<Exclude<AiAction, "generate-image">, { system: string; expect: "text" | "list" }> = {
     summarize: {
       system: "Summarize the blog draft in 2-3 sentences for a card excerpt. Plain text only.",
+      expect: "text",
+    },
+    "article-summary": {
+      system: `You summarize blog articles for busy readers. Write exactly ${SHORTS_SUMMARY_MIN_WORDS} words. Use 3-4 short paragraphs. Cover hook, thesis, bullets, quote, code if any, and closing. Plain text only — no markdown.`,
       expect: "text",
     },
     "seo-title": {
@@ -163,24 +222,43 @@ export async function runAiAssist(
   };
 
   const p = prompts[input.action];
-  const ai = await callOpenAI(p.system, userPayload);
+  let systemPrompt = p.system;
+  if (input.action === "article-summary") {
+    const articleWords = countWords(markdownToPlainText(input.content || ""));
+    const { min, max } = getSummaryWordTargets(articleWords);
+    systemPrompt = `You summarize blog articles for busy readers. Write exactly ${min} words (never fewer, never more than ${max}). Use 3-4 short paragraphs separated by blank lines. Cover: hook, thesis, list items in one tight sentence, quote if any, code/workflow in plain English, closing. Do NOT repeat the headline as sentence one. Never say "this article". Plain text only — no markdown, no bullet symbols.`;
+  }
+  const tokens = input.action === "article-summary" ? 1024 : 512;
+  const { text: ai, source } = await callAiText(systemPrompt, userPayload, tokens);
 
   if (ai) {
+    if (input.action === "article-summary" && typeof ai === "string") {
+      const { summary } = finalizeArticleSummary(
+        ai,
+        input.content || "",
+        input.title
+      );
+      return { result: summary, source };
+    }
     if (p.expect === "list") {
       try {
         const parsed = JSON.parse(ai) as string[];
         if (Array.isArray(parsed)) {
-          return { result: parsed.slice(0, 5), source: "openai" };
+          return { result: parsed.slice(0, 5), source };
         }
       } catch {
         const lines = ai.split("\n").filter((l) => l.trim()).slice(0, 5);
-        return { result: lines, source: "openai" };
+        return { result: lines, source };
       }
     }
-    return { result: ai, source: "openai" };
+    return { result: ai, source };
   }
 
   const local = heuristicAssist(input);
+  if (input.action === "article-summary" && typeof local === "string") {
+    const { summary } = finalizeArticleSummary(local, input.content || "", input.title);
+    return { result: summary, source: "local" };
+  }
   return { result: local, source: "local" };
 }
 
@@ -188,4 +266,65 @@ export async function runAiAssist(
 export function buildPlaceholderImageUrl(prompt: string): string {
   const seed = encodeURIComponent(prompt.slice(0, 80) || "contentverse");
   return `https://picsum.photos/seed/${seed}/1600/900`;
+}
+
+/** Generate poll question + 3 options from article context. */
+export async function generatePollFromArticle(input: {
+  title: string;
+  category?: string;
+  tags?: string[];
+  excerpt?: string;
+}): Promise<{ question: string; options: string[] }> {
+  const fallback = buildHeuristicPoll(input);
+
+  const system =
+    'Create a quick reader poll for a blog article. Return ONLY valid JSON: {"question":"...","options":["A","B","C"]}. Question must relate to the article topic. Exactly 3 short option labels (2-5 words each).';
+  const user = JSON.stringify(input);
+
+  const { text } = await callAiText(system, user);
+  if (text) {
+    try {
+      const json = JSON.parse(text.replace(/```json|```/g, "").trim()) as {
+        question?: string;
+        options?: string[];
+      };
+      if (json.question && Array.isArray(json.options) && json.options.length >= 2) {
+        return {
+          question: json.question.slice(0, 200),
+          options: json.options.slice(0, 4).map((o) => String(o).slice(0, 60)),
+        };
+      }
+    } catch {
+      /* use fallback */
+    }
+  }
+
+  return fallback;
+}
+
+export function buildHeuristicPoll(input: {
+  title: string;
+  category?: string;
+  tags?: string[];
+}): { question: string; options: string[] } {
+  const topic = input.tags?.[0] || input.category || "this topic";
+  const title = input.title.toLowerCase();
+
+  if (title.includes("ai") || topic.toLowerCase().includes("ai")) {
+    return {
+      question: "How are you using AI in your daily work?",
+      options: ["Every day", "Sometimes", "Not yet"],
+    };
+  }
+  if (title.includes("future") || title.includes("2026")) {
+    return {
+      question: "Do you feel ready for what's coming next?",
+      options: ["Absolutely", "Getting there", "Not really"],
+    };
+  }
+
+  return {
+    question: `What's your take on ${topic}?`,
+    options: ["Love it", "It's okay", "Need to learn more"],
+  };
 }

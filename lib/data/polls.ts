@@ -1,4 +1,5 @@
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { generatePollFromArticle, buildHeuristicPoll } from "@/lib/ai/assist";
 
 export type PollDto = {
   id: string;
@@ -14,6 +15,10 @@ const DEFAULT_POLL = {
   question: "Do you think AI will replace jobs?",
   options: ["Yes", "No", "Maybe"],
 };
+
+function pollSlugForBlog(blogSlug: string) {
+  return `blog-${blogSlug}`;
+}
 
 export async function ensureFeaturedPoll() {
   if (!isDatabaseConfigured()) return null;
@@ -43,32 +48,105 @@ export async function ensureFeaturedPoll() {
   return poll;
 }
 
-export async function getPollBySlug(
-  slug: string,
-  voterKey?: string | null
-): Promise<PollDto | null> {
+/** Create or fetch a poll tied to a specific blog article. */
+export async function ensureBlogPoll(input: {
+  blogId?: string;
+  blogSlug: string;
+  title: string;
+  category?: string;
+  tags?: string[];
+  excerpt?: string;
+}) {
+  const slug = pollSlugForBlog(input.blogSlug);
+
   if (!isDatabaseConfigured()) {
-    return mockPoll(slug, voterKey);
+    return mockBlogPoll(slug, input);
   }
 
-  const poll =
-    slug === DEFAULT_POLL.slug
-      ? await ensureFeaturedPoll()
-      : await prisma.poll.findUnique({
-          where: { slug },
-          include: { options: { orderBy: { sortOrder: "asc" } } },
-        });
+  let poll = await prisma.poll.findUnique({
+    where: { slug },
+    include: { options: { orderBy: { sortOrder: "asc" } } },
+  });
 
-  if (!poll) return mockPoll(slug, voterKey);
+  if (!poll) {
+    const generated = await generatePollFromArticle({
+      title: input.title,
+      category: input.category,
+      tags: input.tags,
+      excerpt: input.excerpt,
+    });
+
+    poll = await prisma.poll.create({
+      data: {
+        slug,
+        question: generated.question,
+        blogId: input.blogId || null,
+        isActive: true,
+        options: {
+          create: generated.options.map((label, i) => ({
+            label,
+            sortOrder: i,
+          })),
+        },
+      },
+      include: { options: { orderBy: { sortOrder: "asc" } } },
+    });
+  }
+
+  return poll;
+}
+
+function mockBlogPoll(
+  slug: string,
+  input: { title: string; category?: string; tags?: string[] }
+) {
+  const generated = buildHeuristicPoll(input);
+  return {
+    id: `mock-${slug}`,
+    slug,
+    question: generated.question,
+    isActive: true,
+    options: generated.options.map((label, i) => ({
+      id: `mock-opt-${slug}-${i}`,
+      label,
+      sortOrder: i,
+    })),
+  };
+}
+
+async function mapPollDto(
+  poll: {
+    id: string;
+    slug: string;
+    question: string;
+    options: { id: string; label: string }[];
+  },
+  voterKey?: string | null
+): Promise<PollDto> {
+  if (!isDatabaseConfigured()) {
+    const votes = poll.options.map((_, i) => 12 + i * 7);
+    const total = votes.reduce((a, b) => a + b, 0);
+    return {
+      id: poll.id,
+      slug: poll.slug,
+      question: poll.question,
+      totalVotes: total,
+      userVoteOptionId: null,
+      options: poll.options.map((o, i) => ({
+        id: o.id,
+        label: o.label,
+        votes: votes[i],
+        percent: total ? Math.round((votes[i] / total) * 100) : 0,
+      })),
+    };
+  }
 
   const voteCounts = await prisma.pollVote.groupBy({
     by: ["optionId"],
     where: { pollId: poll.id },
     _count: true,
   });
-  const countMap = new Map(
-    voteCounts.map((v) => [v.optionId, v._count])
-  );
+  const countMap = new Map(voteCounts.map((v) => [v.optionId, v._count]));
   const totalVotes = voteCounts.reduce((s, v) => s + v._count, 0);
 
   let userVoteOptionId: string | null = null;
@@ -97,29 +175,62 @@ export async function getPollBySlug(
   };
 }
 
-function mockPoll(slug: string, voterKey?: string | null): PollDto | null {
-  if (slug !== DEFAULT_POLL.slug) return null;
-  const stored =
-    typeof globalThis !== "undefined"
-      ? null
-      : null;
-  void stored;
-  const votes = [42, 28, 30];
-  const total = votes.reduce((a, b) => a + b, 0);
-  const labels = DEFAULT_POLL.options;
-  return {
-    id: "mock-poll",
-    slug: DEFAULT_POLL.slug,
-    question: DEFAULT_POLL.question,
-    totalVotes: total,
-    userVoteOptionId: null,
-    options: labels.map((label, i) => ({
-      id: `mock-${i}`,
-      label,
-      votes: votes[i],
-      percent: total ? Math.round((votes[i] / total) * 100) : 0,
-    })),
-  };
+export async function getPollBySlug(
+  slug: string,
+  voterKey?: string | null
+): Promise<PollDto | null> {
+  if (!isDatabaseConfigured()) {
+    if (slug.startsWith("blog-")) {
+      const blogSlug = slug.replace(/^blog-/, "");
+      const mock = mockBlogPoll(slug, {
+        title: blogSlug.replace(/-/g, " "),
+        category: "technology",
+      });
+      return mapPollDto(mock, voterKey);
+    }
+    if (slug === DEFAULT_POLL.slug) {
+      return mapPollDto(
+        {
+          id: "mock-poll",
+          slug: DEFAULT_POLL.slug,
+          question: DEFAULT_POLL.question,
+          options: DEFAULT_POLL.options.map((label, i) => ({
+            id: `mock-${i}`,
+            label,
+          })),
+        },
+        voterKey
+      );
+    }
+    return null;
+  }
+
+  const poll =
+    slug === DEFAULT_POLL.slug
+      ? await ensureFeaturedPoll()
+      : await prisma.poll.findUnique({
+          where: { slug },
+          include: { options: { orderBy: { sortOrder: "asc" } } },
+        });
+
+  if (!poll) return null;
+  return mapPollDto(poll, voterKey);
+}
+
+export async function getPollForBlog(
+  input: {
+    blogId?: string;
+    blogSlug: string;
+    title: string;
+    category?: string;
+    tags?: string[];
+    excerpt?: string;
+  },
+  voterKey?: string | null
+) {
+  const poll = await ensureBlogPoll(input);
+  if (!poll) return null;
+  return mapPollDto(poll, voterKey);
 }
 
 export async function castPollVote(
@@ -128,7 +239,7 @@ export async function castPollVote(
   voterKey: string
 ) {
   if (!isDatabaseConfigured()) {
-    return { ok: true, demo: true };
+    return getPollBySlug(pollSlug, voterKey);
   }
 
   const poll = await prisma.poll.findUnique({
@@ -148,3 +259,5 @@ export async function castPollVote(
 
   return getPollBySlug(pollSlug, voterKey);
 }
+
+export { pollSlugForBlog };

@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/blog-card";
+import { FollowButton } from "@/components/profile/follow-button";
 import { AUTHORS, BLOGS, type Author, type Blog } from "@/lib/data/blogs";
 import { getBlogsForProfile } from "@/lib/data/blog-db";
 import { formatNumber, getInitials } from "@/lib/utils";
@@ -38,10 +39,12 @@ export default async function ProfilePage({
 
   let user: Author;
   let blogs: Blog[];
+  let targetUserId: string | null = null;
 
   if (fromDb) {
     user = fromDb.user;
     blogs = fromDb.blogs;
+    targetUserId = fromDb.userId;
   } else {
     const mockUser = AUTHORS.find((a) => a.username === username);
     if (!mockUser) return notFound();
@@ -79,7 +82,11 @@ export default async function ProfilePage({
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline">Message</Button>
-            <Button variant="gradient">Follow</Button>
+            <FollowButton
+              username={user.username}
+              targetUserId={targetUserId}
+              initialFollowerCount={user.followers}
+            />
           </div>
         </div>
 

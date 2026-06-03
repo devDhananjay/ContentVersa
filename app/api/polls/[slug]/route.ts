@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { getPollBySlug, castPollVote } from "@/lib/data/polls";
+import { getPollBySlug, castPollVote, getPollForBlog } from "@/lib/data/polls";
 
 const VoteSchema = z.object({ optionId: z.string().min(1) });
 
@@ -10,7 +10,7 @@ function voterKey() {
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   ctx: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await ctx.params;
@@ -18,7 +18,28 @@ export async function GET(
   let key = jar.get("cv_poll_voter")?.value;
   if (!key) key = undefined;
 
-  const poll = await getPollBySlug(slug, key);
+  const url = new URL(req.url);
+  const title = url.searchParams.get("title") || undefined;
+  const category = url.searchParams.get("category") || undefined;
+  const tags = url.searchParams.get("tags")?.split(",").filter(Boolean);
+  const blogId = url.searchParams.get("blogId") || undefined;
+
+  let poll;
+  if (slug.startsWith("blog-") && title) {
+    poll = await getPollForBlog(
+      {
+        blogSlug: slug.replace(/^blog-/, ""),
+        blogId,
+        title,
+        category,
+        tags,
+      },
+      key
+    );
+  } else {
+    poll = await getPollBySlug(slug, key);
+  }
+
   if (!poll) {
     return NextResponse.json({ error: "Poll not found" }, { status: 404 });
   }

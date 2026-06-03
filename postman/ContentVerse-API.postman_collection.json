@@ -13,7 +13,8 @@
     { "key": "commentId", "value": "COMMENT_ID_HERE" },
     { "key": "pollSlug", "value": "ai-replace-jobs" },
     { "key": "pollOptionId", "value": "OPTION_ID_HERE" },
-    { "key": "bootstrapSecret", "value": "" }
+    { "key": "bootstrapSecret", "value": "" },
+    { "key": "targetUsername", "value": "kai" }
   ],
   "item": [
     {
@@ -26,7 +27,15 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/api/auth/me",
-            "description": "Current session user. Returns `{ user: {...} | null }`."
+            "description": "Session user + profile + reading.totalFormatted when logged in."
+          }
+        },
+        {
+          "name": "GET /api/me/reading",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/me/reading",
+            "description": "Total reading time + recent articles (requires cv_session)."
           }
         },
         {
@@ -102,6 +111,28 @@
             },
             "url": "{{baseUrl}}/api/auth/firebase",
             "description": "Phone OTP via Firebase. Client sends Firebase ID token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "01b — Users & Follow",
+      "description": "app/api/users/[username]/follow",
+      "item": [
+        {
+          "name": "GET /api/users/:username/follow",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/users/{{targetUsername}}/follow",
+            "description": "Follow state + follower counts. Optional auth."
+          }
+        },
+        {
+          "name": "POST /api/users/:username/follow",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/users/{{targetUsername}}/follow",
+            "description": "Toggle follow (requires cv_session). Sends FOLLOW notification."
           }
         }
       ]
@@ -378,6 +409,69 @@
             "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/comments/{{commentId}}/like",
             "description": "Auth required. Toggle comment like."
           }
+        },
+        {
+          "name": "POST /api/blogs/:slug/summary",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/summary",
+            "description": "Inshorts-style news short (~60 words). Gemini 1.5 Flash. Empty body = use blog from DB."
+          }
+        },
+        {
+          "name": "GET /api/blogs/:slug/recommendations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/recommendations",
+            "description": "Personalized 'Blogs you may like' based on reading history cookie."
+          }
+        },
+        {
+          "name": "GET /api/blogs/:slug/history",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/history",
+            "description": "Article seconds read + total reading time (logged-in)."
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/history",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seconds\": 15,\n  \"progress\": 42\n}"
+            },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/history",
+            "description": "Reading time heartbeat (max 120s/request). Sets cv_reader cookie."
+          }
+        },
+        {
+          "name": "GET /api/blogs/:slug/feedback",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/feedback",
+            "description": "Was this helpful? stats."
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/feedback",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"helpful\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/feedback",
+            "description": "Submit helpful vote. Sets cv_feedback_voter cookie."
+          }
         }
       ]
     },
@@ -422,6 +516,19 @@
               "raw": "{\n  \"action\": \"summarize\",\n  \"title\": \"My blog\",\n  \"content\": \"Long draft text to summarize...\",\n  \"category\": \"technology\"\n}"
             },
             "url": "{{baseUrl}}/api/ai/assist"
+          }
+        },
+        {
+          "name": "POST /api/ai/assist — article-summary",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"article-summary\",\n  \"title\": \"AI tools for students\",\n  \"content\": \"Full article body...\",\n  \"category\": \"ai\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ai/assist",
+            "description": "~60 words Inshorts style. Prefer POST /api/blogs/:slug/summary on blog pages."
           }
         },
         {

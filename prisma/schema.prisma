@@ -111,6 +111,7 @@ model User {
   submissions    SubmissionQueue[]
   achievements   UserAchievement[]
   readingHistory ReadingHistory[]
+  articleFeedback ArticleFeedback[]
   tipsSent       Tip[]             @relation("Tipper")
   tipsReceived   Tip[]             @relation("Tippee")
 
@@ -272,6 +273,7 @@ model Blog {
   tips        Tip[]
   history     ReadingHistory[]
   polls       Poll[]
+  feedback    ArticleFeedback[]
 
   @@index([authorId])
   @@index([status])
@@ -502,17 +504,39 @@ model Analytics {
 }
 
 model ReadingHistory {
-  id        String   @id @default(cuid())
-  userId    String
-  blogId    String
-  progress  Int      @default(0)
-  readAt    DateTime @default(now())
+  id          String   @id @default(cuid())
+  userId      String?
+  visitorKey  String?
+  blogId      String
+  category    String   @default("")
+  tags        Json     @default("[]")
+  progress    Int      @default(0)
+  secondsRead Int      @default(0)
+  readAt      DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
 
   @@unique([userId, blogId])
+  @@unique([visitorKey, blogId])
   @@index([userId])
+  @@index([visitorKey])
+}
+
+model ArticleFeedback {
+  id        String   @id @default(cuid())
+  blogId    String
+  helpful   Boolean
+  voterKey  String
+  userId    String?
+  createdAt DateTime @default(now())
+
+  blog Blog  @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([blogId, voterKey])
+  @@index([blogId])
 }
 
 // ---------------------- CMS ----------------------

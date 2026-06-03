@@ -8,7 +8,7 @@ import {
   getCategoriesWithCountsHybrid,
   getFeaturedCreatorsHybrid,
   getPlatformStatsHybrid,
-  getPublishedBlogsHybrid,
+  getPublishedBlogsLiteHybrid,
 } from "@/lib/data/blog-db";
 
 export type CategoryWithCount = CategoryDef & { blogCount: number };
@@ -110,7 +110,7 @@ export async function getHomePageData(): Promise<HomePageData> {
     getCategoriesWithCountsHybrid(),
     getFeaturedCreatorsHybrid(6),
     getPlatformStatsHybrid(),
-    getPublishedBlogsHybrid(),
+    getPublishedBlogsLiteHybrid(50),
   ]);
 
   const aiRecommended = [

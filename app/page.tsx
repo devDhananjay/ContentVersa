@@ -8,6 +8,7 @@ import { EditorPick } from "@/components/home/editor-pick";
 import { CommunityPosts } from "@/components/home/community-posts";
 import { WeeklyTrending } from "@/components/home/weekly-trending";
 import { QuickPollSection } from "@/components/home/quick-poll";
+import { NewsIn60Section } from "@/components/home/news-in-60";
 import { Newsletter } from "@/components/home/newsletter";
 import { Testimonials } from "@/components/home/testimonials";
 import { getHomePageData } from "@/lib/data/home-data";
@@ -21,6 +22,7 @@ export default async function HomePage() {
     <>
       <Hero stats={data.stats} categories={data.categories} />
       <TrendingSection blogs={data.trending} />
+      <NewsIn60Section blogs={data.trending} />
       <FeaturedCreators creators={data.creators} />
       <PopularCategories categories={data.categories} />
       <AIRecommended blogs={data.aiRecommended} />

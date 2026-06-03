@@ -22,7 +22,17 @@ function Row({ blog }: { blog: DashboardBlogRow }) {
     <div className="flex items-center gap-4 p-4 rounded-2xl border bg-card hover:border-neon-purple/40 transition-colors">
       <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
         {blog.coverImage ? (
-          <Image src={blog.coverImage} alt={blog.title} fill sizes="96px" className="object-cover" />
+          <Image
+            src={blog.coverImage}
+            alt={blog.title}
+            fill
+            sizes="96px"
+            className="object-cover"
+            unoptimized={
+              blog.coverImage.startsWith("/uploads/") ||
+              blog.coverImage.startsWith("data:")
+            }
+          />
         ) : null}
       </div>
       <div className="flex-1 min-w-0">

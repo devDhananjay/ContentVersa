@@ -96,6 +96,22 @@
       "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/comments/(?<nxtPcommentId>[^/]+?)/like(?:/)?$"
     },
     {
+      "page": "/api/blogs/[slug]/feedback",
+      "regex": "^/api/blogs/([^/]+?)/feedback(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/feedback(?:/)?$"
+    },
+    {
+      "page": "/api/blogs/[slug]/history",
+      "regex": "^/api/blogs/([^/]+?)/history(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/history(?:/)?$"
+    },
+    {
       "page": "/api/blogs/[slug]/reactions",
       "regex": "^/api/blogs/([^/]+?)/reactions(?:/)?$",
       "routeKeys": {
@@ -104,12 +120,36 @@
       "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/reactions(?:/)?$"
     },
     {
+      "page": "/api/blogs/[slug]/recommendations",
+      "regex": "^/api/blogs/([^/]+?)/recommendations(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/recommendations(?:/)?$"
+    },
+    {
+      "page": "/api/blogs/[slug]/summary",
+      "regex": "^/api/blogs/([^/]+?)/summary(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/summary(?:/)?$"
+    },
+    {
       "page": "/api/polls/[slug]",
       "regex": "^/api/polls/([^/]+?)(?:/)?$",
       "routeKeys": {
         "nxtPslug": "nxtPslug"
       },
       "namedRegex": "^/api/polls/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/users/[username]/follow",
+      "regex": "^/api/users/([^/]+?)/follow(?:/)?$",
+      "routeKeys": {
+        "nxtPusername": "nxtPusername"
+      },
+      "namedRegex": "^/api/users/(?<nxtPusername>[^/]+?)/follow(?:/)?$"
     },
     {
       "page": "/blog/[slug]",

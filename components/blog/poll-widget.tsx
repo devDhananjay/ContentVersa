@@ -4,6 +4,10 @@ import * as React from "react";
 import { BarChart3, Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+function blogPollSlug(blogSlug: string) {
+  return `blog-${blogSlug}`;
+}
+
 type PollOption = {
   id: string;
   label: string;
@@ -21,11 +25,22 @@ type PollData = {
 
 export function PollWidget({
   pollSlug = "ai-replace-jobs",
+  blogContext,
   className,
 }: {
   pollSlug?: string;
+  blogContext?: {
+    blogSlug: string;
+    blogId?: string;
+    title: string;
+    category?: string;
+    tags?: string[];
+    excerpt?: string;
+  };
   className?: string;
 }) {
+  const slug = blogContext ? blogPollSlug(blogContext.blogSlug) : pollSlug;
+
   const [poll, setPoll] = React.useState<PollData | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [voting, setVoting] = React.useState(false);
@@ -33,13 +48,23 @@ export function PollWidget({
   const load = React.useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/polls/${pollSlug}`, { credentials: "include" });
+      const params = new URLSearchParams();
+      if (blogContext) {
+        params.set("title", blogContext.title);
+        if (blogContext.category) params.set("category", blogContext.category);
+        if (blogContext.tags?.length) params.set("tags", blogContext.tags.join(","));
+        if (blogContext.blogId) params.set("blogId", blogContext.blogId);
+      }
+      const qs = params.toString();
+      const res = await fetch(`/api/polls/${slug}${qs ? `?${qs}` : ""}`, {
+        credentials: "include",
+      });
       const data = (await res.json()) as { poll?: PollData };
       if (data.poll) setPoll(data.poll);
     } finally {
       setLoading(false);
     }
-  }, [pollSlug]);
+  }, [slug, blogContext?.blogSlug, blogContext?.title, blogContext?.category, blogContext?.blogId, blogContext?.tags?.join(",")]);
 
   React.useEffect(() => {
     load();
@@ -48,7 +73,7 @@ export function PollWidget({
   const vote = async (optionId: string) => {
     setVoting(true);
     try {
-      const res = await fetch(`/api/polls/${pollSlug}`, {
+      const res = await fetch(`/api/polls/${slug}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

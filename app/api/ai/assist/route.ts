@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { runAiAssist, buildPlaceholderImageUrl, type AiAction } from "@/lib/ai/assist";
+import { isGeminiConfigured } from "@/lib/ai/gemini";
 
 const Schema = z.object({
   action: z.enum([
     "summarize",
+    "article-summary",
     "seo-title",
     "blog-ideas",
     "excerpt",
@@ -29,13 +31,29 @@ export async function POST(req: Request) {
       const prompt =
         parsed.imagePrompt?.trim() ||
         `Blog cover: ${parsed.title || "ContentVerse article"}`;
-      const imageUrl = buildPlaceholderImageUrl(prompt);
+      const { result, source } = await runAiAssist({
+        action: "generate-image",
+        title: parsed.title,
+        category: parsed.category,
+        imagePrompt: prompt,
+      });
+      const imageUrl = typeof result === "string" ? result : buildPlaceholderImageUrl(prompt);
+      if (imageUrl.includes("picsum.photos")) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "Gemini image generation failed. Set GEMINI_API_KEY in .env.",
+            source,
+          },
+          { status: 503 }
+        );
+      }
       return NextResponse.json({
         ok: true,
         prompt,
         imageUrl,
-        source: process.env.OPENAI_API_KEY ? "openai" : "local",
-        note: "Demo image from picsum.photos. Set OPENAI_API_KEY for richer prompts.",
+        source,
+        note: source === "gemini" ? "Generated with Gemini." : "Image ready.",
       });
     }
 
@@ -45,6 +63,7 @@ export async function POST(req: Request) {
       excerpt: parsed.excerpt,
       content: parsed.content,
       category: parsed.category,
+      imagePrompt: parsed.imagePrompt,
     });
 
     return NextResponse.json({ ok: true, result, source });

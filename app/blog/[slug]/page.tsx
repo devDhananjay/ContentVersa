@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Clock, Eye, MessageCircle, Heart, BadgeCheck, Coffee } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,10 +14,12 @@ import { Comments } from "@/components/blog/comments";
 import { PollWidget } from "@/components/blog/poll-widget";
 import { ShareBar } from "@/components/blog/share-bar";
 import { FloatingActions } from "@/components/blog/floating-actions";
-import { BlogCard } from "@/components/blog/blog-card";
+import { NewsIn60Short } from "@/components/blog/news-in-60-short";
+import { ArticleFeedback } from "@/components/blog/article-feedback";
+import { RecommendedBlogs } from "@/components/blog/recommended-blogs";
+import { TrackBlogRead } from "@/components/blog/track-reading";
 import { renderMarkdown, extractTOC } from "@/components/blog/markdown";
-import { BLOGS, getRecommendedFor } from "@/lib/data/blogs";
-import { getBlogBySlugHybrid, getPublishedBlogsHybrid } from "@/lib/data/blog-db";
+import { getBlogBySlugHybrid } from "@/lib/data/blog-db";
 import { getBlogEngagement } from "@/lib/data/blog-engagement";
 import { getCurrentUser } from "@/lib/auth";
 import { resolveUserId } from "@/lib/auth/resolve-user-id";
@@ -58,21 +61,15 @@ export default async function BlogPage({
 
   const category = CATEGORIES.find((c) => c.slug === blog.category);
   const toc = extractTOC(blog.content);
-  const allPublished = await getPublishedBlogsHybrid();
-  let recommended = allPublished
-    .filter((b) => b.slug !== slug && b.category === blog.category)
-    .slice(0, 3);
-  if (recommended.length === 0) {
-    recommended = getRecommendedFor(slug, 3);
-  }
   const url = `${SITE.url}/blog/${blog.slug}`;
 
-  let engagement = null;
-  if (isDatabaseConfigured() && blog.id) {
-    const session = await getCurrentUser();
-    const userId = session ? await resolveUserId(session) : null;
-    engagement = await getBlogEngagement(blog.id, userId);
-  }
+  const session = await getCurrentUser();
+  const userId = session ? await resolveUserId(session) : null;
+
+  const engagement =
+    isDatabaseConfigured() && blog.id
+      ? await getBlogEngagement(blog.id, userId)
+      : null;
 
   const reactionCount = engagement?.totalReactions ?? blog.likes;
 
@@ -84,6 +81,9 @@ export default async function BlogPage({
     datePublished: blog.publishedAt,
     authorName: blog.author.name,
   });
+
+  const coverUnoptimized =
+    blog.coverImage.startsWith("/uploads/") || blog.coverImage.startsWith("data:");
 
   return (
     <>
@@ -100,8 +100,7 @@ export default async function BlogPage({
       />
 
       <article className="container max-w-5xl py-8 md:py-12">
-        {/* Header */}
-        <header className="mb-10">
+        <header className="mb-8">
           <div className="flex flex-wrap items-center gap-2 mb-5">
             {category && (
               <Link href={`/category/${category.slug}`}>
@@ -110,6 +109,10 @@ export default async function BlogPage({
                 </Badge>
               </Link>
             )}
+            <Badge variant="outline" className="gap-1 font-medium">
+              <Clock className="h-3 w-3" />
+              {blog.readingTime} min read
+            </Badge>
             {blog.premium && <Badge variant="orange">Premium</Badge>}
             {blog.trending && <Badge variant="pink">🔥 Trending</Badge>}
             {blog.editorPick && <Badge variant="neon">Editor&apos;s Pick</Badge>}
@@ -117,9 +120,26 @@ export default async function BlogPage({
           <h1 className="font-display text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
             {blog.title}
           </h1>
-          <p className="mt-5 text-xl text-muted-foreground max-w-3xl">
-            {blog.excerpt}
-          </p>
+          {blog.excerpt && (
+            <p className="mt-5 text-xl text-muted-foreground max-w-3xl">
+              {blog.excerpt}
+            </p>
+          )}
+
+          <TrackBlogRead blogSlug={slug} />
+
+          <div className="mt-6">
+            <NewsIn60Short
+              blogSlug={slug}
+              headline={blog.title}
+              coverImage={blog.coverImage}
+              authorName={blog.author.name}
+              publishedAt={blog.publishedAt}
+              content={blog.content}
+              excerpt={blog.excerpt}
+              category={blog.category}
+            />
+          </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-between gap-4 pb-6 border-b">
             <div className="flex items-center gap-3">
@@ -159,21 +179,23 @@ export default async function BlogPage({
           </div>
         </header>
 
-        {/* Cover image */}
-        <div className="relative aspect-[16/9] mb-10 overflow-hidden rounded-3xl">
-          <Image
-            src={blog.coverImage}
-            alt={blog.title}
-            fill
-            priority
-            sizes="(min-width: 1280px) 1024px, 100vw"
-            className="object-cover"
-          />
-        </div>
+        {blog.coverImage && (
+          <div className="relative aspect-[16/9] mb-10 overflow-hidden rounded-3xl">
+            <Image
+              src={blog.coverImage}
+              alt={blog.title}
+              fill
+              priority
+              sizes="(min-width: 1280px) 1024px, 100vw"
+              className="object-cover"
+              unoptimized={coverUnoptimized}
+            />
+          </div>
+        )}
 
-        {/* Content + sidebar layout */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12">
           <div>
+            <h2 className="font-display text-2xl font-bold mb-6">Full story</h2>
             {renderMarkdown(blog.content)}
 
             <div className="mt-10 flex flex-wrap gap-2">
@@ -196,7 +218,10 @@ export default async function BlogPage({
               />
             </div>
 
-            {/* Tip the creator */}
+            <div className="mt-8">
+              <ArticleFeedback blogSlug={slug} />
+            </div>
+
             <div className="mt-8 rounded-3xl border-gradient bg-card p-6 md:p-8">
               <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
                 <Avatar className="h-16 w-16 border-2 border-border">
@@ -227,7 +252,6 @@ export default async function BlogPage({
               </div>
             </div>
 
-            {/* Author bio */}
             <div className="mt-10 p-6 rounded-3xl border bg-card flex flex-col md:flex-row items-start gap-4">
               <Avatar className="h-14 w-14 border-2 border-border">
                 <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
@@ -249,7 +273,17 @@ export default async function BlogPage({
             </div>
 
             <div className="mt-14">
-              <PollWidget className="mb-10" />
+              <PollWidget
+                className="mb-10"
+                blogContext={{
+                  blogSlug: blog.slug,
+                  blogId: blog.id,
+                  title: blog.title,
+                  category: blog.category,
+                  tags: blog.tags,
+                  excerpt: blog.excerpt,
+                }}
+              />
             </div>
 
             <div id="comments" className="mt-14">
@@ -258,7 +292,6 @@ export default async function BlogPage({
             </div>
           </div>
 
-          {/* Sticky TOC sidebar */}
           <aside className="hidden lg:block">
             <div className="sticky top-24 space-y-6">
               <TableOfContents items={toc} />
@@ -266,19 +299,9 @@ export default async function BlogPage({
           </aside>
         </div>
 
-        {/* Recommended */}
-        {recommended.length > 0 && (
-          <section className="mt-20">
-            <h2 className="font-display text-3xl font-extrabold tracking-tight mb-8">
-              Keep reading
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {recommended.map((b, i) => (
-                <BlogCard key={b.id} blog={b} index={i} />
-              ))}
-            </div>
-          </section>
-        )}
+        <Suspense fallback={null}>
+          <RecommendedBlogs slug={slug} />
+        </Suspense>
       </article>
     </>
   );

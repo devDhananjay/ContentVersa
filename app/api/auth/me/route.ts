@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { resolveUserId } from "@/lib/auth/resolve-user-id";
+import { getUserReadingStats } from "@/lib/data/reading-history";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { formatDuration } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -38,8 +41,26 @@ export async function GET() {
     });
   }
 
+  let reading: {
+    totalSeconds: number;
+    totalFormatted: string;
+    articlesRead: number;
+  } | null = null;
+
+  if (isDatabaseConfigured() && user.sub && !user.sub.includes(":")) {
+    const userId = await resolveUserId(user);
+    if (userId) {
+      const stats = await getUserReadingStats(userId);
+      reading = {
+        totalSeconds: stats.totalSeconds,
+        totalFormatted: formatDuration(stats.totalSeconds),
+        articlesRead: stats.articlesRead,
+      };
+    }
+  }
+
   return NextResponse.json(
-    { user: { ...user, profile } },
+    { user: { ...user, profile, reading } },
     {
       headers: {
         "Cache-Control": "no-store, no-cache, must-revalidate",
