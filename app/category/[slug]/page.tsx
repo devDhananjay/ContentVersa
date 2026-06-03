@@ -7,9 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CATEGORIES, getCategoryBySlug } from "@/lib/data/categories";
-import { getBlogsByCategory, AUTHORS } from "@/lib/data/blogs";
+import { AUTHORS } from "@/lib/data/blogs";
+import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { buildMetadata } from "@/lib/seo";
 import { formatNumber, getInitials } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   return CATEGORIES.map((c) => ({ slug: c.slug }));
@@ -39,7 +42,7 @@ export default async function CategoryPage({
   const { slug } = await params;
   const cat = getCategoryBySlug(slug);
   if (!cat) return notFound();
-  const blogs = getBlogsByCategory(slug);
+  const blogs = await getBlogsByCategoryHybrid(slug);
   const topWriters = AUTHORS.slice(0, 3);
 
   return (

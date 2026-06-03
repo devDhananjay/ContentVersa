@@ -188,22 +188,34 @@ export const getBlogBySlugHybrid = cache(async (slug: string) => {
   return getMockBlogBySlug(slug) ?? null;
 });
 
+/** DB posts first, then mock posts not yet synced (same slugs as the public site). */
 export async function getPublishedBlogsHybrid(limit?: number) {
-  const fromDb = await getPublishedBlogsFromDb(limit);
-  if (fromDb && fromDb.length > 0) return fromDb;
-  const mock = [...BLOGS].sort(
+  if (!isDatabaseConfigured()) {
+    const mock = [...BLOGS].sort(
+      (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
+    );
+    return limit ? mock.slice(0, limit) : mock;
+  }
+
+  const fromDb = (await getPublishedBlogsFromDb()) ?? [];
+  const dbSlugs = new Set(fromDb.map((b) => b.slug));
+  const mockExtra = BLOGS.filter((b) => !dbSlugs.has(b.slug));
+  const merged = [...fromDb, ...mockExtra].sort(
     (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
   );
-  return limit ? mock.slice(0, limit) : mock;
+  return limit ? merged.slice(0, limit) : merged;
 }
 
 export async function getPublishedBlogsLiteHybrid(limit = 24) {
-  const fromDb = await getPublishedBlogsLiteFromDb(limit);
-  if (fromDb && fromDb.length > 0) return fromDb;
-  const mock = [...BLOGS].sort(
-    (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
-  );
-  return mock.slice(0, limit).map((b) => ({ ...b, content: "" }));
+  const merged = await getPublishedBlogsHybrid(limit * 2);
+  return merged
+    .slice(0, limit)
+    .map((b) => ({ ...b, content: "" }));
+}
+
+export async function getBlogsByCategoryHybrid(categorySlug: string, limit = 48) {
+  const all = await getPublishedBlogsHybrid(limit * 2);
+  return all.filter((b) => b.category === categorySlug).slice(0, limit);
 }
 
 export async function getBlogsByAuthorId(authorId: string) {
