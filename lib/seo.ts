@@ -1,12 +1,23 @@
 import type { Metadata } from "next";
+import { getAppUrl } from "@/lib/app-url";
 import { PRODUCTION_SITE_URL } from "@/lib/site-config";
+
+function siteUrl() {
+  try {
+    return getAppUrl();
+  } catch {
+    return PRODUCTION_SITE_URL;
+  }
+}
 
 export const SITE = {
   name: "ContentVerse",
   tagline: "Read. Create. Grow.",
   description:
     "ContentVerse is the next-generation creator platform for blogs and content. Read, create and grow with a community of bold writers.",
-  url: process.env.NEXT_PUBLIC_APP_URL || PRODUCTION_SITE_URL,
+  get url() {
+    return siteUrl();
+  },
   twitter: "@contentverse",
   ogImage: "/og-default.png",
 };

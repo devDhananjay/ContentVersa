@@ -4,4 +4,4 @@ Disallow: /dashboard
 Disallow: /admin
 Disallow: /api
 
-Sitemap: http://localhost:3001/sitemap.xml
+Sitemap: https://contentverse.co.in/sitemap.xml

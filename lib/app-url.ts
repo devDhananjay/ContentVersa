@@ -5,12 +5,25 @@ function isLocalhostUrl(url: string) {
   return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(url);
 }
 
+/**
+ * Server/runtime URL — NOT inlined at build (unlike NEXT_PUBLIC_APP_URL).
+ * Set APP_URL=https://contentverse.co.in on production.
+ */
+function getRuntimeAppUrl(): string | undefined {
+  const raw =
+    process.env.APP_URL?.trim() ||
+    process.env.SITE_URL?.trim() ||
+    process.env.NEXTAUTH_URL?.trim();
+  return raw?.replace(/\/$/, "") || undefined;
+}
+
 export function getAppUrl(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_APP_URL?.trim()?.replace(/\/$/, "");
+  const runtime = getRuntimeAppUrl();
+  if (runtime && !isLocalhostUrl(runtime)) return runtime;
 
-  if (fromEnv && !isLocalhostUrl(fromEnv)) return fromEnv;
+  const fromPublic = process.env.NEXT_PUBLIC_APP_URL?.trim()?.replace(/\/$/, "");
+  if (fromPublic && !isLocalhostUrl(fromPublic)) return fromPublic;
 
-  // Vercel preview/production fallback (ignore localhost in env)
   if (process.env.VERCEL) {
     const prod = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
     if (prod) return `https://${prod.replace(/\/$/, "")}`;
@@ -19,9 +32,9 @@ export function getAppUrl(): string {
     if (vercel) return `https://${vercel.replace(/\/$/, "")}`;
   }
 
-  if (fromEnv) return fromEnv;
-
   if (process.env.NODE_ENV === "production") return PRODUCTION_SITE_URL;
 
-  return "http://localhost:3000";
+  if (fromPublic) return fromPublic;
+
+  return "http://localhost:3001";
 }
