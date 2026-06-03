@@ -1,0 +1,734 @@
+{
+  "info": {
+    "_postman_id": "contentverse-api-v2",
+    "name": "ContentVerse API (Complete)",
+    "description": "# ContentVerse — All API Routes\n\n**Total: 23 route files · 38 HTTP endpoints**\n\n| # | Method | Path | Auth |\n|---|--------|------|------|\n| 1 | GET | /api/auth/me | optional |\n| 2 | POST | /api/auth/sign-in | — |\n| 3 | POST | /api/auth/sign-up | — |\n| 4 | POST | /api/auth/sign-out | optional |\n| 5 | GET | /api/auth/google/login | — |\n| 6 | GET | /api/auth/google/callback | — |\n| 7 | POST | /api/auth/firebase | — |\n| 8 | GET | /api/blogs | — |\n| 9 | POST | /api/blogs | user |\n| 10 | GET | /api/blogs/:slug | — |\n| 11 | GET | /api/blogs/:slug/reactions | optional |\n| 12 | POST | /api/blogs/:slug/reactions | user |\n| 13 | GET | /api/blogs/:slug/bookmark | optional |\n| 14 | POST | /api/blogs/:slug/bookmark | user |\n| 15 | GET | /api/blogs/:slug/comments | — |\n| 16 | POST | /api/blogs/:slug/comments | user |\n| 17 | POST | /api/blogs/:slug/comments/:commentId/like | user |\n| 18 | GET | /api/polls/:slug | — |\n| 19 | POST | /api/polls/:slug | — |\n| 20 | POST | /api/ai/assist | — |\n| 21 | GET | /api/admin/users | admin |\n| 22 | POST | /api/admin/users | admin |\n| 23 | POST | /api/admin/users/promote | super / bootstrap |\n| 24 | PATCH | /api/admin/users/:id | admin |\n| 25 | GET | /api/admin/moderation | mod+ |\n| 26 | POST | /api/admin/moderation | mod+ |\n| 27 | POST | /api/upload | — |\n| 28 | GET | /api/search | — |\n| 29 | GET | /api/categories | — |\n| 30 | POST | /api/newsletter | — |\n\n**Variables:** `baseUrl`, `blogSlug`, `blogId`, `userId`, `commentId`, `pollSlug`, `bootstrapSecret`\n\n**Cookie auth:** Run `POST /api/auth/sign-in` first → saves `cv_session`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://contentverse.co.in" },
+    { "key": "blogSlug", "value": "the-shipping-mindset-2026-creators" },
+    { "key": "blogId", "value": "BLOG_ID_HERE" },
+    { "key": "userId", "value": "USER_ID_HERE" },
+    { "key": "commentId", "value": "COMMENT_ID_HERE" },
+    { "key": "pollSlug", "value": "ai-replace-jobs" },
+    { "key": "pollOptionId", "value": "OPTION_ID_HERE" },
+    { "key": "bootstrapSecret", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 — Auth",
+      "description": "app/api/auth/*",
+      "item": [
+        {
+          "name": "GET /api/auth/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/auth/me",
+            "description": "Current session user. Returns `{ user: {...} | null }`."
+          }
+        },
+        {
+          "name": "POST /api/auth/sign-in",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@contentverse.app\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/sign-in",
+            "description": "Email/password login. Sets HttpOnly cookie `cv_session`."
+          }
+        },
+        {
+          "name": "POST /api/auth/sign-up",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"username\": \"testuser123\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/sign-up"
+          }
+        },
+        {
+          "name": "POST /api/auth/sign-out",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/sign-out",
+            "description": "Clears session cookie."
+          }
+        },
+        {
+          "name": "GET /api/auth/google/login",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/google/login?next=/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "google", "login"],
+              "query": [{ "key": "next", "value": "/dashboard", "description": "Redirect after login" }]
+            },
+            "description": "302 redirect to Google OAuth. Use in browser."
+          }
+        },
+        {
+          "name": "GET /api/auth/google/callback",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/google/callback?code=&state=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "google", "callback"],
+              "query": [
+                { "key": "code", "value": "" },
+                { "key": "state", "value": "" }
+              ]
+            },
+            "description": "Google redirects here. Browser-only flow."
+          }
+        },
+        {
+          "name": "POST /api/auth/firebase",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"FIREBASE_ID_TOKEN_FROM_CLIENT\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/firebase",
+            "description": "Phone OTP via Firebase. Client sends Firebase ID token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 — Blogs",
+      "description": "app/api/blogs/*",
+      "item": [
+        {
+          "name": "GET /api/blogs (list — trending)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs?sort=trending&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"],
+              "query": [
+                { "key": "q", "value": "", "disabled": true },
+                { "key": "category", "value": "", "disabled": true },
+                { "key": "sort", "value": "trending" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /api/blogs (sort=latest)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs?sort=latest&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"],
+              "query": [{ "key": "sort", "value": "latest" }, { "key": "limit", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "GET /api/blogs (sort=liked)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs?sort=liked&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"],
+              "query": [{ "key": "sort", "value": "liked" }, { "key": "limit", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "GET /api/blogs (sort=viewed)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs?sort=viewed&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"],
+              "query": [{ "key": "sort", "value": "viewed" }, { "key": "limit", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "GET /api/blogs (sort=editor)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs?sort=editor&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"],
+              "query": [{ "key": "sort", "value": "editor" }, { "key": "limit", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "GET /api/blogs (sort=trending_week)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs?sort=trending_week&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"],
+              "query": [{ "key": "sort", "value": "trending_week" }, { "key": "limit", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "GET /api/blogs (sort=most_read_today)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs?sort=most_read_today&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"],
+              "query": [{ "key": "sort", "value": "most_read_today" }, { "key": "limit", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "GET /api/blogs (search + category)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs?q=ai&category=technology&sort=trending&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"],
+              "query": [
+                { "key": "q", "value": "ai" },
+                { "key": "category", "value": "technology" },
+                { "key": "sort", "value": "trending" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /api/blogs (create — PENDING)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"My new blog post\",\n  \"excerpt\": \"Short hook for readers.\",\n  \"content\": \"Full content here — at least 20 characters for submit review.\",\n  \"coverImage\": \"https://example.com/cover.jpg\",\n  \"category\": \"technology\",\n  \"tags\": [\"ai\", \"startups\"],\n  \"premium\": false,\n  \"metaTitle\": \"SEO title\",\n  \"metaDescription\": \"SEO description\",\n  \"status\": \"PENDING\"\n}"
+            },
+            "url": "{{baseUrl}}/api/blogs",
+            "description": "Auth required. Submits to moderation queue."
+          }
+        },
+        {
+          "name": "POST /api/blogs (create — DRAFT)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Draft title\",\n  \"content\": \"Work in progress...\",\n  \"status\": \"DRAFT\"\n}"
+            },
+            "url": "{{baseUrl}}/api/blogs",
+            "description": "Auth required. Saves draft only."
+          }
+        },
+        {
+          "name": "GET /api/blogs/:slug",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}",
+            "description": "Get single blog by slug (mock data fallback)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — Blog Reactions",
+      "description": "app/api/blogs/[slug]/reactions/route.ts",
+      "item": [
+        {
+          "name": "GET /api/blogs/:slug/reactions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/reactions",
+            "description": "Returns counts, userReaction, bookmarked."
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/reactions (LIKE)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"LIKE\"\n}" },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/reactions"
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/reactions (LOVE)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"LOVE\"\n}" },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/reactions"
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/reactions (FIRE)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"FIRE\"\n}" },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/reactions"
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/reactions (CLAP)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"CLAP\"\n}" },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/reactions"
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/reactions (INSIGHTFUL)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"INSIGHTFUL\"\n}" },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/reactions"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — Bookmarks",
+      "description": "app/api/blogs/[slug]/bookmark/route.ts",
+      "item": [
+        {
+          "name": "GET /api/blogs/:slug/bookmark",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/bookmark",
+            "description": "Returns `{ bookmarked: boolean }`."
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/bookmark (toggle)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/bookmark",
+            "description": "Auth required. Toggle bookmark on/off."
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — Comments",
+      "description": "app/api/blogs/[slug]/comments/*",
+      "item": [
+        {
+          "name": "GET /api/blogs/:slug/comments",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/comments",
+            "description": "List comments with replies."
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/comments (new comment)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Great article! Thanks for sharing.\"\n}"
+            },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/comments",
+            "description": "Auth required."
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/comments (reply)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Totally agree with this point.\",\n  \"parentId\": \"{{commentId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/comments",
+            "description": "Auth required. Reply to parent comment."
+          }
+        },
+        {
+          "name": "POST /api/blogs/:slug/comments/:commentId/like",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/blogs/{{blogSlug}}/comments/{{commentId}}/like",
+            "description": "Auth required. Toggle comment like."
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 — Polls",
+      "description": "app/api/polls/[slug]/route.ts",
+      "item": [
+        {
+          "name": "GET /api/polls/:slug",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/polls/{{pollSlug}}",
+            "description": "Default poll: ai-replace-jobs"
+          }
+        },
+        {
+          "name": "POST /api/polls/:slug (vote)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"optionId\": \"{{pollOptionId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/polls/{{pollSlug}}",
+            "description": "Get optionId from GET poll response. Sets cv_poll_voter cookie."
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 — AI Assist",
+      "description": "app/api/ai/assist/route.ts — all actions",
+      "item": [
+        {
+          "name": "POST /api/ai/assist — summarize",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"summarize\",\n  \"title\": \"My blog\",\n  \"content\": \"Long draft text to summarize...\",\n  \"category\": \"technology\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ai/assist"
+          }
+        },
+        {
+          "name": "POST /api/ai/assist — seo-title",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"seo-title\",\n  \"title\": \"My blog title\",\n  \"content\": \"Draft content...\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ai/assist"
+          }
+        },
+        {
+          "name": "POST /api/ai/assist — blog-ideas",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"blog-ideas\",\n  \"title\": \"AI startups\",\n  \"category\": \"startups\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ai/assist"
+          }
+        },
+        {
+          "name": "POST /api/ai/assist — excerpt",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"excerpt\",\n  \"title\": \"My blog\",\n  \"content\": \"Full article text...\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ai/assist"
+          }
+        },
+        {
+          "name": "POST /api/ai/assist — tags",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"tags\",\n  \"title\": \"TypeScript patterns\",\n  \"category\": \"programming\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ai/assist"
+          }
+        },
+        {
+          "name": "POST /api/ai/assist — image-prompt",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"image-prompt\",\n  \"title\": \"Blog cover\",\n  \"category\": \"technology\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ai/assist"
+          }
+        },
+        {
+          "name": "POST /api/ai/assist — generate-image",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"generate-image\",\n  \"title\": \"Blog cover\",\n  \"category\": \"technology\",\n  \"imagePrompt\": \"futuristic workspace purple neon editorial\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ai/assist"
+          }
+        },
+        {
+          "name": "POST /api/ai/assist — expand-thesis",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"expand-thesis\",\n  \"title\": \"Why creators win in 2026\",\n  \"content\": \"Opening paragraph...\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ai/assist"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 — Admin Users",
+      "description": "app/api/admin/users/*",
+      "item": [
+        {
+          "name": "GET /api/admin/users (list all)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/admin/users",
+            "description": "Admin session required."
+          }
+        },
+        {
+          "name": "GET /api/admin/users?email=",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?email=dhananjays124@gmail.com",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"],
+              "query": [{ "key": "email", "value": "dhananjays124@gmail.com" }]
+            },
+            "description": "Lookup single user by email → returns user.id for PATCH."
+          }
+        },
+        {
+          "name": "POST /api/admin/users (create user)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"username\": \"newuser123\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/users",
+            "description": "Roles: USER | VERIFIED_CREATOR | MODERATOR | ADMIN | SUPER_ADMIN (last two need Super Admin)."
+          }
+        },
+        {
+          "name": "POST /api/admin/users/promote (by email)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-admin-bootstrap-secret", "value": "{{bootstrapSecret}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dhananjays124@gmail.com\",\n  \"role\": \"SUPER_ADMIN\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/users/promote",
+            "description": "Super Admin session OR x-admin-bootstrap-secret header."
+          }
+        },
+        {
+          "name": "PATCH /api/admin/users/:id (update role)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"SUPER_ADMIN\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/users/{{userId}}",
+            "description": "Roles: USER | VERIFIED_CREATOR | MODERATOR | ADMIN | SUPER_ADMIN"
+          }
+        },
+        {
+          "name": "PATCH /api/admin/users/:id (update password)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"newpassword123\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/users/{{userId}}",
+            "description": "Super Admin only. Min 8 chars."
+          }
+        },
+        {
+          "name": "PATCH /api/admin/users/:id (role + password)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"ADMIN\",\n  \"password\": \"newpassword123\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/users/{{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 — Admin Moderation",
+      "description": "app/api/admin/moderation/route.ts",
+      "item": [
+        {
+          "name": "GET /api/admin/moderation",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/admin/moderation",
+            "description": "Returns pending + flagged blogs. Moderator/Admin/Super Admin."
+          }
+        },
+        {
+          "name": "POST /api/admin/moderation (APPROVED)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"blogId\": \"{{blogId}}\",\n  \"decision\": \"APPROVED\",\n  \"feedback\": \"Published — great work!\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/moderation"
+          }
+        },
+        {
+          "name": "POST /api/admin/moderation (REJECTED)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"blogId\": \"{{blogId}}\",\n  \"decision\": \"REJECTED\",\n  \"feedback\": \"Does not meet guidelines.\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/moderation"
+          }
+        },
+        {
+          "name": "POST /api/admin/moderation (REQUEST_CHANGES)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"blogId\": \"{{blogId}}\",\n  \"decision\": \"REQUEST_CHANGES\",\n  \"feedback\": \"Please expand the intro section.\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/moderation"
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 — Upload",
+      "description": "app/api/upload/route.ts",
+      "item": [
+        {
+          "name": "POST /api/upload",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Field name must be `file`. PNG/JPG/WebP/GIF/AVIF, max 5MB."
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/upload",
+            "description": "Returns `{ ok, url, size, type }`. AWS/Vercel uses Blob storage."
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 — Search",
+      "description": "app/api/search/route.ts",
+      "item": [
+        {
+          "name": "GET /api/search",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/search?q=typescript",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search"],
+              "query": [{ "key": "q", "value": "typescript", "description": "Required" }]
+            },
+            "description": "Returns `{ blogs, authors, categories }` (max 5 each)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 — Categories",
+      "description": "app/api/categories/route.ts",
+      "item": [
+        {
+          "name": "GET /api/categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories",
+            "description": "All categories with blog counts."
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 — Newsletter",
+      "description": "app/api/newsletter/route.ts",
+      "item": [
+        {
+          "name": "POST /api/newsletter",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"reader@example.com\"\n}"
+            },
+            "url": "{{baseUrl}}/api/newsletter"
+          }
+        }
+      ]
+    }
+  ]
+}
