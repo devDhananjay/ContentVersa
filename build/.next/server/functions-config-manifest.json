@@ -1,8 +1,8 @@
 {
   "version": 1,
   "functions": {
-    "/api/auth/google/login": {},
     "/api/auth/google/callback": {},
+    "/api/auth/google/login": {},
     "/api/auth/firebase": {},
     "/api/upload": {},
     "/uploads/[filename]": {}

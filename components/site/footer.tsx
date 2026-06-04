@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./logo";
+import { FooterVisitorCount } from "./footer-visitor-count";
 import { Github, Twitter, Instagram, Youtube } from "lucide-react";
 
 const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[] = [
@@ -85,7 +86,9 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pt-8 border-t border-border/50">
+        <FooterVisitorCount />
+
+        <div className="mt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pt-8 border-t border-border/50">
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} ContentVerse. Built for creators. All rights reserved.
           </p>
