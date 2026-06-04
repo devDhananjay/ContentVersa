@@ -47,11 +47,15 @@ function Row({ blog }: { blog: DashboardBlogRow }) {
         </p>
       </div>
       <div className="hidden md:flex items-center gap-1">
-        <Button variant="ghost" size="icon" aria-label="View">
-          <Eye className="h-4 w-4" />
+        <Button variant="ghost" size="icon" aria-label="View" asChild>
+          <Link href={`/blog/${blog.slug}`}>
+            <Eye className="h-4 w-4" />
+          </Link>
         </Button>
-        <Button variant="ghost" size="icon" aria-label="Edit">
-          <Edit3 className="h-4 w-4" />
+        <Button variant="ghost" size="icon" aria-label="Edit" asChild>
+          <Link href={`/dashboard/blogs/${blog.id}/edit`}>
+            <Edit3 className="h-4 w-4" />
+          </Link>
         </Button>
         <Button variant="ghost" size="icon" aria-label="Delete">
           <Trash2 className="h-4 w-4" />

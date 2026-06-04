@@ -21,7 +21,14 @@ type Props = {
   onApplyExcerpt?: (v: string) => void;
   onApplyTags?: (tags: string[]) => void;
   onApplySeoTitle?: (v: string) => void;
+  onApplyContent?: (md: string) => void;
 };
+
+function aiSourceLabel(source?: string) {
+  if (source === "gemini") return "Generated with Gemini";
+  if (source === "openai") return "Generated with OpenAI";
+  return "Smart suggestion (add GEMINI_API_KEY for AI)";
+}
 
 export function AiAssistPanel({
   title,
@@ -32,6 +39,7 @@ export function AiAssistPanel({
   onApplyExcerpt,
   onApplyTags,
   onApplySeoTitle,
+  onApplyContent,
 }: Props) {
   const [loading, setLoading] = React.useState<string | null>(null);
   const [ideas, setIdeas] = React.useState<string[]>([]);
@@ -62,11 +70,7 @@ export function AiAssistPanel({
       } else if (apply && typeof result === "string") {
         apply(result);
       }
-      setMessage(
-        data.source === "openai"
-          ? "Generated with AI"
-          : "Smart suggestion (add OPENAI_API_KEY for GPT)"
-      );
+      setMessage(aiSourceLabel(data.source));
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Failed");
     } finally {
@@ -75,6 +79,15 @@ export function AiAssistPanel({
   };
 
   const tools = [
+    {
+      label: "Generate full blog",
+      icon: Sparkles,
+      action: "generate-from-title",
+      onClick: () =>
+        run("generate-from-title", (r) => {
+          if (typeof r === "string") onApplyContent?.(r);
+        }),
+    },
     {
       label: "Summarize draft",
       icon: FileText,

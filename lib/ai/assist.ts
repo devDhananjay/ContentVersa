@@ -28,7 +28,8 @@ export type AiAction =
   | "tags"
   | "image-prompt"
   | "generate-image"
-  | "expand-thesis";
+  | "expand-thesis"
+  | "generate-from-title";
 
 type AssistInput = {
   action: AiAction;
@@ -158,6 +159,9 @@ function heuristicAssist(input: AssistInput): string | string[] {
         return "Start with a bold claim in your title, then support it with 3 concrete examples.";
       return `Thesis: ${title}\n\n1. Hook — state the problem readers feel today.\n2. Evidence — ${words.length} words of draft; add one data point or story.\n3. Takeaway — what should the reader do in the next 24 hours?`;
 
+    case "generate-from-title":
+      return `## Introduction\n\n${title} is reshaping how creators and readers think about ${cat}. Here is a practical look at why it matters now.\n\n## Why this topic is trending\n\n- Readers want clear, actionable takes—not hype.\n- The ${cat} space is moving fast in 2026.\n- A strong point of view helps you stand out.\n\n## What to watch next\n\nStart with one concrete example from your experience, add a data point or quote, and end with a single action step for the reader.\n\n## Conclusion\n\n${title} is not just a headline—it is an invitation to share what you have learned. Ship the draft, gather feedback, and refine in public.`;
+
     default:
       return "Unknown action.";
   }
@@ -219,6 +223,10 @@ export async function runAiAssist(
       system: "Outline a blog structure: hook, 3 sections, conclusion. Use markdown bullets.",
       expect: "text",
     },
+    "generate-from-title": {
+      system: `Write a complete blog post body in markdown for ContentVerse. Use ## for section headings (do NOT repeat the title as # H1). Include 4-5 sections: introduction, 2-3 substantive sections with paragraphs and optional bullet lists, and conclusion. Target 650-900 words. Engaging, informative tone. Return ONLY markdown body — no frontmatter, no title line.`,
+      expect: "text",
+    },
   };
 
   const p = prompts[input.action];
@@ -228,7 +236,12 @@ export async function runAiAssist(
     const { min, max } = getSummaryWordTargets(articleWords);
     systemPrompt = `You summarize blog articles for busy readers. Write exactly ${min} words (never fewer, never more than ${max}). Use 3-4 short paragraphs separated by blank lines. Cover: hook, thesis, list items in one tight sentence, quote if any, code/workflow in plain English, closing. Do NOT repeat the headline as sentence one. Never say "this article". Plain text only — no markdown, no bullet symbols.`;
   }
-  const tokens = input.action === "article-summary" ? 1024 : 512;
+  const tokens =
+    input.action === "article-summary"
+      ? 1024
+      : input.action === "generate-from-title"
+        ? 2048
+        : 512;
   const { text: ai, source } = await callAiText(systemPrompt, userPayload, tokens);
 
   if (ai) {

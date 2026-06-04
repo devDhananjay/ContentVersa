@@ -14,6 +14,7 @@ const Schema = z.object({
     "image-prompt",
     "generate-image",
     "expand-thesis",
+    "generate-from-title",
   ]),
   title: z.string().optional(),
   excerpt: z.string().optional(),

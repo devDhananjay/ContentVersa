@@ -24,25 +24,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { shouldSkipImageOptimization, uploadImage } from "@/lib/upload";
+import {
+  defaultEditorBlocks,
+  markdownToBlocks,
+  type BlockType,
+  type EditorBlock,
+} from "@/lib/editor/markdown-blocks";
 
-type BlockType =
-  | "paragraph"
-  | "heading-1"
-  | "heading-2"
-  | "list"
-  | "ordered-list"
-  | "quote"
-  | "code"
-  | "image"
-  | "embed"
-  | "callout";
-
-interface Block {
-  id: string;
-  type: BlockType;
-  content: string;
-  meta?: { url?: string };
-}
+interface Block extends EditorBlock {}
 
 const SLASH_COMMANDS: { type: BlockType; label: string; description: string; icon: React.ElementType }[] = [
   { type: "paragraph", label: "Text", description: "Plain paragraph", icon: Type },
@@ -70,25 +59,20 @@ const placeholders: Record<BlockType, string> = {
   callout: "Important note — heads up.",
 };
 
-// IDs MUST be deterministic during SSR/hydration. We use stable seeds for the
-// initial blocks and a counter that only increments from user interaction
-// (which only happens client-side after mount). Avoid Math.random/Date.now in
-// initial state to prevent hydration mismatches.
-const INITIAL_BLOCKS: Block[] = [
-  { id: "blk-init-heading", type: "heading-1", content: "" },
-  { id: "blk-init-paragraph", type: "paragraph", content: "" },
-];
-
-let nextId = 0;
-const genId = () => `blk-${++nextId}`;
+const INITIAL_BLOCKS: Block[] = defaultEditorBlocks();
 
 export interface BlockEditorHandle {
   toMarkdown(): string;
+  loadMarkdown(md: string): void;
 }
 
-export const BlockEditor = React.forwardRef<BlockEditorHandle, { onChange?: (md: string) => void }>(
-  function BlockEditor({ onChange }, ref) {
-  const [blocks, setBlocks] = React.useState<Block[]>(INITIAL_BLOCKS);
+export const BlockEditor = React.forwardRef<
+  BlockEditorHandle,
+  { onChange?: (md: string) => void; initialMarkdown?: string }
+>(function BlockEditor({ onChange, initialMarkdown }, ref) {
+  const [blocks, setBlocks] = React.useState<Block[]>(() =>
+    initialMarkdown?.trim() ? markdownToBlocks(initialMarkdown) : INITIAL_BLOCKS
+  );
   const [slashOpenFor, setSlashOpenFor] = React.useState<string | null>(null);
   const [slashQuery, setSlashQuery] = React.useState("");
 
@@ -101,7 +85,7 @@ export const BlockEditor = React.forwardRef<BlockEditorHandle, { onChange?: (md:
   };
 
   const addBlock = (afterId: string | null, type: BlockType = "paragraph") => {
-    const newBlock: Block = { id: genId(), type, content: "" };
+    const newBlock: Block = { id: `blk-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, type, content: "" };
     if (!afterId) {
       setBlocks((prev) => [...prev, newBlock]);
       return newBlock.id;
@@ -179,7 +163,18 @@ export const BlockEditor = React.forwardRef<BlockEditorHandle, { onChange?: (md:
       .join("\n\n");
   }, [blocks]);
 
-  React.useImperativeHandle(ref, () => ({ toMarkdown }));
+  React.useImperativeHandle(ref, () => ({
+    toMarkdown,
+    loadMarkdown: (md: string) => {
+      setBlocks(md.trim() ? markdownToBlocks(md) : defaultEditorBlocks());
+    },
+  }));
+
+  React.useEffect(() => {
+    if (initialMarkdown?.trim()) {
+      setBlocks(markdownToBlocks(initialMarkdown));
+    }
+  }, [initialMarkdown]);
 
   React.useEffect(() => {
     onChange?.(toMarkdown());
