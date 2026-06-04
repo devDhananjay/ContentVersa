@@ -36,7 +36,7 @@ export async function recordReadingProgress(input: {
   if (existing) {
     const nextProgress = Math.max(existing.progress, progress);
     const nextSeconds = existing.secondsRead + addSeconds;
-    return prisma.readingHistory.update({
+    const row = await prisma.readingHistory.update({
       where: { id: existing.id },
       data: {
         category: input.category,
@@ -46,9 +46,16 @@ export async function recordReadingProgress(input: {
         readAt: new Date(),
       },
     });
+    if (input.userId) {
+      void prisma.profile.updateMany({
+        where: { userId: input.userId },
+        data: { lastActiveAt: new Date() },
+      });
+    }
+    return row;
   }
 
-  return prisma.readingHistory.create({
+  const row = await prisma.readingHistory.create({
     data: {
       userId: input.userId ?? undefined,
       visitorKey: input.visitorKey ?? undefined,
@@ -59,6 +66,13 @@ export async function recordReadingProgress(input: {
       secondsRead: addSeconds,
     },
   });
+  if (input.userId) {
+    void prisma.profile.updateMany({
+      where: { userId: input.userId },
+      data: { lastActiveAt: new Date() },
+    });
+  }
+  return row;
 }
 
 /** @deprecated Use recordReadingProgress */

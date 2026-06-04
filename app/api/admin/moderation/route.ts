@@ -5,6 +5,7 @@ import { requireRole } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { mapDbBlogToBlog } from "@/lib/data/blog-db";
+import { dispatchBlogPublishedNotifications } from "@/lib/notifications/blog-published";
 
 const Schema = z.object({
   blogId: z.string(),
@@ -92,16 +93,8 @@ export async function POST(req: Request) {
             feedback: feedback ?? null,
           },
         }),
-        prisma.notification.create({
-          data: {
-            userId: blog.authorId,
-            type: "APPROVAL",
-            title: "Your blog was approved",
-            message: `“${blog.title}” is now live on ContentVerse.`,
-            link: `/blog/${blog.slug}`,
-          },
-        }),
       ]);
+      void dispatchBlogPublishedNotifications(blogId);
     } else if (decision === "REJECTED") {
       await prisma.$transaction([
         prisma.blog.update({

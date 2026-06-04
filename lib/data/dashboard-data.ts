@@ -60,6 +60,7 @@ export type DashboardNotification = {
   body: string;
   time: string;
   unread: boolean;
+  link?: string | null;
 };
 
 export type DashboardAchievement = {
@@ -107,6 +108,12 @@ const NOTIF_ICON: Record<string, DashboardNotification["icon"]> = {
   SYSTEM: "system",
   TIP_RECEIVED: "like",
   PAYOUT: "achievement",
+  BLOG_PUBLISHED: "approval",
+  RELATED_BLOG: "system",
+  INACTIVE_REMINDER: "system",
+  TRENDING: "like",
+  WEEKLY_DIGEST: "system",
+  CATEGORY_NEW: "system",
 };
 
 function timeAgoShort(date: Date): string {
@@ -264,6 +271,7 @@ export async function getDashboardData(session: SessionUser): Promise<DashboardD
       body: n.message,
       time: timeAgoShort(n.createdAt),
       unread: !n.read,
+      link: n.link,
     })),
     bookmarks: bookmarks
       .map((bk) => (bk.blog ? mapDbBlogToBlog(bk.blog) : null))

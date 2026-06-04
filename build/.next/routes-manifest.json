@@ -144,6 +144,14 @@
       "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/summary(?:/)?$"
     },
     {
+      "page": "/api/categories/[slug]/subscribe",
+      "regex": "^/api/categories/([^/]+?)/subscribe(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/categories/(?<nxtPslug>[^/]+?)/subscribe(?:/)?$"
+    },
+    {
       "page": "/api/polls/[slug]",
       "regex": "^/api/polls/([^/]+?)(?:/)?$",
       "routeKeys": {

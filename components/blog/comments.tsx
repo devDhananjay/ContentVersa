@@ -2,13 +2,10 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Heart, MessageCircle, Send, Loader2, CornerDownRight } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MessageCircle, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { getInitials, timeAgo } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { CommentRow } from "@/components/blog/comment-row";
 
 export type CommentItem = {
   id: string;
@@ -140,99 +137,6 @@ export function Comments({
     comments.reduce((s, c) => s + c.replies.length, 0) ||
     initialCount;
 
-  const CommentRow = ({
-    c,
-    isReply = false,
-  }: {
-    c: CommentItem;
-    isReply?: boolean;
-  }) => (
-    <motion.div
-      layout
-      className={cn(
-        "flex gap-3 rounded-2xl border bg-card p-4",
-        isReply && "ml-8 md:ml-12 border-dashed"
-      )}
-    >
-      <Avatar className="h-9 w-9 shrink-0">
-        <AvatarImage src={c.author.avatar} alt={c.author.name} />
-        <AvatarFallback>{getInitials(c.author.name)}</AvatarFallback>
-      </Avatar>
-      <div className="flex-1 min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="font-semibold text-sm">{c.author.name}</p>
-          <p className="text-xs text-muted-foreground">
-            @{c.author.username} · {timeAgo(c.createdAt)}
-          </p>
-        </div>
-        <p className="mt-2 text-sm leading-relaxed text-foreground/90">{c.content}</p>
-        <div className="mt-3 flex items-center gap-4 text-xs">
-          <button
-            type="button"
-            onClick={() => toggleLike(c.id)}
-            className={cn(
-              "flex items-center gap-1.5 transition-colors",
-              c.likedByMe
-                ? "text-neon-pink"
-                : "text-muted-foreground hover:text-neon-pink"
-            )}
-          >
-            <Heart
-              className={cn("h-3.5 w-3.5", c.likedByMe && "fill-current")}
-            />{" "}
-            {c.likes}
-          </button>
-          {!isReply && (
-            <button
-              type="button"
-              onClick={() => {
-                setReplyTo(replyTo === c.id ? null : c.id);
-                setReplyDraft("");
-              }}
-              className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <CornerDownRight className="h-3.5 w-3.5" /> Reply
-            </button>
-          )}
-        </div>
-        {replyTo === c.id && (
-          <div className="mt-3 space-y-2">
-            <Textarea
-              value={replyDraft}
-              onChange={(e) => setReplyDraft(e.target.value)}
-              placeholder={`Reply to @${c.author.username}…`}
-              className="min-h-[72px] text-sm"
-            />
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="gradient"
-                disabled={posting || !replyDraft.trim()}
-                onClick={() => postComment(replyDraft, c.id)}
-              >
-                {posting ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  "Post reply"
-                )}
-              </Button>
-              <Button size="sm" variant="ghost" onClick={() => setReplyTo(null)}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        )}
-        {c.replies.length > 0 && (
-          <div className="mt-4 space-y-3">
-            {c.replies.map((r) => (
-              <CommentRow key={r.id} c={r} isReply />
-            ))}
-          </div>
-        )}
-      </div>
-    </motion.div>
-  );
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 text-sm font-semibold">
@@ -272,9 +176,7 @@ export function Comments({
         </div>
       </div>
 
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {loading ? (
         <div className="flex justify-center py-8">
@@ -283,7 +185,17 @@ export function Comments({
       ) : (
         <div className="space-y-4">
           {comments.map((c) => (
-            <CommentRow key={c.id} c={c} />
+            <CommentRow
+              key={c.id}
+              comment={c}
+              replyTo={replyTo}
+              replyDraft={replyDraft}
+              posting={posting}
+              onReplyDraftChange={setReplyDraft}
+              onReplyToChange={setReplyTo}
+              onPostReply={postComment}
+              onToggleLike={toggleLike}
+            />
           ))}
           {comments.length === 0 && (
             <p className="text-center text-sm text-muted-foreground py-8">

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   CheckCircle2,
   Heart,
@@ -43,9 +44,8 @@ export function NotificationsList({ items }: { items: DashboardNotification[] })
     <div className="space-y-3">
       {items.map((n) => {
         const Icon = ICON_MAP[n.icon] ?? Bell;
-        return (
+        const inner = (
           <div
-            key={n.id}
             className={cn(
               "flex items-start gap-4 p-4 rounded-2xl border bg-card hover:border-neon-purple/40 transition-colors",
               n.unread && "ring-1 ring-neon-purple/30"
@@ -63,6 +63,14 @@ export function NotificationsList({ items }: { items: DashboardNotification[] })
             </div>
             {n.unread && <div className="h-2 w-2 rounded-full bg-neon-pink shrink-0 mt-2" />}
           </div>
+        );
+
+        return n.link ? (
+          <Link key={n.id} href={n.link} className="block">
+            {inner}
+          </Link>
+        ) : (
+          <div key={n.id}>{inner}</div>
         );
       })}
     </div>

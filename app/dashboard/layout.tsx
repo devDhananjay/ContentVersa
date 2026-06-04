@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
+import { DashboardClientEffects } from "@/components/dashboard/client-effects";
 import { getCurrentUser } from "@/lib/auth";
 import { isAdminRole } from "@/lib/auth/roles";
 import { getDashboardDataCached } from "@/lib/data/dashboard-data";
@@ -27,6 +28,7 @@ export default async function DashboardLayout({
         adminPendingCount={adminPendingCount}
       />
       <div className="flex-1 min-w-0">{children}</div>
+      <DashboardClientEffects />
     </div>
   );
 }
