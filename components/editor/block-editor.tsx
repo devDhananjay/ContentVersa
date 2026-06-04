@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { shouldSkipImageOptimization, uploadImage } from "@/lib/upload";
+import { toYoutubeEmbedUrl } from "@/lib/youtube";
+import { YouTubeEmbed } from "@/components/blog/youtube-embed";
 import {
   defaultEditorBlocks,
   markdownToBlocks,
@@ -152,8 +154,10 @@ export const BlockEditor = React.forwardRef<
             return "```\n" + b.content + "\n```";
           case "image":
             return `![image](${b.content})`;
-          case "embed":
-            return `\n<iframe src="${b.content}" />\n`;
+          case "embed": {
+            const embedUrl = toYoutubeEmbedUrl(b.content) ?? b.content.trim();
+            return `\n<iframe src="${embedUrl}" />\n`;
+          }
           case "callout":
             return `> 💡 ${b.content}`;
           default:
@@ -307,6 +311,10 @@ function BlockRenderer({
 }) {
   if (block.type === "image") {
     return <ImageBlock block={block} onChange={onChange} />;
+  }
+
+  if (block.type === "embed") {
+    return <EmbedBlock block={block} onChange={onChange} />;
   }
 
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -491,6 +499,95 @@ function ImageBlock({
           const f = e.target.files?.[0];
           if (f) handleFile(f);
           e.target.value = "";
+        }}
+      />
+    </div>
+  );
+}
+
+function EmbedBlock({
+  block,
+  onChange,
+}: {
+  block: Block;
+  onChange: (v: string) => void;
+}) {
+  const [showUrl, setShowUrl] = React.useState(false);
+  const embedUrl = toYoutubeEmbedUrl(block.content);
+
+  if (embedUrl) {
+    return (
+      <div className="relative">
+        <YouTubeEmbed src={block.content} className="my-0" />
+        <div className="absolute top-2 right-2 flex gap-1.5">
+          <button
+            type="button"
+            onClick={() => setShowUrl(true)}
+            className="px-2.5 py-1 rounded-full bg-black/60 text-white text-xs backdrop-blur hover:bg-black/80"
+          >
+            Change URL
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            aria-label="Remove video"
+            className="h-7 w-7 rounded-full bg-black/60 text-white text-xs backdrop-blur hover:bg-black/80 flex items-center justify-center"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        {showUrl && (
+          <input
+            id={`block-${block.id}`}
+            type="url"
+            autoFocus
+            defaultValue={block.content}
+            placeholder="https://www.youtube.com/watch?v=…"
+            className="mt-3 w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neon-purple/40"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const v = (e.target as HTMLInputElement).value.trim();
+                if (v) onChange(v);
+                setShowUrl(false);
+              }
+              if (e.key === "Escape") setShowUrl(false);
+            }}
+            onBlur={(e) => {
+              const v = e.target.value.trim();
+              if (v) onChange(v);
+              setShowUrl(false);
+            }}
+          />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      id={`block-${block.id}`}
+      className="rounded-2xl border-2 border-dashed p-6 flex flex-col items-center gap-3 text-center"
+    >
+      <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
+        <Youtube className="h-5 w-5" />
+      </div>
+      <div className="space-y-0.5">
+        <p className="text-sm font-medium">Embed a YouTube video</p>
+        <p className="text-xs text-muted-foreground">
+          Paste a watch, share, or embed link
+        </p>
+      </div>
+      <input
+        type="url"
+        placeholder="https://www.youtube.com/watch?v=…"
+        className="w-full max-w-md rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neon-purple/40"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const v = (e.target as HTMLInputElement).value.trim();
+            if (v) onChange(v);
+          }
         }}
       />
     </div>

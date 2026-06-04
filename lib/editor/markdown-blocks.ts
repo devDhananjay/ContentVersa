@@ -43,8 +43,12 @@ function parseSection(section: string): EditorBlock | EditorBlock[] | null {
   }
 
   if (s.startsWith("<iframe")) {
-    const srcMatch = /src="([^"]+)"/.exec(s);
+    const srcMatch = /src=["']([^"']+)["']/.exec(s);
     return { id: nextBlockId(), type: "embed", content: srcMatch?.[1] || s };
+  }
+
+  if (/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(s)) {
+    return { id: nextBlockId(), type: "embed", content: s };
   }
 
   if (s.startsWith("```")) {

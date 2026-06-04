@@ -2,9 +2,9 @@
   "version": 1,
   "functions": {
     "/api/auth/google/login": {},
+    "/api/auth/google/callback": {},
     "/api/auth/firebase": {},
     "/api/upload": {},
-    "/api/auth/google/callback": {},
     "/uploads/[filename]": {}
   }
 }
