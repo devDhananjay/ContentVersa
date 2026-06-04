@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Users2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdminUsersTable } from "@/components/admin/admin-users-table";
-import { getAdminUsers } from "@/lib/data/admin-data";
+import { getAdminUsers, getPushEnabledUserCount } from "@/lib/data/admin-data";
 import { getCurrentUser } from "@/lib/auth";
 import { isAdminRole } from "@/lib/auth/roles";
 
@@ -13,7 +13,10 @@ export default async function AdminUsersPage() {
     redirect("/dashboard?error=admin_required");
   }
 
-  const users = await getAdminUsers();
+  const [users, pushEnabledCount] = await Promise.all([
+    getAdminUsers(),
+    getPushEnabledUserCount(),
+  ]);
   const isSuperAdmin = session.role === "SUPER_ADMIN";
 
   return (
@@ -35,7 +38,11 @@ export default async function AdminUsersPage() {
         </p>
       </div>
 
-      <AdminUsersTable users={users} isSuperAdmin={isSuperAdmin} />
+      <AdminUsersTable
+        users={users}
+        isSuperAdmin={isSuperAdmin}
+        pushEnabledCount={pushEnabledCount}
+      />
     </div>
   );
 }

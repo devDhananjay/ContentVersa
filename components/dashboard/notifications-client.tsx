@@ -11,6 +11,8 @@ import {
   XCircle,
   Bell,
   Loader2,
+  RefreshCw,
+  FlaskConical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -43,18 +45,49 @@ function normalizeHref(link?: string | null): string | null {
   return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
 }
 
+type VerifyPayload = {
+  database?: boolean;
+  inApp?: {
+    total: number;
+    unread: number;
+    lastAt: string | null;
+    lastType?: string | null;
+    lastTitle?: string | null;
+  };
+  push?: {
+    tokens: number;
+    serverConfigured: boolean;
+    vapidConfigured: boolean;
+  };
+  admin?: { totalLast24h: number; last24hByType: Record<string, number> } | null;
+};
+
 export function NotificationsClient({
   initialItems,
   initialUnread,
+  isSuperAdmin = false,
 }: {
   initialItems: DashboardNotification[];
   initialUnread: number;
+  isSuperAdmin?: boolean;
 }) {
   const router = useRouter();
   const [items, setItems] = React.useState(initialItems);
   const [unread, setUnread] = React.useState(initialUnread);
   const [markingAll, setMarkingAll] = React.useState(false);
   const [openingId, setOpeningId] = React.useState<string | null>(null);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [testing, setTesting] = React.useState(false);
+  const [verify, setVerify] = React.useState<VerifyPayload | null>(null);
+  const [showVerify, setShowVerify] = React.useState(false);
+
+  const loadVerify = React.useCallback(async () => {
+    const res = await fetch("/api/notifications/verify", {
+      credentials: "include",
+    });
+    if (!res.ok) return;
+    setVerify((await res.json()) as VerifyPayload);
+  }, []);
 
   const refresh = React.useCallback(async () => {
     const res = await fetch("/api/notifications", { credentials: "include" });
@@ -66,6 +99,38 @@ export function NotificationsClient({
     setItems(data.data ?? []);
     setUnread(data.unread ?? 0);
   }, []);
+
+  React.useEffect(() => {
+    void refresh();
+    void loadVerify();
+  }, [refresh, loadVerify]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refresh();
+      await loadVerify();
+      router.refresh();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const sendTest = async () => {
+    setTesting(true);
+    try {
+      const res = await fetch("/api/notifications/test", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) return;
+      await refresh();
+      await loadVerify();
+      router.refresh();
+    } finally {
+      setTesting(false);
+    }
+  };
 
   const markAllRead = async () => {
     setMarkingAll(true);
@@ -113,6 +178,84 @@ export function NotificationsClient({
 
   return (
     <div className="space-y-4">
+      <div className="rounded-2xl border bg-muted/30 p-4 text-sm space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-medium text-foreground">Verify notifications</p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={refreshing}
+              onClick={handleRefresh}
+            >
+              {refreshing ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+              ) : (
+                <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+              )}
+              Refresh
+            </Button>
+            {isSuperAdmin && (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={testing}
+                onClick={sendTest}
+              >
+                {testing ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                ) : (
+                  <FlaskConical className="h-3.5 w-3.5 mr-1.5" />
+                )}
+                Send test
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowVerify((v) => !v)}
+            >
+              {showVerify ? "Hide details" : "Details"}
+            </Button>
+          </div>
+        </div>
+        {verify?.inApp && (
+          <p className="text-muted-foreground text-xs">
+            In-app: {verify.inApp.total} total, {verify.inApp.unread} unread
+            {verify.inApp.lastAt
+              ? ` · last ${new Date(verify.inApp.lastAt).toLocaleString()}`
+              : " · none yet — approve a blog or (Super Admin) Send test"}
+          </p>
+        )}
+        {showVerify && verify && (
+          <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+            <li>
+              Push tokens on this account: {verify.push?.tokens ?? 0}
+              {verify.push?.tokens === 0
+                ? " (allow notifications in browser when signed in)"
+                : ""}
+            </li>
+            <li>
+              Server push:{" "}
+              {verify.push?.serverConfigured ? "configured" : "not configured (in-app still works)"}
+            </li>
+            <li>
+              VAPID key: {verify.push?.vapidConfigured ? "yes" : "missing on server"}
+            </li>
+            {verify.admin && (
+              <li>
+                Admin — notifications sent site-wide in last 24h:{" "}
+                {verify.admin.totalLast24h}{" "}
+                {Object.keys(verify.admin.last24hByType).length > 0 &&
+                  `(${Object.entries(verify.admin.last24hByType)
+                    .map(([t, c]) => `${t}: ${c}`)
+                    .join(", ")})`}
+              </li>
+            )}
+          </ul>
+        )}
+      </div>
+
       <div className="flex justify-end">
         <Button
           variant="outline"

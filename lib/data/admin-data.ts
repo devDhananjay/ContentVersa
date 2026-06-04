@@ -42,6 +42,9 @@ export type AdminUserRow = {
   blogCount: number;
   followerCount: number;
   isVerified: boolean;
+  /** Browser push allowed — at least one FCM token saved */
+  pushEnabled: boolean;
+  pushDeviceCount: number;
 };
 
 export type AdminBlogRow = {
@@ -189,7 +192,7 @@ export async function getAdminUsers(): Promise<AdminUserRow[]> {
   const users = await prisma.user.findMany({
     include: {
       profile: true,
-      _count: { select: { blogs: true, followers: true } },
+      _count: { select: { blogs: true, followers: true, pushTokens: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -207,7 +210,18 @@ export async function getAdminUsers(): Promise<AdminUserRow[]> {
     blogCount: u._count.blogs,
     followerCount: u._count.followers,
     isVerified: u.profile?.isVerified ?? false,
+    pushEnabled: u._count.pushTokens > 0,
+    pushDeviceCount: u._count.pushTokens,
   }));
+}
+
+/** Users who saved at least one browser push token (notification permission granted). */
+export async function getPushEnabledUserCount(): Promise<number> {
+  if (!isDatabaseConfigured()) return 0;
+  const rows = await prisma.pushToken.groupBy({
+    by: ["userId"],
+  });
+  return rows.length;
 }
 
 export async function getAdminUserDetail(userId: string): Promise<AdminUserDetail | null> {
@@ -224,7 +238,9 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
         },
         orderBy: { createdAt: "desc" },
       },
-      _count: { select: { blogs: true, followers: true, following: true } },
+      _count: {
+        select: { blogs: true, followers: true, following: true, pushTokens: true },
+      },
     },
   });
 
@@ -244,6 +260,8 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     followerCount: user._count.followers,
     followingCount: user._count.following,
     isVerified: user.profile?.isVerified ?? false,
+    pushEnabled: user._count.pushTokens > 0,
+    pushDeviceCount: user._count.pushTokens,
     bio: user.profile?.bio ?? null,
     headline: user.profile?.headline ?? null,
     totalViews: user.profile?.totalViews ?? 0,

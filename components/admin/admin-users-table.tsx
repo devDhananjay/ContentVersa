@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, BadgeCheck, Eye, Loader2 } from "lucide-react";
+import { Search, BadgeCheck, Eye, Loader2, Bell, BellOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -85,9 +85,11 @@ function RoleSelect({
 export function AdminUsersTable({
   users,
   isSuperAdmin,
+  pushEnabledCount,
 }: {
   users: AdminUserRow[];
   isSuperAdmin: boolean;
+  pushEnabledCount: number;
 }) {
   const [q, setQ] = React.useState("");
   const filtered = users.filter(
@@ -112,8 +114,18 @@ export function AdminUsersTable({
         {isSuperAdmin && <AddUserDialog isSuperAdmin={isSuperAdmin} />}
       </div>
 
+      <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
+        <Badge variant="neon" className="gap-1.5 py-1.5 px-3">
+          <Bell className="h-3.5 w-3.5" />
+          {pushEnabledCount} / {users.length} users allowed browser push
+        </Badge>
+        <span className="text-xs text-muted-foreground">
+          Shown per user when they grant permission and a device token is saved.
+        </span>
+      </div>
+
       <div className="rounded-2xl border bg-card overflow-hidden overflow-x-auto">
-        <table className="w-full min-w-[800px]">
+        <table className="w-full min-w-[920px]">
           <thead className="text-left text-xs uppercase tracking-widest text-muted-foreground bg-muted/40">
             <tr>
               <th className="p-4">User</th>
@@ -121,6 +133,7 @@ export function AdminUsersTable({
               <th className="p-4">Role</th>
               <th className="p-4">Blogs</th>
               <th className="p-4">Followers</th>
+              <th className="p-4">Push alerts</th>
               <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -163,6 +176,20 @@ export function AdminUsersTable({
                 </td>
                 <td className="p-4 font-semibold">{u.blogCount}</td>
                 <td className="p-4">{formatNumber(u.followerCount)}</td>
+                <td className="p-4">
+                  {u.pushEnabled ? (
+                    <Badge variant="success" className="gap-1" title={`${u.pushDeviceCount} device(s)`}>
+                      <Bell className="h-3 w-3" />
+                      Allowed
+                      {u.pushDeviceCount > 1 ? ` (${u.pushDeviceCount})` : ""}
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="gap-1 text-muted-foreground">
+                      <BellOff className="h-3 w-3" />
+                      Off
+                    </Badge>
+                  )}
+                </td>
                 <td className="p-4 text-right">
                   <Link href={`/admin/users/${u.id}`}>
                     <Button variant="outline" size="sm" className="gap-1">

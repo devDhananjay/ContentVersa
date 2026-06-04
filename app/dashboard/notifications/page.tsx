@@ -29,7 +29,11 @@ export default async function NotificationsPage() {
         </p>
       </div>
 
-      <NotificationsClient initialItems={items} initialUnread={unread} />
+      <NotificationsClient
+        initialItems={items}
+        initialUnread={unread}
+        isSuperAdmin={session.role === "SUPER_ADMIN"}
+      />
     </div>
   );
 }
