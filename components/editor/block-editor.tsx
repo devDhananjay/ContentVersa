@@ -273,6 +273,29 @@ export const BlockEditor = React.forwardRef<
   );
 });
 
+const RESIZABLE_BLOCK_TYPES = new Set<BlockType>([
+  "paragraph",
+  "list",
+  "ordered-list",
+  "quote",
+  "code",
+  "callout",
+]);
+
+function useAutoResizeTextarea(
+  ref: React.RefObject<HTMLTextAreaElement | null>,
+  value: string,
+  enabled: boolean
+) {
+  React.useLayoutEffect(() => {
+    if (!enabled) return;
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.max(el.scrollHeight, 48)}px`;
+  }, [ref, value, enabled]);
+}
+
 function BlockRenderer({
   block,
   onChange,
@@ -286,24 +309,39 @@ function BlockRenderer({
     return <ImageBlock block={block} onChange={onChange} />;
   }
 
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const resizable = RESIZABLE_BLOCK_TYPES.has(block.type);
+  useAutoResizeTextarea(textareaRef, block.content, resizable);
+
   const className = cn(
-    "w-full bg-transparent border-0 outline-none resize-none placeholder:text-muted-foreground/60",
+    "w-full bg-transparent border-0 outline-none placeholder:text-muted-foreground/60",
+    resizable
+      ? "resize-y min-h-[3rem] overflow-auto"
+      : "resize-none",
     block.type === "heading-1" && "font-display font-extrabold text-4xl",
     block.type === "heading-2" && "font-display font-bold text-2xl",
     block.type === "quote" && "italic text-foreground/80 border-l-4 border-neon-purple pl-4",
-    block.type === "code" && "font-mono text-sm bg-zinc-950 text-zinc-100 p-4 rounded-xl",
+    block.type === "code" && "font-mono text-sm bg-zinc-950 text-zinc-100 p-4 rounded-xl min-h-[6rem]",
     block.type === "callout" && "bg-neon-purple/10 border border-neon-purple/30 rounded-xl px-4 py-3",
-    block.type === "paragraph" && "text-base leading-relaxed"
+    block.type === "paragraph" && "text-base leading-relaxed min-h-[4rem]"
   );
+
+  const defaultRows =
+    block.type === "heading-1" || block.type === "heading-2"
+      ? 1
+      : resizable
+        ? Math.max(3, block.content.split("\n").length)
+        : Math.max(1, block.content.split("\n").length);
 
   return (
     <textarea
+      ref={textareaRef}
       id={`block-${block.id}`}
       placeholder={placeholders[block.type]}
       value={block.content}
       onChange={(e) => onChange(e.target.value)}
       onKeyDown={onKeyDown}
-      rows={block.type === "heading-1" || block.type === "heading-2" ? 1 : Math.max(1, block.content.split("\n").length)}
+      rows={defaultRows}
       className={className}
     />
   );

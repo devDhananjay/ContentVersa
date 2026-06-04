@@ -3,8 +3,8 @@
   "functions": {
     "/api/auth/google/login": {},
     "/api/auth/firebase": {},
-    "/api/auth/google/callback": {},
     "/api/upload": {},
+    "/api/auth/google/callback": {},
     "/uploads/[filename]": {}
   }
 }

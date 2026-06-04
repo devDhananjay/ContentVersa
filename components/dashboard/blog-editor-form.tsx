@@ -482,7 +482,7 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
                 placeholder="Add a short, punchy excerpt that hooks readers…"
                 value={excerpt}
                 onChange={(e) => setExcerpt(e.target.value)}
-                className="text-lg border-0 px-0 focus-visible:ring-0 resize-none"
+                className="text-lg resize-y min-h-[88px]"
               />
 
               <div className="border-t pt-6 pl-2 md:pl-12">
