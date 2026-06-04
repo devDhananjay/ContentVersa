@@ -32,6 +32,9 @@ yarn-error.log*
 .env*.local
 .env.vercel.check
 
+# Firebase service account (never commit)
+/secrets/
+
 # vercel
 .vercel
 

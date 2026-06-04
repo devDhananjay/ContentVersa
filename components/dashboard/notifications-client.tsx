@@ -57,7 +57,9 @@ type VerifyPayload = {
   push?: {
     tokens: number;
     serverConfigured: boolean;
+    serverReason?: string | null;
     vapidConfigured: boolean;
+    clientConfigured?: boolean;
   };
   admin?: { totalLast24h: number; last24hByType: Record<string, number> } | null;
 };
@@ -236,11 +238,19 @@ export function NotificationsClient({
                 : ""}
             </li>
             <li>
-              Server push:{" "}
-              {verify.push?.serverConfigured ? "configured" : "not configured (in-app still works)"}
+              Browser Firebase (VAPID):{" "}
+              {verify.push?.vapidConfigured ? "yes" : "missing on server"}
             </li>
             <li>
-              VAPID key: {verify.push?.vapidConfigured ? "yes" : "missing on server"}
+              Server push (FCM send):{" "}
+              {verify.push?.serverConfigured
+                ? "configured"
+                : verify.push?.serverReason === "empty" ||
+                    verify.push?.serverReason === "missing"
+                  ? "not set — add FIREBASE_ADMIN_CREDENTIALS on server (service account JSON)"
+                  : verify.push?.serverReason === "invalid_json"
+                    ? "invalid JSON in FIREBASE_ADMIN_CREDENTIALS"
+                    : "not configured (in-app still works)"}
             </li>
             {verify.admin && (
               <li>

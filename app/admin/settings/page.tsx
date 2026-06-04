@@ -1,6 +1,7 @@
 "use client";
 
 import { Save } from "lucide-react";
+import { FirebasePushSetup } from "@/components/admin/firebase-push-setup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +19,8 @@ export default function CMSSettingsPage() {
       </p>
 
       <div className="mt-8 space-y-6">
+        <FirebasePushSetup />
+
         <section className="rounded-2xl border bg-card p-6">
           <h2 className="font-display text-xl font-bold mb-5">Site identity</h2>
           <div className="space-y-4">

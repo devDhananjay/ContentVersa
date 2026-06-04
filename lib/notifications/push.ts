@@ -1,8 +1,13 @@
 /**
  * Firebase Cloud Messaging (optional).
- * Requires FIREBASE_ADMIN_CREDENTIALS (service account JSON) on the server.
+ * Requires service account JSON (FIREBASE_ADMIN_CREDENTIALS or secrets file).
  * Browser registration uses NEXT_PUBLIC_FIREBASE_VAPID_KEY.
  */
+
+import {
+  getFirebaseAdminCredentials,
+  loadFirebaseAdminCredentialsJson,
+} from "@/lib/firebase-admin-credentials";
 
 type PushPayload = {
   title: string;
@@ -12,16 +17,41 @@ type PushPayload = {
 
 let warnedNoCredentials = false;
 
+/** Why server-side FCM send is unavailable (empty env, bad JSON, etc.). */
+export function getFirebaseAdminPushStatus(): {
+  configured: boolean;
+  reason?: "missing" | "empty" | "invalid_json" | "incomplete";
+  source?: "env" | "file";
+} {
+  const fromEnv = process.env.FIREBASE_ADMIN_CREDENTIALS?.trim();
+  if (fromEnv && fromEnv !== '""' && fromEnv !== "''") {
+    const creds = getFirebaseAdminCredentials();
+    if (creds) return { configured: true, source: "env" };
+    try {
+      JSON.parse(fromEnv);
+      return { configured: false, reason: "incomplete", source: "env" };
+    } catch {
+      return { configured: false, reason: "invalid_json", source: "env" };
+    }
+  }
+
+  const raw = loadFirebaseAdminCredentialsJson();
+  if (!raw) return { configured: false, reason: "missing" };
+  const creds = getFirebaseAdminCredentials();
+  if (creds) return { configured: true, source: "file" };
+  try {
+    JSON.parse(raw);
+    return { configured: false, reason: "incomplete", source: "file" };
+  } catch {
+    return { configured: false, reason: "invalid_json", source: "file" };
+  }
+}
+
 async function getAccessToken(): Promise<string | null> {
-  const raw = process.env.FIREBASE_ADMIN_CREDENTIALS?.trim();
-  if (!raw) return null;
+  const creds = getFirebaseAdminCredentials();
+  if (!creds) return null;
 
   try {
-    const creds = JSON.parse(raw) as {
-      client_email: string;
-      private_key: string;
-      project_id?: string;
-    };
     const now = Math.floor(Date.now() / 1000);
     const header = Buffer.from(
       JSON.stringify({ alg: "RS256", typ: "JWT" })
@@ -76,30 +106,22 @@ export async function sendPushToUser(userId: string, payload: PushPayload) {
     if (!warnedNoCredentials) {
       warnedNoCredentials = true;
       console.warn(
-        "[fcm] FIREBASE_ADMIN_CREDENTIALS not set — in-app notifications still work; push disabled."
+        "[fcm] Firebase admin credentials missing — in-app notifications still work; push disabled."
       );
     }
     return;
   }
 
+  const creds = getFirebaseAdminCredentials();
   const projectId =
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
-    (() => {
-      try {
-        return JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS || "{}")
-          .project_id;
-      } catch {
-        return null;
-      }
-    })();
-
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || creds?.project_id;
   if (!projectId) return;
 
   const url = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
 
   for (const { token } of tokens) {
     try {
-      await fetch(url, {
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -120,6 +142,10 @@ export async function sendPushToUser(userId: string, payload: PushPayload) {
           },
         }),
       });
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        console.error("[fcm] send failed", res.status, errText.slice(0, 200));
+      }
     } catch (err) {
       console.error("[fcm] send failed", err);
     }

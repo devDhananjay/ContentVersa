@@ -1,0 +1,1 @@
+"use strict";exports.id=373,exports.ids=[373],exports.modules={70373:(a,b,c)=>{c.d(b,{isDatabaseConfigured:()=>g,prisma:()=>f});var d=c(96330);let e=!!process.env.DATABASE_URL,f=global.prisma??new d.PrismaClient({log:e?["error"]:[]}),g=()=>e}};

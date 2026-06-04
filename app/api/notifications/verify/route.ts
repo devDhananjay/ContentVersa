@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { isAdminUser } from "@/lib/auth/roles";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { getFirebaseAdminPushStatus } from "@/lib/notifications/push";
 
 /** Diagnostic payload for verifying notification delivery (in-app vs push). */
 export async function GET() {
@@ -50,6 +51,8 @@ export async function GET() {
       };
     }
 
+    const adminPush = getFirebaseAdminPushStatus();
+
     return NextResponse.json({
       database: true,
       inApp: {
@@ -61,8 +64,15 @@ export async function GET() {
       },
       push: {
         tokens: pushTokens,
-        serverConfigured: Boolean(process.env.FIREBASE_ADMIN_CREDENTIALS),
-        vapidConfigured: Boolean(process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY),
+        serverConfigured: adminPush.configured,
+        serverReason: adminPush.reason ?? null,
+        vapidConfigured: Boolean(
+          process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY?.trim()
+        ),
+        clientConfigured: Boolean(
+          process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.trim() &&
+            process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID?.trim()
+        ),
       },
       admin,
       hints: [
