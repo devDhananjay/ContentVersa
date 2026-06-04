@@ -24,6 +24,7 @@ import { getBlogEngagement } from "@/lib/data/blog-engagement";
 import { getCurrentUser } from "@/lib/auth";
 import { resolveUserId } from "@/lib/auth/resolve-user-id";
 import { isDatabaseConfigured } from "@/lib/prisma";
+import { shouldSkipImageOptimization } from "@/lib/upload";
 import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
 import { buildMetadata, articleJsonLd, SITE } from "@/lib/seo";
 import { CATEGORIES } from "@/lib/data/categories";
@@ -82,8 +83,7 @@ export default async function BlogPage({
     authorName: blog.author.name,
   });
 
-  const coverUnoptimized =
-    blog.coverImage.startsWith("/uploads/") || blog.coverImage.startsWith("data:");
+  const coverUnoptimized = shouldSkipImageOptimization(blog.coverImage);
 
   return (
     <>

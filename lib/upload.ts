@@ -1,5 +1,10 @@
 // Client-side helper for uploading images to /api/upload
 
+/** Self-hosted /uploads and data URLs must bypass Next.js image optimizer (400 on EC2). */
+export function shouldSkipImageOptimization(src: string): boolean {
+  return src.startsWith("/uploads/") || src.startsWith("data:");
+}
+
 export interface UploadedImage {
   url: string;
   size: number;
@@ -20,14 +25,20 @@ export async function uploadImage(file: File): Promise<UploadedImage> {
   fd.append("file", file);
 
   const res = await fetch("/api/upload", { method: "POST", body: fd });
-  const data = (await res.json().catch(() => ({}))) as {
-    url?: string;
-    size?: number;
-    type?: string;
-    error?: string;
-  };
+  const raw = await res.text();
+  let data: { url?: string; size?: number; type?: string; error?: string } = {};
+  try {
+    data = JSON.parse(raw) as typeof data;
+  } catch {
+    /* nginx HTML error page */
+  }
 
   if (!res.ok || !data.url) {
+    if (res.status === 413) {
+      throw new Error(
+        "Image too large for the server (max 5MB). Try a smaller file or compress the image."
+      );
+    }
     throw new Error(data.error || `Upload failed (${res.status})`);
   }
 

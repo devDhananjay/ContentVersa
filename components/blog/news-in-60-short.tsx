@@ -11,6 +11,7 @@ import {
   SHORTS_SUMMARY_MIN_WORDS,
 } from "@/lib/utils";
 import Image from "next/image";
+import { shouldSkipImageOptimization } from "@/lib/upload";
 
 type Props = {
   blogSlug: string;
@@ -125,9 +126,7 @@ export function NewsIn60Short({
               fill
               className="object-cover"
               sizes="576px"
-              unoptimized={
-                coverSrc.startsWith("/uploads/") || coverSrc.startsWith("data:")
-              }
+              unoptimized={shouldSkipImageOptimization(coverSrc)}
             />
           </div>
 

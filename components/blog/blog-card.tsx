@@ -11,6 +11,7 @@ import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
 import { CATEGORIES } from "@/lib/data/categories";
 import type { Blog } from "@/lib/data/blogs";
 import { cn } from "@/lib/utils";
+import { shouldSkipImageOptimization } from "@/lib/upload";
 
 interface BlogCardProps {
   blog: Blog;
@@ -20,6 +21,7 @@ interface BlogCardProps {
 
 export function BlogCard({ blog, variant = "default", index = 0 }: BlogCardProps) {
   const category = CATEGORIES.find((c) => c.slug === blog.category);
+  const coverUnoptimized = shouldSkipImageOptimization(blog.coverImage);
 
   if (variant === "featured") {
     return (
@@ -39,6 +41,7 @@ export function BlogCard({ blog, variant = "default", index = 0 }: BlogCardProps
               priority
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
+              unoptimized={coverUnoptimized}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
             <div className="absolute top-4 left-4 flex gap-2">
@@ -86,7 +89,7 @@ export function BlogCard({ blog, variant = "default", index = 0 }: BlogCardProps
       >
         <Link href={`/blog/${blog.slug}`} className="relative shrink-0">
           <div className="relative h-24 w-24 md:h-28 md:w-28 overflow-hidden rounded-xl">
-            <Image src={blog.coverImage} alt={blog.title} fill sizes="120px" className="object-cover" />
+            <Image src={blog.coverImage} alt={blog.title} fill sizes="120px" className="object-cover" unoptimized={coverUnoptimized} />
           </div>
         </Link>
         <div className="flex-1 min-w-0">
@@ -126,7 +129,7 @@ export function BlogCard({ blog, variant = "default", index = 0 }: BlogCardProps
         className="group flex items-start gap-3 p-3 rounded-xl hover:bg-muted/40 transition-colors"
       >
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
-          <Image src={blog.coverImage} alt={blog.title} fill sizes="64px" className="object-cover" />
+          <Image src={blog.coverImage} alt={blog.title} fill sizes="64px" className="object-cover" unoptimized={coverUnoptimized} />
         </div>
         <div className="min-w-0 flex-1">
           <h4 className="font-medium text-sm line-clamp-2 leading-snug group-hover:text-foreground">
@@ -157,6 +160,7 @@ export function BlogCard({ blog, variant = "default", index = 0 }: BlogCardProps
             fill
             sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
+            unoptimized={coverUnoptimized}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="absolute top-3 left-3 flex gap-2">

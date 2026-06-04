@@ -238,6 +238,8 @@ ContentVerse/
 | Prisma error | `npm run db:generate` |
 | Admin access nahi | `npm run db:promote-admin` |
 | Upload fail local | `BLOB_READ_WRITE_TOKEN` set karo (Vercel Blob) |
+| Upload **413** on production | Nginx default 1MB — copy `deploy/nginx/upload-limit.conf` to `/etc/nginx/conf.d/` then `sudo nginx -t && sudo systemctl reload nginx` |
+| Cover image **404** (`/uploads/...`) | Standalone Next only serves build-time `public` files. On EC2: set `UPLOAD_DIR=/home/ec2-user/ContentVersa/data/uploads`, add nginx `location ^~ /uploads/` (see `deploy/nginx/uploads-static.conf`), `pm2 restart next-app` after deploy |
 
 ---
 

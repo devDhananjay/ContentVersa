@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { put } from "@vercel/blob";
+import { getUploadsDirectory } from "@/lib/storage/upload-dir";
 
 export function isBlobStorageConfigured() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
@@ -30,7 +31,7 @@ export async function saveUploadedImage(
     );
   }
 
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
+  const uploadsDir = getUploadsDirectory();
   await mkdir(uploadsDir, { recursive: true });
   await writeFile(path.join(uploadsDir, filename), buffer);
   return { url: `/uploads/${filename}` };

@@ -23,7 +23,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { uploadImage } from "@/lib/upload";
+import { shouldSkipImageOptimization, uploadImage } from "@/lib/upload";
 
 type BlockType =
   | "paragraph"
@@ -349,7 +349,7 @@ function ImageBlock({
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 768px"
-            unoptimized={block.content.startsWith("data:")}
+            unoptimized={shouldSkipImageOptimization(block.content)}
           />
         </div>
         <div className="absolute top-2 right-2 flex gap-1.5">

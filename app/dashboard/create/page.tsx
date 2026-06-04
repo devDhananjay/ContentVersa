@@ -31,7 +31,7 @@ import { CATEGORIES } from "@/lib/data/categories";
 import { BlockEditor, type BlockEditorHandle } from "@/components/editor/block-editor";
 import { renderMarkdown } from "@/components/blog/markdown";
 import { readingTime } from "@/lib/utils";
-import { uploadImage } from "@/lib/upload";
+import { shouldSkipImageOptimization, uploadImage } from "@/lib/upload";
 import { getSiteHostname } from "@/lib/site-config";
 import { useRouter } from "next/navigation";
 import { AiAssistPanel } from "@/components/dashboard/ai-assist-panel";
@@ -201,9 +201,7 @@ export default function CreatePage() {
                     fill
                     className="object-cover"
                     sizes="100vw"
-                    unoptimized={
-                      cover.startsWith("data:") || cover.startsWith("/uploads/")
-                    }
+                    unoptimized={shouldSkipImageOptimization(cover)}
                   />
                   <div className="absolute top-3 right-3 flex gap-2">
                     <button

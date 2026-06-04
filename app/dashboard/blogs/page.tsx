@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { shouldSkipImageOptimization } from "@/lib/upload";
 import { redirect } from "next/navigation";
 import { Edit3, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -28,10 +29,7 @@ function Row({ blog }: { blog: DashboardBlogRow }) {
             fill
             sizes="96px"
             className="object-cover"
-            unoptimized={
-              blog.coverImage.startsWith("/uploads/") ||
-              blog.coverImage.startsWith("data:")
-            }
+            unoptimized={shouldSkipImageOptimization(blog.coverImage)}
           />
         ) : null}
       </div>
