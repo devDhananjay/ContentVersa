@@ -201,3 +201,41 @@ export async function PATCH(
     return NextResponse.json({ error: "Failed to update blog" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _req: Request,
+  ctx: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await requireUser();
+    if (!isDatabaseConfigured()) {
+      return NextResponse.json({ error: "Database not configured" }, { status: 503 });
+    }
+
+    const authorId = await requireUserId(session);
+    const { id } = await ctx.params;
+    const existing = await getOwnedBlog(id, authorId);
+    if (!existing) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+
+    await prisma.$transaction([
+      prisma.poll.deleteMany({ where: { blogId: id } }),
+      prisma.blog.delete({ where: { id } }),
+    ]);
+
+    revalidatePath("/dashboard/blogs");
+    revalidatePath("/dashboard");
+    revalidatePath("/blogs");
+    revalidatePath("/");
+    revalidatePath(`/blog/${existing.slug}`);
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    if (err instanceof Error && err.message === "UNAUTHENTICATED") {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+    }
+    console.error("[blogs mine DELETE]", err);
+    return NextResponse.json({ error: "Failed to delete blog" }, { status: 500 });
+  }
+}

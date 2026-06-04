@@ -6,6 +6,7 @@ import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
 import { MobileNav } from "@/components/site/mobile-nav";
 import { AppEffects } from "@/components/app-effects";
+import { Toaster } from "sonner";
 import { buildMetadata } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -43,6 +44,7 @@ export default function RootLayout({
           <Footer />
           <MobileNav />
           <AppEffects />
+          <Toaster richColors position="top-center" closeButton />
         </ThemeProvider>
       </body>
     </html>
