@@ -113,4 +113,10 @@ export async function dispatchBlogPublishedNotifications(blogId: string) {
   if (payloads.length) {
     await createUserNotificationsBulk(payloads);
   }
+
+  // Ensure author + audience alerts always have a deep link when possible
+  await prisma.notification.updateMany({
+    where: { userId: blog.authorId, link: null, message: { contains: blog.title } },
+    data: { link },
+  });
 }

@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   PenSquare,
-  Bell,
   Menu,
   X,
   Compass,
@@ -19,9 +18,9 @@ import { Logo } from "./logo";
 import { UserNav, MobileUserNav } from "@/components/auth/user-nav";
 import { AdminViewButton } from "@/components/auth/admin-view-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -101,15 +100,7 @@ export function Navbar() {
               Write
             </Button>
           </Link>
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <Badge
-              variant="pink"
-              className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full px-1 py-0 text-[10px]"
-            >
-              3
-            </Badge>
-          </Button>
+          <NotificationBell />
           <ThemeToggle />
           <AdminViewButton variant="outline" />
           <UserNav />

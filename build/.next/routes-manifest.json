@@ -366,6 +366,12 @@
       "namedRegex": "^/dashboard/settings(?:/)?$"
     },
     {
+      "page": "/firebase-messaging-sw.js",
+      "regex": "^/firebase\\-messaging\\-sw\\.js(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/firebase\\-messaging\\-sw\\.js(?:/)?$"
+    },
+    {
       "page": "/leaderboard",
       "regex": "^/leaderboard(?:/)?$",
       "routeKeys": {},
