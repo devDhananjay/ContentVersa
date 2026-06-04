@@ -1,6 +1,9 @@
 "use client";
 
-import { getFirebaseApp, isFirebaseConfigured } from "@/lib/firebase";
+import {
+  getFirebaseMessagingApp,
+  loadFirebasePublicConfig,
+} from "@/lib/firebase-config-client";
 
 type PushResult = { token: string | null; error?: string };
 let messagingInit: Promise<PushResult> | null = null;
@@ -9,59 +12,74 @@ export function resetPushRegistration() {
   messagingInit = null;
 }
 
-/** Request browser notification permission and register FCM token (needs user gesture in Safari). */
-export async function registerFirebasePushToken(): Promise<{
-  token: string | null;
-  error?: string;
-}> {
-  if (typeof window === "undefined" || !isFirebaseConfigured()) {
-    return { token: null, error: "Firebase is not configured." };
+/**
+ * Register FCM push token.
+ * - permission already "granted": no browser prompt, silent register
+ * - permission "default": shows native allow/deny (call on site open)
+ * - permission "denied": returns without prompting
+ */
+export async function registerFirebasePushToken(options?: {
+  askPermission?: boolean;
+}): Promise<PushResult> {
+  if (typeof window === "undefined") {
+    return { token: null, error: "Not in browser." };
   }
   if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-    return { token: null, error: "This browser does not support push notifications." };
+    return { token: null, error: "Push not supported in this browser." };
   }
 
-  const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY?.trim();
-  if (!vapidKey) {
-    return { token: null, error: "VAPID key is missing on the server." };
+  const config = await loadFirebasePublicConfig();
+  if (!config?.vapidKey) {
+    return { token: null, error: "Firebase push is not configured on the server." };
   }
 
-  resetPushRegistration();
+  const askPermission = options?.askPermission !== false;
+  let permission = Notification.permission;
+
+  if (permission === "denied") {
+    return { token: null, error: "denied" };
+  }
+
+  if (permission === "default" && askPermission) {
+    permission = await Notification.requestPermission();
+  }
+
+  if (permission !== "granted") {
+    return {
+      token: null,
+      error: permission === "denied" ? "denied" : "not-granted",
+    };
+  }
+
+  if (messagingInit) return messagingInit;
 
   messagingInit = (async () => {
     try {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        return {
-          token: null,
-          error:
-            permission === "denied"
-              ? "Notifications blocked. Enable them in Safari → Settings → Websites → Notifications."
-              : "Notification permission was not granted.",
-        };
-      }
-
       const registration = await navigator.serviceWorker.register(
         "/firebase-messaging-sw.js",
         { scope: "/" }
       );
       await navigator.serviceWorker.ready;
 
+      const app = await getFirebaseMessagingApp();
+      if (!app) {
+        return { token: null, error: "Firebase app failed to initialize." };
+      }
+
       const { getMessaging, getToken, isSupported } = await import(
         "firebase/messaging"
       );
-      const supported = await isSupported();
-      if (!supported) {
-        return { token: null, error: "Firebase Messaging is not supported in this browser." };
+      if (!(await isSupported())) {
+        return { token: null, error: "Firebase Messaging not supported here." };
       }
 
-      const messaging = getMessaging(getFirebaseApp());
+      const messaging = getMessaging(app);
       const token = await getToken(messaging, {
-        vapidKey,
+        vapidKey: config.vapidKey,
         serviceWorkerRegistration: registration,
       });
       if (!token) {
-        return { token: null, error: "Could not get FCM token. Check Firebase Cloud Messaging setup." };
+        return { token: null, error: "Could not obtain FCM token." };
       }
 
       const res = await fetch("/api/notifications/push-token", {
@@ -71,16 +89,18 @@ export async function registerFirebasePushToken(): Promise<{
         body: JSON.stringify({ token }),
       });
       if (!res.ok) {
-        return { token: null, error: "Failed to save push token on server." };
+        return { token: null, error: "Failed to save token." };
       }
 
       return { token };
     } catch (err) {
-      console.warn("[fcm] registration failed", err);
+      console.warn("[fcm]", err);
       return {
         token: null,
-        error: err instanceof Error ? err.message : "Push registration failed.",
+        error: err instanceof Error ? err.message : "Registration failed.",
       };
+    } finally {
+      messagingInit = null;
     }
   })();
 

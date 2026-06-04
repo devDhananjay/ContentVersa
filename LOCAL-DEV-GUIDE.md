@@ -207,6 +207,24 @@ git push origin main
 
 Production `.env` alag hai — kabhi `.env` Git par push mat karo.
 
+### Notification cron (EC2)
+
+`.env` mein `CRON_SECRET` aur `NEXT_PUBLIC_FIREBASE_VAPID_KEY` set karo. Phir:
+
+```bash
+chmod +x scripts/cron-notifications.sh
+sudo yum install -y cronie   # pehli baar
+sudo systemctl enable --now crond
+
+# Crontab (UTC time — India = UTC+5:30)
+crontab -e
+# 0 10 * * *   .../scripts/cron-notifications.sh inactive
+# 0 18 * * *   .../scripts/cron-notifications.sh trending
+# 0 9 * * 5    .../scripts/cron-notifications.sh weekly
+```
+
+Manual test: `./scripts/cron-notifications.sh trending`
+
 ---
 
 ## 7. Frontend vs Backend — quick map
@@ -240,6 +258,7 @@ ContentVerse/
 | Upload fail local | `BLOB_READ_WRITE_TOKEN` set karo (Vercel Blob) |
 | Upload **413** on production | Nginx default 1MB — copy `deploy/nginx/upload-limit.conf` to `/etc/nginx/conf.d/` then `sudo nginx -t && sudo systemctl reload nginx` |
 | Cover image **404** (`/uploads/...`) | Standalone Next only serves build-time `public` files. On EC2: set `UPLOAD_DIR=/home/ec2-user/ContentVersa/data/uploads`, add nginx `location ^~ /uploads/` (see `deploy/nginx/uploads-static.conf`), `pm2 restart next-app` after deploy |
+| Site **502** / PM2 `errored` | Do **not** symlink `build/public/uploads` → `data/uploads` (causes ELOOP). Use `UPLOAD_DIR` only; keep `build/public/uploads` as an empty folder. Remove `data/uploads/uploads` if it exists. |
 
 ---
 

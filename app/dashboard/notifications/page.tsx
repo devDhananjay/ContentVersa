@@ -24,7 +24,8 @@ export default async function NotificationsPage() {
           )}
         </h1>
         <p className="text-muted-foreground mt-1">
-          Tap a notification to open the article or page. Enable browser alerts below.
+          Tap a notification to open the article or page. Browser alerts are requested when you
+          sign in (Safari may ask once — allow to see contentverse.co.in in notification settings).
         </p>
       </div>
 

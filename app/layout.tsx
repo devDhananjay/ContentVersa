@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
 import { MobileNav } from "@/components/site/mobile-nav";
+import { AppEffects } from "@/components/app-effects";
 import { buildMetadata } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -41,6 +42,7 @@ export default function RootLayout({
           <main className="flex-1 pt-16 pb-24 md:pb-0">{children}</main>
           <Footer />
           <MobileNav />
+          <AppEffects />
         </ThemeProvider>
       </body>
     </html>

@@ -15,7 +15,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { DashboardNotification } from "@/lib/data/dashboard-data";
-import { EnablePushButton } from "@/components/notifications/enable-push-button";
 
 const ICON_MAP = {
   approval: CheckCircle2,
@@ -114,14 +113,10 @@ export function NotificationsClient({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <EnablePushButton onEnabled={refresh} />
-        </div>
+      <div className="flex justify-end">
         <Button
           variant="outline"
           size="sm"
-          className="shrink-0"
           disabled={markingAll || unread === 0}
           onClick={markAllRead}
         >
