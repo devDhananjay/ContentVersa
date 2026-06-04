@@ -15,6 +15,7 @@ const Schema = z.object({
     "generate-image",
     "expand-thesis",
     "generate-from-title",
+    "suggest-category",
   ]),
   title: z.string().optional(),
   excerpt: z.string().optional(),
@@ -66,6 +67,16 @@ export async function POST(req: Request) {
       category: parsed.category,
       imagePrompt: parsed.imagePrompt,
     });
+
+    if (parsed.action === "generate-from-title" && typeof result === "object" && result !== null && "content" in result) {
+      const blog = result as import("@/lib/ai/full-blog-package").FullBlogPackage;
+      return NextResponse.json({
+        ok: true,
+        source,
+        blog,
+        result: blog.content,
+      });
+    }
 
     return NextResponse.json({ ok: true, result, source });
   } catch (err) {

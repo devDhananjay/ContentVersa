@@ -4,6 +4,10 @@
  */
 
 import { callGeminiText, callGeminiImage, isGeminiConfigured } from "@/lib/ai/gemini";
+import { generateFullBlogFromTitle, type FullBlogPackage } from "@/lib/ai/generate-full-blog";
+import {
+  guessCategoryFromTitle,
+} from "@/lib/ai/full-blog-package";
 import {
   countWords,
   trimSummaryWords,
@@ -18,6 +22,7 @@ import {
   getSummaryWordTargets,
   markdownToPlainText,
 } from "@/lib/ai/article-summary";
+import { VALID_CATEGORY_SLUGS } from "@/lib/ai/full-blog-package";
 
 export type AiAction =
   | "summarize"
@@ -29,7 +34,8 @@ export type AiAction =
   | "image-prompt"
   | "generate-image"
   | "expand-thesis"
-  | "generate-from-title";
+  | "generate-from-title"
+  | "suggest-category";
 
 type AssistInput = {
   action: AiAction;
@@ -159,17 +165,29 @@ function heuristicAssist(input: AssistInput): string | string[] {
         return "Start with a bold claim in your title, then support it with 3 concrete examples.";
       return `Thesis: ${title}\n\n1. Hook — state the problem readers feel today.\n2. Evidence — ${words.length} words of draft; add one data point or story.\n3. Takeaway — what should the reader do in the next 24 hours?`;
 
-    case "generate-from-title":
-      return `## Introduction\n\n${title} is reshaping how creators and readers think about ${cat}. Here is a practical look at why it matters now.\n\n## Why this topic is trending\n\n- Readers want clear, actionable takes—not hype.\n- The ${cat} space is moving fast in 2026.\n- A strong point of view helps you stand out.\n\n## What to watch next\n\nStart with one concrete example from your experience, add a data point or quote, and end with a single action step for the reader.\n\n## Conclusion\n\n${title} is not just a headline—it is an invitation to share what you have learned. Ship the draft, gather feedback, and refine in public.`;
+    case "suggest-category":
+      return guessCategoryFromTitle(title);
 
     default:
       return "Unknown action.";
   }
 }
 
+export type AiAssistResult = string | string[] | FullBlogPackage;
+
 export async function runAiAssist(
   input: AssistInput
-): Promise<{ result: string | string[]; source: AiSource }> {
+): Promise<{ result: AiAssistResult; source: AiSource }> {
+  if (input.action === "generate-from-title") {
+    const { blog, source } = await generateFullBlogFromTitle({
+      title: input.title || "",
+      excerpt: input.excerpt,
+      category: input.category,
+      content: input.content,
+    });
+    return { result: blog, source };
+  }
+
   const contentLimit = input.action === "article-summary" ? 14000 : 8000;
   const userPayload = JSON.stringify({
     title: input.title,
@@ -190,7 +208,10 @@ export async function runAiAssist(
     return { result: buildPlaceholderImageUrl(prompt), source: "local" };
   }
 
-  const prompts: Record<Exclude<AiAction, "generate-image">, { system: string; expect: "text" | "list" }> = {
+  const prompts: Record<
+    Exclude<AiAction, "generate-image" | "generate-from-title">,
+    { system: string; expect: "text" | "list" }
+  > = {
     summarize: {
       system: "Summarize the blog draft in 2-3 sentences for a card excerpt. Plain text only.",
       expect: "text",
@@ -223,8 +244,8 @@ export async function runAiAssist(
       system: "Outline a blog structure: hook, 3 sections, conclusion. Use markdown bullets.",
       expect: "text",
     },
-    "generate-from-title": {
-      system: `Write a complete blog post body in markdown for ContentVerse. Use ## for section headings (do NOT repeat the title as # H1). Include 4-5 sections: introduction, 2-3 substantive sections with paragraphs and optional bullet lists, and conclusion. Target 650-900 words. Engaging, informative tone. Return ONLY markdown body — no frontmatter, no title line.`,
+    "suggest-category": {
+      system: `Pick the best category slug for this blog title. Return ONLY one slug from: ${VALID_CATEGORY_SLUGS.join(", ")}.`,
       expect: "text",
     },
   };
@@ -239,8 +260,8 @@ export async function runAiAssist(
   const tokens =
     input.action === "article-summary"
       ? 1024
-      : input.action === "generate-from-title"
-        ? 2048
+      : input.action === "suggest-category"
+        ? 64
         : 512;
   const { text: ai, source } = await callAiText(systemPrompt, userPayload, tokens);
 
@@ -252,6 +273,13 @@ export async function runAiAssist(
         input.title
       );
       return { result: summary, source };
+    }
+    if (input.action === "suggest-category" && typeof ai === "string") {
+      const slug = ai.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
+      return {
+        result: VALID_CATEGORY_SLUGS.includes(slug) ? slug : guessCategoryFromTitle(input.title || ""),
+        source,
+      };
     }
     if (p.expect === "list") {
       try {

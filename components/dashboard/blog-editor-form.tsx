@@ -37,6 +37,8 @@ import { getSiteHostname } from "@/lib/site-config";
 import { useRouter } from "next/navigation";
 import { AiAssistPanel } from "@/components/dashboard/ai-assist-panel";
 import { AiImageGenerator } from "@/components/dashboard/ai-image-generator";
+import { TryWithAiButton } from "@/components/dashboard/try-with-ai-button";
+import type { FullBlogPackage } from "@/lib/ai/full-blog-package";
 
 type BlogDraft = {
   id: string;
@@ -77,7 +79,14 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [coverUploading, setCoverUploading] = React.useState(false);
   const [coverError, setCoverError] = React.useState<string | null>(null);
+  const [activeTab, setActiveTab] = React.useState("write");
+  const [aiNotice, setAiNotice] = React.useState<string | null>(null);
   const coverInputRef = React.useRef<HTMLInputElement>(null);
+
+  const aiContext = React.useMemo(
+    () => ({ title, excerpt, content: markdown, category }),
+    [title, excerpt, markdown, category]
+  );
 
   const applyDraft = (data: BlogDraft) => {
     setEditingId(data.id);
@@ -143,18 +152,30 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
     setTags((t) => [...t, v]);
   };
 
+  const applyFullBlog = (blog: FullBlogPackage, source?: string) => {
+    if (blog.excerpt) setExcerpt(blog.excerpt);
+    if (blog.category) setCategory(blog.category);
+    if (blog.tags?.length) setTags(blog.tags.slice(0, 5));
+    if (blog.metaTitle) setSeoTitle(blog.metaTitle);
+    if (blog.metaDescription) setSeoDescription(blog.metaDescription);
+    editorRef.current?.loadMarkdown(blog.content);
+    setMarkdown(blog.content);
+    setInitialMarkdown(blog.content);
+    setEditorKey((k) => `${k}-full`);
+    setActiveTab("preview");
+    setAiNotice(
+      source === "gemini"
+        ? "Full blog generated with Gemini — review Preview, then edit anything."
+        : source === "openai"
+          ? "Full blog generated with OpenAI — review Preview, then edit anything."
+          : "Draft generated offline — add GEMINI_API_KEY for richer AI blogs."
+    );
+  };
+
   const applyGeneratedContent = (content: string) => {
     editorRef.current?.loadMarkdown(content);
     setMarkdown(content);
     setEditorKey((k) => `${k}-gen`);
-    if (!excerpt.trim()) {
-      const firstPara = content
-        .split("\n\n")
-        .find((s) => s.trim() && !s.startsWith("#") && !s.startsWith("-"));
-      if (firstPara) {
-        setExcerpt(firstPara.replace(/^##?\s*/, "").slice(0, 220));
-      }
-    }
   };
 
   const generateFromTitle = async () => {
@@ -164,6 +185,7 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
     }
     setSubmitError(null);
     setGenerating(true);
+    setAiNotice(null);
     try {
       const res = await fetch("/api/ai/assist", {
         method: "POST",
@@ -176,11 +198,15 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
           content: markdown,
         }),
       });
-      const data = (await res.json()) as { result?: string; error?: string };
-      if (!res.ok || typeof data.result !== "string") {
+      const data = (await res.json()) as {
+        blog?: FullBlogPackage;
+        error?: string;
+        source?: string;
+      };
+      if (!res.ok || !data.blog) {
         throw new Error(data.error || "Generation failed");
       }
-      applyGeneratedContent(data.result);
+      applyFullBlog(data.blog, data.source);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Could not generate blog");
     } finally {
@@ -300,9 +326,15 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
         </p>
       ) : null}
 
+      {aiNotice ? (
+        <p className="mb-4 text-sm text-neon-purple rounded-lg border border-neon-purple/30 bg-neon-purple/5 px-4 py-2">
+          {aiNotice}
+        </p>
+      ) : null}
+
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
         <div>
-          <Tabs defaultValue="write">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList>
               <TabsTrigger value="write">Write</TabsTrigger>
               <TabsTrigger value="preview">Preview</TabsTrigger>
@@ -416,7 +448,7 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
                       Write faster with AI
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Generate a full blog from your title — you can edit everything after.
+                      Fills excerpt, body, tags, category & SEO — then open Preview.
                     </p>
                   </div>
                   <Button
@@ -432,11 +464,20 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
                     ) : (
                       <Sparkles className="h-4 w-4" />
                     )}
-                    Generate blog from title
+                    Generate full blog from title
                   </Button>
                 </motion.div>
               ) : null}
 
+              <div className="flex items-center justify-between gap-2">
+                <Label className="text-muted-foreground text-sm">Excerpt</Label>
+                <TryWithAiButton
+                  action="excerpt"
+                  context={aiContext}
+                  onResult={(r) => typeof r === "string" && setExcerpt(r)}
+                  disabled={!title.trim() || generating}
+                />
+              </div>
               <Textarea
                 placeholder="Add a short, punchy excerpt that hooks readers…"
                 value={excerpt}
@@ -456,10 +497,24 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
 
             <TabsContent value="preview" className="space-y-6">
               <div className="rounded-3xl border bg-card p-6 md:p-10">
+                {category ? (
+                  <Badge variant="secondary" className="mb-3 capitalize">
+                    {CATEGORIES.find((c) => c.slug === category)?.name || category}
+                  </Badge>
+                ) : null}
                 <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight">
                   {title || "Untitled blog"}
                 </h1>
                 {excerpt && <p className="mt-4 text-xl text-muted-foreground">{excerpt}</p>}
+                {tags.length > 0 ? (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {tags.map((t) => (
+                      <Badge key={t} variant="outline">
+                        #{t}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : null}
                 <div className="mt-8 border-t pt-6">
                   {markdown ? renderMarkdown(markdown) : <p className="text-muted-foreground">Start writing to see the preview…</p>}
                 </div>
@@ -468,7 +523,23 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
 
             <TabsContent value="seo" className="space-y-4">
               <div className="rounded-2xl border bg-card p-6 space-y-4">
-                <h3 className="font-display text-xl font-bold">SEO settings</h3>
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-display text-xl font-bold">SEO settings</h3>
+                  <TryWithAiButton
+                    action="seo-title"
+                    context={aiContext}
+                    label="Try with AI"
+                    onResult={(r) => {
+                      if (typeof r === "string") {
+                        setSeoTitle(r.slice(0, 70));
+                        if (!seoDescription.trim() && excerpt) {
+                          setSeoDescription(excerpt.slice(0, 160));
+                        }
+                      }
+                    }}
+                    disabled={!title.trim()}
+                  />
+                </div>
                 <div className="space-y-1.5">
                   <Label>Meta title</Label>
                   <Input
@@ -519,7 +590,15 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
               <Tag className="h-4 w-4" /> Publish settings
             </h3>
             <div className="space-y-1.5">
-              <Label>Category</Label>
+              <div className="flex items-center justify-between gap-2">
+                <Label>Category</Label>
+                <TryWithAiButton
+                  action="suggest-category"
+                  context={aiContext}
+                  onResult={(r) => typeof r === "string" && setCategory(r)}
+                  disabled={!title.trim()}
+                />
+              </div>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger>
                   <SelectValue placeholder="Pick a category" />
@@ -534,7 +613,19 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Tags (max 5)</Label>
+              <div className="flex items-center justify-between gap-2">
+                <Label>Tags (max 5)</Label>
+                <TryWithAiButton
+                  action="tags"
+                  context={aiContext}
+                  onResult={(r) => {
+                    if (Array.isArray(r)) {
+                      setTags((prev) => [...new Set([...prev, ...r])].slice(0, 5));
+                    }
+                  }}
+                  disabled={!title.trim()}
+                />
+              </div>
               <Input
                 placeholder="Press Enter to add"
                 value={tagInput}
@@ -589,6 +680,7 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
             onApplySeoTitle={setSeoTitle}
             onApplyTags={(t) => setTags((prev) => [...new Set([...prev, ...t])].slice(0, 5))}
             onApplyContent={applyGeneratedContent}
+            onApplyFullBlog={applyFullBlog}
           />
 
           <AiImageGenerator

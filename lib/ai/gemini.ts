@@ -4,7 +4,7 @@
  */
 
 const GEMINI_TEXT_MODEL =
-  process.env.GEMINI_TEXT_MODEL?.trim() || "gemini-1.5-flash";
+  process.env.GEMINI_TEXT_MODEL?.trim() || "gemini-2.5-flash";
 const GEMINI_IMAGE_MODEL =
   process.env.GEMINI_IMAGE_MODEL?.trim() || "gemini-2.0-flash-exp";
 
@@ -53,6 +53,56 @@ export async function callGeminiText(
     .join("")
     .trim();
   return text || null;
+}
+
+/** Structured JSON via Gemini response schema (2.5+). */
+export async function callGeminiJson<T>(
+  system: string,
+  user: string,
+  responseSchema: object,
+  maxTokens = 8192
+): Promise<T | null> {
+  const key = apiKey();
+  if (!key) return null;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TEXT_MODEL}:generateContent?key=${key}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: "user", parts: [{ text: user.slice(0, 14000) }] }],
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        temperature: 0.7,
+        responseMimeType: "application/json",
+        responseSchema,
+      },
+    }),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    console.error("[gemini json]", res.status, await res.text().catch(() => ""));
+    return null;
+  }
+
+  const data = (await res.json()) as {
+    candidates?: { content?: { parts?: { text?: string }[] } }[];
+  };
+  const text = data.candidates?.[0]?.content?.parts
+    ?.map((p) => p.text || "")
+    .join("")
+    .trim();
+  if (!text) return null;
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    console.error("[gemini json] parse failed", text.slice(0, 200));
+    return null;
+  }
 }
 
 /** Returns a data URL for generated image. */

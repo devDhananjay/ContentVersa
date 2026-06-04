@@ -11,6 +11,8 @@ import {
   Wand2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { isFullBlogPackage } from "@/components/dashboard/try-with-ai-button";
+import type { FullBlogPackage } from "@/lib/ai/full-blog-package";
 
 type Props = {
   title: string;
@@ -22,6 +24,7 @@ type Props = {
   onApplyTags?: (tags: string[]) => void;
   onApplySeoTitle?: (v: string) => void;
   onApplyContent?: (md: string) => void;
+  onApplyFullBlog?: (blog: FullBlogPackage, source?: string) => void;
 };
 
 function aiSourceLabel(source?: string) {
@@ -40,6 +43,7 @@ export function AiAssistPanel({
   onApplyTags,
   onApplySeoTitle,
   onApplyContent,
+  onApplyFullBlog,
 }: Props) {
   const [loading, setLoading] = React.useState<string | null>(null);
   const [ideas, setIdeas] = React.useState<string[]>([]);
@@ -58,11 +62,21 @@ export function AiAssistPanel({
         body: JSON.stringify({ action, title, excerpt, content, category }),
       });
       const data = (await res.json()) as {
-        result?: string | string[];
+        result?: string | string[] | FullBlogPackage;
+        blog?: FullBlogPackage;
         source?: string;
         error?: string;
       };
       if (!res.ok) throw new Error(data.error || "Failed");
+
+      if (action === "generate-from-title") {
+        const blog = data.blog ?? (isFullBlogPackage(data.result) ? data.result : null);
+        if (blog) {
+          onApplyFullBlog?.(blog, data.source);
+          setMessage(aiSourceLabel(data.source));
+          return;
+        }
+      }
 
       const result = data.result;
       if (action === "blog-ideas" && Array.isArray(result)) {
@@ -83,10 +97,7 @@ export function AiAssistPanel({
       label: "Generate full blog",
       icon: Sparkles,
       action: "generate-from-title",
-      onClick: () =>
-        run("generate-from-title", (r) => {
-          if (typeof r === "string") onApplyContent?.(r);
-        }),
+      onClick: () => run("generate-from-title"),
     },
     {
       label: "Summarize draft",
@@ -148,7 +159,7 @@ export function AiAssistPanel({
         <p className="text-xs font-bold uppercase tracking-widest">AI Assist</p>
       </div>
       <p className="text-sm text-muted-foreground mb-3">
-        Summarize, SEO titles, blog ideas & more while you write.
+        Full blog, excerpt, SEO, tags & more — fills every field for you.
       </p>
 
       <div className="space-y-1.5">
