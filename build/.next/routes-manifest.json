@@ -144,6 +144,14 @@
       "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/summary(?:/)?$"
     },
     {
+      "page": "/api/blogs/[slug]/tip",
+      "regex": "^/api/blogs/([^/]+?)/tip(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/tip(?:/)?$"
+    },
+    {
       "page": "/api/categories/[slug]/subscribe",
       "regex": "^/api/categories/([^/]+?)/subscribe(?:/)?$",
       "routeKeys": {
@@ -310,6 +318,12 @@
       "regex": "^/categories(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/categories(?:/)?$"
+    },
+    {
+      "page": "/contact",
+      "regex": "^/contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/contact(?:/)?$"
     },
     {
       "page": "/dashboard",

@@ -5,12 +5,11 @@ import type { Metadata } from "next";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { TopWritersPanel } from "@/components/category/top-writers";
 import { CATEGORIES, getCategoryBySlug } from "@/lib/data/categories";
-import { AUTHORS } from "@/lib/data/blogs";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
+import { getTopWritersForCategoryCached } from "@/lib/data/top-writers";
 import { buildMetadata } from "@/lib/seo";
-import { formatNumber, getInitials } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +42,7 @@ export default async function CategoryPage({
   const cat = getCategoryBySlug(slug);
   if (!cat) return notFound();
   const blogs = await getBlogsByCategoryHybrid(slug);
-  const topWriters = AUTHORS.slice(0, 3);
+  const topWriters = await getTopWritersForCategoryCached(slug, 5);
 
   return (
     <div>
@@ -111,29 +110,7 @@ export default async function CategoryPage({
         <aside className="space-y-6">
           <div className="rounded-2xl border bg-card p-5">
             <h3 className="font-display font-semibold mb-4">Top writers</h3>
-            <div className="space-y-4">
-              {topWriters.map((w) => (
-                <Link
-                  key={w.id}
-                  href={`/profile/${w.username}`}
-                  className="flex items-center gap-3"
-                >
-                  <Avatar>
-                    <AvatarImage src={w.avatar} alt={w.name} />
-                    <AvatarFallback>{getInitials(w.name)}</AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold truncate">{w.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatNumber(w.followers)} followers
-                    </p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    Follow
-                  </Button>
-                </Link>
-              ))}
-            </div>
+            <TopWritersPanel writers={topWriters} />
           </div>
 
           <div className="rounded-2xl border bg-card p-5">

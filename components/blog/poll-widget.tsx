@@ -3,6 +3,7 @@
 import * as React from "react";
 import { BarChart3, Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AuthorActions } from "@/components/blog/author-actions";
 
 function blogPollSlug(blogSlug: string) {
   return `blog-${blogSlug}`;
@@ -26,6 +27,7 @@ type PollData = {
 export function PollWidget({
   pollSlug = "ai-replace-jobs",
   blogContext,
+  author,
   className,
 }: {
   pollSlug?: string;
@@ -36,6 +38,14 @@ export function PollWidget({
     category?: string;
     tags?: string[];
     excerpt?: string;
+  };
+  author?: {
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+    verified?: boolean;
+    followers?: number;
   };
   className?: string;
 }) {
@@ -156,6 +166,24 @@ export function PollWidget({
         {poll.totalVotes.toLocaleString()} votes
         {!hasVoted && " · Tap to vote"}
       </p>
+
+      {author && (
+        <div className="mt-6 pt-5 border-t border-border/60">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
+            Written by
+          </p>
+          <AuthorActions
+            id={author.id}
+            name={author.name}
+            username={author.username}
+            avatar={author.avatar}
+            verified={author.verified}
+            followers={author.followers}
+            avatarSize="sm"
+            layout="row"
+          />
+        </div>
+      )}
     </div>
   );
 }

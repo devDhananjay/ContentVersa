@@ -6,6 +6,7 @@ import { BadgeCheck, ArrowRight, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { FollowButton } from "@/components/profile/follow-button";
 import type { Author } from "@/lib/data/blogs";
 import { formatNumber, getInitials } from "@/lib/utils";
 
@@ -77,15 +78,13 @@ export function FeaturedCreators({ creators }: Props) {
                       : `${formatNumber(c.followers)} followers`}
                   </Badge>
                 </div>
-                <Button
-                  variant="gradient"
-                  size="sm"
-                  className="mt-3 w-full text-xs"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  Follow
-                </Button>
               </Link>
+              <FollowButton
+                username={c.username}
+                targetUserId={c.id}
+                initialFollowerCount={c.followers}
+                className="mt-3 w-full"
+              />
             </motion.div>
           ))}
         </div>

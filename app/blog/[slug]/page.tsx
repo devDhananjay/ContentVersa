@@ -3,10 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Clock, Eye, MessageCircle, Heart, BadgeCheck, Coffee } from "lucide-react";
+import { Clock, Eye, MessageCircle, Heart, BadgeCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { AuthorActions } from "@/components/blog/author-actions";
+import { TipCreator } from "@/components/blog/tip-creator";
+import { FollowButton } from "@/components/profile/follow-button";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { Reactions } from "@/components/blog/reactions";
 import { TableOfContents } from "@/components/blog/toc";
@@ -171,9 +173,11 @@ export default async function BlogPage({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                Follow
-              </Button>
+              <FollowButton
+                username={blog.author.username}
+                targetUserId={blog.author.id}
+                initialFollowerCount={blog.author.followers}
+              />
               <ShareBar url={url} title={blog.title} />
             </div>
           </div>
@@ -222,54 +226,27 @@ export default async function BlogPage({
               <ArticleFeedback blogSlug={slug} />
             </div>
 
-            <div className="mt-8 rounded-3xl border-gradient bg-card p-6 md:p-8">
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
-                <Avatar className="h-16 w-16 border-2 border-border">
-                  <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
-                  <AvatarFallback>{getInitials(blog.author.name)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <p className="text-sm uppercase tracking-widest text-muted-foreground mb-1">
-                    Liked this piece?
-                  </p>
-                  <h3 className="font-display text-2xl font-bold">
-                    Tip {blog.author.name.split(" ")[0]} for the work
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    100% goes to the creator. Send a one-time tip and back the writing you love.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {[2, 5, 10].map((amount) => (
-                    <Button key={amount} variant="outline">
-                      ${amount}
-                    </Button>
-                  ))}
-                  <Button variant="gradient" className="gap-2">
-                    <Coffee className="h-4 w-4" /> Tip
-                  </Button>
-                </div>
-              </div>
+            <div className="mt-8">
+              <TipCreator
+                blogSlug={blog.slug}
+                authorName={blog.author.name}
+                authorAvatar={blog.author.avatar}
+              />
             </div>
 
-            <div className="mt-10 p-6 rounded-3xl border bg-card flex flex-col md:flex-row items-start gap-4">
-              <Avatar className="h-14 w-14 border-2 border-border">
-                <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
-                <AvatarFallback>{getInitials(blog.author.name)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-1.5">
-                  <p className="font-display text-lg font-bold">{blog.author.name}</p>
-                  {blog.author.verified && (
-                    <BadgeCheck className="h-4 w-4 text-neon-cyan" />
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {formatNumber(blog.author.followers)} followers · {blog.author.blogs} blogs
-                </p>
-                <p className="mt-2 text-sm text-foreground/90">{blog.author.bio}</p>
-              </div>
-              <Button variant="gradient">Follow</Button>
+            <div className="mt-10 p-6 rounded-3xl border bg-card">
+              <AuthorActions
+                id={blog.author.id}
+                name={blog.author.name}
+                username={blog.author.username}
+                avatar={blog.author.avatar}
+                verified={blog.author.verified}
+                bio={blog.author.bio}
+                followers={blog.author.followers}
+                blogs={blog.author.blogs}
+                layout="card"
+                avatarSize="lg"
+              />
             </div>
 
             <div className="mt-14">
@@ -282,6 +259,14 @@ export default async function BlogPage({
                   category: blog.category,
                   tags: blog.tags,
                   excerpt: blog.excerpt,
+                }}
+                author={{
+                  id: blog.author.id,
+                  name: blog.author.name,
+                  username: blog.author.username,
+                  avatar: blog.author.avatar,
+                  verified: blog.author.verified,
+                  followers: blog.author.followers,
                 }}
               />
             </div>

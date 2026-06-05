@@ -1,5 +1,6 @@
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { mapUserToAuthor } from "@/lib/data/blog-db";
+import { notifyBlogAuthorOnComment } from "@/lib/notifications/blog-engagement";
 
 export type CommentDto = {
   id: string;
@@ -102,6 +103,12 @@ export async function createComment(input: {
       data: { commentsCount: { increment: 1 } },
     });
   }
+
+  void notifyBlogAuthorOnComment(
+    input.blogId,
+    input.userId,
+    input.parentId ?? null
+  );
 
   return mapComment(comment as CommentRow, input.userId);
 }

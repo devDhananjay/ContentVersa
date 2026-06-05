@@ -1,5 +1,6 @@
 import type { ReactionType } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { notifyBlogAuthorOnReaction } from "@/lib/notifications/blog-engagement";
 
 export const REACTION_TYPES = ["LIKE", "LOVE", "FIRE", "CLAP", "INSIGHTFUL"] as const;
 export type ReactionTypeKey = (typeof REACTION_TYPES)[number];
@@ -93,6 +94,8 @@ export async function toggleReaction(
     where: { blogId_userId_type: { blogId, userId, type } },
   });
 
+  let reactionAdded = false;
+
   if (existing) {
     await prisma.reaction.delete({ where: { id: existing.id } });
   } else {
@@ -100,6 +103,11 @@ export async function toggleReaction(
     await prisma.reaction.create({
       data: { blogId, userId, type },
     });
+    reactionAdded = true;
+  }
+
+  if (reactionAdded) {
+    void notifyBlogAuthorOnReaction(blogId, userId, true);
   }
 
   await syncBlogLikesCount(blogId);

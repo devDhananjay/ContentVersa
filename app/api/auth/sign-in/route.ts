@@ -5,27 +5,32 @@ import { prisma } from "@/lib/prisma";
 import { signSession, setSessionCookie } from "@/lib/auth";
 
 const Schema = z.object({
-  email: z.string().email(),
+  email: z.string().min(1),
   password: z.string().min(6),
 });
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, password } = Schema.parse(body);
+    const { email: identifier, password } = Schema.parse(body);
+    const normalized = identifier.trim().toLowerCase();
 
     // Lookup user (gracefully degrades when DB is unreachable, returns demo mode)
     let user: { id: string; email: string; name: string | null; username: string; password: string | null; role: string; image: string | null } | null = null;
     try {
-      user = await prisma.user.findUnique({ where: { email } });
+      user = await prisma.user.findFirst({
+        where: {
+          OR: [{ email: normalized }, { username: normalized }],
+        },
+      });
     } catch {
       // demo mode: accept any credentials
       const data = await signSession({
         sub: "demo",
-        email,
-        username: email.split("@")[0],
+        email: normalized.includes("@") ? normalized : `${normalized}@demo.local`,
+        username: normalized.includes("@") ? normalized.split("@")[0] : normalized,
         role: "USER",
-        name: email.split("@")[0],
+        name: normalized.includes("@") ? normalized.split("@")[0] : normalized,
       });
       await setSessionCookie(data);
       return NextResponse.json({ ok: true, demo: true });

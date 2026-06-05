@@ -9,6 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SocialButtons } from "@/components/auth/social-buttons";
+import {
+  getLoginSuggestions,
+  getRememberedIdentifier,
+  isRememberMeEnabled,
+  setRememberedIdentifier,
+} from "@/lib/auth/remembered-login";
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   missing_code: "Google did not return an authorization code.",
@@ -24,11 +30,20 @@ export function SignInForm() {
   const next = search.get("next") || "/dashboard";
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [rememberMe, setRememberMe] = React.useState(false);
+  const [suggestions, setSuggestions] = React.useState<string[]>([]);
   const [show, setShow] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(
     oauthError ? OAUTH_ERROR_MESSAGES[oauthError] || "Sign-in failed." : null
   );
+
+  React.useEffect(() => {
+    const remembered = getRememberedIdentifier();
+    if (remembered) setEmail(remembered);
+    setRememberMe(isRememberMeEnabled());
+    setSuggestions(getLoginSuggestions());
+  }, []);
 
   React.useEffect(() => {
     fetch("/api/auth/me", { credentials: "include" })
@@ -51,6 +66,13 @@ export function SignInForm() {
       });
       const data = (await res.json()) as { error?: string; role?: string };
       if (!res.ok) throw new Error(data.error || "Sign in failed");
+
+      if (rememberMe) {
+        setRememberedIdentifier(email.trim());
+      } else {
+        setRememberedIdentifier(null);
+      }
+
       const adminRoles = ["MODERATOR", "ADMIN", "SUPER_ADMIN"];
       const dest =
         adminRoles.includes(data.role ?? "") && next === "/dashboard"
@@ -89,15 +111,25 @@ export function SignInForm() {
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">Email or username</Label>
           <Input
             id="email"
-            type="email"
-            placeholder="you@yourbrand.com"
+            name="email"
+            type="text"
+            autoComplete="username"
+            list="cv-login-suggestions"
+            placeholder="you@email.com or username"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+          {suggestions.length > 0 && (
+            <datalist id="cv-login-suggestions">
+              {suggestions.map((item) => (
+                <option key={item} value={item} />
+              ))}
+            </datalist>
+          )}
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
@@ -112,7 +144,9 @@ export function SignInForm() {
           <div className="relative">
             <Input
               id="password"
+              name="password"
               type={show ? "text" : "password"}
+              autoComplete="current-password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -127,6 +161,16 @@ export function SignInForm() {
             </button>
           </div>
         </div>
+
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="h-4 w-4 rounded border-border text-neon-purple focus:ring-neon-purple/40"
+          />
+          <span className="text-sm text-muted-foreground">Remember me</span>
+        </label>
 
         {error && (
           <div className="text-xs text-destructive p-2 rounded-md bg-destructive/10">
