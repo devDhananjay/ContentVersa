@@ -4,7 +4,6 @@ import * as React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  Eye,
   Save,
   Send,
   Tag,
@@ -307,9 +306,6 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" className="gap-1.5">
-            <Eye className="h-4 w-4" /> Preview
-          </Button>
           <Button variant="outline" className="gap-1.5" onClick={onSaveDraft} disabled={submitting}>
             <Save className="h-4 w-4" /> Save draft
           </Button>

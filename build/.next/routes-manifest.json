@@ -168,6 +168,14 @@
       "namedRegex": "^/api/polls/(?<nxtPslug>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/site/pages/[slug]",
+      "regex": "^/api/site/pages/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/site/pages/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/users/[username]/follow",
       "regex": "^/api/users/([^/]+?)/follow(?:/)?$",
       "routeKeys": {
@@ -228,6 +236,12 @@
       "regex": "^/_not\\-found(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/about",
+      "regex": "^/about(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/about(?:/)?$"
     },
     {
       "page": "/admin",
@@ -314,6 +328,12 @@
       "namedRegex": "^/bookmarks(?:/)?$"
     },
     {
+      "page": "/careers",
+      "regex": "^/careers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/careers(?:/)?$"
+    },
+    {
       "page": "/categories",
       "regex": "^/categories(?:/)?$",
       "routeKeys": {},
@@ -324,6 +344,18 @@
       "regex": "^/contact(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/contact(?:/)?$"
+    },
+    {
+      "page": "/cookies",
+      "regex": "^/cookies(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/cookies(?:/)?$"
+    },
+    {
+      "page": "/creator-program",
+      "regex": "^/creator\\-program(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/creator\\-program(?:/)?$"
     },
     {
       "page": "/dashboard",
@@ -398,6 +430,30 @@
       "namedRegex": "^/manifest\\.webmanifest(?:/)?$"
     },
     {
+      "page": "/policy",
+      "regex": "^/policy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/policy(?:/)?$"
+    },
+    {
+      "page": "/premium",
+      "regex": "^/premium(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/premium(?:/)?$"
+    },
+    {
+      "page": "/press",
+      "regex": "^/press(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/press(?:/)?$"
+    },
+    {
+      "page": "/privacy",
+      "regex": "^/privacy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/privacy(?:/)?$"
+    },
+    {
       "page": "/robots.txt",
       "regex": "^/robots\\.txt(?:/)?$",
       "routeKeys": {},
@@ -408,6 +464,12 @@
       "regex": "^/sitemap\\.xml(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/sitemap\\.xml(?:/)?$"
+    },
+    {
+      "page": "/terms",
+      "regex": "^/terms(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/terms(?:/)?$"
     }
   ],
   "dataRoutes": [],

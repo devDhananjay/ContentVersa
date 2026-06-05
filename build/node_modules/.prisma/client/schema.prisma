@@ -635,6 +635,21 @@ model PollVote {
   @@index([optionId])
 }
 
+// ---------------------- Marketing / legal pages ----------------------
+
+model SitePage {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  subtitle  String?
+  badge     String?
+  sections  Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+}
+
 // ---------------------- Site traffic ----------------------
 
 model SiteVisitor {
