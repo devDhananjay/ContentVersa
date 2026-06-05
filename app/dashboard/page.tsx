@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { ViewsAreaChart } from "@/components/dashboard/views-chart";
+import { formatINR } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Badge } from "@/components/ui/badge";
@@ -55,40 +57,16 @@ export default async function DashboardOverview() {
         <StatCard label="Views (30d)" value={stats?.views30d ?? "0"} delta={stats?.viewsDelta ?? 0} icon={<Eye className="h-5 w-5" />} color="from-neon-blue to-neon-cyan" index={0} />
         <StatCard label="Reactions" value={stats?.reactions ?? "0"} delta={stats?.reactionsDelta ?? 0} icon={<Heart className="h-5 w-5" />} color="from-neon-pink to-neon-purple" index={1} />
         <StatCard label="Followers" value={stats?.followers ?? "0"} delta={stats?.followersDelta ?? 0} icon={<Users className="h-5 w-5" />} color="from-neon-purple to-neon-pink" index={2} />
-        <StatCard label="Earnings" value={stats?.earnings ?? "$0"} delta={stats?.earningsDelta ?? 0} icon={<Wallet className="h-5 w-5" />} color="from-neon-orange to-neon-pink" index={3} />
+        <StatCard label="Earnings (month)" value={stats?.earnings ?? formatINR(0)} delta={stats?.earningsDelta ?? 0} icon={<Wallet className="h-5 w-5" />} color="from-neon-orange to-neon-pink" index={3} />
       </div>
 
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 rounded-2xl border bg-card p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-display text-xl font-bold">Performance</h2>
-            <Badge variant="success">Live</Badge>
+            <Badge variant="secondary">Last 30 days</Badge>
           </div>
-          <div className="h-64 rounded-xl bg-gradient-to-br from-neon-blue/5 via-neon-purple/5 to-neon-pink/5 border relative overflow-hidden">
-            <svg viewBox="0 0 800 250" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
-              <defs>
-                <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#a855f7" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M0,200 C100,180 150,90 250,120 C350,150 400,60 500,80 C600,100 650,30 800,50 L800,250 L0,250 Z"
-                fill="url(#g1)"
-              />
-              <path
-                d="M0,200 C100,180 150,90 250,120 C350,150 400,60 500,80 C600,100 650,30 800,50"
-                fill="none"
-                stroke="#a855f7"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-xs text-muted-foreground">
-              <span>30 days ago</span>
-              <span>Today</span>
-            </div>
-          </div>
+          <ViewsAreaChart values={stats?.viewsDaily ?? []} />
           <div className="mt-6 grid grid-cols-3 gap-4">
             {[
               { label: "Avg read time", value: stats?.avgReadTime ?? "—" },

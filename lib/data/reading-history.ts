@@ -32,6 +32,7 @@ export async function recordReadingProgress(input: {
     : { visitorKey_blogId: { visitorKey: input.visitorKey!, blogId: input.blogId } };
 
   const existing = await prisma.readingHistory.findUnique({ where });
+  const isFirstVisit = !existing;
 
   if (existing) {
     const nextProgress = Math.max(existing.progress, progress);
@@ -66,6 +67,11 @@ export async function recordReadingProgress(input: {
       secondsRead: addSeconds,
     },
   });
+
+  if (isFirstVisit) {
+    void incrementBlogView(input.blogId);
+  }
+
   if (input.userId) {
     void prisma.profile.updateMany({
       where: { userId: input.userId },
@@ -73,6 +79,30 @@ export async function recordReadingProgress(input: {
     });
   }
   return row;
+}
+
+async function incrementBlogView(blogId: string) {
+  const blog = await prisma.blog.findUnique({
+    where: { id: blogId },
+    select: { authorId: true },
+  });
+  if (!blog) return;
+
+  await prisma.$transaction([
+    prisma.blog.update({
+      where: { id: blogId },
+      data: { views: { increment: 1 } },
+    }),
+    prisma.analytics.upsert({
+      where: { blogId },
+      create: { blogId, uniqueVisitors: 1 },
+      update: { uniqueVisitors: { increment: 1 } },
+    }),
+    prisma.profile.updateMany({
+      where: { userId: blog.authorId },
+      data: { totalViews: { increment: 1 } },
+    }),
+  ]);
 }
 
 /** @deprecated Use recordReadingProgress */

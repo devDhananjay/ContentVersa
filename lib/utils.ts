@@ -11,12 +11,18 @@ export function formatNumber(value: number): string {
   return value.toString();
 }
 
-export function formatCurrency(value: number, currency = "USD"): string {
-  return new Intl.NumberFormat("en-US", {
+export function formatCurrency(value: number, currency = "INR"): string {
+  const locale = currency === "INR" ? "en-IN" : "en-US";
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+/** Shorthand for Indian rupee display */
+export function formatINR(value: number): string {
+  return formatCurrency(value, "INR");
 }
 
 export function slugify(input: string): string {

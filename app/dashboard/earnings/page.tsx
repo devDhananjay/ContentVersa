@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
-import { Wallet, DollarSign, Gift, Megaphone, Crown, Coffee } from "lucide-react";
+import { Wallet, IndianRupee, Gift, Megaphone, Crown, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboardDataCached } from "@/lib/data/dashboard-data";
+import { formatINR } from "@/lib/utils";
 
 const ICONS = {
   ads: Megaphone,
@@ -51,12 +52,26 @@ export default async function EarningsPage() {
             Wallet balance
           </p>
           <p className="font-display text-5xl font-extrabold mt-2 text-gradient">
-            {s?.walletBalance ?? "$0"}
+            {s?.walletBalance ?? formatINR(0)}
           </p>
-          <p className="text-xs text-muted-foreground mt-2">Available for payout · USD</p>
+          <p className="text-xs text-muted-foreground mt-2">Available for payout · INR</p>
         </div>
-        <StatCard label="Lifetime earnings" value={s?.lifetimeEarnings ?? "$0"} delta={24} icon={<DollarSign className="h-5 w-5" />} color="from-neon-purple to-neon-pink" index={0} />
-        <StatCard label="This month" value={s?.earnings ?? "$0"} delta={s?.earningsDelta ?? 0} icon={<Wallet className="h-5 w-5" />} color="from-neon-orange to-neon-pink" index={1} />
+        <StatCard
+          label="Lifetime earnings"
+          value={s?.lifetimeEarnings ?? formatINR(0)}
+          delta={s?.earningsDelta ?? 0}
+          icon={<IndianRupee className="h-5 w-5" />}
+          color="from-neon-purple to-neon-pink"
+          index={0}
+        />
+        <StatCard
+          label="This month"
+          value={s?.earnings ?? formatINR(0)}
+          delta={s?.earningsDelta ?? 0}
+          icon={<Wallet className="h-5 w-5" />}
+          color="from-neon-orange to-neon-pink"
+          index={1}
+        />
       </div>
 
       <h2 className="font-display text-xl font-bold mb-4">Revenue sources (30d)</h2>
@@ -73,7 +88,7 @@ export default async function EarningsPage() {
                 {row.source}
               </p>
               <p className="font-display text-2xl font-extrabold mt-1">
-                ${row.amount.toFixed(2)}
+                {formatINR(row.amount)}
               </p>
             </div>
           );
@@ -82,28 +97,34 @@ export default async function EarningsPage() {
 
       <h2 className="font-display text-xl font-bold mt-10 mb-4">Payout history</h2>
       <div className="rounded-2xl border bg-card overflow-hidden">
-        <table className="w-full">
-          <thead className="text-left text-xs uppercase tracking-widest text-muted-foreground bg-muted/40">
-            <tr>
-              <th className="p-4">Date</th>
-              <th className="p-4">Method</th>
-              <th className="p-4">Amount</th>
-              <th className="p-4">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {payouts.map((p) => (
-              <tr key={p.date + p.amount} className="border-t border-border/40 text-sm">
-                <td className="p-4">{p.date}</td>
-                <td className="p-4">{p.method}</td>
-                <td className="p-4 font-semibold">${p.amount.toFixed(2)}</td>
-                <td className="p-4">
-                  <Badge variant="success">{p.status}</Badge>
-                </td>
+        {payouts.length > 0 ? (
+          <table className="w-full">
+            <thead className="text-left text-xs uppercase tracking-widest text-muted-foreground bg-muted/40">
+              <tr>
+                <th className="p-4">Date</th>
+                <th className="p-4">Method</th>
+                <th className="p-4">Amount</th>
+                <th className="p-4">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {payouts.map((p, i) => (
+                <tr key={`${p.date}-${p.amount}-${i}`} className="border-t border-border/40 text-sm">
+                  <td className="p-4">{p.date}</td>
+                  <td className="p-4">{p.method}</td>
+                  <td className="p-4 font-semibold">{formatINR(p.amount)}</td>
+                  <td className="p-4">
+                    <Badge variant="success">{p.status}</Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="p-8 text-center text-sm text-muted-foreground">
+            No payouts yet. Tips and revenue will show up here.
+          </p>
+        )}
       </div>
     </div>
   );

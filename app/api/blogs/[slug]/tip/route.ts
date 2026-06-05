@@ -54,8 +54,17 @@ export async function POST(
       }),
       prisma.wallet.upsert({
         where: { userId: blog.authorId },
-        create: { userId: blog.authorId, balance: amount },
+        create: { userId: blog.authorId, balance: amount, currency: "INR" },
         update: { balance: { increment: amount } },
+      }),
+      prisma.revenue.create({
+        data: {
+          userId: blog.authorId,
+          source: "TIP",
+          amount,
+          currency: "INR",
+          reference: `tip:${blog.id}`,
+        },
       }),
     ]);
 

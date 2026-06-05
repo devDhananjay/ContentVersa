@@ -100,7 +100,7 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-1.5">
               <Label>Default currency</Label>
-              <Input defaultValue="USD" />
+              <Input defaultValue="INR" />
             </div>
           </div>
         </section>
