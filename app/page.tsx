@@ -11,17 +11,23 @@ import { QuickPollSection } from "@/components/home/quick-poll";
 import { NewsIn60Section } from "@/components/home/news-in-60";
 import { Newsletter } from "@/components/home/newsletter";
 import { Testimonials } from "@/components/home/testimonials";
+import { SportsTeaser } from "@/components/home/sports-teaser";
 import { getHomePageData } from "@/lib/data/home-data";
+import { getSportsTeaserData } from "@/lib/sports/data";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const data = await getHomePageData();
+  const [data, sportsTeaser] = await Promise.all([
+    getHomePageData(),
+    getSportsTeaserData(),
+  ]);
 
   return (
     <>
       <Hero stats={data.stats} categories={data.categories} />
       <TrendingSection blogs={data.trending} />
+      <SportsTeaser data={sportsTeaser} />
       <NewsIn60Section blogs={data.trending} />
       <FeaturedCreators creators={data.creators} />
       <PopularCategories categories={data.categories} />

@@ -348,6 +348,43 @@ export const BLOGS: Blog[] = [
     author: AUTHORS[3],
     trending: true,
   },
+  {
+    id: "b13",
+    slug: "india-test-transition-2026",
+    title: "India's Test Transition: What the Afghanistan Match Really Means",
+    excerpt:
+      "The one-off Test isn't about WTC points — it's about how India handles format switches, new leadership and a squad in flux.",
+    content: longContent("India's Test Transition: What the Afghanistan Match Really Means"),
+    coverImage: baseCover("photo-1531419140105-6e857e659f72"),
+    readingTime: 7,
+    views: 31_200,
+    likes: 2_840,
+    comments: 87,
+    category: "sports",
+    tags: ["cricket", "india", "test-cricket"],
+    publishedAt: "2026-06-04",
+    author: AUTHORS[2],
+    featured: true,
+    trending: true,
+  },
+  {
+    id: "b14",
+    slug: "t20-vs-test-mindset-for-creators",
+    title: "T20 vs Test Mindset: Lessons Creators Can Steal From Cricket",
+    excerpt:
+      "Short-form hustle and long-form depth aren't opposites. The best players — and creators — know when to switch gears.",
+    content: longContent("T20 vs Test Mindset: Lessons Creators Can Steal From Cricket"),
+    coverImage: baseCover("photo-1624526267942-ab0ff8a3e972"),
+    readingTime: 6,
+    views: 18_400,
+    likes: 1_920,
+    comments: 54,
+    category: "sports",
+    tags: ["cricket", "creators", "mindset"],
+    publishedAt: "2026-06-01",
+    author: AUTHORS[5],
+    editorPick: true,
+  },
 ];
 
 export function getBlogBySlug(slug: string) {

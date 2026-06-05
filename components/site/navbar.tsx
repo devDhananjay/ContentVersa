@@ -13,6 +13,7 @@ import {
   Trophy,
   Bookmark,
   LayoutDashboard,
+  Medal,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { UserNav, MobileUserNav } from "@/components/auth/user-nav";
@@ -25,6 +26,7 @@ import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { href: "/blogs", label: "Explore", icon: Compass },
+  { href: "/sports", label: "Sports", icon: Medal },
   { href: "/categories", label: "Categories", icon: LayoutDashboard },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/bookmarks", label: "Bookmarks", icon: Bookmark },
