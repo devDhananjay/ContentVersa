@@ -1,0 +1,1 @@
+"use strict";(()=>{var a={};a.id=6183,a.ids=[6183],a.modules={52586:(a,b,c)=>{async function d(){let{startSportsAutoSync:a}=await c.e(531).then(c.bind(c,20531));a()}c.r(b),c.d(b,{register:()=>d})},96330:a=>{a.exports=require("@prisma/client")}};var b=require("./webpack-runtime.js");b.C(a);var c=b(b.s=52586);module.exports=c})();

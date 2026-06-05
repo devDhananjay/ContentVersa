@@ -100,6 +100,14 @@
         {
           "protocol": "https",
           "hostname": "fastly.picsum.photos"
+        },
+        {
+          "protocol": "https",
+          "hostname": "www.cricbuzz.com"
+        },
+        {
+          "protocol": "https",
+          "hostname": "cricbuzz.com"
         }
       ],
       "unoptimized": false
@@ -200,7 +208,7 @@
       "middlewarePrefetch": "flexible",
       "optimisticClientCache": true,
       "manualClientBasePath": false,
-      "cpus": 7,
+      "cpus": 1,
       "memoryBasedWorkersCount": false,
       "imgOptConcurrency": null,
       "imgOptTimeoutInSeconds": 7,
@@ -355,7 +363,8 @@
     ".next/BUILD_ID",
     ".next/server/next-font-manifest.js",
     ".next/server/next-font-manifest.json",
-    ".next/required-server-files.json"
+    ".next/required-server-files.json",
+    ".next/server/instrumentation.js"
   ],
   "ignore": [
     "node_modules/next/dist/compiled/@ampproject/toolbox-optimizer/**/*"

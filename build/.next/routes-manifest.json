@@ -176,6 +176,79 @@
       "namedRegex": "^/api/site/pages/(?<nxtPslug>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/sports/matches/[id]",
+      "regex": "^/api/sports/matches/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/sports/matches/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/sports/matches/[id]/commentary",
+      "regex": "^/api/sports/matches/([^/]+?)/commentary(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/sports/matches/(?<nxtPid>[^/]+?)/commentary(?:/)?$"
+    },
+    {
+      "page": "/api/sports/matches/[id]/scorecard",
+      "regex": "^/api/sports/matches/([^/]+?)/scorecard(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/sports/matches/(?<nxtPid>[^/]+?)/scorecard(?:/)?$"
+    },
+    {
+      "page": "/api/sports/news/[id]",
+      "regex": "^/api/sports/news/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/sports/news/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/sports/players/[id]",
+      "regex": "^/api/sports/players/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/sports/players/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/sports/series/[id]",
+      "regex": "^/api/sports/series/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/sports/series/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/sports/series/[id]/points-table",
+      "regex": "^/api/sports/series/([^/]+?)/points\\-table(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/sports/series/(?<nxtPid>[^/]+?)/points\\-table(?:/)?$"
+    },
+    {
+      "page": "/api/sports/series/[id]/squads/[squadId]",
+      "regex": "^/api/sports/series/([^/]+?)/squads/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid",
+        "nxtPsquadId": "nxtPsquadId"
+      },
+      "namedRegex": "^/api/sports/series/(?<nxtPid>[^/]+?)/squads/(?<nxtPsquadId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/sports/teams/[id]",
+      "regex": "^/api/sports/teams/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/sports/teams/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/users/[username]/follow",
       "regex": "^/api/users/([^/]+?)/follow(?:/)?$",
       "routeKeys": {
@@ -214,6 +287,46 @@
         "nxtPusername": "nxtPusername"
       },
       "namedRegex": "^/profile/(?<nxtPusername>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/sports/match/[id]",
+      "regex": "^/sports/match/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/sports/match/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/sports/news/[id]",
+      "regex": "^/sports/news/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/sports/news/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/sports/player/[id]",
+      "regex": "^/sports/player/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/sports/player/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/sports/series/[id]",
+      "regex": "^/sports/series/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/sports/series/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/sports/team/[id]",
+      "regex": "^/sports/team/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/sports/team/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
       "page": "/uploads/[filename]",
@@ -464,6 +577,24 @@
       "regex": "^/sitemap\\.xml(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/sitemap\\.xml(?:/)?$"
+    },
+    {
+      "page": "/sports",
+      "regex": "^/sports(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sports(?:/)?$"
+    },
+    {
+      "page": "/sports/players",
+      "regex": "^/sports/players(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sports/players(?:/)?$"
+    },
+    {
+      "page": "/sports/teams",
+      "regex": "^/sports/teams(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sports/teams(?:/)?$"
     },
     {
       "page": "/terms",

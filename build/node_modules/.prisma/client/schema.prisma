@@ -665,3 +665,28 @@ model SiteVisitor {
   @@index([userId])
   @@index([firstSeen])
 }
+
+// ---------------------- Sports API cache ----------------------
+
+/// Stores raw Cricbuzz API responses synced hourly by cron (avoids rate limits).
+model SportsApiCache {
+  id        String   @id @default(cuid())
+  cacheKey  String   @unique
+  endpoint  String
+  payload   Json
+  syncedAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([syncedAt])
+}
+
+model SportsSyncRun {
+  id         String   @id @default(cuid())
+  status     String
+  endpoints  Int      @default(0)
+  errors     Json     @default("[]")
+  durationMs Int?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
