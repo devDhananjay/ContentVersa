@@ -10,10 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SocialButtons } from "@/components/auth/social-buttons";
 import {
+  clearRememberedCredentials,
   getLoginSuggestions,
-  getRememberedIdentifier,
+  getRememberedCredentials,
   isRememberMeEnabled,
-  setRememberedIdentifier,
+  setRememberedCredentials,
 } from "@/lib/auth/remembered-login";
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
@@ -39,8 +40,11 @@ export function SignInForm() {
   );
 
   React.useEffect(() => {
-    const remembered = getRememberedIdentifier();
-    if (remembered) setEmail(remembered);
+    const saved = getRememberedCredentials();
+    if (saved) {
+      setEmail(saved.identifier);
+      if (saved.password) setPassword(saved.password);
+    }
     setRememberMe(isRememberMeEnabled());
     setSuggestions(getLoginSuggestions());
   }, []);
@@ -68,9 +72,9 @@ export function SignInForm() {
       if (!res.ok) throw new Error(data.error || "Sign in failed");
 
       if (rememberMe) {
-        setRememberedIdentifier(email.trim());
+        setRememberedCredentials(email.trim(), password);
       } else {
-        setRememberedIdentifier(null);
+        clearRememberedCredentials();
       }
 
       const adminRoles = ["MODERATOR", "ADMIN", "SUPER_ADMIN"];
@@ -116,7 +120,7 @@ export function SignInForm() {
             id="email"
             name="email"
             type="text"
-            autoComplete="username"
+            autoComplete={rememberMe ? "username" : "off"}
             list="cv-login-suggestions"
             placeholder="you@email.com or username"
             value={email}
@@ -146,7 +150,7 @@ export function SignInForm() {
               id="password"
               name="password"
               type={show ? "text" : "password"}
-              autoComplete="current-password"
+              autoComplete={rememberMe ? "current-password" : "off"}
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

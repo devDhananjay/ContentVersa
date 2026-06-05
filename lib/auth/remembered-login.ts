@@ -1,6 +1,12 @@
-const IDENTIFIER_KEY = "contentverse.rememberedIdentifier";
+const CREDENTIALS_KEY = "contentverse.rememberedCredentials";
+const LEGACY_IDENTIFIER_KEY = "contentverse.rememberedIdentifier";
 const SUGGESTIONS_KEY = "contentverse.loginSuggestions";
 const MAX_SUGGESTIONS = 8;
+
+export type RememberedCredentials = {
+  identifier: string;
+  password: string;
+};
 
 function readSuggestions(): string[] {
   if (typeof window === "undefined") return [];
@@ -15,9 +21,33 @@ function readSuggestions(): string[] {
   }
 }
 
-export function getRememberedIdentifier(): string | null {
+export function getRememberedCredentials(): RememberedCredentials | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem(IDENTIFIER_KEY);
+
+  try {
+    const raw = localStorage.getItem(CREDENTIALS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<RememberedCredentials>;
+      if (parsed.identifier?.trim()) {
+        return {
+          identifier: parsed.identifier.trim(),
+          password: typeof parsed.password === "string" ? parsed.password : "",
+        };
+      }
+    }
+  } catch {
+    /* fall through to legacy key */
+  }
+
+  const legacy = localStorage.getItem(LEGACY_IDENTIFIER_KEY)?.trim();
+  if (legacy) return { identifier: legacy, password: "" };
+
+  return null;
+}
+
+/** @deprecated Use getRememberedCredentials */
+export function getRememberedIdentifier(): string | null {
+  return getRememberedCredentials()?.identifier ?? null;
 }
 
 export function getLoginSuggestions(): string[] {
@@ -43,17 +73,37 @@ export function addLoginSuggestion(identifier: string) {
   );
 }
 
-export function setRememberedIdentifier(identifier: string | null) {
+export function setRememberedCredentials(
+  identifier: string,
+  password: string
+) {
   if (typeof window === "undefined") return;
-  const trimmed = identifier?.trim();
-  if (trimmed) {
-    localStorage.setItem(IDENTIFIER_KEY, trimmed);
-    addLoginSuggestion(trimmed);
-  } else {
-    localStorage.removeItem(IDENTIFIER_KEY);
+  const id = identifier.trim();
+  if (!id) return;
+
+  localStorage.setItem(
+    CREDENTIALS_KEY,
+    JSON.stringify({ identifier: id, password })
+  );
+  localStorage.removeItem(LEGACY_IDENTIFIER_KEY);
+  addLoginSuggestion(id);
+}
+
+export function clearRememberedCredentials() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(CREDENTIALS_KEY);
+  localStorage.removeItem(LEGACY_IDENTIFIER_KEY);
+}
+
+/** @deprecated Use setRememberedCredentials / clearRememberedCredentials */
+export function setRememberedIdentifier(identifier: string | null) {
+  if (!identifier?.trim()) {
+    clearRememberedCredentials();
+    return;
   }
+  setRememberedCredentials(identifier, "");
 }
 
 export function isRememberMeEnabled(): boolean {
-  return Boolean(getRememberedIdentifier());
+  return Boolean(getRememberedCredentials());
 }
