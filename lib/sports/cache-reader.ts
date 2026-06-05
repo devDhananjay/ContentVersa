@@ -1,8 +1,7 @@
 import { isDatabaseConfigured } from "@/lib/prisma";
 import { cache as redisCache } from "@/lib/redis";
 import { getSportsDbCache, isSportsDbReady } from "./db-cache";
-import { scheduleSportsSync } from "./auto-sync";
-import { cricbuzzFetch, SportsApiError } from "./cricbuzz-client";
+import { SportsApiError, cricbuzzFetch } from "./cricbuzz-client";
 
 export function isSportsDbCacheEnabled(): boolean {
   return (
@@ -46,8 +45,6 @@ export async function readSportsPayload<T>(
   if (await useDbSportsCache()) {
     const cached = await getSportsDbCache<T>(cacheKey);
     if (cached !== null) return cached;
-
-    scheduleSportsSync("cache-miss");
 
     if (process.env.SPORTS_ALLOW_LIVE_FALLBACK === "1") {
       const value = await loader();

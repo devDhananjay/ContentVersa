@@ -88,7 +88,7 @@ async function runSportsSyncIfNeeded(reason: string): Promise<void> {
   if (syncInProgress) return;
   if (!(await isSportsDbReady())) return;
 
-  const force = reason === "startup" || reason === "cache-miss";
+  const force = reason === "startup";
   if (!force && !(await isSportsSyncDue())) return;
 
   syncInProgress = true;
