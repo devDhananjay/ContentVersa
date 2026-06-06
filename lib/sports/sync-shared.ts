@@ -1,6 +1,6 @@
 import { SportsApiError, cricbuzzFetch } from "./cricbuzz-client";
 import { setSportsDbCache } from "./db-cache";
-import { canMakeApiCall, recordApiCall } from "./quota";
+import { canMakeApiCall, markMonthlyQuotaExhausted, recordApiCall } from "./quota";
 
 export type SyncStepResult =
   | "ok"
@@ -44,7 +44,10 @@ export async function syncEndpoint(
     await recordApiCall();
     const msg = err instanceof Error ? err.message : String(err);
     errors.push(`${cacheKey}: ${msg.slice(0, 120)}`);
-    if (isMonthlyQuotaError(err)) return "quota_exhausted";
+    if (isMonthlyQuotaError(err)) {
+      await markMonthlyQuotaExhausted();
+      return "quota_exhausted";
+    }
     if (isRateLimitError(err)) return "rate_limited";
     return "fail";
   }

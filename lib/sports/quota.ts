@@ -89,6 +89,14 @@ export async function recordApiCall(): Promise<QuotaStatus> {
   return getQuotaStatus();
 }
 
+/** Mark monthly quota as fully used (after RapidAPI MONTHLY quota error). */
+export async function markMonthlyQuotaExhausted(): Promise<QuotaStatus> {
+  const state = await loadQuotaState();
+  state.monthCount = MONTHLY_API_LIMIT;
+  await saveQuotaState(state);
+  return getQuotaStatus();
+}
+
 export function formatQuotaMessage(status: QuotaStatus): string {
   return `${status.monthUsed}/${status.monthLimit} monthly, ${status.hourUsed}/${status.hourLimit} this hour`;
 }
