@@ -6,11 +6,11 @@ import {
   setSportsDbCache,
 } from "./db-cache";
 import {
-  isRateLimitError,
-  syncEndpoint,
-  type SyncStepResult,
-} from "./sync-shared";
+  formatQuotaMessage,
+  getQuotaStatus,
+} from "./quota";
 import { rebuildPlayerIndexFromCache } from "./sync-helpers";
+import { syncEndpoint, type SyncStepResult } from "./sync-shared";
 import {
   parseMatchesResponse,
   parseNewsIndex,
@@ -21,9 +21,10 @@ import {
 } from "./transformers";
 
 const BOOTSTRAP_CURSOR_KEY = "sports:sync:bootstrap-cursor";
-const COOLDOWN_KEY = "sports:sync:cooldown";
 const SYNC_DELAY_MS = Number(process.env.SPORTS_SYNC_DELAY_MS ?? 1500);
-const HOURLY_WAIT_MS = Number(process.env.SPORTS_BOOTSTRAP_WAIT_MS ?? 3_700_000);
+
+/** Max calls per bootstrap run — spread 200/month across several days. */
+const BOOTSTRAP_MAX_CALLS = Number(process.env.SPORTS_BOOTSTRAP_MAX_CALLS ?? 15);
 
 const STATIC_ENDPOINTS = [
   { key: SPORTS_CACHE.live.key, path: "/matches/v1/live" },
@@ -54,10 +55,6 @@ const STATIC_ENDPOINTS = [
 interface BootstrapCursor {
   phase: 1 | 2;
   index: number;
-}
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function uniqueNumbers(values: number[]): number[] {
@@ -96,7 +93,7 @@ async function buildDynamicEndpoints(): Promise<{ key: string; path: string }[]>
       ...collectMatchIds(liveRaw),
       ...collectMatchIds(upcomingRaw),
       ...collectMatchIds(recentRaw),
-    ].slice(0, 25)
+    ].slice(0, 5)
   );
 
   for (const id of matchIds) {
@@ -105,17 +102,13 @@ async function buildDynamicEndpoints(): Promise<{ key: string; path: string }[]>
       {
         key: SPORTS_CACHE.matchScorecard(id).key,
         path: `/mcenter/v1/${id}/scard`,
-      },
-      {
-        key: SPORTS_CACHE.matchCommentary(id).key,
-        path: `/mcenter/v1/${id}/comm`,
       }
     );
   }
 
   if (newsRaw) {
     for (const id of uniqueNumbers(
-      parseNewsIndex(newsRaw).slice(0, 20).map((n) => n.id)
+      parseNewsIndex(newsRaw).slice(0, 3).map((n) => n.id)
     )) {
       endpoints.push({
         key: SPORTS_CACHE.newsDetail(id).key,
@@ -125,88 +118,43 @@ async function buildDynamicEndpoints(): Promise<{ key: string; path: string }[]>
   }
 
   if (seriesRaw) {
-    const seriesIds = uniqueNumbers(
+    for (const seriesId of uniqueNumbers(
       parseSeriesList(seriesRaw).map((s) => s.id)
-    ).slice(0, 15);
-
-    const upcomingMatches = upcomingRaw ? parseMatchesResponse(upcomingRaw) : [];
-    const extraSeriesIds = uniqueNumbers(upcomingMatches.map((m) => m.seriesId));
-    const allSeriesIds = uniqueNumbers([...seriesIds, ...extraSeriesIds]).slice(
-      0,
-      15
-    );
-
-    for (const seriesId of allSeriesIds) {
-      endpoints.push(
-        {
-          key: SPORTS_CACHE.seriesDetail(seriesId).key,
-          path: `/series/v1/${seriesId}`,
-        },
-        {
-          key: SPORTS_CACHE.seriesSquads(seriesId).key,
-          path: `/series/v1/${seriesId}/squads`,
-        },
-        {
-          key: SPORTS_CACHE.pointsTable(seriesId).key,
-          path: `/stats/v1/series/${seriesId}/points-table`,
-        },
-        {
-          key: SPORTS_CACHE.seriesNews(seriesId).key,
-          path: `/news/v1/series/${seriesId}`,
-        }
-      );
+    ).slice(0, 3)) {
+      endpoints.push({
+        key: SPORTS_CACHE.seriesDetail(seriesId).key,
+        path: `/series/v1/${seriesId}`,
+      });
     }
   }
 
   if (teamsRaw) {
-    for (const teamId of uniqueNumbers(parseTeamsList(teamsRaw).map((t) => t.id))) {
-      endpoints.push(
-        {
-          key: SPORTS_CACHE.teamPlayers(teamId).key,
-          path: `/teams/v1/${teamId}/players`,
-        },
-        {
-          key: SPORTS_CACHE.teamSchedule(teamId).key,
-          path: `/teams/v1/${teamId}/schedule`,
-        },
-        {
-          key: SPORTS_CACHE.teamResults(teamId).key,
-          path: `/teams/v1/${teamId}/results`,
-        }
-      );
+    for (const teamId of uniqueNumbers(
+      parseTeamsList(teamsRaw).map((t) => t.id)
+    ).slice(0, 5)) {
+      endpoints.push({
+        key: SPORTS_CACHE.teamPlayers(teamId).key,
+        path: `/teams/v1/${teamId}/players`,
+      });
     }
   }
 
   if (trendingRaw) {
-    for (const p of parseTrendingPlayers(trendingRaw).slice(0, 15)) {
-      endpoints.push(
-        {
-          key: SPORTS_CACHE.playerProfile(p.id).key,
-          path: `/stats/v1/player/${p.id}`,
-        },
-        {
-          key: SPORTS_CACHE.playerBatting(p.id).key,
-          path: `/stats/v1/player/${p.id}/batting`,
-        },
-        {
-          key: SPORTS_CACHE.playerBowling(p.id).key,
-          path: `/stats/v1/player/${p.id}/bowling`,
-        },
-        {
-          key: SPORTS_CACHE.playerNews(p.id).key,
-          path: `/news/v1/player/${p.id}`,
-        }
-      );
+    for (const p of parseTrendingPlayers(trendingRaw).slice(0, 3)) {
+      endpoints.push({
+        key: SPORTS_CACHE.playerProfile(p.id).key,
+        path: `/stats/v1/player/${p.id}`,
+      });
     }
   }
 
   if (teamsRaw) {
-    for (const team of parseTeamsList(teamsRaw)) {
+    for (const team of parseTeamsList(teamsRaw).slice(0, 3)) {
       const playersRaw = await getSportsDbCache(
         SPORTS_CACHE.teamPlayers(team.id).key
       );
       if (!playersRaw) continue;
-      for (const p of parseTeamPlayers(playersRaw).slice(0, 20)) {
+      for (const p of parseTeamPlayers(playersRaw).slice(0, 2)) {
         endpoints.push({
           key: SPORTS_CACHE.playerProfile(p.id).key,
           path: `/stats/v1/player/${p.id}`,
@@ -227,22 +175,19 @@ async function setBootstrapCursor(cursor: BootstrapCursor): Promise<void> {
   await setSportsDbCache(BOOTSTRAP_CURSOR_KEY, "meta", cursor);
 }
 
-async function clearBootstrapState(): Promise<void> {
-  await setSportsDbCache(COOLDOWN_KEY, "meta", { until: new Date(0).toISOString() });
-}
-
-async function syncQueue(
+async function syncQueueWithQuotaCap(
   queue: { key: string; path: string }[],
   startIndex: number,
   force: boolean,
-  waitOnRateLimit: boolean,
+  maxCalls: number,
   errors: string[],
   stats: { synced: number; skipped: number },
   onProgress?: (index: number) => Promise<void>
-): Promise<{ nextIndex: number; complete: boolean; rateLimited: boolean }> {
+): Promise<{ nextIndex: number; complete: boolean; stopped: SyncStepResult | "ok" }> {
   let index = startIndex;
+  let calls = 0;
 
-  while (index < queue.length) {
+  while (index < queue.length && calls < maxCalls) {
     const ep = queue[index];
 
     if (!force) {
@@ -264,29 +209,27 @@ async function syncQueue(
 
     if (result === "ok") {
       stats.synced += 1;
+      calls += 1;
       index += 1;
       await onProgress?.(index);
       continue;
     }
 
-    if (result === "rate_limited") {
+    if (result === "quota_exhausted" || result === "rate_limited") {
       await onProgress?.(index);
-      if (waitOnRateLimit) {
-        console.info(
-          `[sports bootstrap] rate limit — waiting ${Math.round(HOURLY_WAIT_MS / 60000)} min then resuming at ${index}/${queue.length}…`
-        );
-        await sleep(HOURLY_WAIT_MS);
-        await clearBootstrapState();
-        continue;
-      }
-      return { nextIndex: index, complete: false, rateLimited: true };
+      return { nextIndex: index, complete: false, stopped: result };
     }
 
     index += 1;
+    calls += 1;
     await onProgress?.(index);
   }
 
-  return { nextIndex: index, complete: true, rateLimited: false };
+  return {
+    nextIndex: index,
+    complete: index >= queue.length,
+    stopped: "ok",
+  };
 }
 
 export interface BootstrapSyncResult {
@@ -297,18 +240,18 @@ export interface BootstrapSyncResult {
   errors: string[];
   durationMs: number;
   complete: boolean;
+  quotaMessage?: string;
 }
 
 export async function syncSportsBootstrap(options?: {
   force?: boolean;
-  waitOnRateLimit?: boolean;
 }): Promise<BootstrapSyncResult> {
   const started = Date.now();
   const errors: string[] = [];
   const stats = { synced: 0, skipped: 0 };
   const force = options?.force ?? process.env.SPORTS_BOOTSTRAP_FORCE === "1";
-  const waitOnRateLimit = options?.waitOnRateLimit ?? true;
 
+  const quotaBefore = await getQuotaStatus();
   if (!isSportsApiConfigured()) {
     return {
       ok: false,
@@ -321,63 +264,91 @@ export async function syncSportsBootstrap(options?: {
     };
   }
 
-  await clearBootstrapState();
+  if (quotaBefore.monthExhausted) {
+    return {
+      ok: false,
+      synced: 0,
+      skipped: 0,
+      total: 0,
+      errors: [`Monthly quota exhausted (${formatQuotaMessage(quotaBefore)})`],
+      durationMs: Date.now() - started,
+      complete: false,
+      quotaMessage: formatQuotaMessage(quotaBefore),
+    };
+  }
+
+  const budget = Math.min(quotaBefore.monthRemaining, BOOTSTRAP_MAX_CALLS);
+  let callsLeft = budget;
 
   let cursor = await getBootstrapCursor();
   let phase = cursor.phase;
   let index = cursor.index;
+  let complete = false;
 
-  // Phase 1 — static lists (teams, series, matches, rankings, etc.)
-  if (phase === 1) {
-    const staticResult = await syncQueue(
+  if (phase === 1 && callsLeft > 0) {
+    const syncedBefore = stats.synced;
+    const staticResult = await syncQueueWithQuotaCap(
       STATIC_ENDPOINTS,
       index,
       force,
-      waitOnRateLimit,
+      callsLeft,
       errors,
       stats,
       async (i) => setBootstrapCursor({ phase: 1, index: i })
     );
     index = staticResult.nextIndex;
+    callsLeft -= stats.synced - syncedBefore;
 
-    if (!staticResult.complete) {
-      await setBootstrapCursor({ phase: 1, index });
+    if (staticResult.stopped !== "ok" || !staticResult.complete) {
       await rebuildPlayerIndexFromCache();
-      return finishBootstrap(started, stats, errors, false, STATIC_ENDPOINTS.length);
+      const quota = await getQuotaStatus();
+      return {
+        ...(await finishBootstrap(
+          started,
+          stats,
+          errors,
+          false,
+          STATIC_ENDPOINTS.length
+        )),
+        quotaMessage: formatQuotaMessage(quota),
+      };
     }
 
     phase = 2;
     index = 0;
   }
 
-  // Phase 2 — dynamic detail endpoints (built after static data is in DB)
   const dynamicQueue = await buildDynamicEndpoints();
-  const dynamicResult = await syncQueue(
-    dynamicQueue,
-    index,
-    force,
-    waitOnRateLimit,
-    errors,
-    stats,
-    async (i) => setBootstrapCursor({ phase: 2, index: i })
-  );
+  const total = STATIC_ENDPOINTS.length + dynamicQueue.length;
 
-  const complete = dynamicResult.complete;
-  if (complete) {
-    await setBootstrapCursor({ phase: 1, index: 0 });
-  } else {
-    await setBootstrapCursor({ phase: 2, index: dynamicResult.nextIndex });
+  if (phase === 2 && callsLeft > 0) {
+    const syncedBefore = stats.synced;
+    const dynamicResult = await syncQueueWithQuotaCap(
+      dynamicQueue,
+      index,
+      force,
+      callsLeft,
+      errors,
+      stats,
+      async (i) => setBootstrapCursor({ phase: 2, index: i })
+    );
+
+    callsLeft -= stats.synced - syncedBefore;
+    complete = dynamicResult.complete && dynamicResult.stopped === "ok";
+
+    if (complete) {
+      await setBootstrapCursor({ phase: 1, index: 0 });
+    } else {
+      await setBootstrapCursor({ phase: 2, index: dynamicResult.nextIndex });
+    }
   }
 
   await rebuildPlayerIndexFromCache();
-
-  return finishBootstrap(
-    started,
-    stats,
-    errors,
-    complete,
-    STATIC_ENDPOINTS.length + dynamicQueue.length
-  );
+  const quota = await getQuotaStatus();
+  return {
+    ...(await finishBootstrap(started, stats, errors, complete, total)),
+    quotaMessage: formatQuotaMessage(quota),
+  };
 }
 
 async function finishBootstrap(
@@ -388,6 +359,8 @@ async function finishBootstrap(
   total: number
 ): Promise<BootstrapSyncResult> {
   const durationMs = Date.now() - started;
+  const quota = await getQuotaStatus();
+
   await logSportsSyncRun({
     status: complete ? "success" : stats.synced > 0 ? "partial" : "failed",
     endpoints: stats.synced,
@@ -403,12 +376,14 @@ async function finishBootstrap(
     errors,
     durationMs,
     complete,
+    quotaMessage: formatQuotaMessage(quota),
   };
 }
 
 export async function getBootstrapQueueSize(): Promise<number> {
-  const dynamic = await buildDynamicEndpoints();
-  return STATIC_ENDPOINTS.length + dynamic.length;
+  return STATIC_ENDPOINTS.length + (await buildDynamicEndpoints()).length;
 }
 
-export { isRateLimitError };
+export function estimateBootstrapDays(totalEndpoints: number): number {
+  return Math.ceil(totalEndpoints / BOOTSTRAP_MAX_CALLS);
+}

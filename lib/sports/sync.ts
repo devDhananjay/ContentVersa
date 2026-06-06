@@ -6,58 +6,70 @@ import {
   logSportsSyncRun,
   setSportsDbCache,
 } from "./db-cache";
+import { formatQuotaMessage, getQuotaStatus } from "./quota";
 import { rebuildPlayerIndexFromCache } from "./sync-helpers";
-import {
-  isRateLimitError,
-  syncEndpoint,
-} from "./sync-shared";
-import {
-  parseMatchesResponse,
-  parseNewsIndex,
-  parseSeriesList,
-  parseTeamsList,
-} from "./transformers";
+import { syncEndpoint } from "./sync-shared";
 
 export {
   isRateLimitError,
   isMonthlyQuotaError,
 } from "./sync-shared";
 
-const SYNC_DELAY_MS = Number(process.env.SPORTS_SYNC_DELAY_MS ?? 1200);
-const MAX_CALLS_PER_RUN = Number(process.env.SPORTS_SYNC_MAX_CALLS ?? 8);
-const MAX_PLAYER_DETAILS_PER_RUN = Number(
-  process.env.SPORTS_SYNC_MAX_PLAYERS ?? 4
-);
-const MAX_NEWS_DETAILS = 3;
-const MAX_LIVE_MATCH_DETAILS = 2;
-const MAX_TEAMS_PER_RUN = 2;
+/** Basic plan: ~6 calls/day → 180/month with buffer (200 hard limit). */
+const SYNC_DELAY_MS = Number(process.env.SPORTS_SYNC_DELAY_MS ?? 1500);
+const MAX_CALLS_PER_RUN = Number(process.env.SPORTS_SYNC_MAX_CALLS ?? 1);
 
 const COOLDOWN_KEY = "sports:sync:cooldown";
 const CURSOR_KEY = "sports:sync:cursor";
 
-const STATIC_QUEUE: { key: string; path: string }[] = [
-  { key: SPORTS_CACHE.live.key, path: "/matches/v1/live" },
-  { key: SPORTS_CACHE.upcoming.key, path: "/matches/v1/upcoming" },
-  { key: SPORTS_CACHE.recent.key, path: "/matches/v1/recent" },
-  { key: SPORTS_CACHE.news.key, path: "/news/v1/index" },
-  { key: SPORTS_CACHE.schedule.key, path: "/schedule/v1/international" },
-  { key: SPORTS_CACHE.teams.key, path: "/teams/v1/international" },
-  { key: SPORTS_CACHE.series.key, path: "/series/v1/international" },
+/** Ordered by importance — hub first, then lists, then stats. */
+const PRIORITY_QUEUE: { key: string; path: string; staleMs: number }[] = [
+  { key: SPORTS_CACHE.live.key, path: "/matches/v1/live", staleMs: 30 * 60_000 },
+  {
+    key: SPORTS_CACHE.upcoming.key,
+    path: "/matches/v1/upcoming",
+    staleMs: 6 * 3600_000,
+  },
+  {
+    key: SPORTS_CACHE.recent.key,
+    path: "/matches/v1/recent",
+    staleMs: 6 * 3600_000,
+  },
+  { key: SPORTS_CACHE.news.key, path: "/news/v1/index", staleMs: 6 * 3600_000 },
+  {
+    key: SPORTS_CACHE.schedule.key,
+    path: "/schedule/v1/international",
+    staleMs: 24 * 3600_000,
+  },
+  {
+    key: SPORTS_CACHE.teams.key,
+    path: "/teams/v1/international",
+    staleMs: 24 * 3600_000,
+  },
+  {
+    key: SPORTS_CACHE.series.key,
+    path: "/series/v1/international",
+    staleMs: 24 * 3600_000,
+  },
   {
     key: SPORTS_CACHE.rankings("odi").key,
     path: "/stats/v1/rankings/batsmen?formatType=odi",
+    staleMs: 7 * 24 * 3600_000,
   },
   {
     key: SPORTS_CACHE.rankings("t20").key,
     path: "/stats/v1/rankings/batsmen?formatType=t20",
+    staleMs: 7 * 24 * 3600_000,
   },
   {
     key: SPORTS_CACHE.rankings("test").key,
     path: "/stats/v1/rankings/batsmen?formatType=test",
+    staleMs: 7 * 24 * 3600_000,
   },
   {
     key: SPORTS_CACHE.trendingPlayers.key,
     path: "/stats/v1/player/trending",
+    staleMs: 24 * 3600_000,
   },
 ];
 
@@ -73,36 +85,6 @@ async function setRateLimitCooldown(ms = 3600_000): Promise<void> {
   });
 }
 
-function uniqueNumbers(values: number[]): number[] {
-  return [...new Set(values.filter((n) => Number.isFinite(n) && n > 0))];
-}
-
-function collectMatchIds(...rawLists: unknown[]): number[] {
-  const ids: number[] = [];
-  for (const raw of rawLists) {
-    if (!raw) continue;
-    parseMatchesResponse(raw).forEach((m) => ids.push(m.id));
-  }
-  return uniqueNumbers(ids);
-}
-
-function collectNewsIds(raw: unknown): number[] {
-  if (!raw) return [];
-  return uniqueNumbers(
-    parseNewsIndex(raw).slice(0, MAX_NEWS_DETAILS).map((n) => n.id)
-  );
-}
-
-function collectTeamIds(raw: unknown): number[] {
-  if (!raw) return [];
-  return uniqueNumbers(parseTeamsList(raw).map((t) => t.id));
-}
-
-function collectSeriesIds(raw: unknown): number[] {
-  if (!raw) return [];
-  return uniqueNumbers(parseSeriesList(raw).map((s) => s.id));
-}
-
 async function getSyncCursor(): Promise<number> {
   const row = await getSportsDbCache<{ index?: number }>(CURSOR_KEY);
   return row?.index ?? 0;
@@ -112,95 +94,45 @@ async function setSyncCursor(index: number): Promise<void> {
   await setSportsDbCache(CURSOR_KEY, "meta", { index });
 }
 
-async function syncRotatingStaticQueue(
+function isCacheFresh(syncedAt: Date | null, staleMs: number): boolean {
+  if (!syncedAt) return false;
+  return Date.now() - syncedAt.getTime() < staleMs;
+}
+
+async function syncRotatingQueue(
   errors: string[],
   synced: { count: number }
-): Promise<boolean> {
+): Promise<"ok" | "rate_limited" | "quota_exhausted"> {
   let cursor = await getSyncCursor();
   let calls = 0;
-  let rateLimited = false;
+  let scanned = 0;
+  const maxScan = PRIORITY_QUEUE.length * 2;
 
-  while (calls < MAX_CALLS_PER_RUN && !rateLimited) {
-    const ep = STATIC_QUEUE[cursor % STATIC_QUEUE.length];
-    const result = await syncEndpoint(ep.key, ep.path, errors, SYNC_DELAY_MS);
+  while (calls < MAX_CALLS_PER_RUN && scanned < maxScan) {
+    const ep = PRIORITY_QUEUE[cursor % PRIORITY_QUEUE.length];
     cursor += 1;
+    scanned += 1;
 
-    if (result === "ok") {
-      synced.count += 1;
-      calls += 1;
-    } else if (result === "rate_limited") {
-      rateLimited = true;
-      await setRateLimitCooldown();
-    } else {
-      calls += 1;
-    }
-  }
+    const syncedAt = await getSportsCacheSyncedAt(ep.key);
+    if (isCacheFresh(syncedAt, ep.staleMs)) continue;
 
-  await setSyncCursor(cursor % STATIC_QUEUE.length);
-  return rateLimited;
-}
-
-async function syncWithBudget(
-  endpoints: { key: string; path: string }[],
-  budget: number,
-  errors: string[],
-  synced: { count: number }
-): Promise<boolean> {
-  let calls = 0;
-  for (const ep of endpoints) {
-    if (calls >= budget) break;
     const result = await syncEndpoint(ep.key, ep.path, errors, SYNC_DELAY_MS);
+
     if (result === "ok") {
       synced.count += 1;
       calls += 1;
+    } else if (result === "quota_exhausted") {
+      await setSyncCursor(cursor % PRIORITY_QUEUE.length);
+      return "quota_exhausted";
     } else if (result === "rate_limited") {
       await setRateLimitCooldown();
-      return true;
-    } else {
-      calls += 1;
-    }
-  }
-  return false;
-}
-
-async function syncPlayerDetails(
-  playerIds: number[],
-  budget: number,
-  errors: string[],
-  synced: { count: number }
-): Promise<boolean> {
-  const oneHourAgo = Date.now() - 3600 * 1000;
-  const staleIds: number[] = [];
-
-  for (const id of playerIds) {
-    const syncedAt = await getSportsCacheSyncedAt(
-      SPORTS_CACHE.playerProfile(id).key
-    );
-    if (!syncedAt || syncedAt.getTime() < oneHourAgo) staleIds.push(id);
-  }
-
-  const queue = staleIds.slice(0, Math.min(MAX_PLAYER_DETAILS_PER_RUN, budget));
-  let calls = 0;
-
-  for (const id of queue) {
-    if (calls >= budget) break;
-    const ep = {
-      key: SPORTS_CACHE.playerProfile(id).key,
-      path: `/stats/v1/player/${id}`,
-    };
-    const result = await syncEndpoint(ep.key, ep.path, errors, SYNC_DELAY_MS);
-    if (result === "ok") {
-      synced.count += 1;
-      calls += 1;
-    } else if (result === "rate_limited") {
-      await setRateLimitCooldown();
-      return true;
-    } else {
-      calls += 1;
+      await setSyncCursor(cursor % PRIORITY_QUEUE.length);
+      return "rate_limited";
     }
   }
 
-  return false;
+  await setSyncCursor(cursor % PRIORITY_QUEUE.length);
+  return "ok";
 }
 
 export interface SportsSyncResult {
@@ -210,12 +142,14 @@ export interface SportsSyncResult {
   errors: string[];
   durationMs: number;
   message?: string;
+  quota?: Awaited<ReturnType<typeof getQuotaStatus>>;
 }
 
 export async function syncSportsData(): Promise<SportsSyncResult> {
   const started = Date.now();
   const errors: string[] = [];
   const synced = { count: 0 };
+  const quota = await getQuotaStatus();
 
   if (!isSportsApiConfigured()) {
     return {
@@ -224,6 +158,20 @@ export async function syncSportsData(): Promise<SportsSyncResult> {
       endpoints: 0,
       errors: ["RAPIDAPI_KEY is not configured"],
       durationMs: Date.now() - started,
+      quota,
+    };
+  }
+
+  if (quota.monthExhausted) {
+    await rebuildPlayerIndexFromCache();
+    return {
+      ok: true,
+      status: "skipped",
+      endpoints: 0,
+      errors: [],
+      durationMs: Date.now() - started,
+      quota,
+      message: `Monthly API quota exhausted (${formatQuotaMessage(quota)}). Using cached DB data until next month.`,
     };
   }
 
@@ -235,112 +183,39 @@ export async function syncSportsData(): Promise<SportsSyncResult> {
       endpoints: 0,
       errors: [],
       durationMs: Date.now() - started,
-      message:
-        "Rate limit cooldown active — using cached DB data. Will retry next hour.",
+      quota,
+      message: "Hourly rate limit cooldown — using cached DB data.",
     };
   }
 
-  const mode = process.env.SPORTS_SYNC_MODE ?? "rotating";
-  let rateLimited = false;
-  let budget = MAX_CALLS_PER_RUN;
-
-  if (mode === "full") {
-    rateLimited = await syncWithBudget(
-      STATIC_QUEUE,
-      Number(process.env.SPORTS_SYNC_MAX_CALLS ?? 500),
-      errors,
-      synced
-    );
-    budget = 0;
-  } else {
-    rateLimited = await syncRotatingStaticQueue(errors, synced);
-    budget = Math.max(0, MAX_CALLS_PER_RUN - synced.count);
-  }
-
-  if (!rateLimited && budget > 0 && mode === "full") {
-    const liveRaw = await getSportsDbCache(SPORTS_CACHE.live.key);
-    const upcomingRaw = await getSportsDbCache(SPORTS_CACHE.upcoming.key);
-    const recentRaw = await getSportsDbCache(SPORTS_CACHE.recent.key);
-    const newsRaw = await getSportsDbCache(SPORTS_CACHE.news.key);
-    const seriesRaw = await getSportsDbCache(SPORTS_CACHE.series.key);
-    const teamsRaw = await getSportsDbCache(SPORTS_CACHE.teams.key);
-
-    const matchIds = collectMatchIds(liveRaw, upcomingRaw, recentRaw).slice(
-      0,
-      MAX_LIVE_MATCH_DETAILS
-    );
-    const matchEndpoints = matchIds.flatMap((id) => [
-      { key: SPORTS_CACHE.matchDetail(id).key, path: `/mcenter/v1/${id}` },
-      {
-        key: SPORTS_CACHE.matchScorecard(id).key,
-        path: `/mcenter/v1/${id}/scard`,
-      },
-    ]);
-    rateLimited = await syncWithBudget(matchEndpoints, budget, errors, synced);
-
-    if (!rateLimited && newsRaw) {
-      const newsEndpoints = collectNewsIds(newsRaw).map((id) => ({
-        key: SPORTS_CACHE.newsDetail(id).key,
-        path: `/news/v1/detail/${id}`,
-      }));
-      rateLimited = await syncWithBudget(
-        newsEndpoints,
-        50,
-        errors,
-        synced
-      );
-    }
-
-    if (!rateLimited && seriesRaw) {
-      const seriesId = collectSeriesIds(seriesRaw)[0];
-      if (seriesId) {
-        rateLimited = await syncWithBudget(
-          [
-            {
-              key: SPORTS_CACHE.seriesDetail(seriesId).key,
-              path: `/series/v1/${seriesId}`,
-            },
-          ],
-          10,
-          errors,
-          synced
-        );
-      }
-    }
-
-    if (!rateLimited && teamsRaw) {
-      const teamEndpoints = collectTeamIds(teamsRaw).flatMap((teamId) => [
-        {
-          key: SPORTS_CACHE.teamPlayers(teamId).key,
-          path: `/teams/v1/${teamId}/players`,
-        },
-        {
-          key: SPORTS_CACHE.teamSchedule(teamId).key,
-          path: `/teams/v1/${teamId}/schedule`,
-        },
-        {
-          key: SPORTS_CACHE.teamResults(teamId).key,
-          path: `/teams/v1/${teamId}/results`,
-        },
-      ]);
-      rateLimited = await syncWithBudget(teamEndpoints, 200, errors, synced);
-    }
-  }
-
+  const outcome = await syncRotatingQueue(errors, synced);
   await rebuildPlayerIndexFromCache();
 
+  const finalQuota = await getQuotaStatus();
   const durationMs = Date.now() - started;
+
+  let message: string | undefined;
+  if (outcome === "quota_exhausted") {
+    message = `Monthly quota reached (${formatQuotaMessage(finalQuota)}). Cached data served until reset.`;
+  } else if (outcome === "rate_limited") {
+    message = `Hourly limit hit after ${synced.count} call(s). Will retry later.`;
+  } else if (synced.count === 0) {
+    message = "All priority endpoints fresh in DB — no API calls needed.";
+  }
+
   const status: SportsSyncResult["status"] =
-    rateLimited && synced.count === 0
+    outcome === "rate_limited" && synced.count === 0
       ? "failed"
-      : errors.length === 0
-        ? "success"
-        : synced.count > 0
-          ? "partial"
-          : "failed";
+      : outcome === "quota_exhausted" && synced.count === 0
+        ? "skipped"
+        : errors.length === 0
+          ? "success"
+          : synced.count > 0
+            ? "partial"
+            : "failed";
 
   await logSportsSyncRun({
-    status,
+    status: status === "skipped" ? "partial" : status,
     endpoints: synced.count,
     errors,
     durationMs,
@@ -352,8 +227,7 @@ export async function syncSportsData(): Promise<SportsSyncResult> {
     endpoints: synced.count,
     errors,
     durationMs,
-    message: rateLimited
-      ? `Rate limit hit after ${synced.count} calls — remaining data syncs on next run.`
-      : undefined,
+    message,
+    quota: finalQuota,
   };
 }

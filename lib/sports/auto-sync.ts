@@ -8,7 +8,7 @@ import {
 import { syncSportsData } from "./sync";
 
 const SYNC_LOCK_KEY = "sports:sync:lock";
-const DEFAULT_INTERVAL_MS = 3600 * 1000;
+const DEFAULT_INTERVAL_MS = 4 * 3600 * 1000;
 const STARTUP_DELAY_MS = 15_000;
 const LOCK_TTL_MS = 45 * 60 * 1000;
 
@@ -133,7 +133,7 @@ export function startSportsAutoSync(): void {
   }
 
   console.info(
-    `[sports auto-sync] enabled — every ${Math.round(intervalMs / 60000)} min`
+    `[sports auto-sync] enabled — every ${Math.round(intervalMs / 60000)} min, max ${process.env.SPORTS_SYNC_MAX_CALLS ?? 1} API call(s)/run (Basic plan: 200/month)`
   );
 }
 
