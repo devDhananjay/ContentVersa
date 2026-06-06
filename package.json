@@ -20,7 +20,8 @@
     "db:seed-dashboard": "tsx prisma/seed-dashboard-owner.ts",
     "db:promote-admin": "tsx prisma/promote-owner-admin.ts",
     "db:setup-admin": "tsx prisma/setup-admin-access.ts",
-    "sports:sync": "tsx scripts/sports-sync.ts"
+    "sports:sync": "tsx scripts/sports-sync.ts",
+    "sports:bootstrap": "tsx scripts/sports-bootstrap-sync.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

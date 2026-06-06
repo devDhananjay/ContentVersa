@@ -1,4 +1,4 @@
-import { SportsApiError, cricbuzzFetch, isSportsApiConfigured } from "./cricbuzz-client";
+import { isSportsApiConfigured } from "./cricbuzz-client";
 import { SPORTS_CACHE } from "./cache-keys";
 import {
   getSportsCacheSyncedAt,
@@ -6,15 +6,22 @@ import {
   logSportsSyncRun,
   setSportsDbCache,
 } from "./db-cache";
+import { rebuildPlayerIndexFromCache } from "./sync-helpers";
+import {
+  isRateLimitError,
+  syncEndpoint,
+} from "./sync-shared";
 import {
   parseMatchesResponse,
   parseNewsIndex,
   parseSeriesList,
-  parseTeamPlayers,
   parseTeamsList,
-  parseTrendingPlayers,
 } from "./transformers";
-import type { PlayerSearchResult } from "./types";
+
+export {
+  isRateLimitError,
+  isMonthlyQuotaError,
+} from "./sync-shared";
 
 const SYNC_DELAY_MS = Number(process.env.SPORTS_SYNC_DELAY_MS ?? 1200);
 const MAX_CALLS_PER_RUN = Number(process.env.SPORTS_SYNC_MAX_CALLS ?? 8);
@@ -22,7 +29,6 @@ const MAX_PLAYER_DETAILS_PER_RUN = Number(
   process.env.SPORTS_SYNC_MAX_PLAYERS ?? 4
 );
 const MAX_NEWS_DETAILS = 3;
-const MAX_SERIES_DETAILS = 2;
 const MAX_LIVE_MATCH_DETAILS = 2;
 const MAX_TEAMS_PER_RUN = 2;
 
@@ -55,21 +61,6 @@ const STATIC_QUEUE: { key: string; path: string }[] = [
   },
 ];
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export function isRateLimitError(err: unknown): boolean {
-  if (err instanceof SportsApiError && err.status === 429) return true;
-  const msg = err instanceof Error ? err.message : String(err);
-  return /rate limit|quota exceeded|429|MONTHLY quota/i.test(msg);
-}
-
-export function isMonthlyQuotaError(err: unknown): boolean {
-  const msg = err instanceof Error ? err.message : String(err);
-  return /MONTHLY quota/i.test(msg);
-}
-
 async function isInRateLimitCooldown(): Promise<boolean> {
   const row = await getSportsDbCache<{ until?: string }>(COOLDOWN_KEY);
   if (!row?.until) return false;
@@ -80,26 +71,6 @@ async function setRateLimitCooldown(ms = 3600_000): Promise<void> {
   await setSportsDbCache(COOLDOWN_KEY, "meta", {
     until: new Date(Date.now() + ms).toISOString(),
   });
-}
-
-type SyncStepResult = "ok" | "fail" | "rate_limited";
-
-async function syncEndpoint(
-  cacheKey: string,
-  path: string,
-  errors: string[]
-): Promise<SyncStepResult> {
-  try {
-    const raw = await cricbuzzFetch<unknown>(path);
-    await setSportsDbCache(cacheKey, path, raw);
-    await sleep(SYNC_DELAY_MS);
-    return "ok";
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    errors.push(`${cacheKey}: ${msg.slice(0, 120)}`);
-    if (isRateLimitError(err)) return "rate_limited";
-    return "fail";
-  }
 }
 
 function uniqueNumbers(values: number[]): number[] {
@@ -151,7 +122,7 @@ async function syncRotatingStaticQueue(
 
   while (calls < MAX_CALLS_PER_RUN && !rateLimited) {
     const ep = STATIC_QUEUE[cursor % STATIC_QUEUE.length];
-    const result = await syncEndpoint(ep.key, ep.path, errors);
+    const result = await syncEndpoint(ep.key, ep.path, errors, SYNC_DELAY_MS);
     cursor += 1;
 
     if (result === "ok") {
@@ -178,7 +149,7 @@ async function syncWithBudget(
   let calls = 0;
   for (const ep of endpoints) {
     if (calls >= budget) break;
-    const result = await syncEndpoint(ep.key, ep.path, errors);
+    const result = await syncEndpoint(ep.key, ep.path, errors, SYNC_DELAY_MS);
     if (result === "ok") {
       synced.count += 1;
       calls += 1;
@@ -190,54 +161,6 @@ async function syncWithBudget(
     }
   }
   return false;
-}
-
-async function rebuildPlayerIndexFromCache(): Promise<void> {
-  const teamsRaw = await getSportsDbCache(SPORTS_CACHE.teams.key);
-  if (!teamsRaw) return;
-
-  const rosterEntries: PlayerSearchResult[] = [];
-  const seen = new Set<number>();
-
-  for (const team of parseTeamsList(teamsRaw)) {
-    const playersRaw = await getSportsDbCache(
-      SPORTS_CACHE.teamPlayers(team.id).key
-    );
-    if (!playersRaw) continue;
-    for (const p of parseTeamPlayers(playersRaw)) {
-      if (seen.has(p.id)) continue;
-      seen.add(p.id);
-      rosterEntries.push({
-        id: p.id,
-        name: p.name,
-        teamName: team.name,
-        faceImageId: p.imageId,
-      });
-    }
-  }
-
-  const trendingRaw = await getSportsDbCache(SPORTS_CACHE.trendingPlayers.key);
-  if (trendingRaw) {
-    for (const p of parseTrendingPlayers(trendingRaw)) {
-      if (seen.has(p.id)) continue;
-      seen.add(p.id);
-      rosterEntries.push({
-        id: p.id,
-        name: p.name,
-        teamName: p.teamName,
-        faceImageId: p.faceImageId,
-      });
-    }
-  }
-
-  if (!rosterEntries.length) return;
-
-  rosterEntries.sort((a, b) => a.name.localeCompare(b.name));
-  await setSportsDbCache(
-    SPORTS_CACHE.playerIndex.key,
-    "local:players-index",
-    rosterEntries
-  );
 }
 
 async function syncPlayerDetails(
@@ -261,25 +184,19 @@ async function syncPlayerDetails(
 
   for (const id of queue) {
     if (calls >= budget) break;
-    const endpoints = [
-      {
-        key: SPORTS_CACHE.playerProfile(id).key,
-        path: `/stats/v1/player/${id}`,
-      },
-    ];
-
-    for (const ep of endpoints) {
-      if (calls >= budget) break;
-      const result = await syncEndpoint(ep.key, ep.path, errors);
-      if (result === "ok") {
-        synced.count += 1;
-        calls += 1;
-      } else if (result === "rate_limited") {
-        await setRateLimitCooldown();
-        return true;
-      } else {
-        calls += 1;
-      }
+    const ep = {
+      key: SPORTS_CACHE.playerProfile(id).key,
+      path: `/stats/v1/player/${id}`,
+    };
+    const result = await syncEndpoint(ep.key, ep.path, errors, SYNC_DELAY_MS);
+    if (result === "ok") {
+      synced.count += 1;
+      calls += 1;
+    } else if (result === "rate_limited") {
+      await setRateLimitCooldown();
+      return true;
+    } else {
+      calls += 1;
     }
   }
 
@@ -328,7 +245,12 @@ export async function syncSportsData(): Promise<SportsSyncResult> {
   let budget = MAX_CALLS_PER_RUN;
 
   if (mode === "full") {
-    rateLimited = await syncWithBudget(STATIC_QUEUE, budget, errors, synced);
+    rateLimited = await syncWithBudget(
+      STATIC_QUEUE,
+      Number(process.env.SPORTS_SYNC_MAX_CALLS ?? 500),
+      errors,
+      synced
+    );
     budget = 0;
   } else {
     rateLimited = await syncRotatingStaticQueue(errors, synced);
@@ -354,29 +276,22 @@ export async function syncSportsData(): Promise<SportsSyncResult> {
         path: `/mcenter/v1/${id}/scard`,
       },
     ]);
-    rateLimited = await syncWithBudget(
-      matchEndpoints,
-      budget,
-      errors,
-      synced
-    );
-    budget = Math.max(0, budget - synced.count);
+    rateLimited = await syncWithBudget(matchEndpoints, budget, errors, synced);
 
-    if (!rateLimited && budget > 0) {
-      const newsIds = collectNewsIds(newsRaw);
-      const newsEndpoints = newsIds.map((id) => ({
+    if (!rateLimited && newsRaw) {
+      const newsEndpoints = collectNewsIds(newsRaw).map((id) => ({
         key: SPORTS_CACHE.newsDetail(id).key,
         path: `/news/v1/detail/${id}`,
       }));
       rateLimited = await syncWithBudget(
         newsEndpoints,
-        budget,
+        50,
         errors,
         synced
       );
     }
 
-    if (!rateLimited && budget > 0 && seriesRaw) {
+    if (!rateLimited && seriesRaw) {
       const seriesId = collectSeriesIds(seriesRaw)[0];
       if (seriesId) {
         rateLimited = await syncWithBudget(
@@ -386,28 +301,29 @@ export async function syncSportsData(): Promise<SportsSyncResult> {
               path: `/series/v1/${seriesId}`,
             },
           ],
-          budget,
+          10,
           errors,
           synced
         );
       }
     }
 
-    if (!rateLimited && budget > 0 && teamsRaw) {
-      const teamEndpoints = collectTeamIds(teamsRaw)
-        .slice(0, MAX_TEAMS_PER_RUN)
-        .flatMap((teamId) => [
-          {
-            key: SPORTS_CACHE.teamPlayers(teamId).key,
-            path: `/teams/v1/${teamId}/players`,
-          },
-        ]);
-      rateLimited = await syncWithBudget(
-        teamEndpoints,
-        budget,
-        errors,
-        synced
-      );
+    if (!rateLimited && teamsRaw) {
+      const teamEndpoints = collectTeamIds(teamsRaw).flatMap((teamId) => [
+        {
+          key: SPORTS_CACHE.teamPlayers(teamId).key,
+          path: `/teams/v1/${teamId}/players`,
+        },
+        {
+          key: SPORTS_CACHE.teamSchedule(teamId).key,
+          path: `/teams/v1/${teamId}/schedule`,
+        },
+        {
+          key: SPORTS_CACHE.teamResults(teamId).key,
+          path: `/teams/v1/${teamId}/results`,
+        },
+      ]);
+      rateLimited = await syncWithBudget(teamEndpoints, 200, errors, synced);
     }
   }
 
