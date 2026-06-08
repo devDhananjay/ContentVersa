@@ -123,6 +123,7 @@ model User {
   tipsSent       Tip[]             @relation("Tipper")
   tipsReceived   Tip[]             @relation("Tippee")
   siteVisits     SiteVisitor[]
+  financeWatchlist FinanceWatchlistItem[]
 
   @@index([role])
   @@index([createdAt])
@@ -375,6 +376,18 @@ model Follower {
 
   @@unique([followerId, followingId])
   @@index([followingId])
+}
+
+model FinanceWatchlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  symbol    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, symbol])
+  @@index([userId])
 }
 
 // ---------------------- Moderation ----------------------

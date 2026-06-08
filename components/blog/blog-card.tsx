@@ -17,9 +17,16 @@ interface BlogCardProps {
   blog: Blog;
   variant?: "default" | "horizontal" | "compact" | "featured";
   index?: number;
+  /** Skip scroll-triggered fade-in (use on listing pages). */
+  eager?: boolean;
 }
 
-export function BlogCard({ blog, variant = "default", index = 0 }: BlogCardProps) {
+export function BlogCard({
+  blog,
+  variant = "default",
+  index = 0,
+  eager = false,
+}: BlogCardProps) {
   const category = CATEGORIES.find((c) => c.slug === blog.category);
   const coverUnoptimized = shouldSkipImageOptimization(blog.coverImage);
 
@@ -145,10 +152,11 @@ export function BlogCard({ blog, variant = "default", index = 0 }: BlogCardProps
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.35, delay: index * 0.04 }}
+      initial={eager ? false : { opacity: 0, y: 20 }}
+      animate={eager ? { opacity: 1, y: 0 } : undefined}
+      whileInView={eager ? undefined : { opacity: 1, y: 0 }}
+      viewport={eager ? undefined : { once: true }}
+      transition={{ duration: eager ? 0.2 : 0.35, delay: eager ? 0 : index * 0.04 }}
       whileHover={{ y: -4 }}
       className="group relative overflow-hidden rounded-2xl border bg-card hover:border-neon-purple/40 hover:shadow-neon transition-all duration-300"
     >

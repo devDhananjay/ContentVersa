@@ -90,17 +90,8 @@ export default async function BlogsPage({
   const list = applyFilters(all, sp);
 
   return (
-    <div className="container py-8 md:py-12">
-      <div className="mb-6">
-        <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight">
-          {sp.q ? `Results for "${sp.q}"` : "Explore the verse"}
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          {list.length} {list.length === 1 ? "article" : "articles"} matching your filters
-        </p>
-      </div>
-
-      <Suspense fallback={<div className="h-24 rounded-2xl bg-muted/40 animate-pulse mb-8" />}>
+    <div className="container py-2 md:py-3">
+      <Suspense fallback={<div className="h-20 rounded-2xl bg-muted/40 animate-pulse mb-3" />}>
         <BlogFilters
           defaultQuery={sp.q}
           defaultCategory={sp.category}
@@ -114,9 +105,9 @@ export default async function BlogsPage({
           <p className="text-muted-foreground">Try a different keyword or remove filters.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-3">
           {list.map((b, i) => (
-            <BlogCard key={b.id} blog={b} index={i} />
+            <BlogCard key={b.id} blog={b} index={i} eager />
           ))}
         </div>
       )}

@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE.url}/sports`, lastModified: now, changeFrequency: "hourly", priority: 0.85 },
     { url: `${SITE.url}/sports/teams`, lastModified: now, changeFrequency: "daily", priority: 0.75 },
     { url: `${SITE.url}/sports/players`, lastModified: now, changeFrequency: "daily", priority: 0.75 },
+    { url: `${SITE.url}/finance`, lastModified: now, changeFrequency: "hourly", priority: 0.85 },
     ...CATEGORIES.map((c) => ({
       url: `${SITE.url}/category/${c.slug}`,
       lastModified: now,

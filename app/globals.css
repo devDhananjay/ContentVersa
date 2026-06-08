@@ -155,6 +155,21 @@
   animation: shimmer 2s linear infinite;
 }
 
+/* Finance market strip — seamless marquee */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
 /* Reading progress bar */
 .reading-progress {
   position: fixed;

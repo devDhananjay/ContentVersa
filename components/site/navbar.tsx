@@ -14,6 +14,7 @@ import {
   Bookmark,
   LayoutDashboard,
   Medal,
+  TrendingUp,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { UserNav, MobileUserNav } from "@/components/auth/user-nav";
@@ -27,37 +28,25 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS = [
   { href: "/blogs", label: "Explore", icon: Compass },
   { href: "/sports", label: "Sports", icon: Medal },
+  { href: "/finance", label: "Finance", icon: TrendingUp },
   { href: "/categories", label: "Categories", icon: LayoutDashboard },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/bookmarks", label: "Bookmarks", icon: Bookmark },
 ];
 
-export function Navbar() {
+export function Navbar({ embedded = false }: { embedded?: boolean }) {
   const pathname = usePathname();
-  const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const isBlogsPage = pathname === "/blogs" || pathname?.startsWith("/blogs?");
 
   React.useEffect(() => setMobileOpen(false), [pathname]);
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 inset-x-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm"
-          : "bg-transparent"
-      )}
-    >
-      <div className="container flex h-16 items-center gap-4">
+    <header className={cn(!embedded && "fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50")}>
+      <div className="container flex h-14 items-center gap-3">
         <Logo />
 
-        <nav className="hidden lg:flex items-center gap-1 ml-6">
+        <nav className="hidden xl:flex items-center gap-0.5 ml-4">
           {NAV_LINKS.map((link) => {
             const active = pathname?.startsWith(link.href);
             return (
@@ -65,7 +54,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                  "relative px-2.5 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap",
                   active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -84,18 +73,20 @@ export function Navbar() {
 
         <div className="flex-1" />
 
-        <div className="hidden md:flex items-center gap-2 max-w-sm w-full relative">
-          <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
-          <form action="/blogs" className="w-full">
-            <Input
-              name="q"
-              placeholder="Search articles, creators, tags…"
-              className="pl-9 bg-muted/50 border-transparent focus:border-input"
-            />
-          </form>
-        </div>
+        {!isBlogsPage && (
+          <div className="hidden lg:flex items-center gap-2 max-w-xs w-full relative shrink-0">
+            <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
+            <form action="/blogs" className="w-full">
+              <Input
+                name="q"
+                placeholder="Search…"
+                className="pl-9 h-9 text-sm bg-muted/50 border-transparent focus:border-input"
+              />
+            </form>
+          </div>
+        )}
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-1.5 shrink-0">
           <Link href="/dashboard/create">
             <Button variant="gradient" size="sm" className="gap-1.5">
               <PenSquare className="h-4 w-4" />
