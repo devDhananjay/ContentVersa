@@ -281,6 +281,14 @@
       "namedRegex": "^/dashboard/blogs/(?<nxtPid>[^/]+?)/edit(?:/)?$"
     },
     {
+      "page": "/finance/stock/[symbol]",
+      "regex": "^/finance/stock/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsymbol": "nxtPsymbol"
+      },
+      "namedRegex": "^/finance/stock/(?<nxtPsymbol>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/profile/[username]",
       "regex": "^/profile/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -523,6 +531,12 @@
       "regex": "^/dashboard/settings(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/settings(?:/)?$"
+    },
+    {
+      "page": "/finance",
+      "regex": "^/finance(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/finance(?:/)?$"
     },
     {
       "page": "/firebase-messaging-sw.js",
