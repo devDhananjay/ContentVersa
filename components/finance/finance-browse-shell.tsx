@@ -15,7 +15,7 @@ export async function FinanceBrowseShell({
   const hub = await getFinanceHubDataCached();
 
   return (
-    <div className="-mt-2">
+    <div>
       <section className="relative h-[140px] md:h-[160px] overflow-hidden rounded-b-2xl mx-0">
         <Image
           src={HERO_IMAGE}

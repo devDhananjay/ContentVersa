@@ -1,0 +1,4 @@
+# AWS EC2 — sports API sync every 4 hours
+# Install: crontab -e → paste the line below (set CRON_SECRET in server env)
+#
+# 0 */4 * * * curl -fsS -H "Authorization: Bearer YOUR_CRON_SECRET" "https://contentverse.co.in/api/cron/sports-sync" >> /var/log/contentverse-sports-sync.log 2>&1

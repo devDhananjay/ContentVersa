@@ -56,10 +56,10 @@ export function BlogFilters({
   const activeCategory = defaultCategory;
 
   return (
-    <div className="mb-3 space-y-2.5">
+    <div className="mb-6 space-y-4">
       <form
         onSubmit={onSubmit}
-        className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center"
+        className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center"
       >
         <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -104,7 +104,7 @@ export function BlogFilters({
         </div>
       </form>
 
-      <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-0.5">
+      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
         <button
           type="button"
           onClick={() => setParam("category", undefined)}

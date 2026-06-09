@@ -781,7 +781,7 @@
               ]
             },
             "url": "{{baseUrl}}/api/upload",
-            "description": "Returns `{ ok, url, size, type }`. AWS/Vercel uses Blob storage."
+            "description": "Returns `{ ok, url, size, type }`. Uploads go to AWS S3 (or local UPLOAD_DIR in dev)."
           }
         }
       ]

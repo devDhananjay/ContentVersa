@@ -4,6 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { isAdminRole } from "@/lib/auth/roles";
 import { getDashboardDataCached } from "@/lib/data/dashboard-data";
 import { getAdminPendingCount } from "@/lib/data/admin-data";
+import { ReelsStripSection } from "@/components/reels/reels-strip-section";
+import { AmbientPageBackground } from "@/components/site/ambient-page-background";
 
 export default async function DashboardLayout({
   children,
@@ -26,7 +28,13 @@ export default async function DashboardLayout({
         unreadNotifications={data?.stats.unreadNotifications ?? 0}
         adminPendingCount={adminPendingCount}
       />
-      <div className="flex-1 min-w-0">{children}</div>
+      <div className="flex-1 min-w-0">
+        <div className="relative overflow-hidden border-b border-border/30">
+          <AmbientPageBackground className="h-[280px]" />
+          <ReelsStripSection />
+        </div>
+        {children}
+      </div>
     </div>
   );
 }

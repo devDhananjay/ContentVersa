@@ -39,7 +39,7 @@ export const AUTHORS: Author[] = [
     name: "Aarav Mehta",
     username: "aaravbuilds",
     avatar: "https://api.dicebear.com/8.x/notionists/svg?seed=Aarav",
-    bio: "Building at the edge of AI and design systems. Ex-Vercel.",
+    bio: "Building at the edge of AI and design systems.",
     verified: true,
     followers: 48200,
     blogs: 41,

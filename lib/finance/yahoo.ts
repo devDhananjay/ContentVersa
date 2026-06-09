@@ -7,6 +7,7 @@ import {
   SENSEX_INDEX,
   TOP10_STOCKS,
 } from "./constants";
+import { fetchIndianIndices } from "./indian-indices";
 import {
   sortGainers,
   sortLosers,
@@ -63,6 +64,9 @@ async function loadNifty50Quotes(): Promise<StockQuote[]> {
 
 async function loadIndices(): Promise<{ nifty: IndexQuote; sensex: IndexQuote }> {
   return cache.wrap("finance:indices", FINANCE_CACHE_TTL, async () => {
+    const official = await fetchIndianIndices();
+    if (official) return official;
+
     const [niftyRaw, sensexRaw] = await Promise.all([
       fetchQuote(NIFTY_INDEX),
       fetchQuote(SENSEX_INDEX),

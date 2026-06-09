@@ -1,10 +1,15 @@
 import { Navbar } from "./navbar";
 import { MarketStripWrapper } from "@/components/finance/market-strip-wrapper";
+import { HeaderHeightSync } from "@/components/site/header-height-sync";
 
-/** Fixed site header: navbar + live market strip as one unit */
+/** Fixed site header: navbar + live market strip only */
 export function SiteHeader() {
   return (
-    <div className="fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-sm">
+    <div
+      id="site-header"
+      className="fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-sm"
+    >
+      <HeaderHeightSync />
       <Navbar embedded />
       <MarketStripWrapper />
     </div>

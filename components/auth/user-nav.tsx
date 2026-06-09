@@ -53,7 +53,9 @@ export function UserNav() {
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden sm:inline max-w-[120px] truncate">{displayName}</span>
+          <span className="hidden md:inline max-w-[9.5rem] 2xl:max-w-[11rem] truncate">
+            {displayName}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">

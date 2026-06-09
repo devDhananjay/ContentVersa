@@ -1,27 +1,29 @@
 import type { SessionUser } from "@/lib/auth";
-import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { prisma, isDatabaseConfigured, safeDbQuery } from "@/lib/prisma";
 
 /** Resolve Prisma user id from JWT session (handles legacy `google:…` subs). */
 export async function resolveUserId(session: SessionUser): Promise<string | null> {
   if (!session.sub || !isDatabaseConfigured()) return null;
 
-  if (!session.sub.includes(":")) {
-    const byId = await prisma.user.findUnique({
-      where: { id: session.sub },
-      select: { id: true },
-    });
-    if (byId) return byId.id;
-  }
+  return safeDbQuery(null, async () => {
+    if (!session.sub.includes(":")) {
+      const byId = await prisma.user.findUnique({
+        where: { id: session.sub },
+        select: { id: true },
+      });
+      if (byId) return byId.id;
+    }
 
-  if (session.email) {
-    const byEmail = await prisma.user.findUnique({
-      where: { email: session.email },
-      select: { id: true },
-    });
-    return byEmail?.id ?? null;
-  }
+    if (session.email) {
+      const byEmail = await prisma.user.findUnique({
+        where: { email: session.email },
+        select: { id: true },
+      });
+      return byEmail?.id ?? null;
+    }
 
-  return null;
+    return null;
+  }, "resolveUserId");
 }
 
 export async function requireUserId(session: SessionUser): Promise<string> {

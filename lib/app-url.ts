@@ -24,14 +24,6 @@ export function getAppUrl(): string {
   const fromPublic = process.env.NEXT_PUBLIC_APP_URL?.trim()?.replace(/\/$/, "");
   if (fromPublic && !isLocalhostUrl(fromPublic)) return fromPublic;
 
-  if (process.env.VERCEL) {
-    const prod = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
-    if (prod) return `https://${prod.replace(/\/$/, "")}`;
-
-    const vercel = process.env.VERCEL_URL?.trim();
-    if (vercel) return `https://${vercel.replace(/\/$/, "")}`;
-  }
-
   if (process.env.NODE_ENV === "production") return PRODUCTION_SITE_URL;
 
   if (fromPublic) return fromPublic;

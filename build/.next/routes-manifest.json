@@ -160,12 +160,52 @@
       "namedRegex": "^/api/categories/(?<nxtPslug>[^/]+?)/subscribe(?:/)?$"
     },
     {
+      "page": "/api/feeds/[slug]",
+      "regex": "^/api/feeds/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/feeds/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/polls/[slug]",
       "regex": "^/api/polls/([^/]+?)(?:/)?$",
       "routeKeys": {
         "nxtPslug": "nxtPslug"
       },
       "namedRegex": "^/api/polls/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/reels/[id]",
+      "regex": "^/api/reels/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/reels/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/reels/[id]/comments",
+      "regex": "^/api/reels/([^/]+?)/comments(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/reels/(?<nxtPid>[^/]+?)/comments(?:/)?$"
+    },
+    {
+      "page": "/api/reels/[id]/like",
+      "regex": "^/api/reels/([^/]+?)/like(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/reels/(?<nxtPid>[^/]+?)/like(?:/)?$"
+    },
+    {
+      "page": "/api/reels/[id]/view",
+      "regex": "^/api/reels/([^/]+?)/view(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/reels/(?<nxtPid>[^/]+?)/view(?:/)?$"
     },
     {
       "page": "/api/site/pages/[slug]",
@@ -281,6 +321,15 @@
       "namedRegex": "^/dashboard/blogs/(?<nxtPid>[^/]+?)/edit(?:/)?$"
     },
     {
+      "page": "/discover/[category]/[id]",
+      "regex": "^/discover/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcategory": "nxtPcategory",
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/discover/(?<nxtPcategory>[^/]+?)/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/finance/stock/[symbol]",
       "regex": "^/finance/stock/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -295,6 +344,14 @@
         "nxtPusername": "nxtPusername"
       },
       "namedRegex": "^/profile/(?<nxtPusername>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/reels/[id]",
+      "regex": "^/reels/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/reels/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
       "page": "/sports/match/[id]",
@@ -527,6 +584,18 @@
       "namedRegex": "^/dashboard/notifications(?:/)?$"
     },
     {
+      "page": "/dashboard/reels",
+      "regex": "^/dashboard/reels(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/reels(?:/)?$"
+    },
+    {
+      "page": "/dashboard/reels/create",
+      "regex": "^/dashboard/reels/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/reels/create(?:/)?$"
+    },
+    {
       "page": "/dashboard/settings",
       "regex": "^/dashboard/settings(?:/)?$",
       "routeKeys": {},
@@ -579,6 +648,12 @@
       "regex": "^/privacy(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/privacy(?:/)?$"
+    },
+    {
+      "page": "/reels",
+      "regex": "^/reels(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/reels(?:/)?$"
     },
     {
       "page": "/robots.txt",

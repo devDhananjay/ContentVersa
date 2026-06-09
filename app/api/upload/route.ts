@@ -66,16 +66,6 @@ export async function POST(req: Request) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[upload] failed", err);
 
-    if (msg.includes("BLOB_NOT_CONFIGURED")) {
-      return NextResponse.json(
-        {
-          error:
-            "Image storage is not set up on production. In Vercel: Storage → Blob → Connect, then redeploy.",
-        },
-        { status: 503 }
-      );
-    }
-
     return NextResponse.json(
       { error: "Upload failed. Please try again." },
       { status: 500 }

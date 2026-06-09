@@ -8,16 +8,17 @@ import { cn } from "@/lib/utils";
 
 interface MarketStripProps {
   data: FinanceTickerData;
+  /** When true, aligns with in-card padding instead of page container */
+  embedded?: boolean;
 }
 
-export function MarketStrip({ data }: MarketStripProps) {
+export function MarketStrip({ data, embedded }: MarketStripProps) {
   const gainers = data.topGainers;
 
-  return (
-    <div className="border-t border-border/40 bg-muted/20">
-      <div className="flex items-center h-9 max-w-[100vw]">
+  const row = (
+    <div className={cn("flex items-center h-11 py-2", embedded ? "px-5" : "")}>
         {/* Fixed indices — never scroll */}
-        <div className="shrink-0 flex items-center gap-3 pl-4 pr-3 border-r border-border/40 bg-background/95 z-10">
+        <div className="shrink-0 flex items-center gap-4 pr-4 border-r border-border/40 bg-background/95 z-10">
           <Link href="/finance" className="hover:opacity-80 transition-opacity">
             <IndexPill
               label="Nifty 50"
@@ -39,13 +40,18 @@ export function MarketStrip({ data }: MarketStripProps) {
           <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-background/95 to-transparent z-[1] pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-background/95 to-transparent z-[1] pointer-events-none" />
 
-          <div className="flex items-center h-9 animate-marquee hover:[animation-play-state:paused]">
+          <div className="flex items-center min-h-8 animate-marquee hover:[animation-play-state:paused] py-0.5">
             {[...gainers, ...gainers].map((stock, i) => (
               <GainerPill key={`${stock.symbol}-${i}`} stock={stock} />
             ))}
           </div>
         </div>
       </div>
+  );
+
+  return (
+    <div className="border-t border-border/40 bg-muted/20">
+      {embedded ? row : <div className="container">{row}</div>}
     </div>
   );
 }
@@ -55,8 +61,8 @@ function GainerPill({ stock }: { stock: StockQuote }) {
     <Link
       href={`/finance/stock/${displaySymbol(stock.symbol)}`}
       className={cn(
-        "shrink-0 inline-flex items-center gap-1.5 mx-1.5",
-        "rounded-md border border-border/50 bg-muted/30 px-2 py-0.5",
+        "shrink-0 inline-flex items-center gap-2 mx-2",
+        "rounded-md border border-border/50 bg-muted/30 px-2.5 py-1",
         "text-[10px] hover:border-emerald-500/30 transition-colors"
       )}
     >

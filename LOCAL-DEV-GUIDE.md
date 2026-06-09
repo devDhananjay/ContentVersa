@@ -19,7 +19,7 @@ Local par sab **same port** par chalta hai: `http://localhost:3001`
 - Node.js **20+** (`node -v`)
 - npm
 - Git
-- Postgres (Neon cloud ya local Docker)
+- Postgres (local Docker ya AWS RDS)
 
 ### Steps
 
@@ -67,7 +67,7 @@ npm run dev -- -p 3001
 ```env
 NEXT_PUBLIC_APP_URL="http://localhost:3001"
 DEMO_MODE="0"                    # real auth ke liye 0 rakho
-DATABASE_URL="postgresql://..."  # Neon ya local Postgres
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/contentverse?schema=public"
 JWT_SECRET="long-random-string"
 ```
 
@@ -183,7 +183,8 @@ git pull origin main
 npx prisma generate
 npx prisma db push
 
-# .env check — production values
+# .env check — production values (RDS endpoint, not Neon)
+# DATABASE_URL=postgresql://...@your-db.xxxxx.ap-south-1.rds.amazonaws.com:5432/contentverse?sslmode=require
 # NEXT_PUBLIC_APP_URL=https://contentverse.co.in
 
 # App restart (standalone build use ho raha hai)
@@ -255,7 +256,7 @@ ContentVerse/
 | DB connect fail | `.env` mein `DATABASE_URL` check karo |
 | Prisma error | `npm run db:generate` |
 | Admin access nahi | `npm run db:promote-admin` |
-| Upload fail local | `BLOB_READ_WRITE_TOKEN` set karo (Vercel Blob) |
+| Upload fail local | S3 vars set karo (`AWS_S3_BUCKET`, keys) ya `UPLOAD_DIR` use karo |
 | Upload **413** on production | Nginx default 1MB — copy `deploy/nginx/upload-limit.conf` to `/etc/nginx/conf.d/` then `sudo nginx -t && sudo systemctl reload nginx` |
 | Cover image **404** (`/uploads/...`) | Standalone Next only serves build-time `public` files. On EC2: set `UPLOAD_DIR=/home/ec2-user/ContentVersa/data/uploads`, add nginx `location ^~ /uploads/` (see `deploy/nginx/uploads-static.conf`), `pm2 restart next-app` after deploy |
 | Site **502** / PM2 `errored` | Do **not** symlink `build/public/uploads` → `data/uploads` (causes ELOOP). Use `UPLOAD_DIR` only; keep `build/public/uploads` as an empty folder. Remove `data/uploads/uploads` if it exists. |

@@ -40,7 +40,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SiteHeader />
-          <main className="flex-1 pt-[5.75rem] pb-24 md:pb-0">{children}</main>
+          <main className="flex-1 pt-[var(--site-header-offset)] pb-24 md:pb-8">{children}</main>
           <Footer />
           <MobileNav />
           <AppEffects />

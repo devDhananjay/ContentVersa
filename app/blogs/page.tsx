@@ -2,8 +2,12 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
+import { CategoryFinanceLive } from "@/components/category/category-finance-live";
+import { CategoryLiveFeedGrid } from "@/components/feeds/category-live-feed-grid";
 import type { Blog } from "@/lib/data/blogs";
 import { getPublishedBlogsHybrid } from "@/lib/data/blog-db";
+import { getCategoryFeed } from "@/lib/feeds/data";
+import { hasCategoryFeed } from "@/lib/feeds/constants";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -88,10 +92,15 @@ export default async function BlogsPage({
   const sp = await searchParams;
   const all = await getPublishedBlogsHybrid();
   const list = applyFilters(all, sp);
+  const category = sp.category;
+  const feed =
+    category && category !== "finance" && hasCategoryFeed(category)
+      ? await getCategoryFeed(category)
+      : null;
 
   return (
-    <div className="container py-2 md:py-3">
-      <Suspense fallback={<div className="h-20 rounded-2xl bg-muted/40 animate-pulse mb-3" />}>
+    <div className="container pt-8 pb-8 md:pt-10 md:pb-12">
+      <Suspense fallback={<div className="h-20 rounded-2xl bg-muted/40 animate-pulse mb-6" />}>
         <BlogFilters
           defaultQuery={sp.q}
           defaultCategory={sp.category}
@@ -99,13 +108,16 @@ export default async function BlogsPage({
         />
       </Suspense>
 
+      {category === "finance" ? <CategoryFinanceLive /> : null}
+      {feed ? <CategoryLiveFeedGrid feed={feed} /> : null}
+
       {list.length === 0 ? (
         <div className="rounded-3xl border bg-card p-16 text-center">
           <p className="text-2xl font-display font-bold mb-2">No matches yet</p>
           <p className="text-muted-foreground">Try a different keyword or remove filters.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mt-8">
           {list.map((b, i) => (
             <BlogCard key={b.id} blog={b} index={i} eager />
           ))}

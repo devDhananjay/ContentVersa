@@ -5,10 +5,7 @@ function googleDisplayName(profile: GoogleProfile) {
   return profile.name || profile.given_name || null;
 }
 
-/**
- * Link or create a Google user without a long interactive transaction
- * (Neon cold starts were exceeding Prisma's 5s default).
- */
+/** Link or create a Google user without a long interactive transaction. */
 export async function persistGoogleUser(profile: GoogleProfile) {
   const displayName = googleDisplayName(profile);
   const displayImage = profile.picture || null;

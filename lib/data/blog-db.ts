@@ -1,6 +1,6 @@
 import { cache } from "react";
 import type { BlogStatus, User, Profile, Category, Blog as DbBlog } from "@prisma/client";
-import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { prisma, isDatabaseConfigured, safeDbQuery } from "@/lib/prisma";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
 import type { Author, Blog } from "@/lib/data/blogs";
 import { BLOGS, getBlogBySlug as getMockBlogBySlug } from "@/lib/data/blogs";
@@ -129,10 +129,12 @@ const blogLiteSelect = {
 
 export async function getOwnerUser() {
   if (!isDatabaseConfigured()) return null;
-  return prisma.user.findUnique({
-    where: { email: PLATFORM_OWNER_EMAIL },
-    include: { profile: true },
-  });
+  return safeDbQuery(null, () =>
+    prisma.user.findUnique({
+      where: { email: PLATFORM_OWNER_EMAIL },
+      include: { profile: true },
+    })
+  );
 }
 
 export async function getUserByUsername(username: string) {
@@ -152,34 +154,46 @@ export async function getUserByUsername(username: string) {
 
 export async function getPublishedBlogsFromDb(limit?: number) {
   if (!isDatabaseConfigured()) return null;
-  const rows = await prisma.blog.findMany({
-    where: { status: "PUBLISHED" },
-    include: blogInclude,
-    orderBy: { publishedAt: "desc" },
-    take: limit,
-  });
-  return rows.map(mapDbBlogToBlog);
+  return safeDbQuery(null, async () => {
+    const rows = await prisma.blog.findMany({
+      where: {
+        status: "PUBLISHED",
+        slug: { not: { startsWith: "discover-" } },
+      },
+      include: blogInclude,
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+    });
+    return rows.map(mapDbBlogToBlog);
+  }, "blogs");
 }
 
 /** Fast list fetch without article body */
 export async function getPublishedBlogsLiteFromDb(limit = 24) {
   if (!isDatabaseConfigured()) return null;
-  const rows = await prisma.blog.findMany({
-    where: { status: "PUBLISHED" },
-    select: blogLiteSelect,
-    orderBy: { publishedAt: "desc" },
-    take: limit,
-  });
-  return rows.map(mapLiteToBlog);
+  return safeDbQuery(null, async () => {
+    const rows = await prisma.blog.findMany({
+      where: {
+        status: "PUBLISHED",
+        slug: { not: { startsWith: "discover-" } },
+      },
+      select: blogLiteSelect,
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+    });
+    return rows.map(mapLiteToBlog);
+  }, "blogs");
 }
 
 export async function getBlogBySlugFromDb(slug: string) {
   if (!isDatabaseConfigured()) return null;
-  const row = await prisma.blog.findUnique({
-    where: { slug },
-    include: blogInclude,
-  });
-  return row ? mapDbBlogToBlog(row) : null;
+  return safeDbQuery(null, async () => {
+    const row = await prisma.blog.findUnique({
+      where: { slug },
+      include: blogInclude,
+    });
+    return row ? mapDbBlogToBlog(row) : null;
+  }, "blogs");
 }
 
 export const getBlogBySlugHybrid = cache(async (slug: string) => {
@@ -293,12 +307,23 @@ export async function getCategoriesWithCountsHybrid() {
     }));
   }
 
-  const rows = await prisma.category.findMany({
-    include: {
-      _count: { select: { blogs: { where: { status: "PUBLISHED" } } } },
-    },
-    orderBy: { order: "asc" },
-  });
+  type CategoryRow = Awaited<
+    ReturnType<
+      typeof prisma.category.findMany<{
+        include: { _count: { select: { blogs: { where: { status: "PUBLISHED" } } } } };
+      }>
+    >
+  >[number];
+
+  const rows = await safeDbQuery([] as CategoryRow[], () =>
+    prisma.category.findMany({
+      include: {
+        _count: { select: { blogs: { where: { status: "PUBLISHED" } } } },
+      },
+      orderBy: { order: "asc" },
+    }),
+    "categories"
+  );
 
   if (rows.length === 0) {
     return CATEGORIES.map((c) => ({
@@ -320,24 +345,40 @@ export async function getFeaturedCreatorsHybrid(limit = 6) {
 
   if (!isDatabaseConfigured()) return getFeaturedAuthors(limit);
 
-  const users = await prisma.user.findMany({
-    where: {
-      blogs: { some: { status: "PUBLISHED" } },
-    },
-    include: {
-      profile: true,
-      _count: { select: { blogs: { where: { status: "PUBLISHED" } } } },
-    },
-    orderBy: { createdAt: "asc" },
-    take: limit,
-  });
+  type FeaturedCreatorRow = Awaited<
+    ReturnType<
+      typeof prisma.user.findMany<{
+        include: {
+          profile: true;
+          _count: { select: { blogs: { where: { status: "PUBLISHED" } } } };
+        };
+      }>
+    >
+  >[number];
+
+  const users = await safeDbQuery([] as FeaturedCreatorRow[], () =>
+    prisma.user.findMany({
+      where: {
+        blogs: { some: { status: "PUBLISHED" } },
+      },
+      include: {
+        profile: true,
+        _count: { select: { blogs: { where: { status: "PUBLISHED" } } } },
+      },
+      orderBy: { createdAt: "asc" },
+      take: limit,
+    }),
+    "creators"
+  );
 
   if (users.length === 0) {
     const owner = await getOwnerUser();
     if (owner) {
-      const count = await prisma.blog.count({
-        where: { authorId: owner.id, status: "PUBLISHED" },
-      });
+      const count = await safeDbQuery(0, () =>
+        prisma.blog.count({
+          where: { authorId: owner.id, status: "PUBLISHED" },
+        })
+      );
       return [mapUserToAuthor(owner, count)];
     }
     return getFeaturedAuthors(limit);
@@ -349,31 +390,37 @@ export async function getFeaturedCreatorsHybrid(limit = 6) {
     .map((u) => mapUserToAuthor(u, u._count.blogs));
 }
 
+const DEMO_STATS = {
+  creators: "120K+",
+  readers: "8.4M",
+  paid: "$2.1M",
+} as const;
+
 export async function getPlatformStatsHybrid() {
-  if (!isDatabaseConfigured()) {
+  if (!isDatabaseConfigured()) return DEMO_STATS;
+
+  return safeDbQuery(DEMO_STATS, async () => {
+    const [userCount, agg] = await Promise.all([
+      prisma.user.count(),
+      prisma.blog.aggregate({
+        where: { status: "PUBLISHED" },
+        _sum: { views: true, likesCount: true },
+        _count: true,
+      }),
+    ]);
+
+    const views = agg._sum.views ?? 0;
+    const format = (n: number) =>
+      n >= 1_000_000
+        ? `${(n / 1_000_000).toFixed(1)}M`
+        : n >= 1000
+          ? `${Math.round(n / 1000)}K+`
+          : `${n}`;
+
     return {
-      creators: "120K+",
-      readers: "8.4M",
-      paid: "$2.1M",
+      creators: userCount > 0 ? `${userCount}+` : "1+",
+      readers: views > 0 ? format(views) : "—",
+      paid: agg._sum.likesCount ? `$${format(agg._sum.likesCount * 2)}` : "—",
     };
-  }
-
-  const [userCount, agg] = await Promise.all([
-    prisma.user.count(),
-    prisma.blog.aggregate({
-      where: { status: "PUBLISHED" },
-      _sum: { views: true, likesCount: true },
-      _count: true,
-    }),
-  ]);
-
-  const views = agg._sum.views ?? 0;
-  const format = (n: number) =>
-    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` : n >= 1000 ? `${Math.round(n / 1000)}K+` : `${n}`;
-
-  return {
-    creators: userCount > 0 ? `${userCount}+` : "1+",
-    readers: views > 0 ? format(views) : "—",
-    paid: agg._sum.likesCount ? `$${format(agg._sum.likesCount * 2)}` : "—",
-  };
+  }, "stats");
 }

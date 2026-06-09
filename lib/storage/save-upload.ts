@@ -1,34 +1,22 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { put } from "@vercel/blob";
 import { getUploadsDirectory } from "@/lib/storage/upload-dir";
+import { isS3Configured, uploadToS3 } from "@/lib/storage/s3-upload";
 
-export function isBlobStorageConfigured() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
-}
-
-export function isVercelRuntime() {
-  return Boolean(process.env.VERCEL);
-}
-
+/**
+ * Storage priority:
+ * 1. AWS S3 (production — set AWS_S3_BUCKET + credentials)
+ * 2. Local disk via UPLOAD_DIR (EC2 fallback / dev)
+ */
 export async function saveUploadedImage(
   buffer: Buffer,
   filename: string,
   contentType: string
 ): Promise<{ url: string }> {
-  if (isBlobStorageConfigured()) {
-    const blob = await put(`uploads/${filename}`, buffer, {
-      access: "public",
-      contentType,
-      addRandomSuffix: false,
-    });
-    return { url: blob.url };
-  }
+  const key = `uploads/${filename}`;
 
-  if (isVercelRuntime()) {
-    throw new Error(
-      "BLOB_NOT_CONFIGURED: Enable Vercel Blob storage and set BLOB_READ_WRITE_TOKEN."
-    );
+  if (isS3Configured()) {
+    return uploadToS3(buffer, key, contentType);
   }
 
   const uploadsDir = getUploadsDirectory();

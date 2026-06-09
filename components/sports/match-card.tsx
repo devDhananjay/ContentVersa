@@ -23,6 +23,7 @@ export function MatchCard({ match, compact = false }: MatchCardProps) {
       aria-label={`View match: ${matchLabel}`}
       className={cn(
         "block rounded-2xl border bg-card p-4 transition-all hover:border-neon-cyan/40 hover:shadow-neon",
+        compact && "h-auto self-start",
         match.isLive && "border-red-500/30 bg-red-500/5"
       )}
     >

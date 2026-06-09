@@ -1,8 +1,12 @@
 // Client-side helper for uploading images to /api/upload
 
-/** Self-hosted /uploads and data URLs must bypass Next.js image optimizer (400 on EC2). */
+/** Bypass Next.js image optimizer for paths/hosts we don't whitelist in next.config. */
 export function shouldSkipImageOptimization(src: string): boolean {
-  return src.startsWith("/uploads/") || src.startsWith("data:");
+  if (!src) return false;
+  if (src.startsWith("/uploads/") || src.startsWith("data:")) return true;
+  // Feed previews, OG images, and other third-party URLs (e.g. BBC, news sites).
+  if (src.startsWith("http://") || src.startsWith("https://")) return true;
+  return false;
 }
 
 export interface UploadedImage {

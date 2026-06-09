@@ -1,4 +1,6 @@
 import { Hero } from "@/components/home/hero";
+import { ReelsStripSection } from "@/components/reels/reels-strip-section";
+import { AmbientPageBackground } from "@/components/site/ambient-page-background";
 import { TrendingSection } from "@/components/home/trending";
 import { FeaturedCreators } from "@/components/home/featured-creators";
 import { PopularCategories } from "@/components/home/popular-categories";
@@ -25,7 +27,11 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero stats={data.stats} categories={data.categories} />
+      <div className="relative overflow-hidden">
+        <AmbientPageBackground />
+        <ReelsStripSection />
+        <Hero stats={data.stats} categories={data.categories} />
+      </div>
       <TrendingSection blogs={data.trending} />
       <SportsTeaser data={sportsTeaser} />
       <NewsIn60Section blogs={data.trending} />

@@ -33,6 +33,14 @@
     --ring: 263 85% 60%;
 
     --radius: 0.75rem;
+
+    /* Reels strip styling */
+    --reel-preview-w: 88px;
+    --reel-preview-h: 150px;
+    --reel-preview-radius: 20px;
+    --reels-strip-py: 30px;
+    /* SSR fallback (navbar + ticker) — HeaderHeightSync sets exact px after mount */
+    --site-header-offset: 6.5rem;
   }
 
   .dark {
@@ -109,6 +117,12 @@
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+  .reels-strip-scroll {
+    padding-top: var(--reels-strip-py);
+    padding-bottom: var(--reels-strip-py);
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
   .grid-noise {
     background-image:

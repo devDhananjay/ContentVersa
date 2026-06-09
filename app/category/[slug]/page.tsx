@@ -5,10 +5,13 @@ import type { Metadata } from "next";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CategoryFinanceLive } from "@/components/category/category-finance-live";
+import { CategoryLiveFeedGrid } from "@/components/feeds/category-live-feed-grid";
 import { TopWritersPanel } from "@/components/category/top-writers";
 import { CATEGORIES, getCategoryBySlug } from "@/lib/data/categories";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getTopWritersForCategoryCached } from "@/lib/data/top-writers";
+import { getCategoryFeed } from "@/lib/feeds/data";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -41,8 +44,11 @@ export default async function CategoryPage({
   const { slug } = await params;
   const cat = getCategoryBySlug(slug);
   if (!cat) return notFound();
-  const blogs = await getBlogsByCategoryHybrid(slug);
-  const topWriters = await getTopWritersForCategoryCached(slug, 5);
+  const [blogs, topWriters, feed] = await Promise.all([
+    getBlogsByCategoryHybrid(slug),
+    getTopWritersForCategoryCached(slug, 5),
+    slug === "finance" ? Promise.resolve(null) : getCategoryFeed(slug),
+  ]);
 
   return (
     <div>
@@ -79,6 +85,9 @@ export default async function CategoryPage({
 
       <div className="container py-10 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10">
         <div>
+          {slug === "finance" ? <CategoryFinanceLive /> : null}
+          {feed ? <CategoryLiveFeedGrid feed={feed} /> : null}
+
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-display text-2xl font-bold">
               Trending in {cat.name}

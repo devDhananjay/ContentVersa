@@ -14,6 +14,7 @@ import {
   Bookmark,
   LogOut,
   Shield,
+  Film,
 } from "lucide-react";
 import { isAdminRole } from "@/lib/auth/roles";
 import { useSignOut } from "@/components/auth/sign-out-button";
@@ -44,6 +45,7 @@ export function DashboardSidebar({
   const NAV: NavItem[] = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/blogs", label: "My Blogs", icon: FileText },
+    { href: "/dashboard/reels", label: "My Reels", icon: Film },
     { href: "/dashboard/create", label: "Create", icon: PenSquare, primary: true },
     { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
     { href: "/dashboard/earnings", label: "Earnings", icon: Wallet },

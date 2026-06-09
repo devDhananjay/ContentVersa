@@ -6,8 +6,10 @@ import { MarketStrip } from "./market-strip";
 
 export function MarketStripLive({
   initialData,
+  embedded,
 }: {
   initialData: FinanceTickerData;
+  embedded?: boolean;
 }) {
   const [data, setData] = React.useState(initialData);
   const lastKeyRef = React.useRef(initialData.updatedAt);
@@ -41,5 +43,5 @@ export function MarketStripLive({
     };
   }, []);
 
-  return <MarketStrip data={data} />;
+  return <MarketStrip data={data} embedded={embedded} />;
 }

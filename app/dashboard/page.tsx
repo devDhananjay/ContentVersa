@@ -18,12 +18,21 @@ import { Badge } from "@/components/ui/badge";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboardDataCached } from "@/lib/data/dashboard-data";
+import { requireUserId } from "@/lib/auth/resolve-user-id";
+import { getUserReels, getUserReelStats } from "@/lib/reels/data";
+import { ReelsDashboardPanel } from "@/components/reels/reels-dashboard-panel";
 
 export default async function DashboardOverview() {
   const session = await getCurrentUser();
   if (!session) redirect("/auth/sign-in?next=/dashboard");
 
-  const data = await getDashboardDataCached(session);
+  const [data, authorId] = await Promise.all([
+    getDashboardDataCached(session),
+    requireUserId(session).catch(() => null),
+  ]);
+  const [reels, reelStats] = authorId
+    ? await Promise.all([getUserReels(authorId), getUserReelStats(authorId)])
+    : [[], { totalViews: 0, totalReels: 0, publishedReels: 0, views30d: 0 }];
   const firstName = (session.name || session.username || "there").split(" ")[0];
   const stats = data?.stats;
   const topBlogs = data?.topBlogs ?? [];
@@ -58,6 +67,10 @@ export default async function DashboardOverview() {
         <StatCard label="Reactions" value={stats?.reactions ?? "0"} delta={stats?.reactionsDelta ?? 0} icon={<Heart className="h-5 w-5" />} color="from-neon-pink to-neon-purple" index={1} />
         <StatCard label="Followers" value={stats?.followers ?? "0"} delta={stats?.followersDelta ?? 0} icon={<Users className="h-5 w-5" />} color="from-neon-purple to-neon-pink" index={2} />
         <StatCard label="Earnings (month)" value={stats?.earnings ?? formatINR(0)} delta={stats?.earningsDelta ?? 0} icon={<Wallet className="h-5 w-5" />} color="from-neon-orange to-neon-pink" index={3} />
+      </div>
+
+      <div className="mt-8">
+        <ReelsDashboardPanel reels={reels} stats={reelStats} />
       </div>
 
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">

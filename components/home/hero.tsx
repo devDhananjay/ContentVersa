@@ -31,15 +31,7 @@ export function Hero({ categories, stats }: Props) {
 
   return (
     <section className="relative overflow-hidden">
-      {/* Background gradients */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-gradient-to-br from-neon-blue/20 via-neon-purple/20 to-neon-pink/20 blur-3xl opacity-50 rounded-full" />
-        <div className="absolute top-40 left-10 w-72 h-72 bg-neon-purple/20 rounded-full blur-3xl animate-pulse-glow" />
-        <div className="absolute top-20 right-10 w-72 h-72 bg-neon-cyan/20 rounded-full blur-3xl animate-pulse-glow" />
-        <div className="absolute inset-0 grid-noise opacity-30" />
-      </div>
-
-      <div className="container relative pt-16 md:pt-24 pb-20 md:pb-32">
+      <div className="container relative pt-6 md:pt-10 pb-20 md:pb-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
