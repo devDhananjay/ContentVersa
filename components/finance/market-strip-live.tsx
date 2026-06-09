@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { FINANCE_TICKER_POLL_MS } from "@/lib/finance/constants";
 import type { FinanceTickerData } from "@/lib/finance/types";
 import { MarketStrip } from "./market-strip";
 
@@ -36,10 +37,16 @@ export function MarketStripLive({
       }
     }
 
-    const timer = setInterval(() => void tick(), 1000);
+    void tick();
+    const timer = setInterval(() => void tick(), FINANCE_TICKER_POLL_MS);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void tick();
+    };
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       ac.abort();
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { FINANCE_HUB_POLL_MS } from "@/lib/finance/constants";
 import type { FinanceHubData } from "@/lib/finance/types";
 import { FinanceDashboard } from "./finance-dashboard";
 
@@ -34,10 +35,16 @@ export function FinanceHubLive({
       }
     }
 
-    const timer = setInterval(() => void tick(), 1000);
+    void tick();
+    const timer = setInterval(() => void tick(), FINANCE_HUB_POLL_MS);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void tick();
+    };
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       ac.abort();
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 

@@ -3,12 +3,13 @@
 import * as React from "react";
 import { AddToWatchlistButton } from "./add-to-watchlist-button";
 import { ChangeBadge } from "./change-badge";
+import { FINANCE_STOCK_POLL_MS } from "@/lib/finance/constants";
 import type { StockQuote } from "@/lib/finance/types";
 
 export function LiveStockQuote({
   symbol,
   initialQuote,
-  pollingMs = 1000,
+  pollingMs = FINANCE_STOCK_POLL_MS,
 }: {
   symbol: string;
   initialQuote: StockQuote;

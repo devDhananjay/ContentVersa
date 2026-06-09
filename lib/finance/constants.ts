@@ -70,5 +70,13 @@ export const TOP10_STOCKS = [
   "HINDUNILVR.NS",
 ] as const;
 
-// 1 second TTL so polling shows changes quickly (matches UI 1s refresh request).
-export const FINANCE_CACHE_TTL = 1;
+/** Server cache for Yahoo/NSE data (seconds). Override via FINANCE_CACHE_TTL_SECONDS. */
+export const FINANCE_CACHE_TTL =
+  Number(process.env.FINANCE_CACHE_TTL_SECONDS) > 0
+    ? Number(process.env.FINANCE_CACHE_TTL_SECONDS)
+    : 300;
+
+/** Client poll intervals — keep low to avoid hammering Yahoo on every page. */
+export const FINANCE_TICKER_POLL_MS = 120_000;
+export const FINANCE_HUB_POLL_MS = 120_000;
+export const FINANCE_STOCK_POLL_MS = 120_000;

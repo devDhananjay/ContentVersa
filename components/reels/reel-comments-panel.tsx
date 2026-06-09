@@ -32,6 +32,11 @@ export function ReelCommentsPanel({
   const [posting, setPosting] = React.useState(false);
   const [authRequired, setAuthRequired] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const onCountChangeRef = React.useRef(onCountChange);
+
+  React.useEffect(() => {
+    onCountChangeRef.current = onCountChange;
+  }, [onCountChange]);
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -40,11 +45,11 @@ export function ReelCommentsPanel({
       const data = (await res.json()) as { data?: ReelCommentDto[] };
       const list = data.data || [];
       setComments(list);
-      onCountChange?.(list.length);
+      onCountChangeRef.current?.(list.length);
     } finally {
       setLoading(false);
     }
-  }, [reelId, onCountChange]);
+  }, [reelId]);
 
   React.useEffect(() => {
     if (open) {
@@ -73,8 +78,11 @@ export function ReelCommentsPanel({
       if (!res.ok || !data.comment) {
         throw new Error(data.error || "Failed");
       }
-      setComments((prev) => [data.comment!, ...prev]);
-      onCountChange?.(comments.length + 1);
+      setComments((prev) => {
+        const next = [data.comment!, ...prev];
+        onCountChangeRef.current?.(next.length);
+        return next;
+      });
       setDraft("");
     } catch {
       /* toast optional */

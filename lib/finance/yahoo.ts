@@ -29,17 +29,14 @@ async function fetchQuote(symbol: string) {
 }
 
 async function fetchQuotes(symbols: string[]): Promise<StockQuote[]> {
-  const results = await Promise.all(
-    symbols.map(async (symbol) => {
-      try {
-        const raw = await fetchQuote(symbol);
-        return toStockQuote(raw);
-      } catch {
-        return null;
-      }
-    })
-  );
-  return results.filter((q): q is StockQuote => q !== null);
+  if (symbols.length === 0) return [];
+  try {
+    const raw = await yahooFinance.quote([...symbols]);
+    const rows = Array.isArray(raw) ? raw : [raw];
+    return rows.map(toStockQuote).filter((q): q is StockQuote => q !== null);
+  } catch {
+    return [];
+  }
 }
 
 function toIndexQuote(

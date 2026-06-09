@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
-import YahooFinance from "yahoo-finance2";
-import { toStockQuote, normalizeSymbol } from "@/lib/finance/transformers";
-import { cache } from "@/lib/redis";
-import { FINANCE_CACHE_TTL } from "@/lib/finance/constants";
-
-const yahooFinance = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
+import { normalizeSymbol } from "@/lib/finance/transformers";
+import { fetchQuotesCached } from "@/lib/finance/fetch-quotes";
+import { financeJsonResponse } from "@/lib/finance/api-response";
 
 export async function GET(req: Request) {
   const symbols = new URL(req.url).searchParams.get("symbols");
@@ -19,23 +16,8 @@ export async function GET(req: Request) {
     .slice(0, 20);
 
   try {
-    const quotes = await Promise.all(
-      list.map(async (symbol) => {
-        try {
-          const cacheKey = `finance:quote:${symbol}`;
-          const raw = await cache.wrap(cacheKey, FINANCE_CACHE_TTL, () =>
-            yahooFinance.quote(symbol)
-          );
-          return toStockQuote(raw);
-        } catch {
-          return null;
-        }
-      })
-    );
-
-    return NextResponse.json({
-      quotes: quotes.filter((q) => q !== null),
-    });
+    const quotes = await fetchQuotesCached(list);
+    return financeJsonResponse({ quotes });
   } catch (err) {
     console.error("[api/finance/quotes]", err);
     return NextResponse.json({ error: "Failed to fetch quotes" }, { status: 500 });

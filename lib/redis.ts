@@ -57,6 +57,7 @@ class RedisDriver implements CacheDriver {
 }
 
 let driver: CacheDriver | null = null;
+const inflight = new Map<string, Promise<unknown>>();
 
 async function getDriver(): Promise<CacheDriver> {
   if (driver) return driver;
@@ -91,8 +92,21 @@ export const cache = {
   async wrap<T>(key: string, ttlSeconds: number, loader: () => Promise<T>): Promise<T> {
     const hit = await this.get<T>(key);
     if (hit !== null && hit !== undefined) return hit;
-    const value = await loader();
-    await this.set(key, value as CacheValue, ttlSeconds);
-    return value;
+
+    const pending = inflight.get(key);
+    if (pending) return pending as Promise<T>;
+
+    const promise = (async () => {
+      try {
+        const value = await loader();
+        await this.set(key, value as CacheValue, ttlSeconds);
+        return value;
+      } finally {
+        inflight.delete(key);
+      }
+    })();
+
+    inflight.set(key, promise);
+    return promise;
   },
 };

@@ -1,8 +1,13 @@
-import { NextResponse } from "next/server";
 import { getFinanceHubData } from "@/lib/finance/yahoo";
+import { financeJsonResponse } from "@/lib/finance/api-response";
 
 export async function GET() {
-  const data = await getFinanceHubData();
-  return NextResponse.json(data);
+  try {
+    const data = await getFinanceHubData();
+    return financeJsonResponse(data);
+  } catch (err) {
+    console.error("[api/finance/hub]", err);
+    return financeJsonResponse({ error: "Failed to load finance hub" }, 503);
+  }
 }
 
