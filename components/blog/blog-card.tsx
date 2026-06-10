@@ -11,7 +11,7 @@ import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
 import { CATEGORIES } from "@/lib/data/categories";
 import type { Blog } from "@/lib/data/blogs";
 import { cn } from "@/lib/utils";
-import { shouldSkipImageOptimization } from "@/lib/upload";
+import { resolveBlogCoverImage, shouldSkipImageOptimization } from "@/lib/upload";
 
 interface BlogCardProps {
   blog: Blog;
@@ -28,7 +28,8 @@ export function BlogCard({
   eager = false,
 }: BlogCardProps) {
   const category = CATEGORIES.find((c) => c.slug === blog.category);
-  const coverUnoptimized = shouldSkipImageOptimization(blog.coverImage);
+  const coverSrc = resolveBlogCoverImage(blog.coverImage);
+  const coverUnoptimized = shouldSkipImageOptimization(coverSrc);
 
   if (variant === "featured") {
     return (
@@ -42,7 +43,7 @@ export function BlogCard({
         <Link href={`/blog/${blog.slug}`} className="block">
           <div className="relative aspect-[16/10] overflow-hidden">
             <Image
-              src={blog.coverImage}
+              src={coverSrc}
               alt={blog.title}
               fill
               priority
@@ -96,7 +97,7 @@ export function BlogCard({
       >
         <Link href={`/blog/${blog.slug}`} className="relative shrink-0">
           <div className="relative h-24 w-24 md:h-28 md:w-28 overflow-hidden rounded-xl">
-            <Image src={blog.coverImage} alt={blog.title} fill sizes="120px" className="object-cover" unoptimized={coverUnoptimized} />
+            <Image src={coverSrc} alt={blog.title} fill sizes="120px" className="object-cover" unoptimized={coverUnoptimized} />
           </div>
         </Link>
         <div className="flex-1 min-w-0">
@@ -136,7 +137,7 @@ export function BlogCard({
         className="group flex items-start gap-3 p-3 rounded-xl hover:bg-muted/40 transition-colors"
       >
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
-          <Image src={blog.coverImage} alt={blog.title} fill sizes="64px" className="object-cover" unoptimized={coverUnoptimized} />
+          <Image src={coverSrc} alt={blog.title} fill sizes="64px" className="object-cover" unoptimized={coverUnoptimized} />
         </div>
         <div className="min-w-0 flex-1">
           <h4 className="font-medium text-sm line-clamp-2 leading-snug group-hover:text-foreground">
@@ -163,7 +164,7 @@ export function BlogCard({
       <Link href={`/blog/${blog.slug}`} className="block">
         <div className="relative aspect-[16/10] overflow-hidden">
           <Image
-            src={blog.coverImage}
+            src={coverSrc}
             alt={blog.title}
             fill
             sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"

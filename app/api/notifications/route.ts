@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
-import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { prisma, isDatabaseConfigured, safeDbQuery } from "@/lib/prisma";
 
 const PatchSchema = z.object({
   all: z.boolean().optional(),
@@ -46,11 +46,16 @@ export async function GET() {
       return NextResponse.json({ data: [], unread: 0 });
     }
 
-    const rows = await prisma.notification.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      take: 50,
-    });
+    const rows = await safeDbQuery(
+      [] as Awaited<ReturnType<typeof prisma.notification.findMany>>,
+      () =>
+        prisma.notification.findMany({
+          where: { userId },
+          orderBy: { createdAt: "desc" },
+          take: 50,
+        }),
+      "notifications"
+    );
 
     const unread = rows.filter((n) => !n.read).length;
 
@@ -69,6 +74,9 @@ export async function GET() {
   } catch (err) {
     if (err instanceof Error && err.message === "UNAUTHENTICATED") {
       return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+    }
+    if (err instanceof Error && err.message === "USER_NOT_FOUND") {
+      return NextResponse.json({ data: [], unread: 0 });
     }
     return NextResponse.json({ error: "Failed to load" }, { status: 500 });
   }

@@ -1,0 +1,29 @@
+{
+  "pages": {
+    "/discover/[category]/[id]/page": [
+      "static/chunks/[root-of-the-server]__0110a8d4._.css",
+      "static/chunks/node_modules_firebase_messaging_dist_esm_index_esm_285f3885.js",
+      "static/chunks/_cdb76052._.js",
+      "static/chunks/node_modules_next_02beae46._.js",
+      "static/chunks/node_modules_framer-motion_dist_es_011a2bde._.js",
+      "static/chunks/node_modules_@radix-ui_6f8f4b68._.js",
+      "static/chunks/node_modules_@floating-ui_1b6e7b6d._.js",
+      "static/chunks/node_modules_@firebase_e5b1f2ed._.js",
+      "static/chunks/node_modules_68de634a._.js",
+      "static/chunks/app_layout_tsx_0a548d63._.js",
+      "static/chunks/node_modules_next_dist_client_components_builtin_global-error_f3292d8c.js",
+      "static/chunks/components_c57291b5._.js",
+      "static/chunks/node_modules_e64c7b63._.js",
+      "static/chunks/app_discover_[category]_[id]_page_tsx_f3292d8c._.js",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_57d40746._.js",
+      "static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js",
+      "static/chunks/node_modules_next_dist_compiled_next-devtools_index_a9cb0712.js",
+      "static/chunks/node_modules_next_dist_compiled_5150ccfd._.js",
+      "static/chunks/node_modules_next_dist_client_cf1d9188._.js",
+      "static/chunks/node_modules_next_dist_b0daae9a._.js",
+      "static/chunks/node_modules_@swc_helpers_cjs_b3dc30d6._.js",
+      "static/chunks/_a0ff3932._.js",
+      "static/chunks/turbopack-_cdba956c._.js"
+    ]
+  }
+}

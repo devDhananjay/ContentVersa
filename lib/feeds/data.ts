@@ -7,6 +7,7 @@ import { fetchHackerNewsFeed } from "./hackernews";
 import { fetchHuggingFaceFeed } from "./huggingface";
 import { fetchProductHuntFeed } from "./producthunt";
 import { fetchRedditRssFeed } from "./reddit";
+import { fetchFinanceFeed } from "./finance";
 import { fetchTmdbFeed } from "./tmdb";
 import type { CategoryFeed, FeedItem } from "./types";
 
@@ -86,7 +87,7 @@ async function wrap(
 export async function getCategoryFeed(
   slug: string
 ): Promise<CategoryFeed | null> {
-  if (!hasCategoryFeed(slug) || slug === "finance") return null;
+  if (!hasCategoryFeed(slug)) return null;
 
   return cache.wrap(`feeds:category:v2:${slug}`, FEED_CACHE_TTL, () =>
     buildFeed(slug)

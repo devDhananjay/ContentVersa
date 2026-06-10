@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
-import { CategoryFinanceLive } from "@/components/category/category-finance-live";
 import { CategoryLiveFeedGrid } from "@/components/feeds/category-live-feed-grid";
 import type { Blog } from "@/lib/data/blogs";
 import { getPublishedBlogsHybrid } from "@/lib/data/blog-db";
@@ -94,9 +93,7 @@ export default async function BlogsPage({
   const list = applyFilters(all, sp);
   const category = sp.category;
   const feed =
-    category && category !== "finance" && hasCategoryFeed(category)
-      ? await getCategoryFeed(category)
-      : null;
+    category && hasCategoryFeed(category) ? await getCategoryFeed(category) : null;
 
   return (
     <div className="container pt-8 pb-8 md:pt-10 md:pb-12">
@@ -108,7 +105,6 @@ export default async function BlogsPage({
         />
       </Suspense>
 
-      {category === "finance" ? <CategoryFinanceLive /> : null}
       {feed ? <CategoryLiveFeedGrid feed={feed} /> : null}
 
       {list.length === 0 ? (

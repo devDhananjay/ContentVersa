@@ -120,7 +120,7 @@ export function ReelCreateForm() {
             <div className="text-center">
               <p className="text-sm font-medium">Tap to upload</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Video (MP4, WebM, MOV) up to 100MB · Image up to 10MB
+                Video (MP4, WebM, MOV) up to 20MB · Image up to 5MB
               </p>
             </div>
           </button>

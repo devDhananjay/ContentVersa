@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { Blog } from "@/lib/data/blogs";
+import { resolveBlogCoverImage } from "@/lib/upload";
 import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
 
 interface Props {
@@ -48,7 +49,7 @@ export function EditorPick({ blogs: picks }: Props) {
           >
             <Link href={`/blog/${b.slug}`} className="shrink-0">
               <div className="relative aspect-video sm:aspect-square sm:h-48 sm:w-48 overflow-hidden rounded-2xl">
-                <Image src={b.coverImage} alt={b.title} fill sizes="200px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                <Image src={resolveBlogCoverImage(b.coverImage)} alt={b.title} fill sizes="200px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                 <Badge variant="orange" className="absolute top-2 left-2">
                   <Crown className="h-3 w-3 mr-1" /> Pick
                 </Badge>

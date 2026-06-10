@@ -3,6 +3,7 @@ import type { BlogStatus, User, Profile, Category, Blog as DbBlog } from "@prism
 import { prisma, isDatabaseConfigured, safeDbQuery } from "@/lib/prisma";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
 import type { Author, Blog } from "@/lib/data/blogs";
+import { resolveBlogCoverImage } from "@/lib/upload";
 import { BLOGS, getBlogBySlug as getMockBlogBySlug } from "@/lib/data/blogs";
 
 type BlogWithRelations = DbBlog & {
@@ -41,7 +42,7 @@ export function mapDbBlogToBlog(blog: BlogWithRelations): Blog {
     title: blog.title,
     excerpt: blog.excerpt || "",
     content: blog.content,
-    coverImage: blog.coverImage || "",
+    coverImage: resolveBlogCoverImage(blog.coverImage),
     readingTime: blog.readingTime,
     views: blog.views,
     likes: blog.likesCount,

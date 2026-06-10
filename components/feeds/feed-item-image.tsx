@@ -9,6 +9,7 @@ import {
   Gamepad2,
   Rocket,
   Sparkles,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   movies: Clapperboard,
   gaming: Gamepad2,
   startups: Rocket,
+  finance: TrendingUp,
 };
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
@@ -28,6 +30,7 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
   movies: "from-red-500/30 to-rose-500/20",
   gaming: "from-purple-500/30 to-indigo-500/20",
   startups: "from-pink-500/30 to-rose-500/20",
+  finance: "from-emerald-500/30 to-teal-500/20",
 };
 
 interface FeedItemImageProps {

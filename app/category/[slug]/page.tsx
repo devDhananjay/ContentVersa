@@ -5,7 +5,6 @@ import type { Metadata } from "next";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CategoryFinanceLive } from "@/components/category/category-finance-live";
 import { CategoryLiveFeedGrid } from "@/components/feeds/category-live-feed-grid";
 import { TopWritersPanel } from "@/components/category/top-writers";
 import { CATEGORIES, getCategoryBySlug } from "@/lib/data/categories";
@@ -47,7 +46,7 @@ export default async function CategoryPage({
   const [blogs, topWriters, feed] = await Promise.all([
     getBlogsByCategoryHybrid(slug),
     getTopWritersForCategoryCached(slug, 5),
-    slug === "finance" ? Promise.resolve(null) : getCategoryFeed(slug),
+    getCategoryFeed(slug),
   ]);
 
   return (
@@ -83,9 +82,8 @@ export default async function CategoryPage({
         </div>
       </section>
 
-      <div className="container py-10 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10">
-        <div>
-          {slug === "finance" ? <CategoryFinanceLive /> : null}
+      <div className="container py-10 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-10">
+        <div className="min-w-0">
           {feed ? <CategoryLiveFeedGrid feed={feed} /> : null}
 
           <div className="flex items-center justify-between mb-6">

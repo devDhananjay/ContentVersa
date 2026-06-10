@@ -1,7 +1,6 @@
 import { cache } from "react";
-import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { prisma, isDatabaseConfigured, safeDbQuery } from "@/lib/prisma";
 import { mapUserToAuthor } from "@/lib/data/blog-db";
-import { AUTHORS } from "@/lib/data/blogs";
 import type { Author } from "@/lib/data/blogs";
 
 export type TopWriterRow = Author & { score: number };
@@ -10,13 +9,9 @@ export async function getTopWritersForCategory(
   categorySlug: string,
   limit = 5
 ): Promise<TopWriterRow[]> {
-  if (!isDatabaseConfigured()) {
-    return AUTHORS.slice(0, limit).map((a, i) => ({
-      ...a,
-      score: 100 - i * 10,
-    }));
-  }
+  if (!isDatabaseConfigured()) return [];
 
+  return safeDbQuery([], async () => {
   const blogs = await prisma.blog.findMany({
     where: {
       status: "PUBLISHED",
@@ -74,6 +69,7 @@ export async function getTopWritersForCategory(
   });
 
   return scored.sort((a, b) => b.score - a.score).slice(0, limit);
+  }, "top-writers");
 }
 
 export const getTopWritersForCategoryCached = cache(getTopWritersForCategory);

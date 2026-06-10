@@ -1,5 +1,14 @@
 // Client-side helper for uploading images to /api/upload
 
+/** Default cover when a blog has no image (Unsplash — already in next.config remotePatterns). */
+export const BLOG_COVER_PLACEHOLDER =
+  "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800";
+
+export function resolveBlogCoverImage(src?: string | null): string {
+  const trimmed = src?.trim();
+  return trimmed || BLOG_COVER_PLACEHOLDER;
+}
+
 /** Bypass Next.js image optimizer for paths/hosts we don't whitelist in next.config. */
 export function shouldSkipImageOptimization(src: string): boolean {
   if (!src) return false;

@@ -23,7 +23,7 @@ export async function getFeedItemDetail(
   category: string,
   id: string
 ): Promise<FeedItemDetail | null> {
-  if (!hasCategoryFeed(category) || category === "finance") return null;
+  if (!hasCategoryFeed(category)) return null;
 
   const decodedId = decodeURIComponent(id);
   const detail = await fetchFeedItemDetail(category, decodedId);
