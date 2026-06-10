@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { CategoryWithCount } from "@/lib/data/home-data";
+import { categoryPageHref } from "@/lib/data/categories";
 
 const ROTATING_WORDS = ["Read.", "Create.", "Grow.", "Earn.", "Build."];
 
@@ -101,7 +102,7 @@ export function Hero({ categories, stats }: Props) {
                 transition={{ delay: 0.05 * i }}
               >
                 <Link
-                  href={`/category/${cat.slug}`}
+                  href={categoryPageHref(cat.slug)}
                   className="text-xs rounded-full border border-border/60 px-3 py-1.5 hover:border-neon-purple/60 hover:text-foreground text-muted-foreground transition-colors backdrop-blur"
                 >
                   #{cat.name}

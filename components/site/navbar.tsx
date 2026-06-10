@@ -32,8 +32,8 @@ const NAV_LINKS = [
   { href: "/finance", label: "Finance", icon: TrendingUp },
   { href: "/reels", label: "Reels", icon: Film },
   { href: "/categories", label: "Categories", icon: LayoutDashboard },
-  { href: "/leaderboard", label: "Leaderboard", icon: Trophy, wideOnly: true },
-  { href: "/bookmarks", label: "Bookmarks", icon: Bookmark, wideOnly: true },
+  { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
+  { href: "/bookmarks", label: "Bookmarks", icon: Bookmark },
 ];
 
 export function Navbar({ embedded = false }: { embedded?: boolean }) {
@@ -44,58 +44,53 @@ export function Navbar({ embedded = false }: { embedded?: boolean }) {
   React.useEffect(() => setMobileOpen(false), [pathname]);
 
   return (
-    <header
-      className={cn(
-        !embedded && "fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50"
-      )}
-    >
-      <div className="container flex h-14 items-center gap-2 min-w-0">
-        <div className="flex items-center gap-1.5 min-w-0 shrink">
-          <Logo className="shrink-0" />
+    <header className={cn(!embedded && "fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50")}>
+      <div className="container flex h-14 items-center min-w-0 gap-2">
+        <Logo className="shrink-0" />
 
-          <nav className="hidden xl:flex items-center gap-0 shrink-0">
-            {NAV_LINKS.map((link) => {
-              const active = pathname?.startsWith(link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "relative px-1.5 2xl:px-2.5 py-1.5 rounded-lg text-[13px] 2xl:text-sm font-medium transition-colors whitespace-nowrap",
-                    link.wideOnly && "hidden 2xl:inline-block",
-                    active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {link.label}
-                  {active && (
-                    <motion.div
-                      layoutId="nav-indicator"
-                      className="absolute inset-0 -z-10 rounded-lg bg-accent/10"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
+        <nav
+          className="hidden xl:flex items-center gap-0.5 shrink-0 ml-1"
+          aria-label="Main"
+        >
+          {NAV_LINKS.map((link) => {
+            const active = pathname?.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "relative px-1.5 xl:px-2 py-1.5 rounded-lg text-[13px] xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
+                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {link.label}
+                {active && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute inset-0 -z-10 rounded-lg bg-accent/10"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
 
         <div className="flex-1 min-w-2" />
 
         <div className="hidden md:flex items-center gap-1.5 shrink-0">
           {!isBlogsPage && (
-            <div className="hidden lg:flex items-center relative w-32 2xl:w-44 shrink-0">
+            <div className="hidden lg:flex items-center relative w-32 xl:w-36 shrink-0">
               <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
               <form action="/blogs" className="w-full">
                 <Input
                   name="q"
                   placeholder="Search…"
-                  className="pl-8 h-9 text-sm bg-muted/50 border-transparent focus:border-input"
+                  className="pl-8 h-9 text-sm bg-muted/50 border-transparent focus:border-input w-full"
                 />
               </form>
             </div>
           )}
-
           <Link href="/dashboard/create">
             <Button variant="gradient" size="sm" className="gap-1.5 shrink-0">
               <PenSquare className="h-4 w-4" />
@@ -104,8 +99,6 @@ export function Navbar({ embedded = false }: { embedded?: boolean }) {
           </Link>
           <NotificationBell />
           <ThemeToggle />
-          <AdminViewButton variant="outline" compact className="2xl:hidden" />
-          <AdminViewButton variant="outline" className="hidden 2xl:flex" />
           <UserNav />
         </div>
 
@@ -132,7 +125,9 @@ export function Navbar({ embedded = false }: { embedded?: boolean }) {
             <div className="container py-4 space-y-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search…" className="pl-9" />
+                <form action="/blogs">
+                  <Input name="q" placeholder="Search…" className="pl-9" />
+                </form>
               </div>
               {NAV_LINKS.map((link) => (
                 <Link

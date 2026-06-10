@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
-import { CATEGORIES } from "@/lib/data/categories";
+import { CATEGORIES, categoryPageHref } from "@/lib/data/categories";
 import { BLOGS } from "@/lib/data/blogs";
 import { buildMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ export default function CategoriesIndex() {
           return (
             <Link
               key={cat.slug}
-              href={`/category/${cat.slug}`}
+              href={categoryPageHref(cat.slug)}
               className="group relative aspect-[16/10] overflow-hidden rounded-3xl border bg-card hover:border-transparent transition-all"
             >
               <Image

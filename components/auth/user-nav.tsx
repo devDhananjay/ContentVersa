@@ -40,12 +40,26 @@ export function UserNav() {
 
   const displayName = user.name || user.username || "Account";
   const displayEmail = user.email;
+  const isAdmin = isAdminRole(user.role);
 
   return (
-    <DropdownMenu>
+    <div className="flex items-center gap-1.5 shrink-0">
+      {isAdmin && (
+        <Link href="/admin">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 shrink-0 border-orange-500/40 text-orange-600 dark:text-orange-400 hover:bg-orange-500/10"
+          >
+            <Shield className="h-4 w-4 shrink-0" />
+            Admin View
+          </Button>
+        </Link>
+      )}
+      <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2 pl-1.5 pr-3">
-          <Avatar className="h-7 w-7">
+        <Button variant="outline" size="sm" className="gap-2 pl-1.5 pr-2.5 max-w-[11rem] shrink-0">
+          <Avatar className="h-7 w-7 shrink-0">
             {user.image ? (
               <AvatarImage src={user.image} alt={displayName} />
             ) : null}
@@ -53,7 +67,7 @@ export function UserNav() {
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden md:inline max-w-[9.5rem] 2xl:max-w-[11rem] truncate">
+          <span className="hidden xl:inline truncate min-w-0">
             {displayName}
           </span>
         </Button>
@@ -70,7 +84,7 @@ export function UserNav() {
             Dashboard
           </Link>
         </DropdownMenuItem>
-        {isAdminRole(user.role) && (
+        {isAdmin && (
           <DropdownMenuItem asChild>
             <Link href="/admin" className="cursor-pointer text-orange-600 dark:text-orange-400">
               <Shield className="h-4 w-4 mr-2" />
@@ -98,6 +112,7 @@ export function UserNav() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+    </div>
   );
 }
 

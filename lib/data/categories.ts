@@ -225,3 +225,9 @@ export const CATEGORIES: CategoryDef[] = [
 export function getCategoryBySlug(slug: string) {
   return CATEGORIES.find((c) => c.slug === slug);
 }
+
+/** Finance uses the live markets hub instead of the generic category layout. */
+export function categoryPageHref(slug: string): string {
+  if (slug === "finance") return "/finance";
+  return `/category/${slug}`;
+}

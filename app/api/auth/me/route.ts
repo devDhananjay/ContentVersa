@@ -26,6 +26,17 @@ export async function GET() {
     totalLikes: number;
   } | null = null;
 
+  let role = user.role;
+  if (isDatabaseConfigured() && user.email) {
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user.email },
+      select: { role: true },
+    });
+    if (dbUser?.role) {
+      role = dbUser.role as typeof user.role;
+    }
+  }
+
   if (isDatabaseConfigured() && user.sub && !user.sub.includes(":")) {
     profile = await prisma.profile.findUnique({
       where: { userId: user.sub },
@@ -60,7 +71,7 @@ export async function GET() {
   }
 
   return NextResponse.json(
-    { user: { ...user, profile, reading } },
+    { user: { ...user, role, profile, reading } },
     {
       headers: {
         "Cache-Control": "no-store, no-cache, must-revalidate",

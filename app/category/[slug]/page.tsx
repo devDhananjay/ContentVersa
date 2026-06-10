@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -41,6 +41,7 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  if (slug === "finance") redirect("/finance");
   const cat = getCategoryBySlug(slug);
   if (!cat) return notFound();
   const [blogs, topWriters, feed] = await Promise.all([
@@ -51,7 +52,7 @@ export default async function CategoryPage({
 
   return (
     <div>
-      <section className="relative h-[420px] overflow-hidden">
+      <section className="relative h-[min(380px,42vh)] sm:h-[min(420px,48vh)] overflow-hidden">
         <Image
           src={cat.banner}
           alt={cat.name}
@@ -62,7 +63,7 @@ export default async function CategoryPage({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/40" />
         <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/20 via-neon-purple/20 to-neon-pink/20 mix-blend-overlay" />
-        <div className="container relative h-full flex flex-col justify-end pb-12">
+        <div className="container relative h-full flex flex-col justify-end pb-10 sm:pb-12">
           <Badge variant="gradient" className="w-fit mb-3">
             Category
           </Badge>

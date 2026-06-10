@@ -62,6 +62,13 @@ async function buildFeed(slug: string): Promise<CategoryFeed | null> {
         subtitle: "Fresh products and ideas from founders",
       });
 
+    case "finance":
+      items = await fetchFinanceFeed(8);
+      return await wrap(slug, items, {
+        title: "Market movers",
+        subtitle: "Top Nifty 50 gainers right now",
+      });
+
     default:
       return null;
   }

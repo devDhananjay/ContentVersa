@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import * as Lucide from "lucide-react";
 import type { CategoryWithCount } from "@/lib/data/home-data";
+import { categoryPageHref } from "@/lib/data/categories";
 import { cn } from "@/lib/utils";
 
 const TopCategoriesPicker = (icon: string) => {
@@ -45,7 +46,7 @@ export function PopularCategories({ categories }: Props) {
               whileHover={{ scale: 1.03 }}
             >
               <Link
-                href={`/category/${cat.slug}`}
+                href={categoryPageHref(cat.slug)}
                 className={cn(
                   "relative group flex flex-col items-center justify-center gap-2 aspect-square rounded-2xl p-3 overflow-hidden border bg-card hover:border-transparent transition-all"
                 )}

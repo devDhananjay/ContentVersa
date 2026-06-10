@@ -2,7 +2,7 @@
  * Packages Next.js standalone output into ./build for server deployment.
  * Run: npm run build:server
  */
-import { cpSync, rmSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { cpSync, rmSync, existsSync, mkdirSync, writeFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.cwd();
@@ -27,6 +27,17 @@ const staticDest = join(buildDir, ".next", "static");
 if (existsSync(staticSrc)) {
   mkdirSync(join(buildDir, ".next"), { recursive: true });
   cpSync(staticSrc, staticDest, { recursive: true });
+
+  const devChunks = readdirSync(staticDest).filter((f) =>
+    /turbopack|hmr-client|next-devtools/i.test(f)
+  );
+  if (devChunks.length > 0) {
+    console.error(
+      "Refusing to package dev build — found turbopack/HMR chunks in .next/static. " +
+        "Stop `next dev`, run `rm -rf .next build`, then `NODE_ENV=production npm run build:server`."
+    );
+    process.exit(1);
+  }
 }
 
 const publicSrc = join(root, "public");

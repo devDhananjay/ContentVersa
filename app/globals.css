@@ -39,8 +39,8 @@
     --reel-preview-h: 150px;
     --reel-preview-radius: 20px;
     --reels-strip-py: 30px;
-    /* SSR fallback (navbar + ticker) — HeaderHeightSync sets exact px after mount */
-    --site-header-offset: 6.5rem;
+    /* SSR fallback (navbar 3.5rem + ticker 2.25rem) — HeaderHeightSync sets exact px after mount */
+    --site-header-offset: 5.75rem;
   }
 
   .dark {
@@ -82,9 +82,11 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   ::selection {

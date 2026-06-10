@@ -26,12 +26,13 @@ export function AdminViewButton({
   fullWidth,
   compact,
 }: AdminViewButtonProps) {
-  const { user, loading } = useSession();
+  const { user } = useSession();
 
-  if (loading || !isAdminRole(user?.role)) return null;
+  // Don't hide while session refreshes — only hide when role is known to be non-admin
+  if (!isAdminRole(user?.role)) return null;
 
   return (
-    <Link href="/admin" className={cn(fullWidth && "w-full", className)}>
+    <Link href="/admin" className={cn(fullWidth && "w-full", "shrink-0", className)}>
       <Button
         type="button"
         variant={variant === "gradient" ? "gradient" : variant}

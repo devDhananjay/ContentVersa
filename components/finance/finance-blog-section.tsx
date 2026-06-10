@@ -22,7 +22,7 @@ export function FinanceBlogSection({ blogs }: FinanceBlogSectionProps) {
             Investing, markets and money stories from ContentVerse
           </p>
         </div>
-        <Link href="/category/finance" className="hidden md:block">
+        <Link href="/blogs?category=finance" className="hidden md:block">
           <Button variant="outline" size="sm" className="gap-2">
             All finance blogs <ArrowRight className="h-4 w-4" />
           </Button>

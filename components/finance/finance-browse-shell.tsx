@@ -16,7 +16,7 @@ export async function FinanceBrowseShell({
 
   return (
     <div>
-      <section className="relative h-[140px] md:h-[160px] overflow-hidden rounded-b-2xl mx-0">
+      <section className="relative h-[180px] md:h-[220px] overflow-hidden rounded-b-2xl mx-0">
         <Image
           src={HERO_IMAGE}
           alt="Finance Hub"
@@ -26,14 +26,14 @@ export async function FinanceBrowseShell({
           className="object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/60" />
-        <div className="container relative h-full flex flex-col justify-end pb-4">
-          <Badge variant="outline" className="w-fit mb-1.5 text-[9px] gap-1 h-5">
+        <div className="container relative h-full flex flex-col justify-end pb-6">
+          <Badge variant="outline" className="w-fit mb-2 text-[10px] gap-1 h-5">
             <TrendingUp className="h-2.5 w-2.5" /> Indian Markets
           </Badge>
-          <h1 className="font-display text-xl md:text-2xl font-bold tracking-tight">
+          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">
             Finance Hub
           </h1>
-          <p className="mt-0.5 text-[11px] text-muted-foreground max-w-md">
+          <p className="mt-1 text-xs md:text-sm text-muted-foreground max-w-md">
             Live indices, movers, watchlist & stock charts
           </p>
         </div>

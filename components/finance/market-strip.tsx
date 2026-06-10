@@ -16,7 +16,7 @@ export function MarketStrip({ data, embedded }: MarketStripProps) {
   const gainers = data.topGainers;
 
   const row = (
-    <div className={cn("flex items-center h-11 py-2", embedded ? "px-5" : "")}>
+    <div className={cn("flex items-center h-9 py-1", embedded ? "px-5" : "")}>
         {/* Fixed indices — never scroll */}
         <div className="shrink-0 flex items-center gap-4 pr-4 border-r border-border/40 bg-background/95 z-10">
           <Link href="/finance" className="hover:opacity-80 transition-opacity">

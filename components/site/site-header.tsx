@@ -7,7 +7,7 @@ export function SiteHeader() {
   return (
     <div
       id="site-header"
-      className="fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-sm"
+      className="fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-sm overflow-x-hidden"
     >
       <HeaderHeightSync />
       <Navbar embedded />

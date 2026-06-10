@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { isAdminRole } from "@/lib/auth/roles";
 import { useSignOut } from "@/components/auth/sign-out-button";
-import { Logo } from "@/components/site/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "@/components/auth/use-session";
@@ -68,10 +67,7 @@ export function DashboardSidebar({
 
   return (
     <aside className="hidden lg:flex flex-col w-64 shrink-0 border-r border-border/60 bg-card/40 backdrop-blur min-h-[calc(100vh-4rem)] sticky top-16">
-      <div className="p-5 border-b">
-        <Logo />
-      </div>
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 p-3 pt-4 space-y-1 overflow-y-auto">
         {isAdminRole(user?.role) && (
           <Link
             href="/admin"
