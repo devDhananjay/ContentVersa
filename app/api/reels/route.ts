@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { ReelStatus } from "@prisma/client";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
       categoryId = cat?.id;
     }
 
-    let status = parsed.status;
+    let status: ReelStatus = parsed.status;
     let moderation: { held: boolean; reason?: string } | undefined;
 
     if (parsed.status === "DRAFT") {
