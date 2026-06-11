@@ -114,6 +114,7 @@ export default async function AdminOverview() {
           <h2 className="font-display text-xl font-bold">Quick links</h2>
           {[
             { href: "/admin/moderation", label: "Approve blogs", desc: "Review & publish submissions" },
+            { href: "/admin/reels-moderation", label: "Approve reels", desc: "Review flagged short videos" },
             { href: "/admin/blogs", label: "All blogs", desc: "Pending, published, rejected — full content" },
             { href: "/admin/users", label: "All users", desc: "Profiles, emails, post counts" },
             { href: "/admin/settings", label: "CMS settings", desc: "Platform configuration" },

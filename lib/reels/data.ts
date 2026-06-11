@@ -147,6 +147,32 @@ export const getPublishedReelsStripCached = cache(() => getPublishedReels({ limi
 /** Full reels feed page — cached per request. */
 export const getPublishedReelsFeedCached = cache(() => getPublishedReels({ limit: 30 }));
 
+export async function getUserReelById(
+  reelId: string,
+  authorId: string
+): Promise<ReelDashboardRow | null> {
+  if (!isDatabaseConfigured()) return null;
+
+  return safeReelQuery(null, async () => {
+    const row = await prisma.reel.findFirst({
+      where: { id: reelId, authorId },
+      select: {
+        id: true,
+        caption: true,
+        mediaUrl: true,
+        thumbnailUrl: true,
+        mediaType: true,
+        views: true,
+        likesCount: true,
+        status: true,
+        publishedAt: true,
+        createdAt: true,
+      },
+    });
+    return row ? mapDashboardRow(row) : null;
+  });
+}
+
 export async function getUserReels(authorId: string): Promise<ReelDashboardRow[]> {
   if (!isDatabaseConfigured()) return [];
 
@@ -198,6 +224,25 @@ export async function getUserReelStats(authorId: string) {
       publishedReels: reels.filter((r) => r.status === "PUBLISHED").length,
       views30d,
     };
+  });
+}
+
+export async function getViewedReelIds(
+  reelIds: string[],
+  opts: { userId?: string; visitorKey?: string }
+): Promise<string[]> {
+  if (!isDatabaseConfigured() || reelIds.length === 0) return [];
+  if (!opts.userId && !opts.visitorKey) return [];
+
+  return safeReelQuery([], async () => {
+    const rows = await prisma.reelView.findMany({
+      where: {
+        reelId: { in: reelIds },
+        ...(opts.userId ? { userId: opts.userId } : { visitorKey: opts.visitorKey }),
+      },
+      select: { reelId: true },
+    });
+    return rows.map((r) => r.reelId);
   });
 }
 

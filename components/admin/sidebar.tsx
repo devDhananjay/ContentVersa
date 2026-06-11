@@ -6,6 +6,7 @@ import {
   Shield,
   Inbox,
   FileText,
+  Film,
   FolderTree,
   Users2,
   BarChart3,
@@ -27,7 +28,13 @@ type NavItem = {
   badge?: number;
 };
 
-export function AdminSidebar({ pendingCount = 0 }: { pendingCount?: number }) {
+export function AdminSidebar({
+  pendingCount = 0,
+  pendingReelCount = 0,
+}: {
+  pendingCount?: number;
+  pendingReelCount?: number;
+}) {
   const pathname = usePathname();
   const { user } = useSession();
   const displayName = user?.name || user?.username || "Admin";
@@ -39,6 +46,12 @@ export function AdminSidebar({ pendingCount = 0 }: { pendingCount?: number }) {
       label: "Approve blogs",
       icon: Inbox,
       badge: pendingCount > 0 ? pendingCount : undefined,
+    },
+    {
+      href: "/admin/reels-moderation",
+      label: "Approve reels",
+      icon: Film,
+      badge: pendingReelCount > 0 ? pendingReelCount : undefined,
     },
     { href: "/admin/blogs", label: "All blogs", icon: FileText },
     { href: "/admin/users", label: "All users", icon: Users2 },

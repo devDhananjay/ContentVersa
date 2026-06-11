@@ -9,6 +9,7 @@ import {
   REEL_MIN_CAPTION_CHARS,
 } from "@/lib/reels/constants";
 import { getPublishedReels } from "@/lib/reels/data";
+import { moderateReelContent } from "@/lib/reels/moderation";
 
 const CreateSchema = z.object({
   caption: z
@@ -54,13 +55,23 @@ export async function POST(req: Request) {
       categoryId = cat?.id;
     }
 
-    const isVerified =
-      session.role === "VERIFIED_CREATOR" ||
-      session.role === "MODERATOR" ||
-      session.role === "ADMIN" ||
-      session.role === "SUPER_ADMIN";
+    let status = parsed.status;
+    let moderation: { held: boolean; reason?: string } | undefined;
 
-    const status = isVerified && parsed.status === "PENDING" ? "PUBLISHED" : parsed.status;
+    if (parsed.status === "DRAFT") {
+      status = "DRAFT";
+    } else {
+      const mod = await moderateReelContent({
+        caption: parsed.caption,
+        mediaUrl: parsed.mediaUrl,
+        thumbnailUrl: parsed.thumbnailUrl,
+        mediaType: parsed.mediaType,
+      });
+      status = mod.safe ? "PUBLISHED" : "PENDING";
+      if (!mod.safe) {
+        moderation = { held: true, reason: mod.reason };
+      }
+    }
 
     const reel = await prisma.reel.create({
       data: {
@@ -81,7 +92,7 @@ export async function POST(req: Request) {
     revalidatePath("/reels");
     revalidatePath("/dashboard/reels");
 
-    return NextResponse.json({ ok: true, reel });
+    return NextResponse.json({ ok: true, reel, moderation });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: err.errors[0]?.message || "Invalid input" }, { status: 400 });

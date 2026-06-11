@@ -4,7 +4,7 @@ import { Plus, Eye, Film } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { getUserReels, getUserReelStats } from "@/lib/reels/data";
-import { MyReelsList } from "@/components/reels/my-reels-list";
+import { MyReelsClient } from "@/components/reels/my-reels-client";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/utils";
@@ -64,7 +64,7 @@ export default async function DashboardReelsPage() {
         />
       </div>
 
-      <MyReelsList reels={reels} />
+      <MyReelsClient initialRows={reels} />
     </div>
   );
 }

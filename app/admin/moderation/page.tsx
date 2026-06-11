@@ -63,7 +63,12 @@ export default async function ModerationPage() {
             Approve or reject blog submissions before they go public.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Link href="/admin/reels-moderation">
+            <Button variant="outline" className="gap-1.5">
+              <Flag className="h-4 w-4" /> Reel queue
+            </Button>
+          </Link>
           <Link href="/admin/blogs">
             <Button variant="outline" className="gap-1.5">
               <FileText className="h-4 w-4" /> All blogs

@@ -79,13 +79,18 @@ export function ReelCreateForm() {
         }),
       });
 
-      const data = (await res.json()) as { ok?: boolean; error?: string; reel?: { status: string } };
+      const data = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        reel?: { status: string };
+        moderation?: { held: boolean; reason?: string };
+      };
       if (!res.ok) throw new Error(data.error || "Failed to publish");
 
       toast.success(
         data.reel?.status === "PUBLISHED"
-          ? "Reel published!"
-          : "Reel submitted for review"
+          ? "Reel is live!"
+          : "Reel held for review — sensitive content detected"
       );
       router.push("/dashboard/reels");
       router.refresh();
@@ -104,7 +109,7 @@ export function ReelCreateForm() {
       <div>
         <h1 className="font-display text-2xl font-bold">Create Reel</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Upload a short video or image — like Instagram Reels.
+          Upload a short video or image. Safe reels go live instantly; flagged content is reviewed first.
         </p>
       </div>
 

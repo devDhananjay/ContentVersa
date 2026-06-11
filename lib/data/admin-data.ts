@@ -186,6 +186,76 @@ export async function getAdminPendingCount(): Promise<number> {
   return prisma.blog.count({ where: { status: "PENDING" } });
 }
 
+export async function getAdminPendingReelCount(): Promise<number> {
+  if (!isDatabaseConfigured()) return 0;
+  return prisma.reel.count({ where: { status: "PENDING" } });
+}
+
+export type AdminReelQueueItem = {
+  id: string;
+  caption: string;
+  mediaUrl: string;
+  thumbnailUrl: string | null;
+  mediaType: string;
+  status: string;
+  createdAt: Date;
+  author: {
+    id: string;
+    name: string;
+    username: string;
+    image: string | null;
+  };
+};
+
+export async function getAdminReelModerationQueue(): Promise<{
+  pending: AdminReelQueueItem[];
+  rejected: AdminReelQueueItem[];
+}> {
+  if (!isDatabaseConfigured()) return { pending: [], rejected: [] };
+
+  const authorSelect = {
+    id: true,
+    name: true,
+    username: true,
+    image: true,
+  } as const;
+
+  const [pending, rejected] = await Promise.all([
+    prisma.reel.findMany({
+      where: { status: "PENDING" },
+      include: { author: { select: authorSelect } },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.reel.findMany({
+      where: { status: "REJECTED" },
+      include: { author: { select: authorSelect } },
+      orderBy: { updatedAt: "desc" },
+      take: 20,
+    }),
+  ]);
+
+  const mapRow = (r: (typeof pending)[number]): AdminReelQueueItem => ({
+    id: r.id,
+    caption: r.caption,
+    mediaUrl: r.mediaUrl,
+    thumbnailUrl: r.thumbnailUrl,
+    mediaType: r.mediaType,
+    status: r.status,
+    createdAt: r.createdAt,
+    author: {
+      id: r.author.id,
+      name: r.author.name || r.author.username,
+      username: r.author.username,
+      image: r.author.image,
+    },
+  });
+
+  return {
+    pending: pending.map(mapRow),
+    rejected: rejected.map(mapRow),
+  };
+}
+
 export async function getAdminUsers(): Promise<AdminUserRow[]> {
   if (!isDatabaseConfigured()) return [];
 

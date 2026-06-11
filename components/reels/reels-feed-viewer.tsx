@@ -29,6 +29,7 @@ import { ReelCommentsPanel } from "@/components/reels/reel-comments-panel";
 const VIEWER_HEIGHT = "calc(100dvh - var(--site-header-offset))";
 const VIEWER_BG =
   "bg-gradient-to-b from-background via-neon-purple/10 to-neon-pink/10";
+const SWIPE_THRESHOLD_PX = 48;
 
 function getVisitorKey(): string {
   const key = "cv_reel_visitor";
@@ -43,11 +44,16 @@ function getVisitorKey(): string {
 
 async function recordView(reelId: string) {
   try {
-    await fetch(`/api/reels/${reelId}/view`, {
+    const res = await fetch(`/api/reels/${reelId}/view`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ visitorKey: getVisitorKey() }),
     });
+    if (res.ok) {
+      const { markReelViewedLocally } = await import("@/lib/reels/viewed-local");
+      markReelViewedLocally(reelId);
+    }
   } catch {
     /* best effort */
   }
@@ -88,6 +94,11 @@ export function ReelsFeedViewer({
   const viewedRef = React.useRef(new Set<string>());
   const advancingRef = React.useRef(false);
   const pausedRef = React.useRef(false);
+  const pointerStartRef = React.useRef<{ x: number; y: number; pointerId: number } | null>(null);
+  const wheelLockRef = React.useRef(false);
+  const swipeZoneRef = React.useRef<HTMLDivElement>(null);
+  const skipToNextRef = React.useRef<() => void>(() => {});
+  const skipToPrevRef = React.useRef<() => void>(() => {});
   const [replayToken, setReplayToken] = React.useState(0);
   const [loading, setLoading] = React.useState(initialReels.length === 0);
 
@@ -126,10 +137,9 @@ export function ReelsFeedViewer({
   const scrollToIndex = React.useCallback((index: number, smooth = true) => {
     const container = containerRef.current;
     if (!container) return;
-    const card = container.querySelector(`[data-index="${index}"]`) as HTMLElement | null;
-    if (!card) return;
+    const top = index * container.clientHeight;
     container.scrollTo({
-      top: card.offsetTop,
+      top,
       behavior: smooth ? "smooth" : "auto",
     });
     setActiveIndex(index);
@@ -222,10 +232,80 @@ export function ReelsFeedViewer({
     return () => observer.disconnect();
   }, [reels]);
 
-  const scrollTo = (dir: "up" | "down") => {
-    const next = dir === "down" ? activeIndex + 1 : activeIndex - 1;
-    if (next < 0 || next >= reels.length) return;
-    scrollToIndex(next, true);
+  const skipToNext = React.useCallback(() => {
+    if (commentsOpen || advancingRef.current) return;
+    advancingRef.current = true;
+
+    const next = activeIndex + 1;
+    if (next >= reels.length) {
+      if (closeOnComplete) closeViewer();
+      else scrollToIndex(0, true);
+    } else {
+      scrollToIndex(next, true);
+    }
+
+    window.setTimeout(() => {
+      advancingRef.current = false;
+    }, 500);
+  }, [activeIndex, reels.length, closeOnComplete, closeViewer, scrollToIndex, commentsOpen]);
+
+  const skipToPrev = React.useCallback(() => {
+    if (commentsOpen || advancingRef.current || activeIndex <= 0) return;
+    advancingRef.current = true;
+    scrollToIndex(activeIndex - 1, true);
+    window.setTimeout(() => {
+      advancingRef.current = false;
+    }, 500);
+  }, [activeIndex, scrollToIndex, commentsOpen]);
+
+  skipToNextRef.current = skipToNext;
+  skipToPrevRef.current = skipToPrev;
+
+  React.useEffect(() => {
+    const zone = swipeZoneRef.current;
+    if (!zone) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (commentsOpen || wheelLockRef.current) return;
+      if (Math.abs(e.deltaY) < 28) return;
+      e.preventDefault();
+      wheelLockRef.current = true;
+      if (e.deltaY > 0) skipToNextRef.current();
+      else skipToPrevRef.current();
+      window.setTimeout(() => {
+        wheelLockRef.current = false;
+      }, 450);
+    };
+
+    zone.addEventListener("wheel", onWheel, { passive: false });
+    return () => zone.removeEventListener("wheel", onWheel);
+  }, [commentsOpen]);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (commentsOpen || e.button !== 0) return;
+    pointerStartRef.current = { x: e.clientX, y: e.clientY, pointerId: e.pointerId };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const start = pointerStartRef.current;
+    if (!start || start.pointerId !== e.pointerId) return;
+    pointerStartRef.current = null;
+
+    if (commentsOpen) return;
+
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    if (Math.abs(dy) < SWIPE_THRESHOLD_PX || Math.abs(dy) < Math.abs(dx) * 1.1) return;
+
+    if (dy < 0) skipToNextRef.current();
+    else skipToPrevRef.current();
+  };
+
+  const handlePointerCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (pointerStartRef.current?.pointerId === e.pointerId) {
+      pointerStartRef.current = null;
+    }
   };
 
   const updateReelMeta = (id: string, patch: Partial<ReelItem>) => {
@@ -377,7 +457,7 @@ export function ReelsFeedViewer({
 
             <div
               ref={containerRef}
-              className="overflow-y-scroll snap-y snap-mandatory scrollbar-hide overscroll-y-contain touch-pan-y"
+              className="overflow-y-scroll snap-y snap-mandatory scrollbar-hide overscroll-y-contain"
               style={{ height: VIEWER_HEIGHT, minHeight: VIEWER_HEIGHT }}
             >
               {reels.map((reel, index) => (
@@ -402,6 +482,18 @@ export function ReelsFeedViewer({
                 />
               ))}
             </div>
+
+            {/* Swipe zone: video area only — keeps caption + side actions tappable */}
+            {!commentsOpen && (
+              <div
+                ref={swipeZoneRef}
+                className="absolute inset-x-0 top-14 bottom-32 right-16 z-[25] touch-none cursor-grab active:cursor-grabbing"
+                aria-hidden
+                onPointerDown={handlePointerDown}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerCancel}
+              />
+            )}
 
             <AnimatePresence>
               {likeBurst && (
@@ -458,11 +550,17 @@ export function ReelsFeedViewer({
             {activeIndex > 0 && !commentsOpen && (
               <button
                 type="button"
-                onClick={() => scrollTo("up")}
+                onClick={() => skipToPrev()}
                 className="absolute top-16 left-1/2 -translate-x-1/2 z-20 text-white/50 hover:text-white"
               >
                 <ChevronUp className="h-6 w-6 animate-bounce" />
               </button>
+            )}
+
+            {activeIndex < reels.length - 1 && !commentsOpen && (
+              <p className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-[10px] text-white/40 tracking-wide">
+                Swipe up for next
+              </p>
             )}
 
             {activeReel && (
