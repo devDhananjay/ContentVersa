@@ -140,7 +140,7 @@ export function NewsIn60Short({
                 Writing full summary…
               </div>
             ) : summary ? (
-              <div className="overflow-y-auto flex-1 pr-1 -mr-1 min-h-[200px] max-h-[min(68vh,520px)]">
+              <div className="overflow-y-auto overscroll-y-contain flex-1 pr-1 -mr-1 min-h-[200px] max-h-[min(68vh,520px)]">
                 <p className="text-[15px] sm:text-base leading-[1.75] text-white/92 whitespace-pre-wrap">
                   {summary}
                 </p>

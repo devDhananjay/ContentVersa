@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Clock } from "lucide-react";
-import { formatDuration } from "@/lib/utils";
+import { cn, formatDuration } from "@/lib/utils";
 
 const HEARTBEAT_SEC = 15;
 
@@ -82,13 +82,6 @@ export function TrackBlogRead({ blogSlug }: { blogSlug: string }) {
       ping(HEARTBEAT_SEC);
     }, HEARTBEAT_SEC * 1000);
 
-    const onScroll = () => {
-      if (sentRef.current % HEARTBEAT_SEC !== 0) {
-        ping(0);
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-
     const onLeave = () => {
       ping(HEARTBEAT_SEC, true);
     };
@@ -97,18 +90,21 @@ export function TrackBlogRead({ blogSlug }: { blogSlug: string }) {
     return () => {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pagehide", onLeave);
       ping(HEARTBEAT_SEC, true);
     };
   }, [blogSlug, ping]);
 
-  if (articleSeconds < 5 && (totalSeconds == null || totalSeconds < 5)) {
-    return null;
-  }
+  const showStats =
+    articleSeconds >= 5 || (totalSeconds != null && totalSeconds >= 5);
 
   return (
-    <p className="mt-3 text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+    <p
+      className={cn(
+        "mt-3 text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 min-h-[1.25rem]",
+        !showStats && "invisible"
+      )}
+    >
       <span className="inline-flex items-center gap-1">
         <Clock className="h-3.5 w-3.5" />
         Reading this article: {formatDuration(articleSeconds)}

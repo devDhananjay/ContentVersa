@@ -72,14 +72,17 @@ export function FloatingActions({
         <Heart className={cn("h-5 w-5", liked && "fill-current")} />
         <span className="text-[10px] font-semibold">{formatNumber(likeCount)}</span>
       </button>
-      <a
-        href="#comments"
+      <button
+        type="button"
+        onClick={() =>
+          document.getElementById("comments")?.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
         className="group flex flex-col items-center gap-1 p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all"
         aria-label="Jump to comments"
       >
         <MessageCircle className="h-5 w-5" />
         <span className="text-[10px] font-semibold">Reply</span>
-      </a>
+      </button>
       <BookmarkButton
         blogRef={blogRef}
         initialBookmarked={initialBookmarked}

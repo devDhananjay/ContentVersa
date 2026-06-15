@@ -278,7 +278,7 @@ export default async function BlogPage({
           </div>
 
           <aside className="hidden lg:block">
-            <div className="sticky top-24 space-y-6">
+            <div className="sticky top-[calc(var(--site-header-offset)+1rem)] max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto overscroll-y-contain scrollbar-hide">
               <TableOfContents items={toc} />
             </div>
           </aside>

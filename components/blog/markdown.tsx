@@ -1,29 +1,34 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import { slugify } from "@/lib/utils";
+import { createHeadingIdAllocator } from "@/lib/utils";
 import { splitMarkdownEmbeds } from "@/lib/youtube";
 import { YouTubeEmbed } from "@/components/blog/youtube-embed";
 
-const markdownComponents = {
-  h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 id={slugify(String(children))} {...props}>
-      {children}
-    </h1>
-  ),
-  h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 id={slugify(String(children))} {...props}>
-      {children}
-    </h2>
-  ),
-  h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 id={slugify(String(children))} {...props}>
-      {children}
-    </h3>
-  ),
-};
+function makeHeading(
+  Tag: "h1" | "h2" | "h3",
+  idFor: (text: string) => string
+) {
+  return function Heading({
+    children,
+    ...props
+  }: React.HTMLAttributes<HTMLHeadingElement>) {
+    const text = String(children);
+    return (
+      <Tag id={idFor(text)} {...props}>
+        {children}
+      </Tag>
+    );
+  };
+}
 
-function MarkdownChunk({ content }: { content: string }) {
+function MarkdownChunk({
+  content,
+  idFor,
+}: {
+  content: string;
+  idFor: (text: string) => string;
+}) {
   const trimmed = content.trim();
   if (!trimmed) return null;
 
@@ -31,7 +36,11 @@ function MarkdownChunk({ content }: { content: string }) {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeHighlight]}
-      components={markdownComponents}
+      components={{
+        h1: makeHeading("h1", idFor),
+        h2: makeHeading("h2", idFor),
+        h3: makeHeading("h3", idFor),
+      }}
     >
       {trimmed}
     </ReactMarkdown>
@@ -39,6 +48,7 @@ function MarkdownChunk({ content }: { content: string }) {
 }
 
 export function renderMarkdown(content: string) {
+  const idFor = createHeadingIdAllocator();
   const parts = splitMarkdownEmbeds(content);
 
   return (
@@ -47,7 +57,7 @@ export function renderMarkdown(content: string) {
         part.type === "youtube" ? (
           <YouTubeEmbed key={`yt-${i}-${part.src}`} src={part.src} />
         ) : (
-          <MarkdownChunk key={`md-${i}`} content={part.value} />
+          <MarkdownChunk key={`md-${i}`} content={part.value} idFor={idFor} />
         )
       )}
     </article>
@@ -55,6 +65,7 @@ export function renderMarkdown(content: string) {
 }
 
 export function extractTOC(content: string) {
+  const idFor = createHeadingIdAllocator();
   const items: { id: string; text: string; level: number }[] = [];
   const lines = content.split("\n");
   for (const line of lines) {
@@ -62,7 +73,7 @@ export function extractTOC(content: string) {
     if (match) {
       const level = match[1].length;
       const text = match[2].trim();
-      items.push({ id: slugify(text), text, level });
+      items.push({ id: idFor(text), text, level });
     }
   }
   return items;

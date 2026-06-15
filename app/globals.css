@@ -81,12 +81,12 @@
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    scroll-behavior: smooth;
-    overflow-x: hidden;
+    scroll-behavior: auto;
+    overflow-x: clip;
   }
   body {
     @apply bg-background text-foreground;
-    overflow-x: hidden;
+    overflow-x: clip;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   ::selection {
@@ -139,6 +139,7 @@
   .prose-content h2,
   .prose-content h3 {
     @apply font-display font-bold tracking-tight mt-10 mb-4;
+    scroll-margin-top: calc(var(--site-header-offset) + 1rem);
   }
   .prose-content h1 { @apply text-4xl; }
   .prose-content h2 { @apply text-3xl; }

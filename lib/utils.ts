@@ -35,6 +35,17 @@ export function slugify(input: string): string {
     .replace(/-+/g, "-");
 }
 
+/** Stable unique heading ids for TOC + markdown (avoids duplicate-id scroll jumps). */
+export function createHeadingIdAllocator() {
+  const seen = new Map<string, number>();
+  return (text: string) => {
+    const base = slugify(text);
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    return count === 0 ? base : `${base}-${count}`;
+  };
+}
+
 export function readingTime(content: string): number {
   const words = content.trim().split(/\s+/).length;
   return Math.max(1, Math.ceil(words / 220));
