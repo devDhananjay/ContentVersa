@@ -197,7 +197,7 @@ export default async function BlogPage({
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12 items-start">
           <div>
             <h2 className="font-display text-2xl font-bold mb-6">Full story</h2>
             {renderMarkdown(blog.content)}
@@ -277,10 +277,8 @@ export default async function BlogPage({
             </div>
           </div>
 
-          <aside className="hidden lg:block">
-            <div className="sticky top-[calc(var(--site-header-offset)+1rem)] max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto overscroll-y-contain scrollbar-hide">
-              <TableOfContents items={toc} />
-            </div>
+          <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto overscroll-y-contain scrollbar-hide">
+            <TableOfContents items={toc} />
           </aside>
         </div>
 

@@ -82,11 +82,9 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: auto;
-    overflow-x: clip;
   }
   body {
     @apply bg-background text-foreground;
-    overflow-x: clip;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   ::selection {

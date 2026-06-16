@@ -1,4 +1,10 @@
 {
+  "components/reels/reels-feed-viewer.tsx -> @/lib/reels/viewed-local": {
+    "id": 70587,
+    "files": [
+      "static/chunks/587.bb5b8bf8db43f2ff.js"
+    ]
+  },
   "lib/firebase-messaging.ts -> firebase/messaging": {
     "id": 77804,
     "files": [

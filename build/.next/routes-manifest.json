@@ -176,6 +176,14 @@
       "namedRegex": "^/api/polls/(?<nxtPslug>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/reels/mine/[id]",
+      "regex": "^/api/reels/mine/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/reels/mine/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/reels/[id]",
       "regex": "^/api/reels/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -321,6 +329,14 @@
       "namedRegex": "^/dashboard/blogs/(?<nxtPid>[^/]+?)/edit(?:/)?$"
     },
     {
+      "page": "/dashboard/reels/[id]/edit",
+      "regex": "^/dashboard/reels/([^/]+?)/edit(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/reels/(?<nxtPid>[^/]+?)/edit(?:/)?$"
+    },
+    {
       "page": "/discover/[category]/[id]",
       "regex": "^/discover/([^/]+?)/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -456,6 +472,12 @@
       "regex": "^/admin/moderation(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admin/moderation(?:/)?$"
+    },
+    {
+      "page": "/admin/reels-moderation",
+      "regex": "^/admin/reels\\-moderation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/reels\\-moderation(?:/)?$"
     },
     {
       "page": "/admin/reports",
