@@ -193,7 +193,8 @@ export async function getBlogBySlugFromDb(slug: string) {
       where: { slug },
       include: blogInclude,
     });
-    return row ? mapDbBlogToBlog(row) : null;
+    if (!row || row.status !== "PUBLISHED") return null;
+    return mapDbBlogToBlog(row);
   }, "blogs");
 }
 
