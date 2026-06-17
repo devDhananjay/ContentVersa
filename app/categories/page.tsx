@@ -2,9 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
 import { CATEGORIES, categoryPageHref } from "@/lib/data/categories";
-import { BLOGS } from "@/lib/data/blogs";
+import { getCategoriesWithCountsHybrid } from "@/lib/data/blog-db";
 import { buildMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
   title: "Categories",
@@ -13,7 +15,10 @@ export const metadata: Metadata = buildMetadata({
   path: "/categories",
 });
 
-export default function CategoriesIndex() {
+export default async function CategoriesIndex() {
+  const withCounts = await getCategoriesWithCountsHybrid();
+  const countBySlug = new Map(withCounts.map((c) => [c.slug, c.blogCount]));
+
   return (
     <div className="container py-12 md:py-20">
       <div className="text-center max-w-3xl mx-auto mb-12">
@@ -30,7 +35,7 @@ export default function CategoriesIndex() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {CATEGORIES.map((cat) => {
-          const count = BLOGS.filter((b) => b.category === cat.slug).length;
+          const count = countBySlug.get(cat.slug) ?? 0;
           return (
             <Link
               key={cat.slug}
