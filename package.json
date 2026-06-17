@@ -18,6 +18,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:assign-owner": "tsx prisma/assign-owner-content.ts",
     "db:seed-dashboard": "tsx prisma/seed-dashboard-owner.ts",
+    "db:seed-seo": "tsx scripts/seed-seo-articles.ts",
     "db:promote-admin": "tsx prisma/promote-owner-admin.ts",
     "db:setup-admin": "tsx prisma/setup-admin-access.ts",
     "db:local": "bash scripts/start-local-db.sh",
