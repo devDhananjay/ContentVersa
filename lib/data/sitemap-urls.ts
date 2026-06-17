@@ -17,6 +17,9 @@ const STATIC_PAGES: Array<{
   { path: "/leaderboard", changeFrequency: "daily", priority: 0.6 },
   { path: "/about", changeFrequency: "monthly", priority: 0.5 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.5 },
+  { path: "/careers", changeFrequency: "monthly", priority: 0.45 },
+  { path: "/press", changeFrequency: "monthly", priority: 0.45 },
+  { path: "/policy", changeFrequency: "yearly", priority: 0.35 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
   { path: "/cookies", changeFrequency: "yearly", priority: 0.3 },
@@ -49,7 +52,11 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
 
   if (isDatabaseConfigured()) {
     const rows = await prisma.blog.findMany({
-      where: { status: BlogStatus.PUBLISHED },
+      where: {
+        status: BlogStatus.PUBLISHED,
+        // Syndicated discover feeds are thin/duplicate — exclude from sitemap (AdSense + SEO)
+        slug: { not: { startsWith: "discover-" } },
+      },
       select: { slug: true, updatedAt: true, publishedAt: true },
       orderBy: { publishedAt: "desc" },
     });

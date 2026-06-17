@@ -84,7 +84,47 @@ export async function callGeminiJson<T>(
   });
 
   if (!res.ok) {
-    console.error("[gemini json]", res.status, await res.text().catch(() => ""));
+    const errBody = await res.text().catch(() => "");
+    console.error("[gemini json]", res.status, errBody);
+
+    if (res.status === 429) {
+      const retrySec = Number(
+        errBody.match(/retry in ([\d.]+)s/i)?.[1] ?? 10
+      );
+      await new Promise((r) => setTimeout(r, Math.min(retrySec * 1000, 15000)));
+      const retry = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] },
+          contents: [{ role: "user", parts: [{ text: user.slice(0, 14000) }] }],
+          generationConfig: {
+            maxOutputTokens: maxTokens,
+            temperature: 0.7,
+            responseMimeType: "application/json",
+            responseSchema,
+          },
+        }),
+        cache: "no-store",
+      });
+      if (retry.ok) {
+        const retryData = (await retry.json()) as {
+          candidates?: { content?: { parts?: { text?: string }[] } }[];
+        };
+        const retryText = retryData.candidates?.[0]?.content?.parts
+          ?.map((p) => p.text || "")
+          .join("")
+          .trim();
+        if (retryText) {
+          try {
+            return JSON.parse(retryText) as T;
+          } catch {
+            console.error("[gemini json] parse failed", retryText.slice(0, 200));
+          }
+        }
+      }
+    }
+
     return null;
   }
 

@@ -3,6 +3,8 @@
 import * as React from "react";
 import { Clock } from "lucide-react";
 import { cn, formatDuration } from "@/lib/utils";
+import { toast } from "sonner";
+import { refreshStreakBadge } from "@/components/engagement/streak-badge";
 
 const HEARTBEAT_SEC = 15;
 
@@ -42,12 +44,26 @@ export function TrackBlogRead({ blogSlug }: { blogSlug: string }) {
         const data = (await res.json()) as {
           articleSeconds?: number;
           totalReadingSeconds?: number;
+          streakExtended?: boolean;
+          streakDays?: number;
         };
         if (typeof data.articleSeconds === "number") {
           setArticleSeconds(data.articleSeconds);
         }
         if (typeof data.totalReadingSeconds === "number") {
           setTotalSeconds(data.totalReadingSeconds);
+        }
+        if (data.streakExtended && typeof data.streakDays === "number") {
+          toast.success(`🔥 ${data.streakDays}-day reading streak!`, {
+            description: "Keep reading daily to unlock badges.",
+          });
+          refreshStreakBadge();
+        } else if (
+          typeof data.streakDays === "number" &&
+          data.streakDays > 0 &&
+          !data.streakExtended
+        ) {
+          refreshStreakBadge();
         }
       } catch {
         /* ignore */

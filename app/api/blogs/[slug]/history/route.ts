@@ -10,6 +10,7 @@ import {
   recordReadingProgress,
 } from "@/lib/data/reading-history";
 import { getBlogBySlugHybrid } from "@/lib/data/blog-db";
+import { maybeExtendReadingStreak } from "@/lib/engagement/streak";
 
 const BodySchema = z.object({
   seconds: z.number().int().min(0).max(120).optional(),
@@ -115,9 +116,16 @@ export async function POST(
     }
 
     let totalReadingSeconds = 0;
+    let streakDays = 0;
+    let streakExtended = false;
     if (userId) {
       const stats = await getUserReadingStats(userId);
       totalReadingSeconds = stats.totalSeconds;
+      const streak = await maybeExtendReadingStreak(userId);
+      if (streak) {
+        streakDays = streak.streakDays;
+        streakExtended = streak.extended;
+      }
     }
 
     const res = NextResponse.json({
@@ -125,6 +133,8 @@ export async function POST(
       articleSeconds: row?.secondsRead ?? 0,
       progress: row?.progress ?? body.progress ?? 0,
       totalReadingSeconds,
+      streakDays,
+      streakExtended,
     });
 
     if (isNew && !userId && vKey) {

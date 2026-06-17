@@ -14,6 +14,7 @@ import {
   Settings,
   Flag,
   UserCog,
+  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CreatorDashboardLink } from "@/components/admin/creator-dashboard-link";
@@ -54,6 +55,7 @@ export function AdminSidebar({
       badge: pendingReelCount > 0 ? pendingReelCount : undefined,
     },
     { href: "/admin/blogs", label: "All blogs", icon: FileText },
+    { href: "/admin/ai-articles", label: "AI articles", icon: Sparkles },
     { href: "/admin/users", label: "All users", icon: Users2 },
     { href: "/admin/categories", label: "Categories", icon: FolderTree },
     { href: "/admin/revenue", label: "Revenue", icon: Megaphone },

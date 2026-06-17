@@ -6,6 +6,10 @@ import { readingTime } from "@/lib/utils";
 import type { ResolvedBlogRef } from "@/lib/data/ensure-blog-in-db";
 import type { FeedItemDetail } from "./types";
 
+export function isDiscoverSyndicatedSlug(slug: string): boolean {
+  return slug.startsWith("discover-");
+}
+
 export function getDiscoverSlug(category: string, id: string): string {
   const normalizedId = decodeURIComponent(id);
   const hash = createHash("sha256")
@@ -59,7 +63,7 @@ export async function ensureDiscoverBlogInDb(
       content,
       coverImage: item.image || "",
       readingTime: readingTime(content),
-      status: BlogStatus.PUBLISHED,
+      status: BlogStatus.ARCHIVED,
       publishedAt: new Date(),
       authorId: owner.id,
       categoryId,
@@ -71,6 +75,7 @@ export async function ensureDiscoverBlogInDb(
       coverImage: item.image || "",
       readingTime: readingTime(content),
       categoryId,
+      status: BlogStatus.ARCHIVED,
     },
     select: { id: true, slug: true, status: true },
   });

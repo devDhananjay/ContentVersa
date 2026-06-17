@@ -21,6 +21,13 @@ import { getDashboardDataCached } from "@/lib/data/dashboard-data";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { getUserReels, getUserReelStats } from "@/lib/reels/data";
 import { ReelsDashboardPanel } from "@/components/reels/reels-dashboard-panel";
+import { getUserStreakState } from "@/lib/engagement/streak";
+import {
+  STREAK_MIN_PROGRESS,
+  STREAK_MIN_SECONDS,
+} from "@/lib/engagement/streak";
+
+const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
 
 export default async function DashboardOverview() {
   const session = await getCurrentUser();
@@ -30,14 +37,17 @@ export default async function DashboardOverview() {
     getDashboardDataCached(session),
     requireUserId(session).catch(() => null),
   ]);
+  const streakState = authorId ? await getUserStreakState(authorId) : null;
   const [reels, reelStats] = authorId
     ? await Promise.all([getUserReels(authorId), getUserReelStats(authorId)])
     : [[], { totalViews: 0, totalReels: 0, publishedReels: 0, views30d: 0 }];
   const firstName = (session.name || session.username || "there").split(" ")[0];
   const stats = data?.stats;
   const topBlogs = data?.topBlogs ?? [];
-  const streak = stats?.streakDays ?? 0;
-  const streakFilled = Math.min(streak, 14);
+  const streak = streakState?.streakDays ?? stats?.streakDays ?? 0;
+  const longest = streakState?.longestStreak ?? streak;
+  const calendar = streakState?.calendar ?? [];
+  const todayDone = streakState?.todayQualified ?? false;
 
   return (
     <div className="container py-8 max-w-6xl">
@@ -102,21 +112,39 @@ export default async function DashboardOverview() {
             </div>
             <p className="font-display text-5xl font-extrabold mt-2 text-gradient">{streak} days</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Keep writing daily to unlock the Marathon badge (30 days).
+              {todayDone
+                ? "Today's reading goal complete — come back tomorrow!"
+                : `Read ${STREAK_MIN_SECONDS}s or scroll ${STREAK_MIN_PROGRESS}% of any article today.`}
             </p>
+            {longest > streak && (
+              <p className="text-xs text-muted-foreground">Best streak: {longest} days</p>
+            )}
           </div>
-          <div className="grid grid-cols-7 gap-1">
-            {Array.from({ length: 14 }).map((_, i) => (
-              <div
-                key={i}
-                className={
-                  i < streakFilled
-                    ? "h-6 rounded bg-gradient-to-br from-neon-orange to-neon-pink"
-                    : "h-6 rounded bg-muted"
-                }
-              />
-            ))}
+          <div>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2">
+              Last 7 days
+            </p>
+            <div className="grid grid-cols-7 gap-1.5">
+              {calendar.map((active, i) => (
+                <div key={i} className="flex flex-col items-center gap-1">
+                  <div
+                    className={
+                      active
+                        ? "h-8 w-full rounded-md bg-gradient-to-br from-neon-orange to-neon-pink"
+                        : "h-8 w-full rounded-md bg-muted"
+                    }
+                  />
+                  <span className="text-[10px] text-muted-foreground">{DAY_LABELS[i]}</span>
+                </div>
+              ))}
+            </div>
           </div>
+          <Link href="/blogs">
+            <Button variant="outline" size="sm" className="w-full gap-2">
+              <Flame className="h-4 w-4" />
+              {todayDone ? "Read more articles" : "Start reading"}
+            </Button>
+          </Link>
           <div className="pt-4 border-t">
             <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">
               Latest milestone
@@ -126,8 +154,20 @@ export default async function DashboardOverview() {
                 <Flame className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-sm">{data?.achievements[0]?.title ?? "Keep publishing"}</p>
-                <p className="text-xs text-muted-foreground">{stats?.publishedCount ?? 0} posts live</p>
+                <p className="font-semibold text-sm">
+                  {streak >= 30
+                    ? "Marathon Reader"
+                    : streak >= 7
+                      ? "Week Warrior"
+                      : data?.achievements[0]?.title ?? "Start your streak"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {streak >= 30
+                    ? "30-day reading streak unlocked"
+                    : streak >= 7
+                      ? "7-day reading streak unlocked"
+                      : `${7 - Math.min(streak, 7)} days to Week Warrior badge`}
+                </p>
               </div>
             </div>
           </div>

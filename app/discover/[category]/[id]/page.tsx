@@ -32,6 +32,7 @@ export async function generateMetadata({
     description: item.subtitle || item.description || item.title,
     path: feedItemPath(category, id),
     image: item.image,
+    noIndex: true,
   });
 }
 

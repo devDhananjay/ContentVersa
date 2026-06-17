@@ -115,6 +115,7 @@ export default async function AdminOverview() {
           {[
             { href: "/admin/moderation", label: "Approve blogs", desc: "Review & publish submissions" },
             { href: "/admin/reels-moderation", label: "Approve reels", desc: "Review flagged short videos" },
+            { href: "/admin/ai-articles", label: "AI articles", desc: "Generate hot-topic posts with one click" },
             { href: "/admin/blogs", label: "All blogs", desc: "Pending, published, rejected — full content" },
             { href: "/admin/users", label: "All users", desc: "Profiles, emails, post counts" },
             { href: "/admin/settings", label: "CMS settings", desc: "Platform configuration" },

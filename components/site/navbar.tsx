@@ -22,6 +22,7 @@ import { UserNav, MobileUserNav } from "@/components/auth/user-nav";
 import { AdminViewButton } from "@/components/auth/admin-view-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { StreakBadge } from "@/components/engagement/streak-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -97,9 +98,14 @@ export function Navbar({ embedded = false }: { embedded?: boolean }) {
               Write
             </Button>
           </Link>
+          <StreakBadge />
           <NotificationBell />
           <ThemeToggle />
           <UserNav />
+        </div>
+
+        <div className="flex items-center gap-1 md:hidden shrink-0">
+          <StreakBadge />
         </div>
 
         <Button

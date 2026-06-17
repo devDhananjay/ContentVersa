@@ -8,7 +8,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { PrismaClient, BlogStatus } from "@prisma/client";
-import { callGeminiJson } from "../lib/ai/gemini";
+import { generateSeoArticle, type GeneratedArticle } from "../lib/seo/article-generator";
 import { PLATFORM_OWNER_EMAIL } from "../lib/owner";
 import { SEO_ARTICLE_TOPICS, type SeedTopic } from "../lib/seo/seed-topics";
 import { CATEGORIES } from "../lib/data/categories";
@@ -39,28 +39,6 @@ function loadEnvFiles() {
 loadEnvFiles();
 
 const prisma = new PrismaClient();
-
-const ARTICLE_SCHEMA = {
-  type: "object",
-  properties: {
-    title: { type: "string" },
-    excerpt: { type: "string" },
-    metaDescription: { type: "string" },
-    metaKeywords: { type: "string" },
-    tags: { type: "array", items: { type: "string" } },
-    content: { type: "string" },
-  },
-  required: ["title", "excerpt", "metaDescription", "tags", "content"],
-};
-
-type GeneratedArticle = {
-  title: string;
-  excerpt: string;
-  metaDescription: string;
-  metaKeywords?: string;
-  tags: string[];
-  content: string;
-};
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -110,33 +88,12 @@ async function upsertTags(names: string[]) {
 }
 
 async function generateArticle(topic: SeedTopic): Promise<GeneratedArticle | null> {
-  const system = `You are an expert SEO content writer for ContentVerse (contentverse.co.in), an Indian creator platform.
-Write original, helpful, long-form articles in Markdown.
-Rules:
-- Minimum 1,400 words in "content"
-- Use ## and ### headings only (no # h1 — title is separate)
-- Include an intro, 5-8 substantive sections, a FAQ with 3-4 questions, and a conclusion
-- Write for Indian readers where relevant (₹, Indian cities, regulations)
-- Natural tone — not robotic, not keyword-stuffed
-- End with "## Support creators" — 2 sentences about tipping writers on ContentVerse
-${topic.affiliateNote ? `- ${topic.affiliateNote}` : ""}
-- If finance: add disclaimer "This is educational content, not financial advice."
-- Do NOT invent fake statistics; use ranges and general guidance when exact data unknown`;
-
-  const user = `Write a complete SEO blog article for:
-Title idea: ${topic.title}
-Target slug: ${topic.slug}
-Category: ${topic.category}
-Search intent: ${topic.searchIntent}
-
-Return JSON with title, excerpt (2 sentences), metaDescription (150-160 chars), metaKeywords (comma-separated), tags (5-7), and content (full Markdown body).`;
-
-  return callGeminiJson<GeneratedArticle>(
-    system,
-    user,
-    ARTICLE_SCHEMA,
-    16384
-  );
+  return generateSeoArticle({
+    title: topic.title,
+    category: topic.category,
+    searchIntent: topic.searchIntent,
+    affiliateNote: topic.affiliateNote,
+  });
 }
 
 async function publishArticle(
@@ -231,7 +188,7 @@ async function main() {
 
     const category = await ensureCategory(topic.category);
     const article = await generateArticle(topic);
-    if (!article?.content || article.content.length < 800) {
+    if (!article?.content || article.content.length < 400) {
       console.error("  ✗ Gemini failed or content too short — skipping");
       failed++;
       await sleep(3000);

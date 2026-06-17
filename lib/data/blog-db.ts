@@ -42,7 +42,9 @@ export function mapDbBlogToBlog(blog: BlogWithRelations): Blog {
     title: blog.title,
     excerpt: blog.excerpt || "",
     content: blog.content,
-    coverImage: resolveBlogCoverImage(blog.coverImage),
+    coverImage: resolveBlogCoverImage(
+      blog.coverImage || blog.category?.banner
+    ),
     readingTime: blog.readingTime,
     views: blog.views,
     likes: blog.likesCount,
@@ -86,7 +88,9 @@ function mapLiteToBlog(row: BlogLiteRow): Blog {
     title: row.title,
     excerpt: row.excerpt || "",
     content: "",
-    coverImage: row.coverImage || "",
+    coverImage: resolveBlogCoverImage(
+      row.coverImage || row.category?.banner
+    ),
     readingTime: row.readingTime,
     views: row.views,
     likes: row.likesCount,

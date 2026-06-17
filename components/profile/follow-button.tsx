@@ -25,6 +25,7 @@ export function FollowButton({
   const [loading, setLoading] = React.useState(true);
   const [busy, setBusy] = React.useState(false);
   const [signedIn, setSignedIn] = React.useState(true);
+  const [isSelf, setIsSelf] = React.useState(false);
 
   React.useEffect(() => {
     if (!targetUserId) {
@@ -40,12 +41,14 @@ export function FollowButton({
           following?: boolean;
           followerCount?: number;
           signedIn?: boolean;
+          isSelf?: boolean;
         }) => {
           if (typeof data.following === "boolean") setFollowing(data.following);
           if (typeof data.followerCount === "number") {
             setFollowerCount(data.followerCount);
           }
           if (data.signedIn === false) setSignedIn(false);
+          if (data.isSelf) setIsSelf(true);
         }
       )
       .catch(() => {})
@@ -92,6 +95,8 @@ export function FollowButton({
       </Button>
     );
   }
+
+  if (isSelf) return null;
 
   return (
     <div className={className}>

@@ -164,8 +164,10 @@ model Profile {
   totalViews   Int      @default(0)
   totalLikes   Int      @default(0)
   totalEarning Decimal  @default(0) @db.Decimal(12, 2)
-  streakDays   Int      @default(0)
-  lastActiveAt DateTime @default(now())
+  streakDays     Int      @default(0)
+  streakLastDate String?
+  longestStreak  Int      @default(0)
+  lastActiveAt   DateTime @default(now())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

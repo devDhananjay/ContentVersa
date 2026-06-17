@@ -2,18 +2,48 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Mail, Sparkles, CheckCircle2 } from "lucide-react";
+import { Mail, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function Newsletter() {
   const [email, setEmail] = React.useState("");
   const [submitted, setSubmitted] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    setSubmitted(true);
+    if (!email || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        emailSent?: boolean;
+      };
+      if (!res.ok) {
+        toast.error(data.error || "Could not subscribe. Try again.");
+        return;
+      }
+      setSubmitted(true);
+      if (data.emailSent) {
+        toast.success("Check your inbox — welcome email sent!");
+      } else {
+        toast.success("You're subscribed! (Email delivery pending server setup)");
+      }
+    } catch {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <section className="container py-12 md:py-20">
       <div className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-neon-blue/10 via-neon-purple/10 to-neon-pink/10 p-8 md:p-16 text-center">
@@ -57,16 +87,24 @@ export function Newsletter() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-9 h-12 rounded-xl bg-background/80 backdrop-blur"
+                  disabled={loading}
                 />
               </div>
-              <Button variant="gradient" size="lg" type="submit">
-                Subscribe
+              <Button variant="gradient" size="lg" type="submit" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Subscribing…
+                  </>
+                ) : (
+                  "Subscribe"
+                )}
               </Button>
             </form>
           )}
 
           <p className="mt-3 text-xs text-muted-foreground">
-            Join 42,300+ creators & readers · Unsubscribe anytime
+            Weekly digest + trending alerts · Unsubscribe anytime
           </p>
         </motion.div>
       </div>

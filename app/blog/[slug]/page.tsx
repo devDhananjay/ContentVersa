@@ -29,7 +29,9 @@ import { isDatabaseConfigured } from "@/lib/prisma";
 import { shouldSkipImageOptimization } from "@/lib/upload";
 import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
 import { buildMetadata, articleJsonLd, SITE } from "@/lib/seo";
+import { isDiscoverSyndicatedSlug } from "@/lib/feeds/discover-blog";
 import { CATEGORIES } from "@/lib/data/categories";
+import { resolveBlogCoverImage } from "@/lib/upload";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +43,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const blog = await getBlogBySlugHybrid(slug);
   if (!blog) return buildMetadata({ title: "Not found", noIndex: true });
+  const syndicated = isDiscoverSyndicatedSlug(blog.slug);
   return buildMetadata({
     title: blog.title,
     description: blog.excerpt,
@@ -50,6 +53,7 @@ export async function generateMetadata({
     publishedTime: blog.publishedAt,
     authors: [blog.author.name],
     keywords: blog.tags,
+    noIndex: syndicated,
   });
 }
 
@@ -75,17 +79,26 @@ export default async function BlogPage({
       : null;
 
   const reactionCount = engagement?.totalReactions ?? blog.likes;
+  const syndicated = isDiscoverSyndicatedSlug(blog.slug);
+  const isOwnArticle =
+    Boolean(userId && blog.author.id && userId === blog.author.id) ||
+    Boolean(session?.username && session.username === blog.author.username);
 
-  const jsonLd = articleJsonLd({
-    title: blog.title,
-    description: blog.excerpt,
-    url,
-    image: blog.coverImage,
-    datePublished: blog.publishedAt,
-    authorName: blog.author.name,
-  });
+  const jsonLd = syndicated
+    ? null
+    : articleJsonLd({
+        title: blog.title,
+        description: blog.excerpt,
+        url,
+        image: blog.coverImage,
+        datePublished: blog.publishedAt,
+        authorName: blog.author.name,
+      });
 
-  const coverUnoptimized = shouldSkipImageOptimization(blog.coverImage);
+  const coverSrc = resolveBlogCoverImage(
+    blog.coverImage ||
+      CATEGORIES.find((c) => c.slug === blog.category)?.banner
+  );
 
   return (
     <>
@@ -96,10 +109,12 @@ export default async function BlogPage({
         initialBookmarked={engagement?.bookmarked}
         initialUserReaction={engagement?.userReaction}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {jsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      ) : null}
 
       <article className="container max-w-5xl py-8 md:py-12">
         <header className="mb-8">
@@ -183,16 +198,16 @@ export default async function BlogPage({
           </div>
         </header>
 
-        {blog.coverImage && (
+        {coverSrc && (
           <div className="relative aspect-[16/9] mb-10 overflow-hidden rounded-3xl">
             <Image
-              src={blog.coverImage}
+              src={coverSrc}
               alt={blog.title}
               fill
               priority
               sizes="(min-width: 1280px) 1024px, 100vw"
               className="object-cover"
-              unoptimized={coverUnoptimized}
+              unoptimized={shouldSkipImageOptimization(coverSrc)}
             />
           </div>
         )}
@@ -226,28 +241,32 @@ export default async function BlogPage({
               <ArticleFeedback blogSlug={slug} />
             </div>
 
-            <div className="mt-8">
-              <TipCreator
-                blogSlug={blog.slug}
-                authorName={blog.author.name}
-                authorAvatar={blog.author.avatar}
-              />
-            </div>
+            {!isOwnArticle && (
+              <div className="mt-8">
+                <TipCreator
+                  blogSlug={blog.slug}
+                  authorName={blog.author.name}
+                  authorAvatar={blog.author.avatar}
+                />
+              </div>
+            )}
 
-            <div className="mt-10 p-6 rounded-3xl border bg-card">
-              <AuthorActions
-                id={blog.author.id}
-                name={blog.author.name}
-                username={blog.author.username}
-                avatar={blog.author.avatar}
-                verified={blog.author.verified}
-                bio={blog.author.bio}
-                followers={blog.author.followers}
-                blogs={blog.author.blogs}
-                layout="card"
-                avatarSize="lg"
-              />
-            </div>
+            {!isOwnArticle && (
+              <div className="mt-10 p-6 rounded-3xl border bg-card">
+                <AuthorActions
+                  id={blog.author.id}
+                  name={blog.author.name}
+                  username={blog.author.username}
+                  avatar={blog.author.avatar}
+                  verified={blog.author.verified}
+                  bio={blog.author.bio}
+                  followers={blog.author.followers}
+                  blogs={blog.author.blogs}
+                  layout="card"
+                  avatarSize="lg"
+                />
+              </div>
+            )}
 
             <div className="mt-14">
               <PollWidget
@@ -260,14 +279,18 @@ export default async function BlogPage({
                   tags: blog.tags,
                   excerpt: blog.excerpt,
                 }}
-                author={{
-                  id: blog.author.id,
-                  name: blog.author.name,
-                  username: blog.author.username,
-                  avatar: blog.author.avatar,
-                  verified: blog.author.verified,
-                  followers: blog.author.followers,
-                }}
+                author={
+                  isOwnArticle
+                    ? undefined
+                    : {
+                        id: blog.author.id,
+                        name: blog.author.name,
+                        username: blog.author.username,
+                        avatar: blog.author.avatar,
+                        verified: blog.author.verified,
+                        followers: blog.author.followers,
+                      }
+                }
               />
             </div>
 

@@ -49,6 +49,7 @@ export async function GET(
       followerCount: status.followerCount,
       followingCount: status.followingCount,
       signedIn: true,
+      isSelf: followerId === status.targetUserId,
     });
   } catch (err) {
     console.error("[follow GET]", err);

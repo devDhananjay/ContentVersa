@@ -1,13 +1,22 @@
 import { NotificationType } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
-import { createUserNotificationsBulk } from "@/lib/notifications/create";
+import {
+  createUserNotificationsBulk,
+} from "@/lib/notifications/create";
+import { sendEmailBulk } from "@/lib/email/mailer";
+import {
+  trendingArticleEmail,
+  weeklyDigestEmail,
+  notificationEmail,
+} from "@/lib/email/templates";
+import { newsletterUnsubscribeUrl } from "@/lib/newsletter/subscribe";
 
 const INACTIVE_DAYS_MIN = 3;
 const INACTIVE_DAYS_MAX = 7;
 const USER_BATCH = 100;
 
 export async function sendInactiveReaderReminders() {
-  if (!isDatabaseConfigured()) return { sent: 0 };
+  if (!isDatabaseConfigured()) return { sent: 0, emails: 0 };
 
   const now = Date.now();
   const from = new Date(now - INACTIVE_DAYS_MAX * 86400000);
@@ -19,23 +28,25 @@ export async function sendInactiveReaderReminders() {
         lastActiveAt: { gte: from, lte: to },
       },
     },
-    select: { id: true },
+    select: { id: true, email: true },
     take: USER_BATCH,
   });
 
-  if (!inactiveUsers.length) return { sent: 0 };
+  if (!inactiveUsers.length) return { sent: 0, emails: 0 };
 
   const latest = await prisma.blog.findFirst({
     where: { status: "PUBLISHED" },
     orderBy: { publishedAt: "desc" },
-    select: { title: true, slug: true },
+    select: { title: true, slug: true, excerpt: true },
   });
-  if (!latest) return { sent: 0 };
+  if (!latest) return { sent: 0, emails: 0 };
 
   const link = `/blog/${latest.slug}`;
   const since = new Date(now - 86400000);
 
   const payloads = [];
+  const emailRecipients: string[] = [];
+
   for (const u of inactiveUsers) {
     const dup = await prisma.notification.findFirst({
       where: {
@@ -52,37 +63,48 @@ export async function sendInactiveReaderReminders() {
       message: `Catch up with “${latest.title}” and more on ContentVerse.`,
       link,
     });
+    if (u.email) emailRecipients.push(u.email);
   }
 
   const sent = await createUserNotificationsBulk(payloads);
-  return { sent };
+
+  const emails = await sendEmailBulk(emailRecipients, (to) => {
+    const { subject, html } = notificationEmail({
+      title: "We miss you on ContentVerse",
+      message: `New article: “${latest.title}” — come back and catch up.`,
+      link,
+    });
+    return { to, subject, html };
+  });
+
+  return { sent, emails };
 }
 
 export async function sendTrendingArticleAlert() {
-  if (!isDatabaseConfigured()) return { sent: 0 };
+  if (!isDatabaseConfigured()) return { sent: 0, emails: 0 };
 
   const since = new Date(Date.now() - 24 * 3600000);
   const trending = await prisma.blog.findFirst({
     where: { status: "PUBLISHED", publishedAt: { gte: since } },
     orderBy: [{ views: "desc" }, { likesCount: "desc" }],
-    select: { id: true, title: true, slug: true },
+    select: { id: true, title: true, slug: true, excerpt: true },
   });
 
-  if (!trending) {
-    const fallback = await prisma.blog.findFirst({
+  const blog =
+    trending ??
+    (await prisma.blog.findFirst({
       where: { status: "PUBLISHED" },
       orderBy: { views: "desc" },
-      select: { id: true, title: true, slug: true },
-    });
-    if (!fallback) return { sent: 0 };
-    return notifyTrending(fallback, since);
-  }
+      select: { id: true, title: true, slug: true, excerpt: true },
+    }));
 
-  return notifyTrending(trending, since);
+  if (!blog) return { sent: 0, emails: 0 };
+
+  return notifyTrending(blog, since);
 }
 
 async function notifyTrending(
-  blog: { id: string; title: string; slug: string },
+  blog: { id: string; title: string; slug: string; excerpt: string | null },
   since: Date
 ) {
   const link = `/blog/${blog.slug}`;
@@ -115,21 +137,40 @@ async function notifyTrending(
   }
 
   const sent = await createUserNotificationsBulk(payloads);
-  return { sent };
+
+  const subscribers = await prisma.newsletterSubscriber.findMany({
+    select: { email: true, id: true },
+  });
+
+  const emails = await sendEmailBulk(
+    subscribers.map((s) => s.email),
+    (email) => {
+      const sub = subscribers.find((s) => s.email === email);
+      const { subject, html } = trendingArticleEmail({
+        title: blog.title,
+        slug: blog.slug,
+        excerpt: blog.excerpt,
+        unsubscribeUrl: sub ? newsletterUnsubscribeUrl(sub.id) : "#",
+      });
+      return { to: email, subject, html };
+    }
+  );
+
+  return { sent, emails };
 }
 
 export async function sendWeeklyDigest() {
-  if (!isDatabaseConfigured()) return { sent: 0 };
+  if (!isDatabaseConfigured()) return { sent: 0, emails: 0 };
 
   const weekAgo = new Date(Date.now() - 7 * 86400000);
   const top = await prisma.blog.findMany({
     where: { status: "PUBLISHED", publishedAt: { gte: weekAgo } },
     orderBy: { views: "desc" },
     take: 5,
-    select: { title: true },
+    select: { title: true, slug: true, excerpt: true },
   });
 
-  if (!top.length) return { sent: 0 };
+  if (!top.length) return { sent: 0, emails: 0 };
 
   const titles = top.map((b) => b.title).join(" · ");
   const link = "/blogs";
@@ -165,5 +206,22 @@ export async function sendWeeklyDigest() {
   }
 
   const sent = await createUserNotificationsBulk(payloads);
-  return { sent };
+
+  const subscribers = await prisma.newsletterSubscriber.findMany({
+    select: { email: true, id: true },
+  });
+
+  const emails = await sendEmailBulk(
+    subscribers.map((s) => s.email),
+    (email) => {
+      const sub = subscribers.find((s) => s.email === email);
+      const { subject, html } = weeklyDigestEmail({
+        articles: top,
+        unsubscribeUrl: sub ? newsletterUnsubscribeUrl(sub.id) : "#",
+      });
+      return { to: email, subject, html };
+    }
+  );
+
+  return { sent, emails };
 }
