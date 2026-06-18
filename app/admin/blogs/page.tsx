@@ -30,6 +30,7 @@ export default async function AdminBlogsPage() {
         published={byStatus.published}
         rejected={byStatus.rejected}
         draft={byStatus.draft}
+        archived={byStatus.archived}
       />
     </div>
   );

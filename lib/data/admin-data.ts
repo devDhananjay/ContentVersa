@@ -424,15 +424,16 @@ export async function getAdminBlogDetail(blogId: string): Promise<AdminBlogDetai
 
 export async function getAdminBlogsByStatus() {
   if (!isDatabaseConfigured()) {
-    return { pending: [], published: [], rejected: [], draft: [] };
+    return { pending: [], published: [], rejected: [], draft: [], archived: [] };
   }
 
-  const [pending, published, rejected, draft] = await Promise.all([
+  const [pending, published, rejected, draft, archived] = await Promise.all([
     getAdminBlogs("PENDING"),
     getAdminBlogs("PUBLISHED"),
     getAdminBlogs("REJECTED"),
     getAdminBlogs("DRAFT"),
+    getAdminBlogs("ARCHIVED"),
   ]);
 
-  return { pending, published, rejected, draft };
+  return { pending, published, rejected, draft, archived };
 }

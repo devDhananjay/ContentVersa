@@ -3,7 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Eye, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +18,7 @@ const STATUS_VARIANT: Record<string, "success" | "warning" | "secondary" | "dest
   PENDING: "warning",
   DRAFT: "secondary",
   REJECTED: "destructive",
+  ARCHIVED: "secondary",
 };
 
 function BlogTable({ rows }: { rows: AdminBlogRow[] }) {
@@ -86,14 +89,18 @@ export function AdminBlogsTable({
   published,
   rejected,
   draft,
+  archived,
 }: {
   all: AdminBlogRow[];
   pending: AdminBlogRow[];
   published: AdminBlogRow[];
   rejected: AdminBlogRow[];
   draft: AdminBlogRow[];
+  archived: AdminBlogRow[];
 }) {
+  const router = useRouter();
   const [q, setQ] = React.useState("");
+  const [deletingArchived, setDeletingArchived] = React.useState(false);
 
   const filter = (rows: AdminBlogRow[]) =>
     rows.filter(
@@ -102,6 +109,36 @@ export function AdminBlogsTable({
         b.author.name.toLowerCase().includes(q.toLowerCase()) ||
         b.author.email.toLowerCase().includes(q.toLowerCase())
     );
+
+  const filteredArchived = filter(archived);
+
+  const deleteAllArchived = async () => {
+    if (filteredArchived.length === 0) return;
+
+    const confirmed = window.confirm(
+      `Permanently delete all ${filteredArchived.length} archived blog(s)? This cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    setDeletingArchived(true);
+    try {
+      const res = await fetch("/api/admin/blogs/archived", {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = (await res.json()) as { error?: string; deleted?: number };
+      if (!res.ok) {
+        toast.error(data.error || "Could not delete archived blogs");
+        return;
+      }
+      toast.success(`Deleted ${data.deleted ?? 0} archived blog(s)`);
+      router.refresh();
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setDeletingArchived(false);
+    }
+  };
 
   return (
     <div>
@@ -122,6 +159,7 @@ export function AdminBlogsTable({
           <TabsTrigger value="published">Published ({filter(published).length})</TabsTrigger>
           <TabsTrigger value="rejected">Rejected ({filter(rejected).length})</TabsTrigger>
           <TabsTrigger value="draft">Drafts ({filter(draft).length})</TabsTrigger>
+          <TabsTrigger value="archived">Archived ({filteredArchived.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="mt-4">
           <BlogTable rows={filter(all)} />
@@ -137,6 +175,30 @@ export function AdminBlogsTable({
         </TabsContent>
         <TabsContent value="draft" className="mt-4">
           <BlogTable rows={filter(draft)} />
+        </TabsContent>
+        <TabsContent value="archived" className="mt-4 space-y-4">
+          {filteredArchived.length > 0 ? (
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3">
+              <p className="text-sm text-muted-foreground">
+                {filteredArchived.length} archived post(s) — hidden from public site.
+              </p>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="gap-1.5 shrink-0"
+                disabled={deletingArchived}
+                onClick={deleteAllArchived}
+              >
+                {deletingArchived ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
+                Delete all archived
+              </Button>
+            </div>
+          ) : null}
+          <BlogTable rows={filteredArchived} />
         </TabsContent>
       </Tabs>
     </div>
