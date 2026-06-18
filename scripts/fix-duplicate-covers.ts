@@ -1,5 +1,5 @@
 /**
- * Re-assign unique cover images for every blog (fixes duplicate Unsplash covers).
+ * Re-assign content-relevant unique cover images for every blog.
  *
  *   npm run db:fix-duplicate-covers
  */
@@ -46,6 +46,7 @@ async function main() {
       id: true,
       slug: true,
       title: true,
+      excerpt: true,
       coverImage: true,
       category: { select: { slug: true } },
       tags: { select: { tag: { select: { name: true } } } },
@@ -59,6 +60,7 @@ async function main() {
       id: r.id,
       slug: r.slug,
       title: r.title,
+      excerpt: r.excerpt,
       coverImage: r.coverImage,
       categorySlug: r.category!.slug!,
       tags: r.tags.map((t) => t.tag.name),

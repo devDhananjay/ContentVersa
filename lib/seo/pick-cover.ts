@@ -10,7 +10,9 @@ import {
 export async function pickCoverForNewArticle(input: {
   categorySlug: string;
   title: string;
+  excerpt?: string;
   tags?: string[];
+  coverKeywords?: string[];
   slug: string;
 }): Promise<string> {
   if (!isDatabaseConfigured()) {

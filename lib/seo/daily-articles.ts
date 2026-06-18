@@ -155,7 +155,9 @@ export async function runDailyArticleGeneration(options?: {
       const coverImage = await pickCoverForNewArticle({
         categorySlug: cat.slug,
         title: article.title,
+        excerpt: article.excerpt,
         tags: article.tags,
+        coverKeywords: article.coverKeywords,
         slug: topic.slug,
       });
 

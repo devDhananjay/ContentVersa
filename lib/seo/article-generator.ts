@@ -3,6 +3,63 @@ import {
   callGeminiTextWithMeta,
   type GeminiFailure,
 } from "@/lib/ai/gemini";
+import { detectCoverTheme } from "@/lib/seo/cover-image";
+
+function inferCoverKeywordsFromText(text: string): string[] {
+  const theme = detectCoverTheme({
+    categorySlug: "ai",
+    title: text,
+    excerpt: text,
+  });
+  const fallbacks: Record<string, string[]> = {
+    health: ["hospital doctor", "medical checkup", "rural clinic"],
+    movies: ["cinema screen", "film camera", "movie theatre"],
+    sports: ["cricket stadium", "sports action", "team celebration"],
+    finance: ["stock charts", "money planning", "investment growth"],
+    travel: ["mountain landscape", "travel backpack", "scenic road"],
+    career: ["office teamwork", "professional meeting", "laptop workspace"],
+    business: ["startup office", "business handshake", "team planning"],
+    code: ["programming laptop", "developer desk", "code on screen"],
+    data: ["neural network", "ai technology", "data visualization"],
+    cloud: ["cloud servers", "data center", "network cables"],
+    food: ["indian food plate", "kitchen cooking", "restaurant table"],
+    fitness: ["gym workout", "yoga mat", "running outdoors"],
+    gaming: ["gaming controller", "esports arena", "video game"],
+    education: ["students classroom", "books study", "online learning"],
+    fashion: ["fashion outfit", "clothing rack", "style portrait"],
+    lifestyle: ["morning coffee", "city lifestyle", "home workspace"],
+    marketing: ["digital marketing", "analytics dashboard", "social media"],
+    science: ["science lab", "microscope research", "chemistry glass"],
+    robotics: ["robot arm", "automation factory", "tech innovation"],
+  };
+  return fallbacks[theme ?? "data"] ?? ["technology abstract", "modern workspace", "digital india"];
+}
+
+function normalizeArticle(raw: Partial<GeneratedArticle>): GeneratedArticle | null {
+  if (
+    !raw.title ||
+    !raw.excerpt ||
+    !raw.metaDescription ||
+    !Array.isArray(raw.tags) ||
+    !raw.content
+  ) {
+    return null;
+  }
+  const coverKeywords = Array.isArray(raw.coverKeywords)
+    ? raw.coverKeywords.map((k) => String(k).trim()).filter(Boolean).slice(0, 6)
+    : [];
+  const text = `${raw.title} ${raw.excerpt} ${raw.tags.join(" ")}`;
+  return {
+    title: String(raw.title).trim(),
+    excerpt: String(raw.excerpt).trim(),
+    metaDescription: String(raw.metaDescription).trim(),
+    metaKeywords: raw.metaKeywords ? String(raw.metaKeywords).trim() : undefined,
+    tags: raw.tags.map((t) => String(t).trim()).filter(Boolean),
+    coverKeywords:
+      coverKeywords.length > 0 ? coverKeywords : inferCoverKeywordsFromText(text),
+    content: String(raw.content).trim(),
+  };
+}
 
 export const ARTICLE_JSON_SCHEMA = {
   type: "object",
@@ -12,9 +69,10 @@ export const ARTICLE_JSON_SCHEMA = {
     metaDescription: { type: "string" },
     metaKeywords: { type: "string" },
     tags: { type: "array", items: { type: "string" } },
+    coverKeywords: { type: "array", items: { type: "string" } },
     content: { type: "string" },
   },
-  required: ["title", "excerpt", "metaDescription", "tags", "content"],
+  required: ["title", "excerpt", "metaDescription", "tags", "coverKeywords", "content"],
 };
 
 export type GeneratedArticle = {
@@ -23,6 +81,7 @@ export type GeneratedArticle = {
   metaDescription: string;
   metaKeywords?: string;
   tags: string[];
+  coverKeywords: string[];
   content: string;
 };
 
@@ -41,25 +100,7 @@ function parseArticleJson(text: string): GeneratedArticle | null {
     .trim();
   try {
     const parsed = JSON.parse(cleaned) as Partial<GeneratedArticle>;
-    if (
-      !parsed.title ||
-      !parsed.excerpt ||
-      !parsed.metaDescription ||
-      !Array.isArray(parsed.tags) ||
-      !parsed.content
-    ) {
-      return null;
-    }
-    return {
-      title: String(parsed.title).trim(),
-      excerpt: String(parsed.excerpt).trim(),
-      metaDescription: String(parsed.metaDescription).trim(),
-      metaKeywords: parsed.metaKeywords
-        ? String(parsed.metaKeywords).trim()
-        : undefined,
-      tags: parsed.tags.map((t) => String(t).trim()).filter(Boolean),
-      content: String(parsed.content).trim(),
-    };
+    return normalizeArticle(parsed);
   } catch {
     return null;
   }
@@ -86,7 +127,8 @@ Rules:
 - End with one line under "## Support creators" about tipping writers on ContentVerse
 ${input.affiliateNote ? `- ${input.affiliateNote}` : ""}
 - If finance: add disclaimer "This is educational content, not financial advice."
-- Do NOT invent fake statistics; use ranges and general guidance when exact data unknown`;
+- Do NOT invent fake statistics; use ranges and general guidance when exact data unknown
+- coverKeywords: exactly 4 short visual phrases (2-4 words each) for a stock photo that fits this article — concrete nouns/scenes, not abstract (e.g. "rural clinic stethoscope", "stock market chart", "bollywood film reel")`;
 
   const user = input.expandFrom
     ? `Expand this article into a readable blog post (${input.minWords}–${input.maxWords} words). Keep the topic, add depth but stay concise — no fluff.
@@ -98,13 +140,13 @@ Search intent: ${input.searchIntent}
 Existing draft:
 ${input.expandFrom.slice(0, 6000)}
 
-Return JSON with title, excerpt (2 sentences), metaDescription (150-160 chars), metaKeywords (comma-separated), tags (5-7), and content (full Markdown body).`
+Return JSON with title, excerpt (2 sentences), metaDescription (150-160 chars), metaKeywords (comma-separated), tags (5-7), coverKeywords (4 visual photo phrases), and content (full Markdown body).`
     : `Write a complete blog article for:
 Title idea: ${input.title}
 Category: ${input.category}
 Search intent: ${input.searchIntent}
 
-Return JSON with title, excerpt (2 sentences), metaDescription (150-160 chars), metaKeywords (comma-separated), tags (4-6), and content (full Markdown body).`;
+Return JSON with title, excerpt (2 sentences), metaDescription (150-160 chars), metaKeywords (comma-separated), tags (4-6), coverKeywords (4 visual photo phrases), and content (full Markdown body).`;
 
   return { system, user };
 }
@@ -130,14 +172,15 @@ export async function generateSeoArticle(input: {
   );
 
   if (jsonResult.ok && jsonResult.data.content?.length >= 400) {
-    return { article: jsonResult.data };
+    const article = normalizeArticle(jsonResult.data);
+    if (article) return { article };
   }
 
   const textResult = await callGeminiTextWithMeta(
     system,
     `${user}
 
-Return ONLY valid JSON (no markdown fences) with keys: title, excerpt, metaDescription, metaKeywords, tags (string array), content (markdown body).`,
+Return ONLY valid JSON (no markdown fences) with keys: title, excerpt, metaDescription, metaKeywords, tags (string array), coverKeywords (string array, 4 visual phrases), content (markdown body).`,
     8192
   );
 

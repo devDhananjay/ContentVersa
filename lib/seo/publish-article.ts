@@ -72,7 +72,9 @@ export async function publishGeneratedArticle(input: {
   const coverImage = await pickCoverForNewArticle({
     categorySlug: input.categorySlug,
     title: input.article.title,
+    excerpt: input.article.excerpt,
     tags: input.article.tags,
+    coverKeywords: input.article.coverKeywords,
     slug,
   });
 
