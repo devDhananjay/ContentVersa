@@ -9,7 +9,6 @@ import { PrismaClient } from "@prisma/client";
 import {
   assignUniqueCovers,
   isUserUpload,
-  normalizeCoverUrl,
 } from "../lib/seo/cover-image";
 
 function loadEnvFiles() {
@@ -42,7 +41,6 @@ async function main() {
   const rows = await prisma.blog.findMany({
     where: {
       slug: { not: { startsWith: "discover-" } },
-      status: { in: ["PUBLISHED", "DRAFT"] },
     },
     select: {
       id: true,
@@ -80,16 +78,11 @@ async function main() {
     const nextCover = assignments.get(row.slug);
     if (!nextCover) continue;
 
-    const prev = normalizeCoverUrl(row.coverImage);
-    const next = normalizeCoverUrl(nextCover);
-    if (prev === next) continue;
-
     await prisma.blog.update({
       where: { id: row.id },
       data: { coverImage: nextCover },
     });
     updated++;
-    console.log(`✓ ${row.slug}`);
   }
 
   const dupes = await prisma.$queryRaw<{ cover: string; c: bigint }[]>`

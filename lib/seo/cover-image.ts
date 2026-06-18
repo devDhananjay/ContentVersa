@@ -319,11 +319,12 @@ export function pickArticleCoverImage(
     title: string;
     tags?: string[];
     slug?: string;
+    uniqueKey?: string;
   },
   takenUrls?: ReadonlySet<string>
 ): string {
   const pool = poolForArticle(input);
-  const seed = `${input.slug ?? ""}|${input.title}|${input.categorySlug}`;
+  const seed = `${input.uniqueKey ?? input.slug ?? ""}|${input.title}|${input.categorySlug}`;
   const start = hashString(seed) % pool.length;
 
   for (let i = 0; i < pool.length; i++) {
@@ -339,13 +340,13 @@ export function pickArticleCoverImage(
     if (!takenUrls?.has(norm)) return url;
   }
 
-  for (let salt = 0; salt < 32; salt++) {
+  for (let salt = 0; salt < 64; salt++) {
     const url = picsumCover(`${seed}|${salt}`);
     const norm = normalizeCoverUrl(url);
     if (!takenUrls?.has(norm)) return url;
   }
 
-  return picsumCover(seed);
+  return picsumCover(`${seed}|final`);
 }
 
 function picsumCover(seed: string): string {
@@ -355,6 +356,7 @@ function picsumCover(seed: string): string {
 /** Assign a globally unique cover across many blogs (for DB backfill). */
 export function assignUniqueCovers<
   T extends {
+    id?: string;
     slug: string;
     title: string;
     coverImage: string | null;
@@ -373,15 +375,22 @@ export function assignUniqueCovers<
       continue;
     }
 
-    const cover = pickArticleCoverImage(
-      {
-        categorySlug: row.categorySlug,
-        title: row.title,
-        slug: row.slug,
-        tags: row.tags,
-      },
-      taken
-    );
+    let attempt = 0;
+    let cover = "";
+    do {
+      cover = pickArticleCoverImage(
+        {
+          categorySlug: row.categorySlug,
+          title: row.title,
+          slug: row.slug,
+          tags: row.tags,
+          uniqueKey: row.id ? `${row.id}-${attempt}` : `${row.slug}-${attempt}`,
+        },
+        taken
+      );
+      attempt++;
+    } while (taken.has(normalizeCoverUrl(cover)) && attempt < 80);
+
     taken.add(normalizeCoverUrl(cover));
     assignments.set(row.slug, cover);
   }
