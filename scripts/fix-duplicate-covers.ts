@@ -1,15 +1,15 @@
 /**
- * Re-assign cover images for blogs still using the generic category banner.
+ * Re-assign unique cover images for every blog (fixes duplicate Unsplash covers).
  *
- *   npm run db:fix-covers
  *   npm run db:fix-duplicate-covers
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { PrismaClient } from "@prisma/client";
 import {
-  isGenericCategoryCover,
-  pickArticleCoverImage,
+  assignUniqueCovers,
+  isUserUpload,
+  normalizeCoverUrl,
 } from "../lib/seo/cover-image";
 
 function loadEnvFiles() {
@@ -52,32 +52,65 @@ async function main() {
       category: { select: { slug: true } },
       tags: { select: { tag: { select: { name: true } } } },
     },
+    orderBy: { createdAt: "asc" },
   });
 
+  const prepared = rows
+    .filter((r) => r.category?.slug)
+    .map((r) => ({
+      id: r.id,
+      slug: r.slug,
+      title: r.title,
+      coverImage: r.coverImage,
+      categorySlug: r.category!.slug!,
+      tags: r.tags.map((t) => t.tag.name),
+    }));
+
+  const assignments = assignUniqueCovers(prepared);
+
   let updated = 0;
-  for (const row of rows) {
-    const categorySlug = row.category?.slug;
-    if (!categorySlug) continue;
-    if (!isGenericCategoryCover(row.coverImage, categorySlug)) continue;
+  let skippedUploads = 0;
 
-    const coverImage = pickArticleCoverImage({
-      categorySlug,
-      title: row.title,
-      slug: row.slug,
-      tags: row.tags.map((t) => t.tag.name),
-    });
+  for (const row of prepared) {
+    if (isUserUpload(row.coverImage)) {
+      skippedUploads++;
+      continue;
+    }
 
-    if (coverImage === row.coverImage) continue;
+    const nextCover = assignments.get(row.slug);
+    if (!nextCover) continue;
+
+    const prev = normalizeCoverUrl(row.coverImage);
+    const next = normalizeCoverUrl(nextCover);
+    if (prev === next) continue;
 
     await prisma.blog.update({
       where: { id: row.id },
-      data: { coverImage },
+      data: { coverImage: nextCover },
     });
     updated++;
     console.log(`✓ ${row.slug}`);
   }
 
-  console.log(`\nUpdated ${updated} duplicate/generic cover(s).`);
+  const dupes = await prisma.$queryRaw<{ cover: string; c: bigint }[]>`
+    SELECT split_part("coverImage", '?', 1) as cover, COUNT(*)::bigint as c
+    FROM "Blog"
+    WHERE "coverImage" IS NOT NULL
+      AND "coverImage" <> ''
+      AND slug NOT LIKE 'discover-%'
+    GROUP BY 1
+    HAVING COUNT(*) > 1
+    ORDER BY c DESC
+    LIMIT 5
+  `;
+
+  console.log(`\nUpdated ${updated} blog cover(s). Skipped ${skippedUploads} user upload(s).`);
+  if (dupes.length) {
+    console.log("\nRemaining duplicate cover groups (top 5):");
+    for (const d of dupes) console.log(`  ${d.c}x ${d.cover}`);
+  } else {
+    console.log("\nNo duplicate cover groups remaining.");
+  }
 }
 
 main()
