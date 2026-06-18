@@ -1,6 +1,5 @@
-import { NotificationType } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
-import { createUserNotification } from "@/lib/notifications/create";
+import { unlockAchievement, checkStreakAchievements } from "@/lib/engagement/achievements";
 
 export const STREAK_TZ = "Asia/Kolkata";
 /** Minimum read time on an article to count toward the daily streak */
@@ -8,11 +7,7 @@ export const STREAK_MIN_SECONDS = 60;
 /** Or scroll at least this far through an article */
 export const STREAK_MIN_PROGRESS = 30;
 
-const STREAK_MILESTONES = [
-  { days: 7, code: "streak-7", title: "Week Warrior", description: "7-day reading streak." },
-  { days: 14, code: "streak-14", title: "Fortnight Reader", description: "14-day reading streak." },
-  { days: 30, code: "streak-30", title: "Marathon Reader", description: "30-day reading streak." },
-] as const;
+const STREAK_MILESTONES = [7, 14, 30] as const;
 
 export function istDayKey(date = new Date()): string {
   return new Intl.DateTimeFormat("en-CA", {
@@ -83,39 +78,12 @@ export async function getUserStreakState(
 }
 
 async function unlockStreakMilestones(userId: string, streakDays: number) {
-  for (const m of STREAK_MILESTONES) {
-    if (streakDays < m.days) continue;
-
-    const achievement = await prisma.achievement.upsert({
-      where: { code: m.code },
-      create: {
-        code: m.code,
-        title: m.title,
-        description: m.description,
-        icon: "🔥",
-      },
-      update: {},
-    });
-
-    const existing = await prisma.userAchievement.findUnique({
-      where: {
-        userId_achievementId: { userId, achievementId: achievement.id },
-      },
-    });
-    if (existing) continue;
-
-    await prisma.userAchievement.create({
-      data: { userId, achievementId: achievement.id },
-    });
-
-    await createUserNotification({
-      userId,
-      type: NotificationType.SYSTEM,
-      title: `Achievement unlocked: ${m.title}`,
-      message: m.description,
-      link: "/dashboard/achievements",
-    });
+  for (const days of STREAK_MILESTONES) {
+    if (streakDays < days) continue;
+    const code = `streak-${days}` as const;
+    await unlockAchievement(userId, code);
   }
+  await checkStreakAchievements(userId, streakDays);
 }
 
 /** Call after reading progress is saved for a signed-in user. */

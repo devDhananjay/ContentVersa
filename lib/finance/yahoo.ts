@@ -39,6 +39,11 @@ async function fetchQuotes(symbols: string[]): Promise<StockQuote[]> {
   }
 }
 
+/** Batch quotes for watchlist alert cron */
+export async function fetchYahooQuotes(symbols: string[]): Promise<StockQuote[]> {
+  return fetchQuotes(symbols);
+}
+
 function toIndexQuote(
   symbol: string,
   name: string,

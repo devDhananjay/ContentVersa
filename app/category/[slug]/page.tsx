@@ -11,6 +11,7 @@ import { CATEGORIES, getCategoryBySlug } from "@/lib/data/categories";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getTopWritersForCategoryCached } from "@/lib/data/top-writers";
 import { getCategoryFeed } from "@/lib/feeds/data";
+import { CategorySubscribeButton } from "@/components/category/category-subscribe-button";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -73,7 +74,11 @@ export default async function CategoryPage({
           <p className="mt-3 text-lg text-foreground/80 max-w-2xl">
             {cat.description}
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-2">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <CategorySubscribeButton
+              categorySlug={cat.slug}
+              categoryName={cat.name}
+            />
             {cat.subcategories.map((s) => (
               <Badge key={s} variant="outline" className="bg-background/50 backdrop-blur">
                 #{s.toLowerCase().replace(/\s+/g, "-")}

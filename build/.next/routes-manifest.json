@@ -450,6 +450,12 @@
       "namedRegex": "^/admin/account(?:/)?$"
     },
     {
+      "page": "/admin/ai-articles",
+      "regex": "^/admin/ai\\-articles(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/ai\\-articles(?:/)?$"
+    },
+    {
       "page": "/admin/analytics",
       "regex": "^/admin/analytics(?:/)?$",
       "routeKeys": {},

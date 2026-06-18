@@ -1,10 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { Twitter, Linkedin, Link2, Facebook, Check } from "lucide-react";
+import { Twitter, Linkedin, Link2, Facebook, Check, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function ShareBar({ url, title }: { url: string; title: string }) {
+export function ShareBar({
+  url,
+  title,
+  imageUrl,
+}: {
+  url: string;
+  title: string;
+  imageUrl?: string;
+}) {
   const [copied, setCopied] = React.useState(false);
   const onCopy = async () => {
     try {
@@ -15,8 +23,21 @@ export function ShareBar({ url, title }: { url: string; title: string }) {
   };
   const encoded = encodeURIComponent(url);
   const text = encodeURIComponent(title);
+  const waText = encodeURIComponent(
+    imageUrl ? `${title}\n${url}` : `${title} — ${url}`
+  );
   return (
     <div className="flex items-center gap-2">
+      <a
+        href={`https://wa.me/?text=${waText}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Share on WhatsApp"
+      >
+        <Button variant="outline" size="icon" aria-label="Share on WhatsApp">
+          <MessageCircle className="h-4 w-4 text-green-600" />
+        </Button>
+      </a>
       <a
         href={`https://twitter.com/intent/tweet?text=${text}&url=${encoded}`}
         target="_blank"

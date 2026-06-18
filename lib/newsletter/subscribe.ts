@@ -18,6 +18,12 @@ export async function subscribeToNewsletter(email: string) {
   });
 
   if (existing) {
+    if (!existing.weeklyDigest) {
+      await prisma.newsletterSubscriber.update({
+        where: { id: existing.id },
+        data: { weeklyDigest: true },
+      });
+    }
     const { subject, html } = newsletterWelcomeEmail(
       newsletterUnsubscribeUrl(existing.id)
     );
@@ -26,7 +32,7 @@ export async function subscribeToNewsletter(email: string) {
   }
 
   const subscriber = await prisma.newsletterSubscriber.create({
-    data: { email: normalized, verified: true },
+    data: { email: normalized, verified: true, weeklyDigest: true },
   });
 
   const { subject, html } = newsletterWelcomeEmail(

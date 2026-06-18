@@ -32,6 +32,9 @@ import { buildMetadata, articleJsonLd, SITE } from "@/lib/seo";
 import { isDiscoverSyndicatedSlug } from "@/lib/feeds/discover-blog";
 import { CATEGORIES } from "@/lib/data/categories";
 import { resolveBlogCoverImage } from "@/lib/upload";
+import { SeriesNav } from "@/components/blog/series-nav";
+import { GoogleAdSense } from "@/components/ads/google-adsense";
+import { getBlogSeriesMeta } from "@/lib/data/series";
 
 export const dynamic = "force-dynamic";
 
@@ -100,6 +103,11 @@ export default async function BlogPage({
       CATEGORIES.find((c) => c.slug === blog.category)?.banner
   );
 
+  const seriesMeta =
+    blog.id && isDatabaseConfigured()
+      ? await getBlogSeriesMeta(blog.id)
+      : null;
+
   return (
     <>
       <ReadingProgress />
@@ -117,6 +125,13 @@ export default async function BlogPage({
       ) : null}
 
       <article className="container max-w-5xl py-8 md:py-12">
+        {seriesMeta ? (
+          <SeriesNav
+            seriesSlug={seriesMeta.seriesSlug}
+            currentPart={seriesMeta.currentPart}
+            parts={seriesMeta.parts}
+          />
+        ) : null}
         <header className="mb-8">
           <div className="flex flex-wrap items-center gap-2 mb-5">
             {category && (
@@ -193,7 +208,7 @@ export default async function BlogPage({
                 targetUserId={blog.author.id}
                 initialFollowerCount={blog.author.followers}
               />
-              <ShareBar url={url} title={blog.title} />
+              <ShareBar url={url} title={blog.title} imageUrl={blog.coverImage} />
             </div>
           </div>
         </header>
@@ -300,8 +315,9 @@ export default async function BlogPage({
             </div>
           </div>
 
-          <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto overscroll-y-contain scrollbar-hide">
+          <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto overscroll-y-contain scrollbar-hide space-y-6">
             <TableOfContents items={toc} />
+            <GoogleAdSense format="rectangle" className="rounded-xl overflow-hidden" />
           </aside>
         </div>
 

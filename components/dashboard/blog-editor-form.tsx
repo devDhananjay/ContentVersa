@@ -8,6 +8,7 @@ import {
   Send,
   Tag,
   ImagePlus,
+  BookOpen,
   Calendar,
   Loader2,
   CheckCircle2,
@@ -52,6 +53,8 @@ type BlogDraft = {
   metaTitle: string;
   metaDescription: string;
   status: string;
+  seriesSlug: string;
+  seriesPart: number | null;
 };
 
 export function BlogEditorForm({ blogId }: { blogId?: string }) {
@@ -72,6 +75,8 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
   const [seoDescription, setSeoDescription] = React.useState("");
   const [premium, setPremium] = React.useState(false);
   const [allowComments, setAllowComments] = React.useState(true);
+  const [seriesSlug, setSeriesSlug] = React.useState("");
+  const [seriesPart, setSeriesPart] = React.useState("");
   const [saved, setSaved] = React.useState<Date | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
   const [generating, setGenerating] = React.useState(false);
@@ -99,6 +104,8 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
     setSeoTitle(data.metaTitle);
     setSeoDescription(data.metaDescription);
     setPremium(data.premium);
+    setSeriesSlug(data.seriesSlug || "");
+    setSeriesPart(data.seriesPart != null ? String(data.seriesPart) : "");
     setEditorKey(data.id);
   };
 
@@ -245,6 +252,10 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
         premium,
         metaTitle: seoTitle.trim() || undefined,
         metaDescription: seoDescription.trim() || undefined,
+        seriesSlug: seriesSlug.trim() || undefined,
+        seriesPart: seriesSlug.trim()
+          ? Math.max(1, parseInt(seriesPart, 10) || 1)
+          : undefined,
         status,
       };
 
@@ -660,6 +671,33 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
                 <p className="text-xs text-muted-foreground">Default on</p>
               </div>
               <Switch checked={allowComments} onCheckedChange={setAllowComments} />
+            </div>
+            <div className="space-y-2 pt-2 border-t">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-neon-purple" />
+                <Label>Multi-part series</Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Same series slug on each part — readers get notified when the next part goes live.
+              </p>
+              <Input
+                placeholder="e.g. ai-funding-guide"
+                value={seriesSlug}
+                onChange={(e) => setSeriesSlug(e.target.value)}
+              />
+              {seriesSlug.trim() ? (
+                <div className="space-y-1.5">
+                  <Label>Part number</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={99}
+                    placeholder="1"
+                    value={seriesPart}
+                    onChange={(e) => setSeriesPart(e.target.value)}
+                  />
+                </div>
+              ) : null}
             </div>
             <Button variant="outline" className="w-full gap-2">
               <Calendar className="h-4 w-4" /> Schedule

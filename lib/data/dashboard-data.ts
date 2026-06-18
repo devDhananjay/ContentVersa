@@ -194,7 +194,7 @@ export async function getDashboardData(session: SessionUser): Promise<DashboardD
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-  const [user, blogs, notifications, bookmarks, achievements, wallet, revenues, tips, followerCount] =
+  const [user, blogs, notifications, bookmarks, achievements, wallet, revenues, tips, payoutRequests, followerCount] =
     await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
@@ -237,6 +237,10 @@ export async function getDashboardData(session: SessionUser): Promise<DashboardD
       }),
       prisma.tip.findMany({
         where: { toUserId: userId },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.payoutRequest.findMany({
+        where: { userId },
         orderBy: { createdAt: "desc" },
       }),
       prisma.follower.count({ where: { followingId: userId } }),
@@ -394,6 +398,17 @@ export async function getDashboardData(session: SessionUser): Promise<DashboardD
   }));
 
   const payoutRows: PayoutRow[] = [
+    ...payoutRequests.map((p) => ({
+      date: p.createdAt.toISOString().slice(0, 10),
+      method: p.method === "bank" ? "Bank transfer" : p.method,
+      amount: Number(p.amount),
+      status:
+        p.status === "COMPLETED"
+          ? "Paid"
+          : p.status === "REJECTED"
+            ? "Rejected"
+            : "Pending",
+    })),
     ...tips.map((t) => ({
       date: t.createdAt.toISOString().slice(0, 10),
       method: "Tip",

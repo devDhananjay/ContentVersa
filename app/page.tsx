@@ -14,6 +14,7 @@ import { NewsIn60Section } from "@/components/home/news-in-60";
 import { Newsletter } from "@/components/home/newsletter";
 import { Testimonials } from "@/components/home/testimonials";
 import { SportsTeaser } from "@/components/home/sports-teaser";
+import { ForYouSection } from "@/components/home/for-you-section";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
 
@@ -33,6 +34,7 @@ export default async function HomePage() {
         <Hero stats={data.stats} categories={data.categories} />
       </div>
       <TrendingSection blogs={data.trending} />
+      <ForYouSection />
       <SportsTeaser data={sportsTeaser} />
       <NewsIn60Section blogs={data.trending} />
       <FeaturedCreators creators={data.creators} />

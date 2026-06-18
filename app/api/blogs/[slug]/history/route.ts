@@ -126,6 +126,9 @@ export async function POST(
         streakDays = streak.streakDays;
         streakExtended = streak.extended;
       }
+      void import("@/lib/engagement/challenges").then(({ checkWeeklyAiReadingChallenge }) =>
+        checkWeeklyAiReadingChallenge(userId)
+      );
     }
 
     const res = NextResponse.json({

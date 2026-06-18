@@ -107,7 +107,12 @@ export async function createComment(input: {
   void notifyBlogAuthorOnComment(
     input.blogId,
     input.userId,
+    input.content,
     input.parentId ?? null
+  );
+
+  void import("@/lib/engagement/achievements").then(({ checkCommentAchievements }) =>
+    checkCommentAchievements(input.userId)
   );
 
   return mapComment(comment as CommentRow, input.userId);

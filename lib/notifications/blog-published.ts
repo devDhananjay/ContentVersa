@@ -114,6 +114,45 @@ export async function dispatchBlogPublishedNotifications(blogId: string) {
     await createUserNotificationsBulk(payloads);
   }
 
+  if (blog.seriesSlug && blog.seriesPart && blog.seriesPart > 1) {
+    const prevPart = await prisma.blog.findFirst({
+      where: {
+        seriesSlug: blog.seriesSlug,
+        seriesPart: blog.seriesPart - 1,
+        status: "PUBLISHED",
+      },
+      select: { id: true },
+    });
+    if (prevPart) {
+      const readers = await prisma.readingHistory.findMany({
+        where: {
+          blogId: prevPart.id,
+          userId: { not: null },
+          progress: { gte: 20 },
+        },
+        select: { userId: true },
+        distinct: ["userId"],
+        take: AUDIENCE_LIMIT,
+      });
+      const seriesPayloads = readers
+        .filter((r) => r.userId && !exclude.has(r.userId))
+        .map((r) => ({
+          userId: r.userId!,
+          type: NotificationType.RELATED_BLOG,
+          title: `Part ${blog.seriesPart} is live`,
+          message: `Continue the series: “${blog.title}”.`,
+          link,
+        }));
+      if (seriesPayloads.length) {
+        await createUserNotificationsBulk(seriesPayloads);
+      }
+    }
+  }
+
+  void import("@/lib/engagement/achievements").then(({ checkPublishAchievements }) =>
+    checkPublishAchievements(blog.authorId, { views: blog.views })
+  );
+
   // Ensure author + audience alerts always have a deep link when possible
   await prisma.notification.updateMany({
     where: { userId: blog.authorId, link: null, message: { contains: blog.title } },

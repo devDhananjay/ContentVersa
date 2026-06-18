@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "@/components/auth/use-session";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { ReferralCard } from "@/components/engagement/referral-card";
 type MeUser = {
   name?: string;
   username?: string;
@@ -90,6 +91,8 @@ export default function SettingsPage() {
             </div>
           ))}
         </section>
+
+        <ReferralCard />
 
         <section className="rounded-2xl border bg-card p-6">
           <h2 className="font-display text-xl font-bold mb-5">Payouts</h2>

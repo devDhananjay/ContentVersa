@@ -9,12 +9,13 @@ const Schema = z.object({
   username: z.string().min(3).regex(/^[a-zA-Z0-9_-]+$/),
   email: z.string().email(),
   password: z.string().min(8),
+  ref: z.string().optional(),
 });
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, username, email, password } = Schema.parse(body);
+    const { name, username, email, password, ref } = Schema.parse(body);
 
     try {
       const existing = await prisma.user.findFirst({
@@ -37,6 +38,8 @@ export async function POST(req: Request) {
           wallet: { create: {} },
         },
       });
+      const { applyReferralOnSignup } = await import("@/lib/referral");
+      void applyReferralOnSignup(user.id, ref);
       const token = await signSession({
         sub: user.id,
         email: user.email,

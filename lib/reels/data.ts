@@ -35,6 +35,7 @@ type ReelWithAuthor = {
     profile: { isVerified: boolean } | null;
   };
   category: { slug: string } | null;
+  relatedBlog: { slug: string; title: string } | null;
 };
 
 function mapReel(row: ReelWithAuthor): ReelItem {
@@ -59,6 +60,9 @@ function mapReel(row: ReelWithAuthor): ReelItem {
       isVerified: row.author.profile?.isVerified ?? false,
     },
     categorySlug: row.category?.slug ?? null,
+    relatedBlog: row.relatedBlog
+      ? { slug: row.relatedBlog.slug, title: row.relatedBlog.title }
+      : null,
   };
 }
 
@@ -113,7 +117,11 @@ export async function getPublishedReels(opts?: {
       },
       orderBy: { publishedAt: "desc" },
       take: limit + 1,
-      include: { author: { select: authorSelect }, category: { select: { slug: true } } },
+      include: {
+        author: { select: authorSelect },
+        category: { select: { slug: true } },
+        relatedBlog: { select: { slug: true, title: true } },
+      },
     });
 
     const hasMore = rows.length > limit;
@@ -130,7 +138,11 @@ export async function getReelById(id: string): Promise<ReelItem | null> {
   return safeReelQuery(null, async () => {
     const row = await prisma.reel.findUnique({
       where: { id },
-      include: { author: { select: authorSelect }, category: { select: { slug: true } } },
+      include: {
+        author: { select: authorSelect },
+        category: { select: { slug: true } },
+        relatedBlog: { select: { slug: true, title: true } },
+      },
     });
     if (!row) return null;
     if (row.status !== "PUBLISHED") return null;

@@ -1,7 +1,43 @@
 import { NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { getCurrentUser, requireUser } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+
+export async function GET(
+  _req: Request,
+  ctx: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await ctx.params;
+
+  if (!isDatabaseConfigured()) {
+    return NextResponse.json({ subscribed: false, signedIn: false, demo: true });
+  }
+
+  const session = await getCurrentUser();
+  if (!session) {
+    return NextResponse.json({ subscribed: false, signedIn: false });
+  }
+
+  const userId = await requireUserId(session).catch(() => null);
+  if (!userId) {
+    return NextResponse.json({ subscribed: false, signedIn: true });
+  }
+
+  const category = await prisma.category.findUnique({ where: { slug } });
+  if (!category) {
+    return NextResponse.json({ error: "Category not found" }, { status: 404 });
+  }
+
+  const sub = await prisma.categorySubscription.findUnique({
+    where: { userId_categoryId: { userId, categoryId: category.id } },
+  });
+
+  return NextResponse.json({
+    subscribed: Boolean(sub),
+    signedIn: true,
+    category: category.name,
+  });
+}
 
 export async function POST(
   _req: Request,

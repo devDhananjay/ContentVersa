@@ -213,7 +213,7 @@ Production `.env` alag hai — kabhi `.env` Git par push mat karo.
 `.env` mein `CRON_SECRET` aur `NEXT_PUBLIC_FIREBASE_VAPID_KEY` set karo. Phir:
 
 ```bash
-chmod +x scripts/cron-notifications.sh
+chmod +x scripts/cron-notifications.sh scripts/cron-push-alerts.sh
 sudo yum install -y cronie   # pehli baar
 sudo systemctl enable --now crond
 
@@ -222,9 +222,13 @@ crontab -e
 # 0 10 * * *   .../scripts/cron-notifications.sh inactive
 # 0 18 * * *   .../scripts/cron-notifications.sh trending
 # 0 9 * * 5    .../scripts/cron-notifications.sh weekly
+# */15 * * * * .../scripts/cron-push-alerts.sh cricket   # match ~30 min alert
+# 30 9 * * 1-5 .../scripts/cron-push-alerts.sh stocks    # watchlist ±5% (weekdays UTC)
 ```
 
-Manual test: `./scripts/cron-notifications.sh trending`
+Push alerts manual test: `./scripts/cron-push-alerts.sh cricket`
+
+Notification cron manual test: `./scripts/cron-notifications.sh trending`
 
 ---
 

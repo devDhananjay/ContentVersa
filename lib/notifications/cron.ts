@@ -139,6 +139,7 @@ async function notifyTrending(
   const sent = await createUserNotificationsBulk(payloads);
 
   const subscribers = await prisma.newsletterSubscriber.findMany({
+    where: { weeklyDigest: true },
     select: { email: true, id: true },
   });
 
@@ -208,6 +209,7 @@ export async function sendWeeklyDigest() {
   const sent = await createUserNotificationsBulk(payloads);
 
   const subscribers = await prisma.newsletterSubscriber.findMany({
+    where: { weeklyDigest: true },
     select: { email: true, id: true },
   });
 

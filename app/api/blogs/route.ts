@@ -37,7 +37,18 @@ const CreateSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   status: z.enum(["DRAFT", "PENDING"]).optional().default("PENDING"),
-});
+  seriesSlug: z
+    .string()
+    .optional()
+    .transform((v) => {
+      const s = v?.trim().toLowerCase().replace(/\s+/g, "-");
+      return s || undefined;
+    }),
+  seriesPart: z.coerce.number().int().min(1).max(99).optional(),
+}).refine(
+  (d) => !d.seriesPart || Boolean(d.seriesSlug),
+  { message: "Series part requires a series slug", path: ["seriesPart"] }
+);
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -165,6 +176,8 @@ export async function POST(req: Request) {
         metaDescription: parsed.metaDescription,
         authorId,
         categoryId,
+        seriesSlug: parsed.seriesSlug ?? null,
+        seriesPart: parsed.seriesSlug ? (parsed.seriesPart ?? 1) : null,
         ...(parsed.status === "PENDING"
           ? {
               submission: {

@@ -21,6 +21,10 @@ export type ReelItem = {
   createdAt: string;
   author: ReelAuthor;
   categorySlug: string | null;
+  relatedBlog?: {
+    slug: string;
+    title: string;
+  } | null;
 };
 
 export type ReelDashboardRow = {

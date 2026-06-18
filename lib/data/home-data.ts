@@ -14,6 +14,7 @@ import {
 export type CategoryWithCount = CategoryDef & { blogCount: number };
 
 export type CommunityPost = {
+  slug: string;
   author: Author;
   content: string;
   likes: number;
@@ -66,6 +67,7 @@ function buildWeeklyTopics(blogs: Blog[]): WeeklyTopic[] {
 
 function buildCommunityPosts(blogs: Blog[]): CommunityPost[] {
   return blogs.slice(0, 4).map((b) => ({
+    slug: b.slug,
     author: b.author,
     content: b.excerpt,
     likes: b.likes,

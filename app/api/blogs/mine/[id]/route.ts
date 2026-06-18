@@ -35,7 +35,18 @@ const UpdateSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   status: z.enum(["DRAFT", "PENDING"]).optional(),
-});
+  seriesSlug: z
+    .string()
+    .optional()
+    .transform((v) => {
+      const s = v?.trim().toLowerCase().replace(/\s+/g, "-");
+      return s || undefined;
+    }),
+  seriesPart: z.coerce.number().int().min(1).max(99).optional().nullable(),
+}).refine(
+  (d) => d.seriesPart == null || Boolean(d.seriesSlug),
+  { message: "Series part requires a series slug", path: ["seriesPart"] }
+);
 
 async function connectTags(blogId: string, tagSlugs: string[]) {
   await prisma.blogTag.deleteMany({ where: { blogId } });
@@ -94,6 +105,8 @@ export async function GET(
         metaTitle: blog.metaTitle || "",
         metaDescription: blog.metaDescription || "",
         status: blog.status,
+        seriesSlug: blog.seriesSlug || "",
+        seriesPart: blog.seriesPart ?? null,
       },
     });
   } catch (err) {
@@ -160,6 +173,8 @@ export async function PATCH(
         isPremium: parsed.premium ?? existing.isPremium,
         metaTitle: parsed.metaTitle,
         metaDescription: parsed.metaDescription,
+        seriesSlug: parsed.seriesSlug ?? null,
+        seriesPart: parsed.seriesSlug ? (parsed.seriesPart ?? 1) : null,
         ...(categoryId !== undefined ? { categoryId } : {}),
         ...(status === "PENDING" && existing.status === "DRAFT"
           ? {

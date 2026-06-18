@@ -26,6 +26,8 @@ import {
   STREAK_MIN_PROGRESS,
   STREAK_MIN_SECONDS,
 } from "@/lib/engagement/streak";
+import { StreakShareCard } from "@/components/engagement/streak-share-card";
+import { ReadingChallengeCard } from "@/components/engagement/reading-challenge-card";
 
 const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
 
@@ -145,10 +147,8 @@ export default async function DashboardOverview() {
               {todayDone ? "Read more articles" : "Start reading"}
             </Button>
           </Link>
+          <StreakShareCard streakDays={streak} className="mt-4" />
           <div className="pt-4 border-t">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">
-              Latest milestone
-            </p>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center text-white">
                 <Flame className="h-5 w-5" />
@@ -172,6 +172,10 @@ export default async function DashboardOverview() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mt-8">
+        <ReadingChallengeCard />
       </div>
 
       <div className="mt-10">

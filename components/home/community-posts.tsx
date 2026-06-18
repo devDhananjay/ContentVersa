@@ -1,14 +1,144 @@
 "use client";
 
+import * as React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, MessageCircle, Repeat2 } from "lucide-react";
+import { Heart, MessageCircle, Repeat2, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getInitials } from "@/lib/utils";
+import { getAppUrl } from "@/lib/app-url";
 import type { CommunityPost } from "@/lib/data/home-data";
 
 interface Props {
   posts: CommunityPost[];
+}
+
+function PostCard({ p, index }: { p: CommunityPost; index: number }) {
+  const router = useRouter();
+  const [likes, setLikes] = React.useState(p.likes);
+  const [liked, setLiked] = React.useState(false);
+  const [busy, setBusy] = React.useState(false);
+  const blogUrl = `/blog/${p.slug}`;
+  const fullUrl = `${typeof window !== "undefined" ? window.location.origin : getAppUrl()}${blogUrl}`;
+
+  const onLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (busy) return;
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/blogs/${encodeURIComponent(p.slug)}/reactions`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "LIKE" }),
+      });
+      if (res.status === 401) {
+        router.push(`/auth/sign-in?next=${encodeURIComponent(blogUrl)}`);
+        return;
+      }
+      if (res.ok) {
+        const data = (await res.json()) as { userReaction?: string | null; totalReactions?: number };
+        const nowLiked = Boolean(data.userReaction);
+        setLiked(nowLiked);
+        if (typeof data.totalReactions === "number") setLikes(data.totalReactions);
+        else setLikes((n) => (nowLiked ? n + 1 : Math.max(0, n - 1)));
+      }
+    } catch {
+      router.push(blogUrl);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const text = `${p.author.name} on ContentVerse`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: text, url: fullUrl });
+      } else {
+        await navigator.clipboard.writeText(fullUrl);
+      }
+    } catch {
+      /* user cancelled */
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.05 }}
+    >
+      <Link
+        href={blogUrl}
+        className="block p-5 rounded-2xl border bg-card hover:border-neon-purple/40 hover:shadow-neon transition-all"
+      >
+        <div className="flex items-start gap-3">
+          <Avatar className="h-10 w-10">
+            {p.author.avatar ? (
+              <AvatarImage src={p.author.avatar} alt={p.author.name} />
+            ) : null}
+            <AvatarFallback>{getInitials(p.author.name)}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="font-semibold text-sm">{p.author.name}</p>
+              <p className="text-xs text-muted-foreground">
+                @{p.author.username} · {p.time}
+              </p>
+              {p.tag && (
+                <Badge variant="neon" className="text-[10px]">
+                  #{p.tag}
+                </Badge>
+              )}
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/90 line-clamp-4">
+              {p.content}
+            </p>
+            <div className="mt-4 flex items-center gap-6 text-xs text-muted-foreground">
+              <button
+                type="button"
+                onClick={onLike}
+                className={`flex items-center gap-1.5 transition-colors ${
+                  liked ? "text-neon-pink" : "hover:text-neon-pink"
+                }`}
+              >
+                {busy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Heart className={`h-4 w-4 ${liked ? "fill-neon-pink" : ""}`} />
+                )}
+                {likes}
+              </button>
+              <span
+                className="flex items-center gap-1.5 hover:text-neon-blue transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  router.push(`${blogUrl}#comments`);
+                }}
+              >
+                <MessageCircle className="h-4 w-4" /> {p.comments}
+              </span>
+              <button
+                type="button"
+                onClick={onShare}
+                className="flex items-center gap-1.5 hover:text-neon-green transition-colors"
+              >
+                <Repeat2 className="h-4 w-4" /> {p.reposts}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
 }
 
 export function CommunityPosts({ posts }: Props) {
@@ -28,44 +158,7 @@ export function CommunityPosts({ posts }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {posts.map((p, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.05 }}
-            className="p-5 rounded-2xl border bg-card hover:border-neon-purple/40 hover:shadow-neon transition-all"
-          >
-            <div className="flex items-start gap-3">
-              <Avatar className="h-10 w-10">
-                {p.author.avatar ? (
-                  <AvatarImage src={p.author.avatar} alt={p.author.name} />
-                ) : null}
-                <AvatarFallback>{getInitials(p.author.name)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-semibold text-sm">{p.author.name}</p>
-                  <p className="text-xs text-muted-foreground">@{p.author.username} · {p.time}</p>
-                  {p.tag && <Badge variant="neon" className="text-[10px]">#{p.tag}</Badge>}
-                </div>
-                <p className="mt-2 text-sm leading-relaxed text-foreground/90">
-                  {p.content}
-                </p>
-                <div className="mt-4 flex items-center gap-6 text-xs text-muted-foreground">
-                  <button className="flex items-center gap-1.5 hover:text-neon-pink transition-colors">
-                    <Heart className="h-4 w-4" /> {p.likes}
-                  </button>
-                  <button className="flex items-center gap-1.5 hover:text-neon-blue transition-colors">
-                    <MessageCircle className="h-4 w-4" /> {p.comments}
-                  </button>
-                  <button className="flex items-center gap-1.5 hover:text-neon-green transition-colors">
-                    <Repeat2 className="h-4 w-4" /> {p.reposts}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          <PostCard key={p.slug} p={p} index={i} />
         ))}
       </div>
     </section>

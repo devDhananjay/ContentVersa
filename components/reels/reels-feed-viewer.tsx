@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   BadgeCheck,
+  BookOpen,
   ChevronUp,
   Eye,
   Heart,
@@ -816,6 +817,17 @@ function ReelCard({
             <span className="text-xs text-white/50">more</span>
           )}
         </button>
+
+        {reel.relatedBlog ? (
+          <Link
+            href={`/blog/${reel.relatedBlog.slug}`}
+            className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-neon-cyan hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            Read: {reel.relatedBlog.title}
+          </Link>
+        ) : null}
 
         <div className="flex items-center gap-3 mt-2 text-[11px] text-white/70">
           <span>{formatNumber(reel.views ?? 0)} views</span>

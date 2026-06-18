@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { Wallet, IndianRupee, Gift, Megaphone, Crown, Coffee } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { WithdrawButton } from "@/components/dashboard/withdraw-button";
 import { Badge } from "@/components/ui/badge";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { getCurrentUser } from "@/lib/auth";
@@ -41,9 +41,7 @@ export default async function EarningsPage() {
             Your wallet and revenue — mapped to your account only.
           </p>
         </div>
-        <Button variant="gradient" className="gap-2">
-          <Wallet className="h-4 w-4" /> Withdraw
-        </Button>
+        <WithdrawButton balanceInr={s?.walletBalanceRaw ?? 0} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
