@@ -6,12 +6,13 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefi
 // we silence Prisma's per-query validation log so the terminal isn't spammed.
 // Routes that call into Prisma already guard with try/catch and fall back to
 // demo mode. Once DATABASE_URL is set, normal logging resumes.
-const hasDb = !!process.env.DATABASE_URL;
+// Log level only — do not use this to gate queries (env may load after first import).
+const hasDbAtBoot = !!process.env.DATABASE_URL;
 
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: hasDb
+    log: hasDbAtBoot
       ? process.env.NODE_ENV === "development"
         ? ["warn", "error"]
         : ["error"]
@@ -21,8 +22,8 @@ export const prisma =
 // One client per Node process — avoids pool exhaustion in dev / long-running servers.
 globalForPrisma.prisma = prisma;
 
-/** True when a database URL is configured. Use this to short-circuit DB code. */
-export const isDatabaseConfigured = () => hasDb;
+/** True when a database URL is configured. Checked at call time (not module load). */
+export const isDatabaseConfigured = () => Boolean(process.env.DATABASE_URL?.trim());
 
 /** Connection down, pool saturated, or schema missing. */
 export function isDbUnavailable(err: unknown): boolean {

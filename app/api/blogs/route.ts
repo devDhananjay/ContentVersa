@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { cache } from "@/lib/redis";
-import { BLOGS, searchBlogs } from "@/lib/data/blogs";
+import { searchBlogs } from "@/lib/data/blogs";
+import { getPublishedBlogsLiteHybrid } from "@/lib/data/blog-db";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
@@ -59,8 +60,8 @@ export async function GET(req: Request) {
 
   const key = `blogs:${q}:${category}:${sort}:${limit}`;
   const result = await cache.wrap(key, 60, async () => {
-    let list = [...BLOGS];
-    if (q) list = searchBlogs(q);
+    let list = await getPublishedBlogsLiteHybrid(200);
+    if (q) list = list.filter((b) => searchBlogs(q).some((m) => m.slug === b.slug) || `${b.title} ${b.excerpt}`.toLowerCase().includes(q.toLowerCase()));
     if (category) list = list.filter((b) => b.category === category);
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const todayStart = new Date();
