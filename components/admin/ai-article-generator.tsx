@@ -91,7 +91,15 @@ export function AiArticleGenerator() {
         blog?: { id: string; slug: string; title: string; readingTime: number };
       };
       if (!res.ok) {
-        toast.error(data.error || "Generation failed");
+        const code = (data as { code?: string }).code;
+        if (code === "GEMINI_QUOTA") {
+          toast.error(data.error || "Gemini quota exceeded", {
+            description: "Enable billing in Google AI Studio or try again tomorrow.",
+            duration: 8000,
+          });
+        } else {
+          toast.error(data.error || "Generation failed");
+        }
         return;
       }
       if (data.blog) {

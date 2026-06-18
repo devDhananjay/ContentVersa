@@ -134,7 +134,7 @@ export async function runDailyArticleGeneration(options?: {
       if (created >= maxTotal) break;
 
       const category = await ensureCategory(cat.slug);
-      const article = await generateSeoArticle({
+      const { article } = await generateSeoArticle({
         title: topic.title,
         category: cat.name,
         searchIntent: topic.searchIntent,

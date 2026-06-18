@@ -88,12 +88,13 @@ async function upsertTags(names: string[]) {
 }
 
 async function generateArticle(topic: SeedTopic): Promise<GeneratedArticle | null> {
-  return generateSeoArticle({
+  const { article } = await generateSeoArticle({
     title: topic.title,
     category: topic.category,
     searchIntent: topic.searchIntent,
     affiliateNote: topic.affiliateNote,
   });
+  return article;
 }
 
 async function publishArticle(

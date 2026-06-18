@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     }
 
     const cat = CATEGORIES.find((c) => c.slug === body.category)!;
-    const article = await generateSeoArticle({
+    const { article, failure, reason } = await generateSeoArticle({
       title: body.title,
       category: cat.name,
       searchIntent: body.searchIntent,
@@ -82,8 +82,33 @@ export async function POST(req: Request) {
     });
 
     if (!article?.content || article.content.length < 400) {
+      if (reason === "quota" || failure?.quotaExceeded) {
+        return NextResponse.json(
+          {
+            error:
+              "Gemini API daily quota exceeded (free tier is ~20 requests/day per model). Enable billing in Google AI Studio, set GEMINI_TEXT_MODEL to another model, or try again tomorrow.",
+            code: "GEMINI_QUOTA",
+          },
+          { status: 429 }
+        );
+      }
+      if (reason === "short") {
+        return NextResponse.json(
+          {
+            error:
+              "AI returned content that was too short. Try again or pick a simpler topic.",
+            code: "CONTENT_TOO_SHORT",
+          },
+          { status: 502 }
+        );
+      }
       return NextResponse.json(
-        { error: "AI generation failed or content too short. Try again." },
+        {
+          error:
+            failure?.message ||
+            "AI generation failed. Check server logs and GEMINI_API_KEY.",
+          code: "GENERATION_FAILED",
+        },
         { status: 502 }
       );
     }

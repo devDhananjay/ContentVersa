@@ -87,7 +87,7 @@ async function main() {
   for (const blog of targets) {
     console.log(`\n→ ${blog.slug} (${blog.readingTime} min)`);
 
-    const article = await generateSeoArticle({
+    const { article } = await generateSeoArticle({
       title: blog.title,
       category: blog.category?.name ?? "General",
       searchIntent: blog.metaKeywords || blog.excerpt || blog.title,
