@@ -339,7 +339,17 @@ export function pickArticleCoverImage(
     if (!takenUrls?.has(norm)) return url;
   }
 
-  return unsplash(GLOBAL_POOL[globalStart]!);
+  for (let salt = 0; salt < 32; salt++) {
+    const url = picsumCover(`${seed}|${salt}`);
+    const norm = normalizeCoverUrl(url);
+    if (!takenUrls?.has(norm)) return url;
+  }
+
+  return picsumCover(seed);
+}
+
+function picsumCover(seed: string): string {
+  return `https://picsum.photos/seed/${hashString(seed)}/1600/900`;
 }
 
 /** Assign a globally unique cover across many blogs (for DB backfill). */
