@@ -1,13 +1,16 @@
 /**
- * Backfill missing blog cover images from category banners.
+ * Re-assign cover images for blogs still using the generic category banner.
  *
  *   npm run db:fix-covers
+ *   npm run db:fix-duplicate-covers
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { PrismaClient } from "@prisma/client";
-import { CATEGORIES } from "../lib/data/categories";
-import { pickArticleCoverImage, unsplash } from "../lib/seo/cover-image";
+import {
+  isGenericCategoryCover,
+  pickArticleCoverImage,
+} from "../lib/seo/cover-image";
 
 function loadEnvFiles() {
   for (const file of [".env.local", ".env"]) {
@@ -35,38 +38,46 @@ loadEnvFiles();
 
 const prisma = new PrismaClient();
 
-function categoryBanner(slug: string | null | undefined): string {
-  const cat = CATEGORIES.find((c) => c.slug === slug);
-  return cat?.slug
-    ? pickArticleCoverImage({
-        categorySlug: cat.slug,
-        title: `fallback-${slug}`,
-        slug: `fallback-${slug}`,
-      })
-    : unsplash("photo-1517245386807-bb43f82c33c4");
-}
-
 async function main() {
   const rows = await prisma.blog.findMany({
     where: {
-      OR: [{ coverImage: null }, { coverImage: "" }],
       slug: { not: { startsWith: "discover-" } },
+      status: { in: ["PUBLISHED", "DRAFT"] },
     },
-    select: { id: true, slug: true, category: { select: { slug: true } } },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      coverImage: true,
+      category: { select: { slug: true } },
+      tags: { select: { tag: { select: { name: true } } } },
+    },
   });
 
   let updated = 0;
   for (const row of rows) {
-    const cover = categoryBanner(row.category?.slug);
+    const categorySlug = row.category?.slug;
+    if (!categorySlug) continue;
+    if (!isGenericCategoryCover(row.coverImage, categorySlug)) continue;
+
+    const coverImage = pickArticleCoverImage({
+      categorySlug,
+      title: row.title,
+      slug: row.slug,
+      tags: row.tags.map((t) => t.tag.name),
+    });
+
+    if (coverImage === row.coverImage) continue;
+
     await prisma.blog.update({
       where: { id: row.id },
-      data: { coverImage: cover },
+      data: { coverImage },
     });
     updated++;
     console.log(`✓ ${row.slug}`);
   }
 
-  console.log(`\nFixed ${updated} missing cover(s).`);
+  console.log(`\nUpdated ${updated} duplicate/generic cover(s).`);
 }
 
 main()

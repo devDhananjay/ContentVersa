@@ -2,6 +2,7 @@ import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
 import { CATEGORIES } from "@/lib/data/categories";
+import { pickArticleCoverImage } from "@/lib/seo/cover-image";
 import { istDayKey } from "@/lib/engagement/streak";
 import { generateSeoArticle } from "@/lib/seo/article-generator";
 import { readingTime, slugify } from "@/lib/utils";
@@ -151,7 +152,12 @@ export async function runDailyArticleGeneration(options?: {
       }
 
       const tagIds = await upsertTags(article.tags);
-      const coverImage = `${cat.banner}?w=1600&auto=format&fit=crop`;
+      const coverImage = pickArticleCoverImage({
+        categorySlug: cat.slug,
+        title: article.title,
+        tags: article.tags,
+        slug: topic.slug,
+      });
 
       if (exists) {
         await prisma.blogTag.deleteMany({ where: { blogId: exists.id } });

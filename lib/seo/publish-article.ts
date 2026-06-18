@@ -2,6 +2,7 @@ import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { CATEGORIES } from "@/lib/data/categories";
 import type { GeneratedArticle } from "@/lib/seo/article-generator";
+import { pickArticleCoverImage } from "@/lib/seo/cover-image";
 import { readingTime, slugify } from "@/lib/utils";
 
 async function ensureCategory(slug: string) {
@@ -68,9 +69,12 @@ export async function publishGeneratedArticle(input: {
     `article-${Date.now().toString(36)}`;
   const slug = await uniqueSlug(baseSlug);
 
-  const coverImage = category.banner
-    ? `${category.banner}${category.banner.includes("?") ? "&" : "?"}w=1600&auto=format&fit=crop`
-    : "";
+  const coverImage = pickArticleCoverImage({
+    categorySlug: input.categorySlug,
+    title: input.article.title,
+    tags: input.article.tags,
+    slug,
+  });
 
   const status = input.publish !== false ? BlogStatus.PUBLISHED : BlogStatus.DRAFT;
 
