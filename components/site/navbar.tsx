@@ -46,11 +46,11 @@ export function Navbar({ embedded = false }: { embedded?: boolean }) {
 
   return (
     <header className={cn(!embedded && "fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50")}>
-      <div className="container flex h-14 items-center min-w-0 gap-2">
-        <Logo className="shrink-0" />
+      <div className="container flex h-14 items-center gap-1.5 lg:gap-2 flex-nowrap min-w-0">
+        <Logo size="sm" className="shrink-0" />
 
         <nav
-          className="hidden xl:flex items-center gap-0.5 shrink-0 ml-1"
+          className="hidden lg:flex items-center gap-0 shrink-0"
           aria-label="Main"
         >
           {NAV_LINKS.map((link) => {
@@ -60,7 +60,7 @@ export function Navbar({ embedded = false }: { embedded?: boolean }) {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative px-1.5 xl:px-2 py-1.5 rounded-lg text-[13px] xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
+                  "relative px-2 py-1.5 rounded-lg text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
                   active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 )}
               >
