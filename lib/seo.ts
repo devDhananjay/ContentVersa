@@ -20,6 +20,18 @@ export const SITE = {
   },
   twitter: "@contentverse",
   ogImage: "/og-default.png",
+  logo: "/logo.png",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
+  },
 };
 
 export function buildMetadata(input: {
@@ -44,6 +56,7 @@ export function buildMetadata(input: {
     authors: input.authors?.map((name) => ({ name })),
     alternates: { canonical: url },
     robots: input.noIndex ? { index: false, follow: false } : { index: true, follow: true },
+    icons: SITE.icons,
     openGraph: {
       title,
       description: input.description || SITE.description,
@@ -51,7 +64,7 @@ export function buildMetadata(input: {
       siteName: SITE.name,
       type: input.type || "website",
       publishedTime: input.publishedTime,
-      images: [{ url: image, width: 1200, height: 630, alt: title }],
+      images: [{ url: image, width: 1200, height: 1200, alt: SITE.name }],
     },
     twitter: {
       card: "summary_large_image",
@@ -84,7 +97,7 @@ export function articleJsonLd(args: {
     publisher: {
       "@type": "Organization",
       name: SITE.name,
-      logo: { "@type": "ImageObject", url: `${SITE.url}/logo.png` },
+      logo: { "@type": "ImageObject", url: `${SITE.url}${SITE.logo}` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": args.url },
   };

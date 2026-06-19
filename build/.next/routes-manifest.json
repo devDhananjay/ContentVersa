@@ -518,6 +518,12 @@
       "namedRegex": "^/admin/users(?:/)?$"
     },
     {
+      "page": "/apple-icon.png",
+      "regex": "^/apple\\-icon\\.png(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/apple\\-icon\\.png(?:/)?$"
+    },
+    {
       "page": "/auth/sign-in",
       "regex": "^/auth/sign\\-in(?:/)?$",
       "routeKeys": {},
@@ -638,6 +644,12 @@
       "namedRegex": "^/dashboard/settings(?:/)?$"
     },
     {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
       "page": "/finance",
       "regex": "^/finance(?:/)?$",
       "routeKeys": {},
@@ -648,6 +660,12 @@
       "regex": "^/firebase\\-messaging\\-sw\\.js(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/firebase\\-messaging\\-sw\\.js(?:/)?$"
+    },
+    {
+      "page": "/icon.png",
+      "regex": "^/icon\\.png(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icon\\.png(?:/)?$"
     },
     {
       "page": "/leaderboard",
