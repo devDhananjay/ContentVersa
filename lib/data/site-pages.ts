@@ -65,7 +65,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Questions? Write to writewith@contentveres.in — we read every message.",
+        callout: "Questions? Write to writewith@contentverses.in — we read every message.",
       },
     ],
   },
@@ -106,7 +106,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Don't see your role? Email writewith@contentveres.in with your portfolio or GitHub.",
+        callout: "Don't see your role? Email writewith@contentverses.in with your portfolio or GitHub.",
       },
     ],
   },
@@ -126,7 +126,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
       {
         heading: "Press contact",
         bullets: [
-          "Email: writewith@contentveres.in",
+          "Email: writewith@contentverses.in",
           "Based in India",
           "Response within 2 business days",
         ],
@@ -182,7 +182,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Interested in early access? Contact writewith@contentveres.in from your creator dashboard email.",
+        callout: "Interested in early access? Contact writewith@contentverses.in from your creator dashboard email.",
       },
     ],
   },
@@ -215,7 +215,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         cards: [
           { title: "1. Create account", description: "Sign up at contentverse.co.in and complete your profile.", meta: "Free" },
           { title: "2. Publish 2 posts", description: "Submit original articles for review.", meta: "Quality bar" },
-          { title: "3. Apply for verification", description: "Email writewith@contentveres.in with your username.", meta: "Review ~7 days" },
+          { title: "3. Apply for verification", description: "Email writewith@contentverses.in with your username.", meta: "Review ~7 days" },
         ],
       },
     ],
@@ -256,7 +256,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Questions: writewith@contentveres.in",
+        callout: "Questions: writewith@contentverses.in",
       },
     ],
   },
@@ -286,7 +286,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         heading: "Your choices",
         bullets: [
           "Update profile and notification settings in Dashboard",
-          "Request account deletion via writewith@contentveres.in",
+          "Request account deletion via writewith@contentverses.in",
           "Disable push notifications in browser or device settings",
         ],
       },
@@ -359,7 +359,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Report concerns: writewith@contentveres.in",
+        callout: "Report concerns: writewith@contentverses.in",
       },
     ],
   },

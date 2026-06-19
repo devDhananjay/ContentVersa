@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
-import { Mail, MessageSquare, MapPin, Clock } from "lucide-react";
+import { Mail, MessageSquare, MapPin, Clock, Phone } from "lucide-react";
 import { ContactForm } from "@/components/site/contact-form";
 import { buildMetadata } from "@/lib/seo";
+import {
+  CONTACT_EMAIL,
+  CONTACT_PHONE,
+  CONTACT_PHONE_DISPLAY,
+} from "@/lib/site-contact";
 
 export const metadata: Metadata = buildMetadata({
   title: "Contact us",
@@ -9,8 +14,6 @@ export const metadata: Metadata = buildMetadata({
     "Get in touch with the ContentVerse team — partnerships, support, and creator enquiries.",
   path: "/contact",
 });
-
-const CONTACT_EMAIL = "writewith@contentveres.in";
 
 export default function ContactPage() {
   return (
@@ -33,7 +36,7 @@ export default function ContactPage() {
 
         <aside className="space-y-6">
           <div className="rounded-2xl border bg-card p-6 space-y-4">
-            <h2 className="font-display text-lg font-bold">Direct email</h2>
+            <h2 className="font-display text-lg font-bold">Get in touch</h2>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="flex items-center gap-3 text-sm hover:text-neon-purple transition-colors"
@@ -41,8 +44,15 @@ export default function ContactPage() {
               <Mail className="h-5 w-5 text-neon-cyan shrink-0" />
               <span className="break-all">{CONTACT_EMAIL}</span>
             </a>
+            <a
+              href={`tel:${CONTACT_PHONE}`}
+              className="flex items-center gap-3 text-sm hover:text-neon-purple transition-colors"
+            >
+              <Phone className="h-5 w-5 text-neon-purple shrink-0" />
+              <span>{CONTACT_PHONE_DISPLAY}</span>
+            </a>
             <p className="text-sm text-muted-foreground">
-              For publishing enquiries, creator support, bugs, or partnerships — write to us
+              For publishing enquiries, creator support, bugs, or partnerships — write or call us
               anytime.
             </p>
           </div>

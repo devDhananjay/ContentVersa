@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 import type Transporter from "nodemailer/lib/mailer";
-
-let transporter: Transporter | null = null;
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
 export function isEmailConfigured(): boolean {
   return Boolean(
@@ -11,21 +10,32 @@ export function isEmailConfigured(): boolean {
   );
 }
 
-function getTransporter() {
-  if (!isEmailConfigured()) return null;
-  if (!transporter) {
-    const port = Number(process.env.SMTP_PORT || "587");
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST!.trim(),
-      port,
-      secure: port === 465,
-      auth: {
-        user: process.env.SMTP_USER!.trim(),
-        pass: process.env.SMTP_PASSWORD!.trim(),
-      },
-    });
-  }
-  return transporter;
+function smtpPorts(): number[] {
+  const primary = Number(process.env.SMTP_PORT || "465");
+  const ports = [primary, primary === 465 ? 587 : 465];
+  return [...new Set(ports.filter((p) => p > 0))];
+}
+
+function createTransport(port: number): Transporter {
+  const host = process.env.SMTP_HOST!.trim();
+  const options: SMTPTransport.Options = {
+    host,
+    port,
+    secure: port === 465,
+    requireTLS: port === 587,
+    auth: {
+      user: process.env.SMTP_USER!.trim(),
+      pass: process.env.SMTP_PASSWORD!.trim(),
+    },
+    connectionTimeout: 20_000,
+    greetingTimeout: 20_000,
+    socketTimeout: 30_000,
+    tls: {
+      minVersion: "TLSv1.2",
+      servername: host,
+    },
+  };
+  return nodemailer.createTransport(options);
 }
 
 export type SendEmailInput = {
@@ -33,32 +43,40 @@ export type SendEmailInput = {
   subject: string;
   html: string;
   text?: string;
+  replyTo?: string;
 };
 
 export async function sendEmail(input: SendEmailInput): Promise<boolean> {
-  const transport = getTransporter();
-  if (!transport) {
+  if (!isEmailConfigured()) {
     if (process.env.NODE_ENV === "development") {
       console.warn("[email] SMTP not configured — skipped:", input.subject, "→", input.to);
     }
     return false;
   }
 
-  const from = process.env.EMAIL_FROM?.trim() || "writewith@contentverses.in";
+  const from = process.env.EMAIL_FROM?.trim() || process.env.SMTP_USER!.trim();
+  const mail = {
+    from: `ContentVerse <${from}>`,
+    to: input.to,
+    subject: input.subject,
+    html: input.html,
+    text: input.text || stripHtml(input.html),
+    replyTo: input.replyTo,
+  };
 
-  try {
-    await transport.sendMail({
-      from: `ContentVerse <${from}>`,
-      to: input.to,
-      subject: input.subject,
-      html: input.html,
-      text: input.text || stripHtml(input.html),
-    });
-    return true;
-  } catch (err) {
-    console.error("[email] send failed", input.to, err);
-    return false;
+  for (const port of smtpPorts()) {
+    const transport = createTransport(port);
+    try {
+      await transport.sendMail(mail);
+      return true;
+    } catch (err) {
+      console.error(`[email] send failed on port ${port}`, input.to, err);
+    } finally {
+      transport.close();
+    }
   }
+
+  return false;
 }
 
 /** Send to many recipients (deduped). Returns count sent. */

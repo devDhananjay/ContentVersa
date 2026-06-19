@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { SitePageData } from "@/lib/data/site-pages";
+import { CONTACT_EMAIL } from "@/lib/site-contact";
 
 export function SitePageRenderer({ page }: { page: SitePageData }) {
   return (
@@ -56,16 +57,16 @@ export function SitePageRenderer({ page }: { page: SitePageData }) {
             )}
             {section.callout && (
               <div className="rounded-2xl border border-neon-purple/30 bg-neon-purple/5 px-5 py-4 text-sm">
-                {section.callout.includes("writewith@") ? (
+                {section.callout.includes(CONTACT_EMAIL) ? (
                   <p>
-                    {section.callout.split("writewith@contentveres.in")[0]}
+                    {section.callout.split(CONTACT_EMAIL)[0]}
                     <Link
-                      href="mailto:writewith@contentveres.in"
+                      href={`mailto:${CONTACT_EMAIL}`}
                       className="font-medium text-foreground hover:underline"
                     >
-                      writewith@contentveres.in
+                      {CONTACT_EMAIL}
                     </Link>
-                    {section.callout.split("writewith@contentveres.in")[1]}
+                    {section.callout.split(CONTACT_EMAIL)[1]}
                   </p>
                 ) : (
                   <p>{section.callout}</p>

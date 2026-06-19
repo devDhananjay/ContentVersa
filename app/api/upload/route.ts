@@ -11,6 +11,9 @@ const ALLOWED_TYPES = new Set([
   "image/webp",
   "image/gif",
   "image/avif",
+  "image/svg+xml",
+  "image/x-icon",
+  "image/vnd.microsoft.icon",
 ]);
 const EXT_BY_TYPE: Record<string, string> = {
   "image/png": "png",
@@ -19,6 +22,9 @@ const EXT_BY_TYPE: Record<string, string> = {
   "image/webp": "webp",
   "image/gif": "gif",
   "image/avif": "avif",
+  "image/svg+xml": "svg",
+  "image/x-icon": "ico",
+  "image/vnd.microsoft.icon": "ico",
 };
 
 function safeSlug(name: string) {

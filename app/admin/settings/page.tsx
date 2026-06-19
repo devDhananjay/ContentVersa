@@ -1,6 +1,7 @@
 "use client";
 
 import { Save } from "lucide-react";
+import { BrandingAssetsSetup } from "@/components/admin/branding-assets";
 import { FirebasePushSetup } from "@/components/admin/firebase-push-setup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ export default function CMSSettingsPage() {
       </p>
 
       <div className="mt-8 space-y-6">
+        <BrandingAssetsSetup />
         <FirebasePushSetup />
 
         <section className="rounded-2xl border bg-card p-6">

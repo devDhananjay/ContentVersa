@@ -662,12 +662,6 @@
       "namedRegex": "^/firebase\\-messaging\\-sw\\.js(?:/)?$"
     },
     {
-      "page": "/icon.svg",
-      "regex": "^/icon\\.svg(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/icon\\.svg(?:/)?$"
-    },
-    {
       "page": "/leaderboard",
       "regex": "^/leaderboard(?:/)?$",
       "routeKeys": {},

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "./logo";
 import { FooterVisitorCount } from "./footer-visitor-count";
 import { Github, Twitter, Instagram, Youtube } from "lucide-react";
+import { getBrandingAssets } from "@/lib/data/site-branding";
 
 const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[] = [
   {
@@ -42,14 +43,16 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
   },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const branding = await getBrandingAssets();
+
   return (
     <footer className="relative mt-32 border-t border-border/50 bg-background">
       <div className="absolute inset-x-0 top-0 -translate-y-1/2 mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-neon-purple/40 to-transparent" />
       <div className="container py-16">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-10">
           <div className="col-span-2">
-            <Logo size="lg" />
+            <Logo size="lg" imageUrl={branding.logo.current} />
             <p className="mt-4 text-sm text-muted-foreground max-w-sm">
               A next-generation creator platform built for the 2026 internet. Read deeply, create boldly, grow with a community of bold writers.
             </p>

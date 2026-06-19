@@ -8,13 +8,33 @@ import { MobileNav } from "@/components/site/mobile-nav";
 import { AppEffects } from "@/components/app-effects";
 import { Toaster } from "sonner";
 import { buildMetadata } from "@/lib/seo";
+import { getBrandingAssets } from "@/lib/data/site-branding";
+import { BrandingHead } from "@/components/site/branding-head";
 import { AdSenseSiteScript } from "@/components/ads/adsense-site-script";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
-export const metadata: Metadata = buildMetadata({});
+export async function generateMetadata(): Promise<Metadata> {
+  const branding = await getBrandingAssets();
+  const base = buildMetadata({});
+  const customFavicon = branding.favicon.current;
+
+  if (!customFavicon) return base;
+
+  return {
+    ...base,
+    icons: {
+      icon: [
+        { url: customFavicon },
+        { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      ],
+      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+      shortcut: customFavicon,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [
@@ -32,6 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <BrandingHead />
         <AdSenseSiteScript />
       </head>
       <body
