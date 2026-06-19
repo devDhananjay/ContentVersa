@@ -136,6 +136,14 @@
       "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/recommendations(?:/)?$"
     },
     {
+      "page": "/api/blogs/[slug]/repost",
+      "regex": "^/api/blogs/([^/]+?)/repost(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/repost(?:/)?$"
+    },
+    {
       "page": "/api/blogs/[slug]/summary",
       "regex": "^/api/blogs/([^/]+?)/summary(?:/)?$",
       "routeKeys": {

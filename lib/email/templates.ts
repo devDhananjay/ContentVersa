@@ -44,14 +44,25 @@ export function newsletterWelcomeEmail(unsubscribeUrl: string) {
 }
 
 export function weeklyDigestEmail(opts: {
-  articles: { title: string; slug: string; excerpt?: string | null }[];
+  articles: {
+    title: string;
+    slug: string;
+    excerpt?: string | null;
+    reason?: "followed" | "unread" | "trending";
+  }[];
   unsubscribeUrl: string;
 }) {
   const site = getAppUrl();
+  const reasonLabel = (reason?: string) => {
+    if (reason === "followed") return "From a category you follow";
+    if (reason === "unread") return "Unread pick for you";
+    return "Trending this week";
+  };
   const list = opts.articles
     .map(
       (a) =>
         `<li style="margin-bottom:16px;">
+          <span style="display:block;font-size:11px;color:#a855f7;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${reasonLabel(a.reason)}</span>
           <a href="${site}/blog/${a.slug}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${escapeHtml(a.title)}</a>
           ${a.excerpt ? `<p style="margin:6px 0 0;color:#a1a1aa;font-size:14px;line-height:1.5;">${escapeHtml(a.excerpt.slice(0, 120))}${a.excerpt.length > 120 ? "…" : ""}</p>` : ""}
         </li>`
@@ -60,7 +71,7 @@ export function weeklyDigestEmail(opts: {
 
   const html = layout(
     `<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">Your weekly digest</h1>
-    <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Top reads this week on ContentVerse</p>
+    <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Trending + unread from categories you follow</p>
     <ul style="margin:0;padding:0;list-style:none;">${list}</ul>
     ${btn(site + "/blogs", "See all articles")}`,
     `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`

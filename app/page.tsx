@@ -10,6 +10,7 @@ import { EditorPick } from "@/components/home/editor-pick";
 import { CommunityPosts } from "@/components/home/community-posts";
 import { WeeklyTrending } from "@/components/home/weekly-trending";
 import { QuickPollSection } from "@/components/home/quick-poll";
+import { DailyQuizSection } from "@/components/home/daily-quiz";
 import { NewsIn60Section } from "@/components/home/news-in-60";
 import { Newsletter } from "@/components/home/newsletter";
 import { Testimonials } from "@/components/home/testimonials";
@@ -44,6 +45,7 @@ export default async function HomePage() {
       <EditorPick blogs={data.editorPicks} />
       <CommunityPosts posts={data.communityPosts} />
       <QuickPollSection />
+      <DailyQuizSection />
       <WeeklyTrending topics={data.weeklyTopics} />
       <Testimonials />
       <Newsletter />

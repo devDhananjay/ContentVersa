@@ -10,16 +10,22 @@ import {
   getPlatformStatsHybrid,
   getPublishedBlogsLiteHybrid,
 } from "@/lib/data/blog-db";
+import { getRepostCounts, getUserRepostedBlogIds } from "@/lib/data/blog-reposts";
+import { getCurrentUser } from "@/lib/auth";
+import { resolveUserId } from "@/lib/auth/resolve-user-id";
+import { isDatabaseConfigured } from "@/lib/prisma";
 
 export type CategoryWithCount = CategoryDef & { blogCount: number };
 
 export type CommunityPost = {
   slug: string;
+  blogId: string;
   author: Author;
   content: string;
   likes: number;
   comments: number;
   reposts: number;
+  userReposted: boolean;
   time: string;
   tag?: string;
 };
@@ -65,14 +71,34 @@ function buildWeeklyTopics(blogs: Blog[]): WeeklyTopic[] {
     }));
 }
 
-function buildCommunityPosts(blogs: Blog[]): CommunityPost[] {
-  return blogs.slice(0, 4).map((b) => ({
+async function buildCommunityPosts(blogs: Blog[]): Promise<CommunityPost[]> {
+  const picked = blogs.slice(0, 4);
+  const blogIds = picked.map((b) => b.id);
+
+  const session = await getCurrentUser();
+  let userId: string | null = null;
+  if (session && isDatabaseConfigured()) {
+    try {
+      userId = await resolveUserId(session);
+    } catch {
+      userId = null;
+    }
+  }
+
+  const [repostCounts, userReposted] = await Promise.all([
+    getRepostCounts(blogIds),
+    userId ? getUserRepostedBlogIds(userId, blogIds) : Promise.resolve(new Set<string>()),
+  ]);
+
+  return picked.map((b) => ({
     slug: b.slug,
+    blogId: b.id,
     author: b.author,
     content: b.excerpt,
     likes: b.likes,
     comments: b.comments,
-    reposts: Math.max(1, Math.floor(b.likes / 15)),
+    reposts: repostCounts.get(b.id) ?? 0,
+    userReposted: userReposted.has(b.id),
     time: new Date(b.publishedAt).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -121,7 +147,7 @@ export async function getHomePageData(): Promise<HomePageData> {
   ].slice(0, 4);
 
   const weeklyTopics = buildWeeklyTopics(allPublished);
-  const communityPosts = buildCommunityPosts(
+  const communityPosts = await buildCommunityPosts(
     [...allPublished].sort((a, b) => b.likes - a.likes)
   );
 
@@ -142,7 +168,7 @@ export async function getHomePageData(): Promise<HomePageData> {
     communityPosts:
       communityPosts.length > 0
         ? communityPosts
-        : buildCommunityPosts((await import("@/lib/data/blogs")).BLOGS),
+        : await buildCommunityPosts((await import("@/lib/data/blogs")).BLOGS),
     stats,
   };
 }

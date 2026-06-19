@@ -1,5 +1,6 @@
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { generatePollFromArticle, buildHeuristicPoll } from "@/lib/ai/assist";
+import { getPollDefBySlug } from "@/lib/polls/catalog";
 
 export type PollDto = {
   id: string;
@@ -12,30 +13,34 @@ export type PollDto = {
 
 const DEFAULT_POLL = {
   slug: "ai-replace-jobs",
-  question: "Do you think AI will replace jobs?",
-  options: ["Yes", "No", "Maybe"],
+  question: "Do you think AI will replace most creative jobs by 2030?",
+  options: ["Yes", "No", "Maybe", "Only parts of the work"],
 };
 
 function pollSlugForBlog(blogSlug: string) {
   return `blog-${blogSlug}`;
 }
 
-export async function ensureFeaturedPoll() {
+/** Create a homepage daily poll from catalog if missing. */
+export async function ensureDailyPoll(slug: string) {
   if (!isDatabaseConfigured()) return null;
 
+  const def = getPollDefBySlug(slug);
+  if (!def) return null;
+
   let poll = await prisma.poll.findUnique({
-    where: { slug: DEFAULT_POLL.slug },
+    where: { slug },
     include: { options: { orderBy: { sortOrder: "asc" } } },
   });
 
   if (!poll) {
     poll = await prisma.poll.create({
       data: {
-        slug: DEFAULT_POLL.slug,
-        question: DEFAULT_POLL.question,
+        slug: def.slug,
+        question: def.question,
         isActive: true,
         options: {
-          create: DEFAULT_POLL.options.map((label, i) => ({
+          create: def.options.map((label, i) => ({
             label,
             sortOrder: i,
           })),
@@ -46,6 +51,10 @@ export async function ensureFeaturedPoll() {
   }
 
   return poll;
+}
+
+export async function ensureFeaturedPoll() {
+  return ensureDailyPoll(DEFAULT_POLL.slug);
 }
 
 /** Create or fetch a poll tied to a specific blog article. */
@@ -188,6 +197,21 @@ export async function getPollBySlug(
       });
       return mapPollDto(mock, voterKey);
     }
+    const catalogDef = getPollDefBySlug(slug);
+    if (catalogDef) {
+      return mapPollDto(
+        {
+          id: `mock-${slug}`,
+          slug: catalogDef.slug,
+          question: catalogDef.question,
+          options: catalogDef.options.map((label, i) => ({
+            id: `mock-${slug}-${i}`,
+            label,
+          })),
+        },
+        voterKey
+      );
+    }
     if (slug === DEFAULT_POLL.slug) {
       return mapPollDto(
         {
@@ -208,10 +232,12 @@ export async function getPollBySlug(
   const poll =
     slug === DEFAULT_POLL.slug
       ? await ensureFeaturedPoll()
-      : await prisma.poll.findUnique({
-          where: { slug },
-          include: { options: { orderBy: { sortOrder: "asc" } } },
-        });
+      : getPollDefBySlug(slug)
+        ? await ensureDailyPoll(slug)
+        : await prisma.poll.findUnique({
+            where: { slug },
+            include: { options: { orderBy: { sortOrder: "asc" } } },
+          });
 
   if (!poll) return null;
   return mapPollDto(poll, voterKey);

@@ -12,12 +12,16 @@ import {
   REEL_MAX_CAPTION_CHARS,
   REEL_MIN_CAPTION_CHARS,
 } from "@/lib/reels/constants";
+import { RelatedBlogPicker } from "@/components/reels/related-blog-picker";
 import { cn } from "@/lib/utils";
 import type { ReelDashboardRow } from "@/lib/reels/types";
 
 export function ReelEditForm({ reel }: { reel: ReelDashboardRow }) {
   const router = useRouter();
   const [caption, setCaption] = React.useState(reel.caption);
+  const [relatedBlogId, setRelatedBlogId] = React.useState<string | null>(
+    reel.relatedBlogId
+  );
   const [submitting, setSubmitting] = React.useState(false);
 
   const captionLen = caption.trim().length;
@@ -37,7 +41,10 @@ export function ReelEditForm({ reel }: { reel: ReelDashboardRow }) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ caption: caption.trim() }),
+        body: JSON.stringify({
+          caption: caption.trim(),
+          relatedBlogId,
+        }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string; reel?: { status: string } };
       if (!res.ok) throw new Error(data.error || "Failed to save");
@@ -108,6 +115,12 @@ export function ReelEditForm({ reel }: { reel: ReelDashboardRow }) {
           className="resize-none"
         />
       </div>
+
+      <RelatedBlogPicker
+        value={relatedBlogId}
+        initialBlog={reel.relatedBlog ?? null}
+        onChange={(id) => setRelatedBlogId(id)}
+      />
 
       <Button type="submit" variant="gradient" className="w-full gap-2" disabled={submitting || !captionValid}>
         {submitting ? (

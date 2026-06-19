@@ -38,4 +38,9 @@ export type ReelDashboardRow = {
   status: string;
   publishedAt: string | null;
   createdAt: string;
+  relatedBlogId: string | null;
+  relatedBlog?: {
+    slug: string;
+    title: string;
+  } | null;
 };

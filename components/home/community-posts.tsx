@@ -8,7 +8,6 @@ import { Heart, MessageCircle, Repeat2, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getInitials } from "@/lib/utils";
-import { getAppUrl } from "@/lib/app-url";
 import type { CommunityPost } from "@/lib/data/home-data";
 
 interface Props {
@@ -19,9 +18,11 @@ function PostCard({ p, index }: { p: CommunityPost; index: number }) {
   const router = useRouter();
   const [likes, setLikes] = React.useState(p.likes);
   const [liked, setLiked] = React.useState(false);
+  const [reposts, setReposts] = React.useState(p.reposts);
+  const [reposted, setReposted] = React.useState(p.userReposted);
   const [busy, setBusy] = React.useState(false);
+  const [repostBusy, setRepostBusy] = React.useState(false);
   const blogUrl = `/blog/${p.slug}`;
-  const fullUrl = `${typeof window !== "undefined" ? window.location.origin : getAppUrl()}${blogUrl}`;
 
   const onLike = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -53,18 +54,29 @@ function PostCard({ p, index }: { p: CommunityPost; index: number }) {
     }
   };
 
-  const onShare = async (e: React.MouseEvent) => {
+  const onRepost = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const text = `${p.author.name} on ContentVerse`;
+    if (repostBusy) return;
+    setRepostBusy(true);
     try {
-      if (navigator.share) {
-        await navigator.share({ title: text, url: fullUrl });
-      } else {
-        await navigator.clipboard.writeText(fullUrl);
+      const res = await fetch(`/api/blogs/${encodeURIComponent(p.slug)}/repost`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.status === 401) {
+        router.push(`/auth/sign-in?next=${encodeURIComponent(blogUrl)}`);
+        return;
+      }
+      if (res.ok) {
+        const data = (await res.json()) as { reposted?: boolean; repostCount?: number };
+        if (typeof data.reposted === "boolean") setReposted(data.reposted);
+        if (typeof data.repostCount === "number") setReposts(data.repostCount);
       }
     } catch {
-      /* user cancelled */
+      router.push(blogUrl);
+    } finally {
+      setRepostBusy(false);
     }
   };
 
@@ -128,10 +140,18 @@ function PostCard({ p, index }: { p: CommunityPost; index: number }) {
               </span>
               <button
                 type="button"
-                onClick={onShare}
-                className="flex items-center gap-1.5 hover:text-neon-green transition-colors"
+                onClick={onRepost}
+                className={`flex items-center gap-1.5 transition-colors ${
+                  reposted ? "text-neon-green" : "hover:text-neon-green"
+                }`}
+                title="Repost"
               >
-                <Repeat2 className="h-4 w-4" /> {p.reposts}
+                {repostBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Repeat2 className={`h-4 w-4 ${reposted ? "text-neon-green" : ""}`} />
+                )}
+                {reposts}
               </button>
             </div>
           </div>

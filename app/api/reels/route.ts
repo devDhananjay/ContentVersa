@@ -24,6 +24,7 @@ const CreateSchema = z.object({
   durationSec: z.number().int().positive().optional(),
   cloudinaryId: z.string().optional(),
   category: z.string().optional(),
+  relatedBlogId: z.string().optional().nullable(),
   status: z.enum(["DRAFT", "PENDING"]).optional().default("PENDING"),
 });
 
@@ -74,6 +75,15 @@ export async function POST(req: Request) {
       }
     }
 
+    let relatedBlogId: string | null = parsed.relatedBlogId ?? null;
+    if (relatedBlogId) {
+      const linked = await prisma.blog.findFirst({
+        where: { id: relatedBlogId, status: "PUBLISHED" },
+        select: { id: true },
+      });
+      if (!linked) relatedBlogId = null;
+    }
+
     const reel = await prisma.reel.create({
       data: {
         authorId,
@@ -84,6 +94,7 @@ export async function POST(req: Request) {
         durationSec: parsed.durationSec,
         cloudinaryId: parsed.cloudinaryId,
         categoryId,
+        relatedBlogId,
         status,
         publishedAt: status === "PUBLISHED" ? new Date() : null,
       },

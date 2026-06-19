@@ -8,6 +8,7 @@ import { MobileNav } from "@/components/site/mobile-nav";
 import { AppEffects } from "@/components/app-effects";
 import { Toaster } from "sonner";
 import { buildMetadata } from "@/lib/seo";
+import { AdSenseSiteScript } from "@/components/ads/adsense-site-script";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display", display: "swap" });
@@ -30,6 +31,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <AdSenseSiteScript />
+      </head>
       <body
         className={`${inter.variable} ${grotesk.variable} ${mono.variable} font-sans antialiased min-h-screen flex flex-col`}
       >

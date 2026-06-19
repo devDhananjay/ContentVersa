@@ -13,6 +13,7 @@ import {
   REEL_MIN_CAPTION_CHARS,
 } from "@/lib/reels/constants";
 import { uploadReelMedia } from "@/lib/reels/upload-client";
+import { RelatedBlogPicker } from "@/components/reels/related-blog-picker";
 import { cn } from "@/lib/utils";
 
 export function ReelCreateForm() {
@@ -22,6 +23,7 @@ export function ReelCreateForm() {
   const [preview, setPreview] = React.useState<string | null>(null);
   const [mediaType, setMediaType] = React.useState<"IMAGE" | "VIDEO" | null>(null);
   const [file, setFile] = React.useState<File | null>(null);
+  const [relatedBlogId, setRelatedBlogId] = React.useState<string | null>(null);
   const [uploading, setUploading] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -75,6 +77,7 @@ export function ReelCreateForm() {
           mediaType: uploaded.mediaType,
           durationSec: uploaded.durationSec,
           cloudinaryId: uploaded.cloudinaryId,
+          relatedBlogId: relatedBlogId || undefined,
           status: "PENDING",
         }),
       });
@@ -186,6 +189,11 @@ export function ReelCreateForm() {
           className="resize-none"
         />
       </div>
+
+      <RelatedBlogPicker
+        value={relatedBlogId}
+        onChange={(id) => setRelatedBlogId(id)}
+      />
 
       <Button
         type="submit"

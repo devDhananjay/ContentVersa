@@ -144,6 +144,8 @@ model User {
   reelViews        ReelView[]
   reelComments     ReelComment[]
   reelLikes        ReelLike[]
+  blogReposts      BlogRepost[]
+  quizAttempts     QuizAttempt[]
 
   @@index([role])
   @@index([createdAt])
@@ -314,6 +316,7 @@ model Blog {
   polls       Poll[]
   feedback    ArticleFeedback[]
   relatedReels Reel[]
+  reposts     BlogRepost[]
 
   @@index([authorId])
   @@index([status])
@@ -692,6 +695,36 @@ model PollVote {
 
   @@unique([pollId, voterKey])
   @@index([optionId])
+}
+
+model BlogRepost {
+  id        String   @id @default(cuid())
+  blogId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([blogId, userId])
+  @@index([blogId])
+  @@index([userId])
+}
+
+model QuizAttempt {
+  id               String   @id @default(cuid())
+  quizKey          String
+  userId           String?
+  visitorKey       String?
+  selectedOptionId String
+  correct          Boolean
+  createdAt        DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([quizKey, userId])
+  @@unique([quizKey, visitorKey])
+  @@index([quizKey])
 }
 
 // ---------------------- Marketing / legal pages ----------------------

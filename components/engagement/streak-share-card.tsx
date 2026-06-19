@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Share2, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { getAppUrl } from "@/lib/app-url";
 
 const MILESTONES = [7, 14, 30] as const;
@@ -58,7 +59,7 @@ export function StreakShareCard({ streakDays, className }: Props) {
       <div className="flex flex-wrap gap-2 mt-4">
         <a href={waUrl} target="_blank" rel="noopener noreferrer">
           <Button variant="gradient" size="sm" className="gap-2">
-            <Share2 className="h-4 w-4" />
+            <WhatsAppIcon className="h-4 w-4 text-white" />
             WhatsApp
           </Button>
         </a>

@@ -17,6 +17,7 @@ const UpdateSchema = z.object({
     .trim()
     .min(REEL_MIN_CAPTION_CHARS, `Caption must be at least ${REEL_MIN_CAPTION_CHARS} characters`)
     .max(REEL_MAX_CAPTION_CHARS),
+  relatedBlogId: z.string().optional().nullable(),
 });
 
 export async function GET(
@@ -75,12 +76,25 @@ export async function PATCH(
       status = mod.safe ? "PUBLISHED" : "PENDING";
     }
 
+    let relatedBlogId: string | null | undefined = undefined;
+    if (parsed.relatedBlogId !== undefined) {
+      relatedBlogId = parsed.relatedBlogId;
+      if (relatedBlogId) {
+        const linked = await prisma.blog.findFirst({
+          where: { id: relatedBlogId, status: "PUBLISHED" },
+          select: { id: true },
+        });
+        if (!linked) relatedBlogId = null;
+      }
+    }
+
     const reel = await prisma.reel.update({
       where: { id },
       data: {
         caption: parsed.caption,
         status,
         publishedAt: status === "PUBLISHED" ? existing.publishedAt ?? new Date() : null,
+        ...(relatedBlogId !== undefined ? { relatedBlogId } : {}),
       },
       select: { id: true, status: true },
     });

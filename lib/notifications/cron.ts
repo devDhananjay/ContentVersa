@@ -10,6 +10,7 @@ import {
   notificationEmail,
 } from "@/lib/email/templates";
 import { newsletterUnsubscribeUrl } from "@/lib/newsletter/subscribe";
+import { buildPersonalizedDigestArticles } from "@/lib/notifications/weekly-digest-personal";
 
 const INACTIVE_DAYS_MIN = 3;
 const INACTIVE_DAYS_MAX = 7;
@@ -164,17 +165,6 @@ export async function sendWeeklyDigest() {
   if (!isDatabaseConfigured()) return { sent: 0, emails: 0 };
 
   const weekAgo = new Date(Date.now() - 7 * 86400000);
-  const top = await prisma.blog.findMany({
-    where: { status: "PUBLISHED", publishedAt: { gte: weekAgo } },
-    orderBy: { views: "desc" },
-    take: 5,
-    select: { title: true, slug: true, excerpt: true },
-  });
-
-  if (!top.length) return { sent: 0, emails: 0 };
-
-  const titles = top.map((b) => b.title).join(" · ");
-  const link = "/blogs";
   const digestSince = new Date(Date.now() - 6 * 86400000);
 
   const users = await prisma.user.findMany({
@@ -197,12 +187,20 @@ export async function sendWeeklyDigest() {
       },
     });
     if (dup) continue;
+
+    const articles = await buildPersonalizedDigestArticles({
+      userId: u.id,
+      limit: 5,
+    });
+    if (!articles.length) continue;
+
+    const titles = articles.map((b) => b.title).join(" · ");
     payloads.push({
       userId: u.id,
       type: NotificationType.WEEKLY_DIGEST,
       title: "Your weekly reading digest",
-      message: `Top picks this week: ${titles}`,
-      link,
+      message: `Picked for you: ${titles}`,
+      link: "/blogs",
     });
   }
 
@@ -213,17 +211,27 @@ export async function sendWeeklyDigest() {
     select: { email: true, id: true },
   });
 
-  const emails = await sendEmailBulk(
-    subscribers.map((s) => s.email),
-    (email) => {
-      const sub = subscribers.find((s) => s.email === email);
-      const { subject, html } = weeklyDigestEmail({
-        articles: top,
-        unsubscribeUrl: sub ? newsletterUnsubscribeUrl(sub.id) : "#",
-      });
-      return { to: email, subject, html };
-    }
-  );
+  const emailJobs = (
+    await Promise.all(
+      subscribers.map(async (s) => {
+        const articles = await buildPersonalizedDigestArticles({
+          email: s.email,
+          limit: 5,
+        });
+        if (!articles.length) return null;
+        return { email: s.email, subId: s.id, articles };
+      })
+    )
+  ).filter((j): j is NonNullable<typeof j> => Boolean(j));
+
+  const emails = await sendEmailBulk(emailJobs.map((j) => j.email), (email) => {
+    const job = emailJobs.find((j) => j.email === email)!;
+    const { subject, html } = weeklyDigestEmail({
+      articles: job.articles,
+      unsubscribeUrl: newsletterUnsubscribeUrl(job.subId),
+    });
+    return { to: email, subject, html };
+  });
 
   return { sent, emails };
 }

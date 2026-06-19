@@ -20,11 +20,12 @@
   </p>`}function g(a){let b=(0,d.X)();return{subject:"Welcome to ContentVerse — you're subscribed",html:e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Welcome to The Verse</h1>
     <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">You're subscribed to the ContentVerse newsletter. Every Friday we'll send top reads, creator spotlights, and what's trending.</p>
     <p style="margin:0;line-height:1.65;color:#a1a1aa;font-size:14px;">Meanwhile, explore the latest stories on the site.</p>
-    ${f(b+"/blogs","Browse articles")}`,`<p><a href="${a}" style="color:#71717a;">Unsubscribe</a></p>`)}}function h(a){let b=(0,d.X)(),c=a.articles.map(a=>`<li style="margin-bottom:16px;">
+    ${f(b+"/blogs","Browse articles")}`,`<p><a href="${a}" style="color:#71717a;">Unsubscribe</a></p>`)}}function h(a){let b=(0,d.X)(),c=a.articles.map(a=>{var c;return`<li style="margin-bottom:16px;">
+          <span style="display:block;font-size:11px;color:#a855f7;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${"followed"===(c=a.reason)?"From a category you follow":"unread"===c?"Unread pick for you":"Trending this week"}</span>
           <a href="${b}/blog/${a.slug}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${k(a.title)}</a>
           ${a.excerpt?`<p style="margin:6px 0 0;color:#a1a1aa;font-size:14px;line-height:1.5;">${k(a.excerpt.slice(0,120))}${a.excerpt.length>120?"…":""}</p>`:""}
-        </li>`).join("");return{subject:"Your weekly ContentVerse digest",html:e(`<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">Your weekly digest</h1>
-    <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Top reads this week on ContentVerse</p>
+        </li>`}).join("");return{subject:"Your weekly ContentVerse digest",html:e(`<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">Your weekly digest</h1>
+    <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Trending + unread from categories you follow</p>
     <ul style="margin:0;padding:0;list-style:none;">${c}</ul>
     ${f(b+"/blogs","See all articles")}`,`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`)}}function i(a){let b=(0,d.X)(),c=e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">🔥 Trending today</h1>
     <p style="margin:0 0 8px;font-size:18px;font-weight:600;color:#fff;">${k(a.title)}</p>

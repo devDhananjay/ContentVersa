@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Twitter, Linkedin, Link2, Facebook, Check, MessageCircle } from "lucide-react";
+import { Twitter, Linkedin, Link2, Facebook, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 export function ShareBar({
   url,
@@ -35,7 +36,7 @@ export function ShareBar({
         title="Share on WhatsApp"
       >
         <Button variant="outline" size="icon" aria-label="Share on WhatsApp">
-          <MessageCircle className="h-4 w-4 text-green-600" />
+          <WhatsAppIcon className="h-4 w-4 text-[#25D366]" />
         </Button>
       </a>
       <a

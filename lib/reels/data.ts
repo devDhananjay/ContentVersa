@@ -77,6 +77,8 @@ function mapDashboardRow(row: {
   status: ReelStatus;
   publishedAt: Date | null;
   createdAt: Date;
+  relatedBlogId: string | null;
+  relatedBlog: { slug: string; title: string } | null;
 }): ReelDashboardRow {
   return {
     id: row.id,
@@ -89,6 +91,10 @@ function mapDashboardRow(row: {
     status: row.status,
     publishedAt: row.publishedAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),
+    relatedBlogId: row.relatedBlogId,
+    relatedBlog: row.relatedBlog
+      ? { slug: row.relatedBlog.slug, title: row.relatedBlog.title }
+      : null,
   };
 }
 
@@ -179,6 +185,8 @@ export async function getUserReelById(
         status: true,
         publishedAt: true,
         createdAt: true,
+        relatedBlogId: true,
+        relatedBlog: { select: { slug: true, title: true } },
       },
     });
     return row ? mapDashboardRow(row) : null;
@@ -203,6 +211,8 @@ export async function getUserReels(authorId: string): Promise<ReelDashboardRow[]
         status: true,
         publishedAt: true,
         createdAt: true,
+        relatedBlogId: true,
+        relatedBlog: { select: { slug: true, title: true } },
       },
     });
     return rows.map(mapDashboardRow);

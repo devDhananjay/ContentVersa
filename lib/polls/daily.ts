@@ -1,12 +1,7 @@
-/** Rotating homepage poll slugs — must exist in DB or fall back via getPollBySlug */
-export const DAILY_POLL_SLUGS = [
-  "ai-replace-jobs",
-  "best-creator-tool-2026",
-  "india-startup-bet",
-  "cricket-format-pick",
-  "newsletter-worth-it",
-  "remote-work-india",
-] as const;
+/** Rotating homepage poll slugs — auto-created from catalog on first load */
+export { DAILY_POLL_SLUGS } from "@/lib/polls/catalog";
+
+import { DAILY_POLL_SLUGS } from "@/lib/polls/catalog";
 
 export function getDailyPollSlug(date = new Date()): string {
   const dayIndex = Math.floor(date.getTime() / 86_400_000);
