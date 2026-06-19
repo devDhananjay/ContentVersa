@@ -21,13 +21,14 @@ export const SITE = {
   twitter: "@contentverse",
   ogImage: "/og-default.png",
   logo: "/logo.png",
+  logoIcon: "/logo-icon.png",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/logo-icon.png", sizes: "512x512", type: "image/png" },
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
     apple: "/apple-touch-icon.png",
     shortcut: "/favicon.ico",

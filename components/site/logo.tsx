@@ -3,20 +3,35 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export function Logo({ className, size = "md" }: { className?: string; size?: "sm" | "md" | "lg" }) {
-  const heights = { sm: 32, md: 40, lg: 52 } as const;
-  const h = heights[size];
+  const sizes = {
+    sm: { icon: 36, text: "text-base", tagline: false },
+    md: { icon: 44, text: "text-xl", tagline: false },
+    lg: { icon: 52, text: "text-2xl", tagline: true },
+  } as const;
+  const s = sizes[size];
 
   return (
-    <Link href="/" className={cn("group flex items-center shrink-0", className)}>
+    <Link href="/" className={cn("group flex items-center gap-2.5 shrink-0", className)}>
       <Image
-        src="/logo.png"
-        alt="ContentVerse — Read. Create. Grow."
-        width={h}
-        height={h}
-        className="rounded-lg object-contain"
-        style={{ width: "auto", height: h }}
+        src="/logo-icon.png"
+        alt=""
+        width={s.icon}
+        height={s.icon}
+        className="rounded-xl object-contain shrink-0"
+        style={{ width: s.icon, height: s.icon }}
         priority
+        aria-hidden
       />
+      <div className="flex flex-col leading-none min-w-0">
+        <span className={cn("font-display font-extrabold tracking-tight whitespace-nowrap", s.text)}>
+          Content<span className="text-gradient">Verse</span>
+        </span>
+        {s.tagline && (
+          <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1 hidden sm:block">
+            Read · Create · Grow
+          </span>
+        )}
+      </div>
     </Link>
   );
 }
