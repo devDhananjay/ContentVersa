@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site/site-header";
 import { Footer } from "@/components/site/footer";
 import { MobileNav } from "@/components/site/mobile-nav";
 import { AppEffects } from "@/components/app-effects";
+import { SkipToMainLink } from "@/components/a11y/skip-to-main-link";
 import { Toaster } from "sonner";
 import { buildMetadata } from "@/lib/seo";
 import { getBrandingAssets } from "@/lib/data/site-branding";
@@ -64,10 +65,19 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SiteHeader />
-          <main className="flex-1 pt-[var(--site-header-offset)] pb-24 md:pb-8">{children}</main>
-          <Footer />
-          <MobileNav />
+          <SkipToMainLink />
+          <div id="site-content" className="flex flex-1 flex-col min-h-0">
+            <SiteHeader />
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="flex-1 pt-[var(--site-header-offset)] pb-24 md:pb-8 outline-none"
+            >
+              {children}
+            </main>
+            <Footer />
+            <MobileNav />
+          </div>
           <AppEffects />
           <Toaster richColors position="top-center" closeButton />
         </ThemeProvider>

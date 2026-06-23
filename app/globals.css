@@ -185,6 +185,142 @@
   animation: marquee 40s linear infinite;
 }
 
+/* Color vision accessibility — apply to page content only so fixed a11y UI stays put */
+html.cv-protanopia #site-content {
+  filter: url("#cv-protanopia");
+}
+html.cv-deuteranopia #site-content {
+  filter: url("#cv-deuteranopia");
+}
+html.cv-tritanopia #site-content {
+  filter: url("#cv-tritanopia");
+}
+html.cv-achromatopsia #site-content {
+  filter: url("#cv-achromatopsia");
+}
+
+html.cv-enhanced-saturation:not(.cv-protanopia):not(.cv-deuteranopia):not(.cv-tritanopia):not(.cv-achromatopsia) #site-content {
+  filter: saturate(1.6);
+}
+html.cv-protanopia.cv-enhanced-saturation #site-content {
+  filter: url("#cv-protanopia") saturate(1.6);
+}
+html.cv-deuteranopia.cv-enhanced-saturation #site-content {
+  filter: url("#cv-deuteranopia") saturate(1.6);
+}
+html.cv-tritanopia.cv-enhanced-saturation #site-content {
+  filter: url("#cv-tritanopia") saturate(1.6);
+}
+html.cv-achromatopsia.cv-enhanced-saturation #site-content {
+  filter: url("#cv-achromatopsia") saturate(1.6);
+}
+
+html.cv-high-contrast {
+  --foreground: 0 0% 0%;
+  --muted-foreground: 0 0% 15%;
+  --border: 0 0% 20%;
+  --primary: 263 90% 40%;
+  --accent: 217 95% 35%;
+}
+html.cv-high-contrast.dark {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 5%;
+  --card-foreground: 0 0% 100%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 85%;
+  --border: 0 0% 40%;
+  --primary: 263 90% 75%;
+  --accent: 217 95% 70%;
+}
+html.cv-high-contrast body {
+  font-weight: 500;
+}
+html.cv-high-contrast img,
+html.cv-high-contrast video {
+  filter: contrast(1.15);
+}
+
+html.cv-highlight-links #site-content a,
+html.cv-highlight-links #site-content [role="link"],
+html.cv-highlight-links #site-content button[role="link"] {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 3px !important;
+  text-decoration-color: hsl(var(--primary) / 0.85);
+  /* Underline only — no dashed box (looked like erroneous multi-select) */
+  outline: none !important;
+}
+
+/* Screen reader — landmark hints (subtle, only when explicitly enabled) */
+html.sr-landmarks #site-content > header,
+html.sr-landmarks #site-content > footer,
+html.sr-landmarks #site-content > aside {
+  box-shadow: inset 0 0 0 2px hsl(var(--primary) / 0.28);
+  outline: none;
+}
+
+html.sr-landmarks #site-content header nav,
+html.sr-landmarks #site-content > nav {
+  box-shadow: inset 0 -2px 0 hsl(var(--primary) / 0.45);
+  outline: none;
+}
+
+/* Main content: label only — no full-page dashed outline */
+html.sr-landmarks #site-content > main {
+  outline: none;
+  box-shadow: none;
+}
+
+html.sr-landmarks #site-content > header::before,
+html.sr-landmarks #site-content > footer::before,
+html.sr-landmarks #site-content > aside::before,
+html.sr-landmarks #site-content > main::before {
+  display: block;
+  width: fit-content;
+  margin-bottom: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  background: hsl(var(--primary) / 0.9);
+  color: hsl(var(--primary-foreground));
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  pointer-events: none;
+}
+
+html.sr-landmarks #site-content > header::before { content: "Banner"; }
+html.sr-landmarks #site-content > main::before { content: "Main"; }
+html.sr-landmarks #site-content > footer::before { content: "Footer"; }
+html.sr-landmarks #site-content > aside::before { content: "Aside"; }
+
+html.sr-enhanced-focus *:focus-visible {
+  outline: 3px solid hsl(var(--primary)) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 6px hsl(var(--primary) / 0.2) !important;
+}
+
+html.sr-readable-text body {
+  line-height: 1.8 !important;
+  letter-spacing: 0.04em;
+  word-spacing: 0.1em;
+}
+
+html.sr-reduce-motion *,
+html.sr-reduce-motion *::before,
+html.sr-reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html.sr-read-aloud-focus :focus-visible {
+  box-shadow: 0 0 0 3px hsl(var(--accent) / 0.35) !important;
+}
+
 /* Reading progress bar */
 .reading-progress {
   position: fixed;
