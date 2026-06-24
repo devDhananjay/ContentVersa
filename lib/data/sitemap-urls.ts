@@ -29,6 +29,9 @@ const STATIC_PAGES: Array<{
   { path: "/sports/teams", changeFrequency: "daily", priority: 0.75 },
   { path: "/sports/players", changeFrequency: "daily", priority: 0.75 },
   { path: "/finance", changeFrequency: "hourly", priority: 0.85 },
+  { path: "/jobs", changeFrequency: "daily", priority: 0.8 },
+  { path: "/jobs/govt", changeFrequency: "hourly", priority: 0.78 },
+  { path: "/jobs/private", changeFrequency: "daily", priority: 0.72 },
 ];
 
 export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {

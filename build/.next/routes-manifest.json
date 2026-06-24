@@ -662,6 +662,24 @@
       "namedRegex": "^/firebase\\-messaging\\-sw\\.js(?:/)?$"
     },
     {
+      "page": "/jobs",
+      "regex": "^/jobs(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/jobs(?:/)?$"
+    },
+    {
+      "page": "/jobs/govt",
+      "regex": "^/jobs/govt(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/jobs/govt(?:/)?$"
+    },
+    {
+      "page": "/jobs/private",
+      "regex": "^/jobs/private(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/jobs/private(?:/)?$"
+    },
+    {
       "page": "/leaderboard",
       "regex": "^/leaderboard(?:/)?$",
       "routeKeys": {},
