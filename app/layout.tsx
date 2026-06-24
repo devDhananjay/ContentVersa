@@ -12,6 +12,7 @@ import { buildMetadata } from "@/lib/seo";
 import { getBrandingAssets } from "@/lib/data/site-branding";
 import { BrandingHead } from "@/components/site/branding-head";
 import { AdSenseSiteScript } from "@/components/ads/adsense-site-script";
+import { GoogleAdsTag } from "@/components/ads/google-ads-tag";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display", display: "swap" });
@@ -54,6 +55,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <BrandingHead />
+        <GoogleAdsTag />
         <AdSenseSiteScript />
       </head>
       <body
