@@ -87,6 +87,28 @@ enum SubmissionDecision {
   REQUEST_CHANGES
 }
 
+enum ReportTargetType {
+  BLOG
+  COMMENT
+  USER
+  REEL
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  HATE_SPEECH
+  MISINFORMATION
+  INAPPROPRIATE
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  DISMISSED
+  ACTION_TAKEN
+}
+
 enum AccountProvider {
   CREDENTIALS
   GOOGLE
@@ -146,6 +168,8 @@ model User {
   reelLikes        ReelLike[]
   blogReposts      BlogRepost[]
   quizAttempts     QuizAttempt[]
+  reportsFiled     ContentReport[] @relation("ReportsFiled")
+  reportsReviewed  ContentReport[] @relation("ReportsReviewed")
 
   @@index([role])
   @@index([createdAt])
@@ -356,6 +380,29 @@ model Comment {
   @@index([blogId])
   @@index([userId])
   @@index([parentId])
+}
+
+model ContentReport {
+  id           String           @id @default(cuid())
+  reporterId   String
+  targetType   ReportTargetType
+  targetId     String
+  reason       ReportReason
+  details      String?          @db.Text
+  status       ReportStatus     @default(PENDING)
+  reviewedById String?
+  reviewedAt   DateTime?
+  actionNote   String?          @db.Text
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  reporter   User  @relation("ReportsFiled", fields: [reporterId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("ReportsReviewed", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@unique([reporterId, targetType, targetId])
+  @@index([status])
+  @@index([targetType, targetId])
+  @@index([createdAt])
 }
 
 model CommentLike {

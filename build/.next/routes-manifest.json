@@ -63,6 +63,14 @@
       "namedRegex": "^/api/admin/blogs/(?<nxtPid>[^/]+?)/publish(?:/)?$"
     },
     {
+      "page": "/api/admin/reports/[id]",
+      "regex": "^/api/admin/reports/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admin/reports/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/admin/users/[id]",
       "regex": "^/api/admin/users/([^/]+?)(?:/)?$",
       "routeKeys": {

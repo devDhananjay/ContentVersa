@@ -15,6 +15,7 @@ import { TableOfContents } from "@/components/blog/toc";
 import { Comments } from "@/components/blog/comments";
 import { PollWidget } from "@/components/blog/poll-widget";
 import { ShareBar } from "@/components/blog/share-bar";
+import { ReportContentButton } from "@/components/blog/report-content";
 import { FloatingActions } from "@/components/blog/floating-actions";
 import { NewsIn60Short } from "@/components/blog/news-in-60-short";
 import { ArticleFeedback } from "@/components/blog/article-feedback";
@@ -202,13 +203,16 @@ export default async function BlogPage({
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <FollowButton
                 username={blog.author.username}
                 targetUserId={blog.author.id}
                 initialFollowerCount={blog.author.followers}
               />
               <ShareBar url={url} title={blog.title} imageUrl={blog.coverImage} />
+              {blog.id && !isOwnArticle && (
+                <ReportContentButton targetType="BLOG" targetId={blog.id} />
+              )}
             </div>
           </div>
         </header>
