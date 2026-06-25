@@ -15,12 +15,13 @@ export function StatCard({
 }: {
   label: string;
   value: string;
-  delta: number;
+  delta?: number | null;
   icon: React.ReactNode;
   color?: string;
   index?: number;
 }) {
-  const positive = delta >= 0;
+  const showDelta = delta != null;
+  const positive = (delta ?? 0) >= 0;
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -34,15 +35,19 @@ export function StatCard({
           <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center bg-gradient-to-br text-white", color)}>
             {icon}
           </div>
-          <div
-            className={cn(
-              "flex items-center gap-1 text-xs font-semibold",
-              positive ? "text-green-500" : "text-red-500"
-            )}
-          >
-            {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-            {Math.abs(delta)}%
-          </div>
+          {showDelta ? (
+            <div
+              className={cn(
+                "flex items-center gap-1 text-xs font-semibold",
+                positive ? "text-green-500" : "text-red-500"
+              )}
+            >
+              {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+              {Math.abs(delta ?? 0)}%
+            </div>
+          ) : (
+            <span className="text-[10px] text-muted-foreground">Live</span>
+          )}
         </div>
         <p className="text-xs uppercase tracking-widest text-muted-foreground mt-4">
           {label}
