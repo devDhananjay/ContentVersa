@@ -138,6 +138,7 @@ export async function runDailyArticleGeneration(options?: {
       const { article } = await generateSeoArticle({
         title: topic.title,
         category: cat.name,
+        categorySlug: cat.slug,
         searchIntent: topic.searchIntent,
         affiliateNote:
           cat.slug === "finance"
@@ -158,6 +159,9 @@ export async function runDailyArticleGeneration(options?: {
         excerpt: article.excerpt,
         tags: article.tags,
         coverKeywords: article.coverKeywords,
+        coverImagePrompt: article.coverImagePrompt,
+        searchIntent: topic.searchIntent,
+        contentSnippet: article.content.slice(0, 400),
         slug: topic.slug,
       });
 

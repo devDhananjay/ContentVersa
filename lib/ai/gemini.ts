@@ -265,7 +265,12 @@ export async function callGeminiImage(prompt: string): Promise<string | null> {
           role: "user",
           parts: [
             {
-              text: `Generate a high-quality blog cover illustration. No text in the image. Prompt: ${prompt.slice(0, 800)}`,
+              text: [
+                "Create a single photorealistic editorial photograph for a blog hero banner (16:9 wide shot).",
+                "Match the scene description exactly — do not substitute a generic category image.",
+                "No text, logos, watermarks, borders, or collage.",
+                `Scene: ${prompt.slice(0, 900)}`,
+              ].join(" "),
             },
           ],
         },

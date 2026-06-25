@@ -74,6 +74,7 @@ export async function POST(req: Request) {
     const { article, failure, reason } = await generateSeoArticle({
       title: body.title,
       category: cat.name,
+      categorySlug: body.category,
       searchIntent: body.searchIntent,
       affiliateNote:
         body.category === "finance"
@@ -120,6 +121,7 @@ export async function POST(req: Request) {
       article,
       slugHint,
       publish: body.publish,
+      searchIntent: body.searchIntent,
     });
 
     if (body.publish) {

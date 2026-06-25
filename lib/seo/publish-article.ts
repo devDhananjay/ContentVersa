@@ -54,6 +54,7 @@ export async function publishGeneratedArticle(input: {
   article: GeneratedArticle;
   slugHint?: string;
   publish?: boolean;
+  searchIntent?: string;
 }) {
   if (!isDatabaseConfigured()) {
     throw new Error("Database not configured");
@@ -75,6 +76,9 @@ export async function publishGeneratedArticle(input: {
     excerpt: input.article.excerpt,
     tags: input.article.tags,
     coverKeywords: input.article.coverKeywords,
+    coverImagePrompt: input.article.coverImagePrompt,
+    searchIntent: input.searchIntent,
+    contentSnippet: content.slice(0, 400),
     slug,
   });
 
