@@ -222,8 +222,9 @@ crontab -e
 # 0 10 * * *   .../scripts/cron-notifications.sh inactive
 # 0 18 * * *   .../scripts/cron-notifications.sh trending
 # 0 9 * * 5    .../scripts/cron-notifications.sh weekly
-# */15 * * * * .../scripts/cron-push-alerts.sh cricket   # match ~30 min alert
-# 30 9 * * 1-5 .../scripts/cron-push-alerts.sh stocks    # watchlist ±5% (weekdays UTC)
+# */5 * * * *  .../scripts/cron-push-alerts.sh cricket       # 30 min before match
+# 50 3 * * 1-5 .../scripts/cron-push-alerts.sh stocks-open  # ~9:20 IST market open
+# 5 10 * * 1-5 .../scripts/cron-push-alerts.sh stocks-close # ~3:35 IST market close
 ```
 
 Push alerts manual test: `./scripts/cron-push-alerts.sh cricket`

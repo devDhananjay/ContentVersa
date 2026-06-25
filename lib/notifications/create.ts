@@ -31,6 +31,8 @@ const EMAIL_TYPES = new Set<NotificationType>([
   NotificationType.TIP_RECEIVED,
   NotificationType.FOLLOW,
   NotificationType.APPROVAL,
+  NotificationType.CRICKET_MATCH_REMINDER,
+  NotificationType.STOCK_WATCHLIST_ALERT,
 ]);
 
 async function emailUserForNotification(

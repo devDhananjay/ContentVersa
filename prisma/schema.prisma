@@ -68,6 +68,8 @@ enum NotificationType {
   TRENDING
   WEEKLY_DIGEST
   CATEGORY_NEW
+  CRICKET_MATCH_REMINDER
+  STOCK_WATCHLIST_ALERT
 }
 
 enum RevenueSource {
@@ -803,6 +805,14 @@ model SiteVisitor {
 
   @@index([userId])
   @@index([firstSeen])
+}
+
+model AlertDispatch {
+  id        String   @id @default(cuid())
+  alertKey  String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 // ---------------------- Sports API cache ----------------------

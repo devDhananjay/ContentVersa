@@ -3,12 +3,13 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, LogIn, Plus, Star, X } from "lucide-react";
+import { Bell, Loader2, LogIn, Plus, Search, Star, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { displaySymbol, normalizeSymbol } from "@/lib/finance/transformers";
 import type { StockQuote } from "@/lib/finance/types";
+import type { StockSearchResult } from "@/lib/finance/stock-search";
 import { ChangeBadge } from "./change-badge";
 
 interface WatchlistPanelProps {
@@ -23,6 +24,10 @@ export function WatchlistPanel({ defaultQuotes = [] }: WatchlistPanelProps) {
   const [input, setInput] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [adding, setAdding] = React.useState(false);
+  const [searching, setSearching] = React.useState(false);
+  const [results, setResults] = React.useState<StockSearchResult[]>([]);
+  const [open, setOpen] = React.useState(false);
+  const searchRef = React.useRef<HTMLDivElement>(null);
 
   const loadWatchlist = React.useCallback(async () => {
     setLoading(true);
@@ -52,8 +57,43 @@ export function WatchlistPanel({ defaultQuotes = [] }: WatchlistPanelProps) {
     void loadWatchlist();
   }, [loadWatchlist]);
 
-  async function addSymbol() {
-    const sym = normalizeSymbol(input);
+  React.useEffect(() => {
+    const q = input.trim();
+    if (q.length < 1) {
+      setResults([]);
+      setSearching(false);
+      return;
+    }
+
+    const timer = window.setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await fetch(`/api/finance/search?q=${encodeURIComponent(q)}`);
+        const data = (await res.json()) as { results?: StockSearchResult[] };
+        setResults(data.results ?? []);
+        setOpen(true);
+      } catch {
+        setResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 250);
+
+    return () => window.clearTimeout(timer);
+  }, [input]);
+
+  React.useEffect(() => {
+    function onPointerDown(e: MouseEvent) {
+      if (!searchRef.current?.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, []);
+
+  async function addSymbol(symbolInput?: string) {
+    const sym = normalizeSymbol(symbolInput ?? input);
     if (!sym) return;
 
     if (!loggedIn) {
@@ -78,6 +118,8 @@ export function WatchlistPanel({ defaultQuotes = [] }: WatchlistPanelProps) {
       setSymbols(data.symbols ?? []);
       setQuotes(data.quotes ?? []);
       setInput("");
+      setResults([]);
+      setOpen(false);
       toast.success(`${displaySymbol(sym)} added to watchlist`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not add stock");
@@ -103,6 +145,10 @@ export function WatchlistPanel({ defaultQuotes = [] }: WatchlistPanelProps) {
     }
   }
 
+  function pickResult(row: StockSearchResult) {
+    void addSymbol(row.symbol);
+  }
+
   if (loggedIn === null || loading) {
     return (
       <div className="flex items-center justify-center py-8 text-muted-foreground">
@@ -110,6 +156,8 @@ export function WatchlistPanel({ defaultQuotes = [] }: WatchlistPanelProps) {
       </div>
     );
   }
+
+  const filteredResults = results.filter((r) => !symbols.includes(r.symbol));
 
   return (
     <div className="space-y-2.5">
@@ -125,19 +173,74 @@ export function WatchlistPanel({ defaultQuotes = [] }: WatchlistPanelProps) {
         </div>
       )}
 
-      <div className="flex gap-1.5">
-        <Input
-          placeholder="e.g. RELIANCE"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addSymbol()}
-          className="h-7 text-[11px]"
-          disabled={adding}
-        />
+      {loggedIn && (
+        <div className="flex items-start gap-1.5 rounded-lg border border-sky-500/20 bg-sky-500/5 px-2.5 py-2 text-[10px] text-muted-foreground leading-relaxed">
+          <Bell className="h-3 w-3 text-sky-500 shrink-0 mt-0.5" />
+          <span>
+            Aapko apne favorite stocks ke liye market <strong>open</strong> aur{" "}
+            <strong>close</strong> par email + notification milega — kitne pe khula
+            aur band hua.
+          </span>
+        </div>
+      )}
+
+      <div className="flex gap-1.5" ref={searchRef}>
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+          <Input
+            placeholder="Search stock e.g. RELIANCE, TCS…"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              setOpen(true);
+            }}
+            onFocus={() => input.trim() && setOpen(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (filteredResults[0]) pickResult(filteredResults[0]);
+                else void addSymbol();
+              }
+              if (e.key === "Escape") setOpen(false);
+            }}
+            className="h-7 text-[11px] pl-7 pr-7"
+            disabled={adding}
+            autoComplete="off"
+          />
+          {searching && (
+            <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 animate-spin text-muted-foreground" />
+          )}
+
+          {open && input.trim().length > 0 && !searching && (
+            <ul className="absolute z-20 left-0 right-0 top-full mt-1 max-h-40 overflow-y-auto rounded-md border border-border/60 bg-popover shadow-md">
+              {filteredResults.length === 0 ? (
+                <li className="px-2.5 py-2 text-[10px] text-muted-foreground">
+                  No Nifty 50 match for &quot;{input.trim()}&quot;
+                </li>
+              ) : (
+                filteredResults.map((row) => (
+                  <li key={row.symbol}>
+                    <button
+                      type="button"
+                      onClick={() => pickResult(row)}
+                      className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-[11px] hover:bg-muted/60"
+                    >
+                      <span className="font-medium">{row.label}</span>
+                      <span className="text-[9px] text-muted-foreground ml-auto">
+                        NSE
+                      </span>
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
+        </div>
+
         <Button
           size="sm"
           variant="outline"
-          onClick={addSymbol}
+          onClick={() => void addSymbol()}
           disabled={adding || !input.trim()}
           className="shrink-0 h-7 px-2"
         >

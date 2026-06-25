@@ -2,12 +2,10 @@ import { NextResponse } from "next/server";
 import { getCurrentUser, requireUser } from "@/lib/auth";
 import { requireUserId, resolveUserId } from "@/lib/auth/resolve-user-id";
 import { isDatabaseConfigured } from "@/lib/prisma";
-import {
-  addToWatchlist,
-  getUserWatchlistSymbols,
-  removeFromWatchlist,
-} from "@/lib/finance/watchlist-db";
+import { addToWatchlist, getUserWatchlistSymbols, removeFromWatchlist } from "@/lib/finance/watchlist-db";
 import { fetchQuotesCached } from "@/lib/finance/fetch-quotes";
+import { isKnownFinanceSymbol } from "@/lib/finance/stock-search";
+import { normalizeSymbol } from "@/lib/finance/transformers";
 
 export async function GET() {
   if (!isDatabaseConfigured()) {
@@ -43,7 +41,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "symbol required" }, { status: 400 });
     }
 
-    const symbols = await addToWatchlist(userId, body.symbol);
+    const symbol = normalizeSymbol(body.symbol);
+    if (!isKnownFinanceSymbol(symbol)) {
+      return NextResponse.json(
+        { error: "Stock not found. Try Nifty 50 symbols like RELIANCE, TCS, INFY." },
+        { status: 404 }
+      );
+    }
+
+    const quoteCheck = await fetchQuotesCached([symbol]);
+    if (!quoteCheck.length) {
+      return NextResponse.json(
+        { error: "Could not fetch quote for that symbol. Check the ticker and try again." },
+        { status: 404 }
+      );
+    }
+
+    const symbols = await addToWatchlist(userId, symbol);
     const quotes = await fetchQuotesCached(symbols);
 
     return NextResponse.json({ ok: true, symbols, quotes });

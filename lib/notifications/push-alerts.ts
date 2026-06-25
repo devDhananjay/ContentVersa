@@ -1,128 +1,144 @@
 /**
- * Scheduled push alert stubs — cricket match reminders & stock watchlist moves.
- * Wire to cron via /api/cron/push-alerts?job=cricket|stocks
+ * Cricket match reminders (30 min before) & stock watchlist open/close alerts.
+ * Cron: /api/cron/push-alerts?job=cricket|stocks-open|stocks-close
  */
 import { NotificationType } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { createUserNotificationsBulk } from "@/lib/notifications/create";
 import { sendPushToUser } from "@/lib/notifications/push";
+import { claimAlertDispatch, istDateKey } from "@/lib/notifications/alert-dispatch";
 import { getUpcomingMatches } from "@/lib/sports/data";
 import { fetchYahooQuotes } from "@/lib/finance/yahoo";
+import { displaySymbol } from "@/lib/finance/transformers";
+import type { NotificationPayload } from "@/lib/notifications/create";
 
 const MATCH_LEAD_MINUTES = 30;
+const MATCH_WINDOW_MIN = 25;
+const MATCH_WINDOW_MAX = 35;
 
-/** Notify users subscribed to cricket category / sports readers */
-export async function sendCricketMatchReminders() {
-  if (!isDatabaseConfigured()) return { sent: 0, push: 0 };
-
-  const matches = await getUpcomingMatches();
-  const soon = matches.find((m) => {
-    if (!m.startDate) return false;
-    const start = new Date(m.startDate).getTime();
-    if (Number.isNaN(start)) return false;
-    const diff = start - Date.now();
-    return diff > 0 && diff <= MATCH_LEAD_MINUTES * 60_000;
-  });
-
-  if (!soon) return { sent: 0, push: 0 };
-
-  const link = "/sports/cricket";
-  const title = "Match starts soon";
-  const message = `${soon.team1.name} vs ${soon.team2.name} starts in ~${MATCH_LEAD_MINUTES} min.`;
-
-  const sportsReaders = await prisma.readingHistory.findMany({
-    where: {
-      userId: { not: null },
-      OR: [
-        { category: { in: ["sports", "cricket"] } },
-        { category: { contains: "sport", mode: "insensitive" } },
-      ],
-    },
-    select: { userId: true },
-    distinct: ["userId"],
-    take: 100,
-  });
-
-  const subs = await prisma.categorySubscription.findMany({
-    where: { category: { slug: { in: ["sports", "cricket"] } } },
-    select: { userId: true },
-    take: 100,
-  });
-
-  const userIds = new Set<string>();
-  for (const r of sportsReaders) {
-    if (r.userId) userIds.add(r.userId);
-  }
-  for (const s of subs) userIds.add(s.userId);
-
-  const payloads = [...userIds].map((userId) => ({
-    userId,
-    type: NotificationType.SYSTEM,
-    title,
-    message,
-    link,
-  }));
-
-  const sent = await createUserNotificationsBulk(payloads);
-
-  await Promise.all(
-    [...userIds].map((userId) =>
-      sendPushToUser(userId, { title, body: message, link })
-    )
-  );
-
-  return { sent, push: userIds.size, match: soon.id };
+function matchStartsInReminderWindow(startDate: string): boolean {
+  const start = new Date(startDate).getTime();
+  if (Number.isNaN(start)) return false;
+  const diffMin = (start - Date.now()) / 60_000;
+  return diffMin >= MATCH_WINDOW_MIN && diffMin <= MATCH_WINDOW_MAX;
 }
 
-/** ±5% move on watchlist symbols */
-export async function sendStockWatchlistAlerts() {
-  if (!isDatabaseConfigured()) return { sent: 0, push: 0 };
-
-  const items = await prisma.financeWatchlistItem.findMany({
-    select: { userId: true, symbol: true },
-    take: 200,
-  });
-  if (!items.length) return { sent: 0, push: 0 };
-
-  const symbols = [...new Set(items.map((i) => i.symbol))];
-  const quotes = await fetchYahooQuotes(symbols);
-  const quoteMap = new Map(quotes.map((q) => [q.symbol, q]));
-
-  const payloads: {
-    userId: string;
-    type: NotificationType;
-    title: string;
-    message: string;
-    link: string;
-  }[] = [];
-
-  for (const item of items) {
-    const q = quoteMap.get(item.symbol);
-    if (!q || q.changePercent == null) continue;
-    const pct = Math.abs(q.changePercent);
-    if (pct < 5) continue;
-
-    const dir = q.changePercent >= 0 ? "up" : "down";
-    const title = `${item.symbol} ${dir} ${pct.toFixed(1)}%`;
-    const message = `${q.shortName || item.symbol} moved ${q.changePercent >= 0 ? "+" : ""}${q.changePercent.toFixed(2)}% today.`;
-    const link = `/finance?symbol=${encodeURIComponent(item.symbol)}`;
-
-    payloads.push({
-      userId: item.userId,
-      type: NotificationType.SYSTEM,
-      title,
-      message,
-      link,
-    });
-  }
+async function notifyUsers(payloads: NotificationPayload[]) {
+  if (!payloads.length) return { sent: 0, push: 0 };
 
   const sent = await createUserNotificationsBulk(payloads);
 
   await Promise.all(
     payloads.map((p) =>
-      sendPushToUser(p.userId, { title: p.title, body: p.message, link: p.link })
+      sendPushToUser(p.userId, {
+        title: p.title,
+        body: p.message,
+        link: p.link ?? undefined,
+      })
     )
   );
 
   return { sent, push: payloads.length };
+}
+
+/** 30 minutes before a cricket match — email + in-app + push for all users. */
+export async function sendCricketMatchReminders() {
+  if (!isDatabaseConfigured()) return { sent: 0, push: 0, match: null };
+
+  const matches = await getUpcomingMatches();
+  const soon = matches.find((m) => m.startDate && matchStartsInReminderWindow(m.startDate));
+
+  if (!soon) return { sent: 0, push: 0, match: null };
+
+  const alertKey = `cricket:${soon.id}:30m`;
+  const claimed = await claimAlertDispatch(alertKey);
+  if (!claimed) return { sent: 0, push: 0, match: soon.id, skipped: true };
+
+  const link = `/sports/match/${soon.id}`;
+  const title = "Cricket match starts in 30 minutes";
+  const message = `${soon.team1.name} vs ${soon.team2.name} · ${soon.matchDesc || soon.seriesName}. Tap to view live score.`;
+
+  const users = await prisma.user.findMany({
+    select: { id: true },
+    take: 5000,
+  });
+
+  const payloads: NotificationPayload[] = users.map((user) => ({
+    userId: user.id,
+    type: NotificationType.CRICKET_MATCH_REMINDER,
+    title,
+    message,
+    link,
+  }));
+
+  const result = await notifyUsers(payloads);
+  return { ...result, match: soon.id };
+}
+
+type StockPhase = "open" | "close";
+
+/** Market open/close price alerts for each user's watchlist symbols. */
+export async function sendStockWatchlistSessionAlerts(phase: StockPhase) {
+  if (!isDatabaseConfigured()) return { sent: 0, push: 0, phase };
+
+  const dateKey = istDateKey();
+  const items = await prisma.financeWatchlistItem.findMany({
+    select: { userId: true, symbol: true },
+    take: 5000,
+  });
+  if (!items.length) return { sent: 0, push: 0, phase };
+
+  const symbols = [...new Set(items.map((i) => i.symbol))];
+  const quotes = await fetchYahooQuotes(symbols);
+  const quoteMap = new Map(quotes.map((q) => [q.symbol, q]));
+
+  const payloads: NotificationPayload[] = [];
+
+  for (const item of items) {
+    const alertKey = `stock:${item.symbol}:${phase}:${dateKey}:${item.userId}`;
+    const claimed = await claimAlertDispatch(alertKey);
+    if (!claimed) continue;
+
+    const q = quoteMap.get(item.symbol);
+    if (!q) continue;
+
+    const label = displaySymbol(item.symbol);
+    const price = q.price.toLocaleString("en-IN", { maximumFractionDigits: 2 });
+    const link = `/finance/stock/${label}`;
+
+    if (phase === "open") {
+      const openRef = q.previousClose ?? q.price;
+      const title = `${label} market open`;
+      const message = `${q.shortName || label} opened at ₹${price} (prev close ₹${openRef.toLocaleString("en-IN", { maximumFractionDigits: 2 })}).`;
+      payloads.push({
+        userId: item.userId,
+        type: NotificationType.STOCK_WATCHLIST_ALERT,
+        title,
+        message,
+        link,
+      });
+    } else {
+      const title = `${label} market close`;
+      const change =
+        q.changePercent >= 0
+          ? `+${q.changePercent.toFixed(2)}%`
+          : `${q.changePercent.toFixed(2)}%`;
+      const message = `${q.shortName || label} closed at ₹${price} (${change} today).`;
+      payloads.push({
+        userId: item.userId,
+        type: NotificationType.STOCK_WATCHLIST_ALERT,
+        title,
+        message,
+        link,
+      });
+    }
+  }
+
+  const result = await notifyUsers(payloads);
+  return { ...result, phase, stocks: payloads.length };
+}
+
+/** @deprecated Use sendStockWatchlistSessionAlerts('close') for large moves if needed */
+export async function sendStockWatchlistAlerts() {
+  return sendStockWatchlistSessionAlerts("close");
 }
