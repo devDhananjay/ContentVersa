@@ -97,7 +97,7 @@ export async function publishGeneratedArticle(input: {
       categoryId: category.id,
       tags: { create: tagIds.map((tagId) => ({ tagId })) },
     },
-    select: { id: true, slug: true, title: true, readingTime: true },
+    select: { id: true, slug: true, title: true, readingTime: true, status: true, excerpt: true, coverImage: true },
   });
 
   return blog;

@@ -138,7 +138,12 @@ export async function POST(req: Request) {
         slug: blog.slug,
         title: blog.title,
         readingTime: blog.readingTime,
+        status: blog.status,
+        excerpt: blog.excerpt,
+        coverImage: blog.coverImage,
         url: `/blog/${blog.slug}`,
+        previewUrl: `/admin/blogs/${blog.id}`,
+        editUrl: `/dashboard/blogs/${blog.id}/edit`,
       },
     });
   } catch (err) {
