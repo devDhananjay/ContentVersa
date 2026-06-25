@@ -7,6 +7,7 @@ import {
   clearBrandingAsset,
   type BrandingKey,
 } from "@/lib/data/site-branding";
+import { isValidGoogleFaviconUrl } from "@/lib/branding/favicon";
 
 const PostSchema = z.object({
   type: z.enum(["logo", "favicon", "loader"]),
@@ -40,6 +41,16 @@ export async function POST(req: Request) {
     const url = body.url.trim();
     if (!url.startsWith("/") && !url.startsWith("http://") && !url.startsWith("https://")) {
       return NextResponse.json({ error: "Invalid asset URL" }, { status: 400 });
+    }
+
+    if (body.type === "favicon" && !isValidGoogleFaviconUrl(url)) {
+      return NextResponse.json(
+        {
+          error:
+            "Favicon must be a square PNG, ICO, WebP or SVG (not JPG). Use Admin → Branding or upload /favicon-48x48.png.",
+        },
+        { status: 400 }
+      );
     }
 
     const asset = await setBrandingAsset(body.type as BrandingKey, url);

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getAppUrl } from "@/lib/app-url";
 import { PRODUCTION_SITE_URL } from "@/lib/site-config";
+import { DEFAULT_FAVICON_ICONS } from "@/lib/branding/favicon";
 
 function siteUrl() {
   try {
@@ -10,28 +11,44 @@ function siteUrl() {
   }
 }
 
+/** Square logo for Google Organization / Knowledge Graph (min ~112px). */
+export const SITE_LOGO_URL = "/icon-192.png";
+
+/** Main site sections — helps Google understand navigation (sitelinks). */
+export const SITE_NAV_SECTIONS = [
+  { name: "Blogs", path: "/blogs", description: "Read articles and stories" },
+  { name: "Categories", path: "/categories", description: "Browse topics" },
+  { name: "Sports", path: "/sports", description: "Live scores and cricket news" },
+  { name: "Jobs", path: "/jobs", description: "Government and private jobs" },
+  { name: "Finance", path: "/finance", description: "Markets and investing" },
+  { name: "Reels", path: "/reels", description: "Short-form creator videos" },
+  { name: "About", path: "/about", description: "About ContentVerse" },
+  { name: "Contact", path: "/contact", description: "Get in touch" },
+  { name: "Creator Program", path: "/creator-program", description: "Monetize your writing" },
+] as const;
+
 export const SITE = {
   name: "ContentVerse",
   tagline: "Read. Create. Grow.",
   description:
-    "ContentVerse is the next-generation creator platform for blogs and content. Read, create and grow with a community of bold writers.",
+    "ContentVerse is India's creator platform for blogs, reels, sports, jobs and finance content. Read, create and grow with a community of bold writers.",
   get url() {
     return siteUrl();
   },
   twitter: "@contentverse",
   ogImage: "/og-default.png",
-  logo: "/logo.png",
+  logo: SITE_LOGO_URL,
   logoIcon: "/logo-mark.svg",
   icons: {
     icon: [
+      { url: DEFAULT_FAVICON_ICONS.primary, sizes: "48x48", type: "image/png" },
+      { url: DEFAULT_FAVICON_ICONS.large, sizes: "192x192", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: DEFAULT_FAVICON_ICONS.fallback, sizes: "48x48", type: "image/x-icon" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-    shortcut: "/favicon.ico",
+    apple: [{ url: DEFAULT_FAVICON_ICONS.apple, sizes: "180x180", type: "image/png" }],
+    shortcut: DEFAULT_FAVICON_ICONS.primary,
   },
 };
 
@@ -49,15 +66,27 @@ export function buildMetadata(input: {
   const title = input.title ? `${input.title} · ${SITE.name}` : `${SITE.name} — ${SITE.tagline}`;
   const url = input.path ? `${SITE.url}${input.path}` : SITE.url;
   const image = input.image || SITE.ogImage;
+  const verification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
+
   return {
     metadataBase: new URL(SITE.url),
     title,
     description: input.description || SITE.description,
-    keywords: input.keywords,
+    keywords:
+      input.keywords ??
+      [
+        "ContentVerse",
+        "ContentVerse India",
+        "blog platform India",
+        "creator platform",
+        "write blogs",
+        "content creators",
+      ],
     authors: input.authors?.map((name) => ({ name })),
     alternates: { canonical: url },
     robots: input.noIndex ? { index: false, follow: false } : { index: true, follow: true },
     icons: SITE.icons,
+    ...(verification ? { verification: { google: verification } } : {}),
     openGraph: {
       title,
       description: input.description || SITE.description,
@@ -74,6 +103,55 @@ export function buildMetadata(input: {
       creator: SITE.twitter,
       images: [image],
     },
+  };
+}
+
+export function organizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${SITE.url}/#organization`,
+    name: SITE.name,
+    url: SITE.url,
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE.url}${SITE_LOGO_URL}`,
+      width: 192,
+      height: 192,
+    },
+    image: `${SITE.url}${SITE.ogImage}`,
+    description: SITE.description,
+    sameAs: [] as string[],
+  };
+}
+
+export function websiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE.url}/#website`,
+    name: SITE.name,
+    url: SITE.url,
+    description: SITE.description,
+    publisher: { "@id": `${SITE.url}/#organization` },
+    inLanguage: "en-IN",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE.url}/blogs?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+    hasPart: SITE_NAV_SECTIONS.map((section, index) => ({
+      "@type": "WebPage",
+      "@id": `${SITE.url}${section.path}`,
+      name: section.name,
+      description: section.description,
+      url: `${SITE.url}${section.path}`,
+      position: index + 1,
+      isPartOf: { "@id": `${SITE.url}/#website` },
+    })),
   };
 }
 
@@ -98,7 +176,7 @@ export function articleJsonLd(args: {
     publisher: {
       "@type": "Organization",
       name: SITE.name,
-      logo: { "@type": "ImageObject", url: `${SITE.url}${SITE.logo}` },
+      logo: { "@type": "ImageObject", url: `${SITE.url}${SITE_LOGO_URL}` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": args.url },
   };

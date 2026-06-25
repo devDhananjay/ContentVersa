@@ -18,6 +18,7 @@ import { SportsTeaser } from "@/components/home/sports-teaser";
 import { ForYouSection } from "@/components/home/for-you-section";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
+import { SiteJsonLd } from "@/components/seo/site-json-ld";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <SiteJsonLd />
       <div className="relative overflow-hidden">
         <AmbientPageBackground />
         <ReelsStripSection />

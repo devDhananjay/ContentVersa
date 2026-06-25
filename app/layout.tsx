@@ -9,7 +9,6 @@ import { AppEffects } from "@/components/app-effects";
 import { SkipToMainLink } from "@/components/a11y/skip-to-main-link";
 import { Toaster } from "sonner";
 import { buildMetadata } from "@/lib/seo";
-import { getBrandingAssets } from "@/lib/data/site-branding";
 import { BrandingHead } from "@/components/site/branding-head";
 import { AdSenseSiteScript } from "@/components/ads/adsense-site-script";
 import { GoogleAdsTag } from "@/components/ads/google-ads-tag";
@@ -19,23 +18,7 @@ const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display", 
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const branding = await getBrandingAssets();
-  const base = buildMetadata({});
-  const customFavicon = branding.favicon.current;
-
-  if (!customFavicon) return base;
-
-  return {
-    ...base,
-    icons: {
-      icon: [
-        { url: customFavicon },
-        { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      ],
-      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-      shortcut: customFavicon,
-    },
-  };
+  return buildMetadata({});
 }
 
 export const viewport: Viewport = {
