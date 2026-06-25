@@ -5,11 +5,12 @@ import {
 } from "@/lib/ai/gemini";
 import { detectCoverTheme } from "@/lib/seo/cover-image";
 
-function inferCoverKeywordsFromText(text: string): string[] {
+function inferCoverKeywordsFromText(title: string, excerpt: string, tags: string[]): string[] {
   const theme = detectCoverTheme({
     categorySlug: "ai",
-    title: text,
-    excerpt: text,
+    title,
+    excerpt,
+    tags,
   });
   const fallbacks: Record<string, string[]> = {
     health: ["hospital doctor", "medical checkup", "rural clinic"],
@@ -32,7 +33,17 @@ function inferCoverKeywordsFromText(text: string): string[] {
     science: ["science lab", "microscope research", "chemistry glass"],
     robotics: ["robot arm", "automation factory", "tech innovation"],
   };
-  return fallbacks[theme ?? "data"] ?? ["technology abstract", "modern workspace", "digital india"];
+  const base = fallbacks[theme ?? "data"] ?? ["technology abstract", "modern workspace", "digital india"];
+  const titleHint = title
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 3)
+    .slice(0, 3)
+    .join(" ");
+  if (titleHint) {
+    return [`${titleHint} editorial photo`, ...base].slice(0, 4);
+  }
+  return base;
 }
 
 function normalizeArticle(raw: Partial<GeneratedArticle>): GeneratedArticle | null {
@@ -56,7 +67,9 @@ function normalizeArticle(raw: Partial<GeneratedArticle>): GeneratedArticle | nu
     metaKeywords: raw.metaKeywords ? String(raw.metaKeywords).trim() : undefined,
     tags: raw.tags.map((t) => String(t).trim()).filter(Boolean),
     coverKeywords:
-      coverKeywords.length > 0 ? coverKeywords : inferCoverKeywordsFromText(text),
+      coverKeywords.length > 0
+        ? coverKeywords
+        : inferCoverKeywordsFromText(String(raw.title).trim(), String(raw.excerpt).trim(), raw.tags.map((t) => String(t).trim())),
     content: String(raw.content).trim(),
   };
 }
@@ -128,7 +141,7 @@ Rules:
 ${input.affiliateNote ? `- ${input.affiliateNote}` : ""}
 - If finance: add disclaimer "This is educational content, not financial advice."
 - Do NOT invent fake statistics; use ranges and general guidance when exact data unknown
-- coverKeywords: exactly 4 short visual phrases (2-4 words each) for a stock photo that fits this article — concrete nouns/scenes, not abstract (e.g. "rural clinic stethoscope", "stock market chart", "bollywood film reel")`;
+- coverKeywords: exactly 4 literal visual scenes a photographer could shoot for THIS article — use specific subjects from the title (places, jobs, objects), not generic stock labels`;
 
   const user = input.expandFrom
     ? `Expand this article into a readable blog post (${input.minWords}–${input.maxWords} words). Keep the topic, add depth but stay concise — no fluff.

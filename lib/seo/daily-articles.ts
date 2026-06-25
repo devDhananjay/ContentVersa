@@ -2,12 +2,12 @@ import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
 import { CATEGORIES } from "@/lib/data/categories";
-import { pickCoverForNewArticle } from "@/lib/seo/pick-cover";
+import { resolveArticleCoverImage } from "@/lib/seo/article-cover";
 import { istDayKey } from "@/lib/engagement/streak";
 import { generateSeoArticle } from "@/lib/seo/article-generator";
 import { readingTime, slugify } from "@/lib/utils";
 
-const PER_CATEGORY_DEFAULT = 2;
+const PER_CATEGORY_DEFAULT = 1;
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -152,7 +152,7 @@ export async function runDailyArticleGeneration(options?: {
       }
 
       const tagIds = await upsertTags(article.tags);
-      const coverImage = await pickCoverForNewArticle({
+      const coverImage = await resolveArticleCoverImage({
         categorySlug: cat.slug,
         title: article.title,
         excerpt: article.excerpt,

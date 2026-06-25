@@ -2,7 +2,7 @@ import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { CATEGORIES } from "@/lib/data/categories";
 import type { GeneratedArticle } from "@/lib/seo/article-generator";
-import { pickCoverForNewArticle } from "@/lib/seo/pick-cover";
+import { resolveArticleCoverImage } from "@/lib/seo/article-cover";
 import { readingTime, slugify } from "@/lib/utils";
 
 async function ensureCategory(slug: string) {
@@ -69,7 +69,7 @@ export async function publishGeneratedArticle(input: {
     `article-${Date.now().toString(36)}`;
   const slug = await uniqueSlug(baseSlug);
 
-  const coverImage = await pickCoverForNewArticle({
+  const coverImage = await resolveArticleCoverImage({
     categorySlug: input.categorySlug,
     title: input.article.title,
     excerpt: input.article.excerpt,

@@ -1,8 +1,8 @@
 /**
- * Daily AI articles — 2 per category (IST).
+ * Daily AI articles — 1 per category (IST) by default.
  *
  *   npm run db:daily-ai
- *   npm run db:daily-ai -- --per-category=2 --max=42
+ *   npm run db:daily-ai -- --per-category=1 --max=24
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -36,7 +36,7 @@ function parseArgs() {
   const perCat = process.argv.find((a) => a.startsWith("--per-category="));
   const maxArg = process.argv.find((a) => a.startsWith("--max="));
   return {
-    perCategory: perCat ? Number(perCat.split("=")[1]) : 2,
+    perCategory: perCat ? Number(perCat.split("=")[1]) : 1,
     maxTotal: maxArg ? Number(maxArg.split("=")[1]) : undefined,
   };
 }

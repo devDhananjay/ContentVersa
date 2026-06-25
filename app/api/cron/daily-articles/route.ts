@@ -10,21 +10,21 @@ function authorize(req: Request) {
   return bearer === secret || query === secret;
 }
 
-/** GET /api/cron/daily-articles — 2 AI articles per category (IST day) */
+/** GET /api/cron/daily-articles — 1 AI article per category per IST day (default) */
 export async function GET(req: Request) {
   if (!authorize(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const url = new URL(req.url);
-  const perCategory = Number(url.searchParams.get("perCategory") || "2");
+  const perCategory = Number(url.searchParams.get("perCategory") || "1");
   const maxTotal = url.searchParams.get("max")
     ? Number(url.searchParams.get("max"))
     : undefined;
 
   try {
     const result = await runDailyArticleGeneration({
-      perCategory: Number.isFinite(perCategory) ? perCategory : 2,
+      perCategory: Number.isFinite(perCategory) ? perCategory : 1,
       maxTotal,
     });
     return NextResponse.json({ ok: true, ...result });

@@ -414,27 +414,25 @@ export type CoverImageInput = {
   uniqueKey?: string;
 };
 
-function buildHaystack(input: CoverImageInput): string {
-  return [
-    input.title,
-    input.excerpt ?? "",
-    input.tags?.join(" ") ?? "",
-    input.coverKeywords?.join(" ") ?? "",
-  ]
-    .join(" ")
-    .trim();
-}
-
-/** Best matching visual theme from article content. */
+/** Best matching visual theme from article content (coverKeywords weighted heavily). */
 export function detectCoverTheme(input: CoverImageInput): string | null {
-  const haystack = buildHaystack(input);
+  const weightedParts: { text: string; weight: number }[] = [
+    { text: input.title, weight: 2 },
+    { text: input.excerpt ?? "", weight: 2 },
+    { text: input.tags?.join(" ") ?? "", weight: 1 },
+    ...(input.coverKeywords ?? []).map((keyword) => ({ text: keyword, weight: 5 })),
+  ];
+
   let bestTheme: string | null = null;
   let bestScore = 0;
 
   for (const rule of THEME_RULES) {
     let score = 0;
-    for (const pattern of rule.patterns) {
-      if (pattern.test(haystack)) score += 2;
+    for (const part of weightedParts) {
+      if (!part.text.trim()) continue;
+      for (const pattern of rule.patterns) {
+        if (pattern.test(part.text)) score += 2 * part.weight;
+      }
     }
     if (score > bestScore) {
       bestScore = score;
@@ -484,7 +482,8 @@ export function pickArticleCoverImage(
   takenUrls?: ReadonlySet<string>
 ): string {
   const pool = poolForArticle(input);
-  const seed = `${input.uniqueKey ?? input.slug ?? ""}|${input.title}|${detectCoverTheme(input) ?? input.categorySlug}`;
+  const primaryKeyword = input.coverKeywords?.find((k) => k.trim()) ?? "";
+  const seed = `${input.uniqueKey ?? input.slug ?? ""}|${input.title}|${primaryKeyword}|${detectCoverTheme(input) ?? input.categorySlug}`;
   const start = hashString(seed) % pool.length;
 
   for (let i = 0; i < pool.length; i++) {
