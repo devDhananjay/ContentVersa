@@ -815,6 +815,24 @@ model AlertDispatch {
   @@index([createdAt])
 }
 
+// ---------------------- Meta (Facebook / Instagram) publishing ----------------------
+
+model MetaPublishLog {
+  id          String   @id @default(cuid())
+  contentType String
+  contentId   String
+  platform    String
+  externalId  String?
+  permalink   String?
+  status      String
+  error       String?  @db.Text
+  publishedBy String
+  createdAt   DateTime @default(now())
+
+  @@index([contentId])
+  @@index([createdAt])
+}
+
 // ---------------------- Sports API cache ----------------------
 
 /// Stores raw Cricbuzz API responses synced hourly by cron (avoids rate limits).

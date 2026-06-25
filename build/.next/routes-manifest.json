@@ -498,6 +498,12 @@
       "namedRegex": "^/admin/categories(?:/)?$"
     },
     {
+      "page": "/admin/meta-publishing",
+      "regex": "^/admin/meta\\-publishing(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/meta\\-publishing(?:/)?$"
+    },
+    {
       "page": "/admin/moderation",
       "regex": "^/admin/moderation(?:/)?$",
       "routeKeys": {},
