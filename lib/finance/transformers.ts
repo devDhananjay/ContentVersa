@@ -54,3 +54,14 @@ export function normalizeSymbol(input: string): string {
   if (s.endsWith(".NS") || s.endsWith(".BO")) return s;
   return `${s}.NS`;
 }
+
+/** Map retired / renamed tickers to current Yahoo symbols. */
+const LEGACY_SYMBOL_ALIASES: Record<string, string> = {
+  TATAMOTORS: "TMPV.NS",
+};
+
+export function resolveFinanceSymbol(input: string): string {
+  const normalized = normalizeSymbol(input);
+  const bare = displaySymbol(normalized);
+  return LEGACY_SYMBOL_ALIASES[bare] ?? normalized;
+}

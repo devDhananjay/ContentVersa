@@ -3,7 +3,7 @@ import {
   getFinanceTickerData,
   getStockDetail,
 } from "./yahoo";
-import { normalizeSymbol } from "./transformers";
+import { resolveFinanceSymbol } from "./transformers";
 
 // Do not wrap with React `cache()` here.
 // The underlying `yahoo.ts` already uses Redis/in-memory TTL caching,
@@ -17,5 +17,5 @@ export async function getFinanceHubDataCached() {
 }
 
 export async function getStockDetailCached(symbol: string) {
-  return getStockDetail(normalizeSymbol(symbol));
+  return getStockDetail(resolveFinanceSymbol(symbol));
 }

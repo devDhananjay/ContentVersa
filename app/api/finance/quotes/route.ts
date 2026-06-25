@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { normalizeSymbol } from "@/lib/finance/transformers";
+import { resolveFinanceSymbol } from "@/lib/finance/transformers";
 import { fetchQuotesCached } from "@/lib/finance/fetch-quotes";
 import { financeJsonResponse } from "@/lib/finance/api-response";
 
@@ -11,7 +11,7 @@ export async function GET(req: Request) {
 
   const list = symbols
     .split(",")
-    .map((s) => normalizeSymbol(s.trim()))
+    .map((s) => resolveFinanceSymbol(s.trim()))
     .filter(Boolean)
     .slice(0, 20);
 

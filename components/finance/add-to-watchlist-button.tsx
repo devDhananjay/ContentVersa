@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Loader2, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { displaySymbol, normalizeSymbol } from "@/lib/finance/transformers";
+import { displaySymbol, resolveFinanceSymbol } from "@/lib/finance/transformers";
 
 interface AddToWatchlistButtonProps {
   symbol: string;
@@ -16,7 +16,7 @@ export function AddToWatchlistButton({ symbol }: AddToWatchlistButtonProps) {
   const [inList, setInList] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const normalized = normalizeSymbol(symbol);
+  const normalized = resolveFinanceSymbol(symbol);
 
   React.useEffect(() => {
     fetch("/api/finance/watchlist")

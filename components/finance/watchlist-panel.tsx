@@ -7,7 +7,7 @@ import { Bell, Loader2, LogIn, Plus, Search, Star, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { displaySymbol, normalizeSymbol } from "@/lib/finance/transformers";
+import { displaySymbol, resolveFinanceSymbol } from "@/lib/finance/transformers";
 import type { StockQuote } from "@/lib/finance/types";
 import type { StockSearchResult } from "@/lib/finance/stock-search";
 import { ChangeBadge } from "./change-badge";
@@ -93,7 +93,7 @@ export function WatchlistPanel({ defaultQuotes = [] }: WatchlistPanelProps) {
   }, []);
 
   async function addSymbol(symbolInput?: string) {
-    const sym = normalizeSymbol(symbolInput ?? input);
+    const sym = resolveFinanceSymbol(symbolInput ?? input);
     if (!sym) return;
 
     if (!loggedIn) {
@@ -177,9 +177,9 @@ export function WatchlistPanel({ defaultQuotes = [] }: WatchlistPanelProps) {
         <div className="flex items-start gap-1.5 rounded-lg border border-sky-500/20 bg-sky-500/5 px-2.5 py-2 text-[10px] text-muted-foreground leading-relaxed">
           <Bell className="h-3 w-3 text-sky-500 shrink-0 mt-0.5" />
           <span>
-            Aapko apne favorite stocks ke liye market <strong>open</strong> aur{" "}
-            <strong>close</strong> par email + notification milega — kitne pe khula
-            aur band hua.
+            You&apos;ll receive email and notifications when your favorite stocks{" "}
+            <strong>open</strong> and <strong>close</strong> each trading day — including
+            the opening and closing prices.
           </span>
         </div>
       )}
@@ -226,7 +226,12 @@ export function WatchlistPanel({ defaultQuotes = [] }: WatchlistPanelProps) {
                       className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-[11px] hover:bg-muted/60"
                     >
                       <span className="font-medium">{row.label}</span>
-                      <span className="text-[9px] text-muted-foreground ml-auto">
+                      {row.hint ? (
+                        <span className="text-[9px] text-muted-foreground truncate">
+                          {row.hint}
+                        </span>
+                      ) : null}
+                      <span className="text-[9px] text-muted-foreground ml-auto shrink-0">
                         NSE
                       </span>
                     </button>

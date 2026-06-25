@@ -5,7 +5,7 @@ import { isDatabaseConfigured } from "@/lib/prisma";
 import { addToWatchlist, getUserWatchlistSymbols, removeFromWatchlist } from "@/lib/finance/watchlist-db";
 import { fetchQuotesCached } from "@/lib/finance/fetch-quotes";
 import { isKnownFinanceSymbol } from "@/lib/finance/stock-search";
-import { normalizeSymbol } from "@/lib/finance/transformers";
+import { resolveFinanceSymbol } from "@/lib/finance/transformers";
 
 export async function GET() {
   if (!isDatabaseConfigured()) {
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "symbol required" }, { status: 400 });
     }
 
-    const symbol = normalizeSymbol(body.symbol);
+    const symbol = resolveFinanceSymbol(body.symbol);
     if (!isKnownFinanceSymbol(symbol)) {
       return NextResponse.json(
         { error: "Stock not found. Try Nifty 50 symbols like RELIANCE, TCS, INFY." },

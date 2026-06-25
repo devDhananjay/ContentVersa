@@ -1,5 +1,5 @@
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
-import { normalizeSymbol } from "./transformers";
+import { resolveFinanceSymbol } from "./transformers";
 
 export async function getUserWatchlistSymbols(userId: string): Promise<string[]> {
   if (!isDatabaseConfigured()) return [];
@@ -15,7 +15,7 @@ export async function addToWatchlist(
   userId: string,
   symbolInput: string
 ): Promise<string[]> {
-  const symbol = normalizeSymbol(symbolInput);
+  const symbol = resolveFinanceSymbol(symbolInput);
   await prisma.financeWatchlistItem.upsert({
     where: { userId_symbol: { userId, symbol } },
     create: { userId, symbol },
@@ -28,7 +28,7 @@ export async function removeFromWatchlist(
   userId: string,
   symbolInput: string
 ): Promise<string[]> {
-  const symbol = normalizeSymbol(symbolInput);
+  const symbol = resolveFinanceSymbol(symbolInput);
   await prisma.financeWatchlistItem.deleteMany({
     where: { userId, symbol },
   });
@@ -39,7 +39,7 @@ export async function isInWatchlist(
   userId: string,
   symbolInput: string
 ): Promise<boolean> {
-  const symbol = normalizeSymbol(symbolInput);
+  const symbol = resolveFinanceSymbol(symbolInput);
   const row = await prisma.financeWatchlistItem.findUnique({
     where: { userId_symbol: { userId, symbol } },
     select: { id: true },
