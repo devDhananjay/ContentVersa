@@ -96,6 +96,48 @@ export function trendingArticleEmail(opts: {
   return { subject: `Trending: ${opts.title.slice(0, 60)}`, html };
 }
 
+export function stockWatchlistDigestEmail(opts: {
+  phase: "open" | "close";
+  items: { title: string; message: string; link?: string | null }[];
+  unsubscribeUrl?: string;
+}) {
+  const site = getAppUrl();
+  const heading =
+    opts.phase === "open"
+      ? "Market open — your watchlist"
+      : "Market close — your watchlist";
+  const subject =
+    opts.phase === "open"
+      ? "Your watchlist: market open update"
+      : "Your watchlist: market close update";
+
+  const list = opts.items
+    .map((item) => {
+      const href = item.link?.startsWith("http")
+        ? item.link
+        : item.link
+          ? `${site}${item.link}`
+          : `${site}/finance`;
+      return `<li style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #27272a;">
+          <a href="${href}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${escapeHtml(item.title)}</a>
+          <p style="margin:6px 0 0;color:#a1a1aa;font-size:14px;line-height:1.5;">${escapeHtml(item.message)}</p>
+        </li>`;
+    })
+    .join("");
+
+  const html = layout(
+    `<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">${heading}</h1>
+    <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">${opts.items.length} stock${opts.items.length === 1 ? "" : "s"} on your watchlist</p>
+    <ul style="margin:0;padding:0;list-style:none;">${list}</ul>
+    ${btn(`${site}/finance`, "View watchlist")}`,
+    opts.unsubscribeUrl
+      ? `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe from emails</a></p>`
+      : ""
+  );
+
+  return { subject, html };
+}
+
 export function notificationEmail(opts: {
   title: string;
   message: string;

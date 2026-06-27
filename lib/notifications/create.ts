@@ -2,7 +2,10 @@ import { NotificationType, Prisma } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { sendPushToUser } from "@/lib/notifications/push";
 import { sendEmail } from "@/lib/email/mailer";
-import { notificationEmail } from "@/lib/email/templates";
+import {
+  notificationEmail,
+  stockWatchlistDigestEmail,
+} from "@/lib/email/templates";
 import {
   newsletterUnsubscribeUrl,
 } from "@/lib/newsletter/subscribe";
@@ -32,7 +35,6 @@ const EMAIL_TYPES = new Set<NotificationType>([
   NotificationType.FOLLOW,
   NotificationType.APPROVAL,
   NotificationType.CRICKET_MATCH_REMINDER,
-  NotificationType.STOCK_WATCHLIST_ALERT,
 ]);
 
 async function emailUserForNotification(
@@ -117,6 +119,57 @@ export async function createUserNotificationsBulk(
   }
 
   return created;
+}
+
+/** One combined inbox email per user for all watchlist stocks in a session. */
+export async function emailStockWatchlistDigests(
+  payloads: NotificationPayload[],
+  phase: "open" | "close"
+): Promise<number> {
+  if (!payloads.length) return 0;
+
+  const byUser = new Map<string, NotificationPayload[]>();
+  for (const payload of payloads) {
+    const list = byUser.get(payload.userId) ?? [];
+    list.push(payload);
+    byUser.set(payload.userId, list);
+  }
+
+  const userIds = [...byUser.keys()];
+  const users = await prisma.user.findMany({
+    where: { id: { in: userIds } },
+    select: { id: true, email: true },
+  });
+
+  let sent = 0;
+  for (const user of users) {
+    if (!user.email) continue;
+
+    const items = byUser.get(user.id);
+    if (!items?.length) continue;
+
+    const subscriber = await prisma.newsletterSubscriber.findUnique({
+      where: { email: user.email.toLowerCase() },
+      select: { id: true },
+    });
+
+    const { subject, html } = stockWatchlistDigestEmail({
+      phase,
+      items: items.map((item) => ({
+        title: item.title,
+        message: item.message,
+        link: item.link,
+      })),
+      unsubscribeUrl: subscriber
+        ? newsletterUnsubscribeUrl(subscriber.id)
+        : undefined,
+    });
+
+    const ok = await sendEmail({ to: user.email, subject, html });
+    if (ok) sent += 1;
+  }
+
+  return sent;
 }
 
 export async function getSubscriberIdByEmail(email: string) {

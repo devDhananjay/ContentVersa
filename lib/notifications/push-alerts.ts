@@ -4,7 +4,10 @@
  */
 import { NotificationType } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
-import { createUserNotificationsBulk } from "@/lib/notifications/create";
+import {
+  createUserNotificationsBulk,
+  emailStockWatchlistDigests,
+} from "@/lib/notifications/create";
 import { sendPushToUser } from "@/lib/notifications/push";
 import { claimAlertDispatch, istDateKey } from "@/lib/notifications/alert-dispatch";
 import { getUpcomingMatches } from "@/lib/sports/data";
@@ -135,7 +138,8 @@ export async function sendStockWatchlistSessionAlerts(phase: StockPhase) {
   }
 
   const result = await notifyUsers(payloads);
-  return { ...result, phase, stocks: payloads.length };
+  const emails = await emailStockWatchlistDigests(payloads, phase);
+  return { ...result, phase, stocks: payloads.length, emails };
 }
 
 /** @deprecated Use sendStockWatchlistSessionAlerts('close') for large moves if needed */
