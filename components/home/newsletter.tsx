@@ -45,7 +45,7 @@ export function Newsletter() {
   };
 
   return (
-    <section className="container py-12 md:py-20">
+    <section id="newsletter" className="container py-12 md:py-20 scroll-mt-24">
       <div className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-neon-blue/10 via-neon-purple/10 to-neon-pink/10 p-8 md:p-16 text-center">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-neon-blue/20 rounded-full blur-3xl" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-neon-pink/20 rounded-full blur-3xl" />

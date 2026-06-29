@@ -13,6 +13,7 @@ import { QuickPollSection } from "@/components/home/quick-poll";
 import { DailyQuizSection } from "@/components/home/daily-quiz";
 import { NewsIn60Section } from "@/components/home/news-in-60";
 import { Newsletter } from "@/components/home/newsletter";
+import { StayEngagedStrip } from "@/components/home/stay-engaged-strip";
 import { Testimonials } from "@/components/home/testimonials";
 import { SportsTeaser } from "@/components/home/sports-teaser";
 import { ForYouSection } from "@/components/home/for-you-section";
@@ -49,6 +50,7 @@ export default async function HomePage() {
       <QuickPollSection />
       <DailyQuizSection />
       <WeeklyTrending topics={data.weeklyTopics} />
+      <StayEngagedStrip />
       <Testimonials />
       <Newsletter />
     </>

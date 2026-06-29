@@ -54,7 +54,7 @@ export function DailyQuizSection() {
 
   if (loading) {
     return (
-      <section className="container py-12 md:py-16">
+      <section id="daily-quiz" className="container py-12 md:py-16 scroll-mt-24">
         <div className="max-w-xl mx-auto flex justify-center py-8">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
@@ -65,7 +65,7 @@ export function DailyQuizSection() {
   if (!quiz) return null;
 
   return (
-    <section className="container py-12 md:py-16">
+    <section id="daily-quiz" className="container py-12 md:py-16 scroll-mt-24">
       <div className="max-w-xl mx-auto rounded-2xl border bg-card p-6 md:p-8">
         <div className="flex items-center gap-2 mb-4">
           <Brain className="h-4 w-4 text-neon-purple" />
