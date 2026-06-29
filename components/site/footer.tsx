@@ -39,6 +39,7 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
       { label: "Privacy", href: "/privacy" },
       { label: "Cookies", href: "/cookies" },
       { label: "Content Policy", href: "/policy" },
+      { label: "Site Map", href: "/site-map" },
     ],
   },
 ];

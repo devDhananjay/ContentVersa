@@ -776,6 +776,12 @@
       "namedRegex": "^/robots\\.txt(?:/)?$"
     },
     {
+      "page": "/site-map",
+      "regex": "^/site\\-map(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/site\\-map(?:/)?$"
+    },
+    {
       "page": "/sitemap.xml",
       "regex": "^/sitemap\\.xml(?:/)?$",
       "routeKeys": {},

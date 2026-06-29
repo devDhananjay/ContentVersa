@@ -176,7 +176,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
       {
         heading: "Pricing",
         paragraphs: [
-          "Premium creator plan: ₹499/month — cancel anytime.",
+          "Premium creator plan: ₹199/month — cancel anytime.",
           "Reader Premium (ad-light experience + exclusive posts): ₹199/month.",
           "Tips and one-time paid posts are always available on the free plan.",
         ],
@@ -386,10 +386,14 @@ function mapDbRow(row: {
   };
 }
 
+/** Slugs whose DB copy is refreshed from code defaults on boot. */
+const SYNC_FROM_DEFAULTS: SitePageSlug[] = ["premium"];
+
 export async function ensureSitePagesInDb() {
   if (!isDatabaseConfigured()) return;
   for (const slug of SITE_PAGE_SLUGS) {
     const def = DEFAULT_PAGES[slug];
+    const sync = SYNC_FROM_DEFAULTS.includes(slug);
     await prisma.sitePage.upsert({
       where: { slug },
       create: {
@@ -399,7 +403,14 @@ export async function ensureSitePagesInDb() {
         badge: def.badge ?? null,
         sections: def.sections,
       },
-      update: {},
+      update: sync
+        ? {
+            title: def.title,
+            subtitle: def.subtitle,
+            badge: def.badge ?? null,
+            sections: def.sections,
+          }
+        : {},
     });
   }
 }

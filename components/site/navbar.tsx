@@ -10,13 +10,13 @@ import {
   Menu,
   X,
   Compass,
-  Trophy,
   Bookmark,
   LayoutDashboard,
   Medal,
   TrendingUp,
   Film,
   Briefcase,
+  Map,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { UserNav, MobileUserNav } from "@/components/auth/user-nav";
@@ -35,8 +35,8 @@ const NAV_LINKS = [
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/reels", label: "Reels", icon: Film },
   { href: "/categories", label: "Categories", icon: LayoutDashboard },
-  { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/bookmarks", label: "Bookmarks", icon: Bookmark },
+  { href: "/site-map", label: "Site Map", icon: Map },
 ];
 
 export function Navbar({

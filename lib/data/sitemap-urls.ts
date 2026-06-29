@@ -25,6 +25,7 @@ const STATIC_PAGES: Array<{
   { path: "/cookies", changeFrequency: "yearly", priority: 0.3 },
   { path: "/creator-program", changeFrequency: "monthly", priority: 0.55 },
   { path: "/premium", changeFrequency: "monthly", priority: 0.5 },
+  { path: "/site-map", changeFrequency: "monthly", priority: 0.45 },
   { path: "/sports", changeFrequency: "hourly", priority: 0.85 },
   { path: "/sports/teams", changeFrequency: "daily", priority: 0.75 },
   { path: "/sports/players", changeFrequency: "daily", priority: 0.75 },
