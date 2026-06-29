@@ -14,6 +14,20 @@
   ],
   "headers": [
     {
+      "source": "/ads.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ],
+      "regex": "^/ads\\.txt(?:/)?$"
+    },
+    {
       "source": "/:path*",
       "headers": [
         {
@@ -538,6 +552,12 @@
       "regex": "^/admin/users(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admin/users(?:/)?$"
+    },
+    {
+      "page": "/ads.txt",
+      "regex": "^/ads\\.txt(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/ads\\.txt(?:/)?$"
     },
     {
       "page": "/apple-icon.png",
