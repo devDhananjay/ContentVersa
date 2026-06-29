@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HELP_SUGGESTIONS } from "@/lib/help/chat-knowledge";
+import { HELP_SUGGESTIONS, detectLocale } from "@/lib/help/chat-knowledge";
 import { AccessibilityHub } from "@/components/a11y/accessibility-hub";
 
 export const HELP_CHAT_OPEN_EVENT = "contentverse:help-chat-open";
@@ -182,15 +182,21 @@ export function HelpChatWidget() {
   const t = COPY[locale];
   const hidden = pathname.startsWith("/admin");
 
-  const loadWelcome = React.useCallback(async () => {
+  const loadWelcome = React.useCallback(async (welcomeLocale?: Locale) => {
     if (welcomeLoadingRef.current) return;
     welcomeLoadingRef.current = true;
+    const lang =
+      welcomeLocale ??
+      (typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("hi")
+        ? "hi"
+        : "en");
+    setLocale(lang);
     setLoading(true);
     try {
       const res = await fetch("/api/help/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ welcome: true, pagePath: pathname, locale }),
+        body: JSON.stringify({ welcome: true, pagePath: pathname, locale: lang }),
       });
       const data = (await res.json()) as {
         ok?: boolean;
@@ -224,7 +230,7 @@ export function HelpChatWidget() {
       setLoading(false);
       setWelcomeDone(true);
     }
-  }, [locale, pathname]);
+  }, [pathname]);
 
   React.useEffect(() => {
     const onOpen = () => {
@@ -266,6 +272,9 @@ export function HelpChatWidget() {
       const trimmed = text.trim();
       if (!trimmed || loading) return;
 
+      const msgLocale = detectLocale(trimmed);
+      setLocale(msgLocale);
+
       const userMsg: ChatMessage = {
         id: `u-${Date.now()}`,
         role: "user",
@@ -287,7 +296,7 @@ export function HelpChatWidget() {
               .slice(-10)
               .map((m) => ({ role: m.role, content: m.content })),
             pagePath: pathname,
-            locale,
+            locale: msgLocale,
           }),
         });
         const data = (await res.json()) as {
@@ -304,7 +313,7 @@ export function HelpChatWidget() {
             role: "assistant",
             content:
               data.reply ||
-              (locale === "hi"
+              (msgLocale === "hi"
                 ? "कुछ गलत हो गया। /contact पर लिखें।"
                 : "Something went wrong. Try /contact."),
             source: data.source,
@@ -318,7 +327,7 @@ export function HelpChatWidget() {
             id: `a-${Date.now()}`,
             role: "assistant",
             content:
-              locale === "hi"
+              msgLocale === "hi"
                 ? "Network error। बाद में try करें।"
                 : "Network error. Try again later.",
             source: "local",
@@ -329,7 +338,7 @@ export function HelpChatWidget() {
         setLoading(false);
       }
     },
-    [loading, locale, messages, pathname]
+    [loading, messages, pathname]
   );
 
   const onSubmit = (e: React.FormEvent) => {
@@ -361,9 +370,12 @@ export function HelpChatWidget() {
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <div className="flex rounded-lg border border-border/60 overflow-hidden text-[10px] font-semibold">
-                <button
-                  type="button"
-                  onClick={() => setLocale("en")}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocale("en");
+                      if (messages.length <= 1) void loadWelcome("en");
+                    }}
                   className={cn(
                     "px-2 py-1 transition-colors",
                     locale === "en" ? "bg-neon-purple/20 text-foreground" : "text-muted-foreground"
@@ -371,9 +383,12 @@ export function HelpChatWidget() {
                 >
                   EN
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setLocale("hi")}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocale("hi");
+                      if (messages.length <= 1) void loadWelcome("hi");
+                    }}
                   className={cn(
                     "px-2 py-1 transition-colors",
                     locale === "hi" ? "bg-neon-purple/20 text-foreground" : "text-muted-foreground"

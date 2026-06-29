@@ -3,6 +3,7 @@ import { searchBlogs } from "@/lib/data/blogs";
 import { CATEGORIES } from "@/lib/data/categories";
 import {
   defaultFallback,
+  detectLocale,
   faqAnswer,
   looksLikeContentSearch,
   matchFaq,
@@ -47,7 +48,19 @@ function buildSearchReply(
       c.slug.toLowerCase().includes(term.toLowerCase())
   ).slice(0, 3);
 
-  if (blogs.length === 0 && categories.length === 0) return null;
+  if (blogs.length === 0 && categories.length === 0) {
+    if (/trending|latest|popular/.test(term.toLowerCase())) {
+      return {
+        reply:
+          locale === "hi"
+            ? "ट्रेंडिंग और latest blogs यहाँ browse करें:"
+            : "Browse trending and latest blogs here:",
+        source: "search",
+        links: [{ label: "Explore blogs", href: "/blogs" }],
+      };
+    }
+    return null;
+  }
 
   const links: HelpLink[] = [
     ...blogs.map((b) => ({ label: b.title, href: `/blogs/${b.slug}` })),
@@ -75,12 +88,16 @@ function buildSearchReply(
   };
 }
 
-function helpSystemPrompt(pagePath?: string) {
+function helpSystemPrompt(pagePath: string | undefined, locale: "en" | "hi") {
   const nav = SITE_MAP_NAV.links.map((l) => `${l.label}: ${l.href}`).join(", ");
+  const langRule =
+    locale === "hi"
+      ? "CRITICAL: Reply ONLY in Hindi (Devanagari script). Do not write English sentences — proper nouns like ContentVerse are fine."
+      : "CRITICAL: Reply ONLY in English. Do not use Hindi or Devanagari script.";
   return `You are ContentVerse Help — a short, friendly site assistant (NOT a generic chatbot).
 Answer ONLY about ContentVerse: blogs, reels, sports, finance, jobs, creator dashboard, premium (₹199/mo), newsletter (opt-in only), contact.
 Keep replies under 120 words. Use bullet points when listing steps.
-Reply in the same language the user used (English or Hindi).
+${langRule}
 Never invent features. If unsure, suggest /contact or /site-map.
 Current page path: ${pagePath || "/"}
 Key links: ${nav}, /dashboard/create, /premium, /leaderboard, /site-map, /contact`;
@@ -89,7 +106,8 @@ Key links: ${nav}, /dashboard/create, /premium, /leaderboard, /site-map, /contac
 async function askGemini(
   message: string,
   history: HelpChatMessage[],
-  pagePath?: string
+  pagePath: string | undefined,
+  locale: "en" | "hi"
 ): Promise<string | null> {
   if (!isGeminiConfigured()) return null;
 
@@ -102,15 +120,13 @@ async function askGemini(
     ? `${transcript}\nUser: ${message}`
     : message;
 
-  return callGeminiText(helpSystemPrompt(pagePath), user, 320);
+  return callGeminiText(helpSystemPrompt(pagePath, locale), user, 320);
 }
 
 const WELCOME_GEMINI_SYSTEM = `You are ContentVerse Help greeting a new website visitor.
 Write a warm welcome in 2-3 short paragraphs (max 90 words total).
-Start with "Hello!" and "Namaste!" on its own line or early in the message.
 Briefly say you help with blogs, reels, finance, sports, jobs, and writing on ContentVerse.
 End by inviting them to subscribe to the free weekly newsletter (opt-in only, unsubscribe anytime).
-Use light Hinglish if locale is hi; otherwise friendly English.
 No markdown headers. You may use **bold** sparingly. Do not invent features.`;
 
 export async function generateWelcomeMessage(
@@ -122,10 +138,14 @@ export async function generateWelcomeMessage(
   if (isGeminiConfigured()) {
     const prompt =
       locale === "hi"
-        ? "नए visitor को ContentVerse पर स्वागत करो। Hello और Namaste दोनों बोलो।"
-        : "Greet a new visitor landing on ContentVerse.";
+        ? "नए visitor को ContentVerse पर स्वागत करो। Hello और Namaste दोनों बोलो। पूरा जवाब हिंदी (देवनागरी) में लिखो।"
+        : "Greet a new visitor landing on ContentVerse. Start with Hello! Write the entire reply in English only.";
+    const system =
+      locale === "hi"
+        ? `${WELCOME_GEMINI_SYSTEM}\nCRITICAL: Write ONLY in Hindi (Devanagari). Start with Hello! and Namaste!`
+        : `${WELCOME_GEMINI_SYSTEM}\nCRITICAL: Write ONLY in English. You may say Namaste once as a greeting.`;
     const ai = await callGeminiText(
-      `${WELCOME_GEMINI_SYSTEM}\nLocale: ${locale}\nPage: ${pagePath || "/"}`,
+      `${system}\nPage: ${pagePath || "/"}`,
       prompt,
       400
     );
@@ -149,17 +169,18 @@ export async function respondToHelpChat(opts: {
   welcome?: boolean;
 }): Promise<HelpChatResult> {
   if (opts.welcome) {
-    return generateWelcomeMessage(opts.locale ?? "en", opts.pagePath);
+    const welcomeLocale = opts.locale ?? "en";
+    return generateWelcomeMessage(welcomeLocale, opts.pagePath);
   }
 
   const message = opts.message.trim();
   if (!message) {
-    const locale = opts.locale ?? "en";
+    const locale = pickLocale("", opts.locale);
     const fb = defaultFallback(locale);
     return { reply: fb.reply, source: "local", links: fb.links };
   }
 
-  const locale = pickLocale(message, opts.locale);
+  const locale = detectLocale(message);
 
   if (looksLikeContentSearch(message)) {
     const search = buildSearchReply(message, locale);
@@ -175,7 +196,7 @@ export async function respondToHelpChat(opts: {
     };
   }
 
-  const ai = await askGemini(message, opts.history ?? [], opts.pagePath);
+  const ai = await askGemini(message, opts.history ?? [], opts.pagePath, locale);
   if (ai) {
     return { reply: ai, source: "gemini" };
   }

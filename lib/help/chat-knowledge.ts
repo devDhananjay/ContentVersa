@@ -198,9 +198,21 @@ export function isHindiText(text: string) {
   return /[\u0900-\u097F]/.test(text);
 }
 
+const HINGLISH_RE =
+  /\b(kya|kaise|kahan|kahin|mujhe|batao|dikhao|chahiye|karna|karo|hai|hain|nahi|nahin|ka|ki|ke|mein|me|par|se|ko|aur|koi|bata|madad|namaste|dhanyavad|shukriya|likh|lekh|kaise|krna|krdo|btao|btao)\b/i;
+
+/** Detect reply language from the user's message (not UI toggle). */
+export function detectLocale(text: string): "en" | "hi" {
+  const t = text.trim();
+  if (!t) return "en";
+  if (isHindiText(t)) return "hi";
+  if (HINGLISH_RE.test(t)) return "hi";
+  return "en";
+}
+
 export function pickLocale(text: string, preferred?: "en" | "hi"): "en" | "hi" {
-  if (preferred) return preferred;
-  return isHindiText(text) ? "hi" : "en";
+  if (text.trim()) return detectLocale(text);
+  return preferred ?? "en";
 }
 
 export function faqAnswer(entry: HelpFaqEntry, locale: "en" | "hi") {
