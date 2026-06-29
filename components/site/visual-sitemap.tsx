@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, CSSProperties } from "react";
 import Link from "next/link";
 import {
   Home,
@@ -114,72 +114,84 @@ const COLOR_STYLES: Record<
   },
 };
 
+function TreeList({
+  children,
+  treeColor,
+  className,
+}: {
+  children: React.ReactNode;
+  treeColor: string;
+  className?: string;
+}) {
+  return (
+    <ul
+      className={cn("sitemap-tree-trunk list-none", className)}
+      style={{ "--tree-line-color": treeColor } as CSSProperties}
+    >
+      {children}
+    </ul>
+  );
+}
+
 function TreeItem({
   item,
-  lineClass,
-  depth = 0,
+  treeColor,
+  isFirst = true,
   isLast = true,
 }: {
   item: SiteMapItem;
-  lineClass: string;
-  depth?: number;
+  treeColor: string;
+  isFirst?: boolean;
   isLast?: boolean;
 }) {
   const hasChildren = Boolean(item.children?.length);
-  const pl = depth === 0 ? "pl-5" : "pl-4";
+
+  const label = item.href ? (
+    <Link
+      href={item.href}
+      className="text-sm font-medium text-foreground hover:text-neon-purple transition-colors min-w-0"
+    >
+      {item.label}
+    </Link>
+  ) : (
+    <span className="text-sm font-medium text-foreground">{item.label}</span>
+  );
 
   return (
-    <li className={cn("relative list-none", pl)}>
-      {/* elbow connector */}
-      <span
-        aria-hidden
-        className={cn(
-          "absolute left-0 border-dashed",
-          depth === 0 ? "top-[0.65rem] w-4 border-t-2" : "top-[0.6rem] w-3 border-t-2",
-          lineClass
-        )}
-      />
-      {depth > 0 && (
+    <li
+      className="sitemap-tree-item list-none"
+      style={{ "--tree-line-color": treeColor } as CSSProperties}
+    >
+      {isFirst && (
+        <span aria-hidden className="absolute left-0 top-0 z-[1] h-4 w-0.5 bg-card pointer-events-none" />
+      )}
+      {isLast && (
         <span
           aria-hidden
-          className={cn(
-            "absolute left-0 top-0 border-l-2 border-dashed",
-            isLast ? "h-[0.7rem]" : "h-full",
-            lineClass
-          )}
+          className="absolute left-0 top-4 bottom-0 z-[1] w-0.5 bg-card pointer-events-none"
         />
       )}
 
-      <div className="py-1.5">
-        {item.href ? (
-          <Link
-            href={item.href}
-            className="text-sm font-medium text-foreground hover:text-neon-purple transition-colors"
-          >
-            {item.label}
-          </Link>
-        ) : (
-          <span className="text-sm font-medium text-foreground">{item.label}</span>
-        )}
-        {item.detail && (
-          <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed pr-1">
-            {item.detail}
-          </p>
-        )}
-      </div>
+      <div className="relative z-[2] flex items-center py-1.5 min-w-0">{label}</div>
+
+      {item.detail && (
+        <p className="relative z-[2] mt-0.5 pb-1 text-xs text-muted-foreground leading-relaxed pr-1">
+          {item.detail}
+        </p>
+      )}
 
       {hasChildren && (
-        <ul className="relative ml-1 border-l-2 border-dashed border-border/50">
+        <TreeList treeColor={treeColor} className="ml-1">
           {item.children!.map((child, i) => (
             <TreeItem
               key={`${child.label}-${i}`}
               item={child}
-              lineClass={lineClass}
-              depth={depth + 1}
+              treeColor={treeColor}
+              isFirst={i === 0}
               isLast={i === item.children!.length - 1}
             />
           ))}
-        </ul>
+        </TreeList>
       )}
     </li>
   );
@@ -241,19 +253,20 @@ function ModuleCard({
         <div className="px-3 py-3 space-y-4">
           {module.groups.map((group) => (
             <div key={group.heading}>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 px-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 px-2">
                 {group.heading}
               </p>
-              <ul className="relative ml-2 border-l-2 border-dashed border-border/50">
+              <TreeList treeColor={styles.svg}>
                 {group.items.map((item, i) => (
                   <TreeItem
                     key={`${group.heading}-${item.label}`}
                     item={item}
-                    lineClass={styles.line}
+                    treeColor={styles.svg}
+                    isFirst={i === 0}
                     isLast={i === group.items.length - 1}
                   />
                 ))}
-              </ul>
+              </TreeList>
             </div>
           ))}
         </div>
@@ -262,50 +275,11 @@ function ModuleCard({
   );
 }
 
-function NavBusConnector({ columnCount }: { columnCount: number }) {
-  const cols = Math.min(columnCount, 4);
-  const positions = Array.from({ length: cols }, (_, i) => ((i + 0.5) / cols) * 100);
-
+function NavToModulesBridge() {
   return (
-    <div className="hidden lg:block relative h-12 w-full pointer-events-none" aria-hidden>
-      <svg className="absolute inset-0 w-full h-full overflow-visible">
-        {/* NAV center down */}
-        <line
-          x1="50%"
-          y1="0"
-          x2="50%"
-          y2="18"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeDasharray="5 5"
-          className="text-border"
-        />
-        {/* horizontal bus */}
-        <line
-          x1={`${positions[0]}%`}
-          y1="18"
-          x2={`${positions[positions.length - 1]}%`}
-          y2="18"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeDasharray="5 5"
-          className="text-border"
-        />
-        {/* drops to each column in first row */}
-        {positions.map((x) => (
-          <line
-            key={x}
-            x1={`${x}%`}
-            y1="18"
-            x2={`${x}%`}
-            y2="48"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeDasharray="5 5"
-            className="text-border"
-          />
-        ))}
-      </svg>
+    <div className="hidden lg:flex flex-col items-center pointer-events-none" aria-hidden>
+      <div className="h-6 w-px border-l-2 border-dashed border-border/60" />
+      <div className="h-px w-full max-w-4xl border-t-2 border-dashed border-border/60" />
     </div>
   );
 }
@@ -334,9 +308,10 @@ export function VisualSitemap() {
         pages, sub-features, and admin tools. Every box is clickable where a live page exists.
       </p>
 
-      {/* ─── NAV ─── */}
-      <div className="flex flex-col items-center">
-        <div className="w-full max-w-3xl rounded-2xl border-2 border-dashed border-neon-purple/50 bg-neon-purple/10 px-6 py-5 shadow-sm">
+      {/* ─── NAV + modules (connected) ─── */}
+      <div className="flex flex-col items-stretch gap-0">
+        <div className="flex flex-col items-center">
+          <div className="w-full max-w-3xl rounded-2xl border-2 border-dashed border-neon-purple/50 bg-neon-purple/10 px-6 py-5 shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-neon-purple text-center mb-2">
             NAV · Global header
           </p>
@@ -370,16 +345,16 @@ export function VisualSitemap() {
               </Link>
             ))}
           </div>
+          </div>
         </div>
-      </div>
 
-      <NavBusConnector columnCount={4} />
+        <NavToModulesBridge />
 
-      {/* ─── Main modules ─── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-6">
-        {SITE_MAP_MODULES.map((mod) => (
-          <ModuleCard key={mod.id} module={mod} showConnector={false} />
-        ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-6 w-full -mt-px">
+          {SITE_MAP_MODULES.map((mod) => (
+            <ModuleCard key={mod.id} module={mod} showConnector={false} />
+          ))}
+        </div>
       </div>
 
       {/* ─── Admin ─── */}

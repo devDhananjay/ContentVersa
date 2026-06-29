@@ -170,6 +170,84 @@
   animation: shimmer 2s linear infinite;
 }
 
+@keyframes sitemap-dash-march-v {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 8px;
+  }
+}
+
+@keyframes sitemap-dash-march-h {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 8px 0;
+  }
+}
+
+/* Site map tree — one continuous vertical trunk + animated branches */
+.sitemap-tree-trunk {
+  position: relative;
+  margin-left: 0.5rem;
+}
+
+.sitemap-tree-trunk::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--tree-line-color, hsl(var(--border))) 0,
+    var(--tree-line-color, hsl(var(--border))) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  background-size: 2px 8px;
+  animation: sitemap-dash-march-v 1.4s linear infinite;
+}
+
+.sitemap-tree-item {
+  position: relative;
+  padding-left: 0.75rem;
+}
+
+.sitemap-tree-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  width: 0.75rem;
+  height: 2px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(
+    to right,
+    var(--tree-line-color, hsl(var(--border))) 0,
+    var(--tree-line-color, hsl(var(--border))) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  background-size: 8px 2px;
+  animation: sitemap-dash-march-h 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sitemap-tree-trunk::before,
+  .sitemap-tree-item::before {
+    animation: none;
+  }
+}
+
+html.sr-reduce-motion .sitemap-tree-trunk::before,
+html.sr-reduce-motion .sitemap-tree-item::before {
+  animation: none;
+}
+
 /* Finance market strip — seamless marquee */
 @keyframes marquee {
   0% {
