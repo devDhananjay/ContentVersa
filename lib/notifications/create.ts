@@ -121,10 +121,18 @@ export async function createUserNotificationsBulk(
   return created;
 }
 
+export type StockMoverEmailRow = {
+  symbol: string;
+  name: string;
+  price: number;
+  changePercent: number;
+};
+
 /** One combined inbox email per user for all watchlist stocks in a session. */
 export async function emailStockWatchlistDigests(
   payloads: NotificationPayload[],
-  phase: "open" | "close"
+  phase: "open" | "close",
+  movers?: { topGainers: StockMoverEmailRow[]; topLosers: StockMoverEmailRow[] }
 ): Promise<number> {
   if (!payloads.length) return 0;
 
@@ -160,6 +168,8 @@ export async function emailStockWatchlistDigests(
         message: item.message,
         link: item.link,
       })),
+      topGainers: movers?.topGainers,
+      topLosers: movers?.topLosers,
       unsubscribeUrl: subscriber
         ? newsletterUnsubscribeUrl(subscriber.id)
         : undefined,

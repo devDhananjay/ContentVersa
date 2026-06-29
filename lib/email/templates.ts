@@ -96,9 +96,51 @@ export function trendingArticleEmail(opts: {
   return { subject: `Trending: ${opts.title.slice(0, 60)}`, html };
 }
 
+type StockMoverRow = {
+  symbol: string;
+  name: string;
+  price: number;
+  changePercent: number;
+};
+
+function formatChangePercent(changePercent: number): string {
+  const sign = changePercent >= 0 ? "+" : "";
+  return `${sign}${changePercent.toFixed(2)}%`;
+}
+
+function stockMoverList(
+  site: string,
+  rows: StockMoverRow[],
+  tone: "gain" | "loss"
+): string {
+  if (!rows.length) {
+    return `<p style="margin:0;color:#71717a;font-size:14px;">No data available right now.</p>`;
+  }
+
+  const color = tone === "gain" ? "#4ade80" : "#f87171";
+  return `<ul style="margin:0;padding:0;list-style:none;">
+    ${rows
+      .map((row) => {
+        const href = `${site}/finance/stock/${encodeURIComponent(row.symbol)}`;
+        const price = row.price.toLocaleString("en-IN", { maximumFractionDigits: 2 });
+        return `<li style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #27272a;">
+          <a href="${href}" style="color:#fff;font-weight:600;text-decoration:none;font-size:15px;">${escapeHtml(row.symbol)}</a>
+          <span style="display:block;margin-top:4px;color:#a1a1aa;font-size:13px;">${escapeHtml(row.name)}</span>
+          <span style="display:block;margin-top:6px;font-size:14px;">
+            <span style="color:#d4d4d8;">₹${price}</span>
+            <span style="color:${color};font-weight:600;margin-left:8px;">${formatChangePercent(row.changePercent)}</span>
+          </span>
+        </li>`;
+      })
+      .join("")}
+  </ul>`;
+}
+
 export function stockWatchlistDigestEmail(opts: {
   phase: "open" | "close";
   items: { title: string; message: string; link?: string | null }[];
+  topGainers?: StockMoverRow[];
+  topLosers?: StockMoverRow[];
   unsubscribeUrl?: string;
 }) {
   const site = getAppUrl();
@@ -125,10 +167,27 @@ export function stockWatchlistDigestEmail(opts: {
     })
     .join("");
 
+  const moversSection =
+    opts.topGainers?.length || opts.topLosers?.length
+      ? `<div style="margin-top:28px;padding-top:24px;border-top:1px solid #27272a;">
+          <h2 style="margin:0 0 6px;font-size:18px;color:#fff;">Nifty 50 movers</h2>
+          <p style="margin:0 0 18px;color:#a1a1aa;font-size:13px;">Top gainers and losers today</p>
+          <div style="margin-bottom:24px;">
+            <h3 style="margin:0 0 12px;font-size:14px;color:#4ade80;text-transform:uppercase;letter-spacing:0.06em;">Top 5 gainers</h3>
+            ${stockMoverList(site, opts.topGainers ?? [], "gain")}
+          </div>
+          <div>
+            <h3 style="margin:0 0 12px;font-size:14px;color:#f87171;text-transform:uppercase;letter-spacing:0.06em;">Top 5 losers</h3>
+            ${stockMoverList(site, opts.topLosers ?? [], "loss")}
+          </div>
+        </div>`
+      : "";
+
   const html = layout(
     `<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">${heading}</h1>
     <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">${opts.items.length} stock${opts.items.length === 1 ? "" : "s"} on your watchlist</p>
     <ul style="margin:0;padding:0;list-style:none;">${list}</ul>
+    ${moversSection}
     ${btn(`${site}/finance`, "View watchlist")}`,
     opts.unsubscribeUrl
       ? `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe from emails</a></p>`

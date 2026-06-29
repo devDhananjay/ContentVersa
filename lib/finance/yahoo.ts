@@ -44,6 +44,18 @@ export async function fetchYahooQuotes(symbols: string[]): Promise<StockQuote[]>
   return fetchQuotes(symbols);
 }
 
+/** Fresh Nifty 50 movers for market alert emails (no cache). */
+export async function fetchNifty50TopMovers(limit = 5): Promise<{
+  gainers: StockQuote[];
+  losers: StockQuote[];
+}> {
+  const quotes = await fetchQuotes([...NIFTY50_SYMBOLS]);
+  return {
+    gainers: sortGainers(quotes).slice(0, limit),
+    losers: sortLosers(quotes).slice(0, limit),
+  };
+}
+
 function toIndexQuote(
   symbol: string,
   name: string,

@@ -11,7 +11,7 @@ import {
 import { sendPushToUser } from "@/lib/notifications/push";
 import { claimAlertDispatch, istDateKey } from "@/lib/notifications/alert-dispatch";
 import { getUpcomingMatches } from "@/lib/sports/data";
-import { fetchYahooQuotes } from "@/lib/finance/yahoo";
+import { fetchNifty50TopMovers, fetchYahooQuotes } from "@/lib/finance/yahoo";
 import { displaySymbol } from "@/lib/finance/transformers";
 import type { NotificationPayload } from "@/lib/notifications/create";
 
@@ -137,8 +137,24 @@ export async function sendStockWatchlistSessionAlerts(phase: StockPhase) {
     }
   }
 
+  const moversRaw = await fetchNifty50TopMovers(5);
+  const movers = {
+    topGainers: moversRaw.gainers.map((q) => ({
+      symbol: displaySymbol(q.symbol),
+      name: q.shortName,
+      price: q.price,
+      changePercent: q.changePercent,
+    })),
+    topLosers: moversRaw.losers.map((q) => ({
+      symbol: displaySymbol(q.symbol),
+      name: q.shortName,
+      price: q.price,
+      changePercent: q.changePercent,
+    })),
+  };
+
   const result = await notifyUsers(payloads);
-  const emails = await emailStockWatchlistDigests(payloads, phase);
+  const emails = await emailStockWatchlistDigests(payloads, phase, movers);
   return { ...result, phase, stocks: payloads.length, emails };
 }
 

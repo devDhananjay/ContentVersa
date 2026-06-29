@@ -6,8 +6,9 @@ const GOOGLE_CERT_ID = "f08c47fec0942fa0";
 function adsensePublisherId(): string | null {
   const raw = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID?.trim();
   if (!raw) return null;
-  const normalized = raw.replace(/^ca-pub-/i, "pub-");
-  return normalized.startsWith("pub-") ? normalized : `pub-${normalized}`;
+  const match = raw.match(/(?:ca-)?pub-(\d+)/i);
+  if (!match?.[1]) return null;
+  return `pub-${match[1]}`;
 }
 
 export async function GET() {
