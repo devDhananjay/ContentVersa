@@ -1,5 +1,5 @@
 /**
- * Brain logo → circular favicons with gradient border (ContentVerse brand).
+ * Brain logo → square favicons with rounded corners + gradient border.
  * Run: node scripts/generate-favicons.mjs
  */
 import sharp from "sharp";
@@ -24,8 +24,9 @@ const OUTPUTS = [
 ];
 
 async function renderFavicon(size) {
-  const border = Math.max(2, Math.round(size * 0.07));
-  const pad = Math.max(1, Math.round(size * 0.06));
+  const border = Math.max(2, Math.round(size * 0.08));
+  const pad = Math.max(1, Math.round(size * 0.07));
+  const radius = Math.max(3, Math.round(size * 0.2));
   const inner = size - border * 2;
   const logoBox = inner - pad * 2;
 
@@ -38,17 +39,18 @@ async function renderFavicon(size) {
     .png()
     .toBuffer();
 
-  const circleClip = Buffer.from(
+  const squareClip = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${logoBox}" height="${logoBox}">
-      <circle cx="${logoBox / 2}" cy="${logoBox / 2}" r="${logoBox / 2}" fill="white"/>
+      <rect width="${logoBox}" height="${logoBox}" rx="${Math.round(logoBox * 0.16)}" fill="white"/>
     </svg>`
   );
 
   const clippedLogo = await sharp(cropped)
-    .composite([{ input: circleClip, blend: "dest-in" }])
+    .composite([{ input: squareClip, blend: "dest-in" }])
     .png()
     .toBuffer();
 
+  const innerRadius = Math.max(2, radius - 2);
   const frame = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
       <defs>
@@ -58,10 +60,12 @@ async function renderFavicon(size) {
           <stop offset="100%" stop-color="#22d3ee"/>
         </linearGradient>
       </defs>
-      <rect width="${size}" height="${size}" rx="${size / 2}" ry="${size / 2}" fill="#0a0a0f"/>
-      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - border / 2}" fill="none"
+      <rect width="${size}" height="${size}" rx="${radius}" ry="${radius}" fill="#0a0a0f"/>
+      <rect x="${border / 2}" y="${border / 2}" width="${size - border}" height="${size - border}"
+        rx="${innerRadius}" ry="${innerRadius}" fill="none"
         stroke="url(#ring)" stroke-width="${border}"/>
-      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - border - 1}" fill="#0a0a0f"/>
+      <rect x="${border}" y="${border}" width="${inner}" height="${inner}"
+        rx="${innerRadius}" ry="${innerRadius}" fill="#0a0a0f"/>
     </svg>`
   );
 
@@ -98,7 +102,7 @@ async function main() {
   writeFileSync(icoPath, icoResult.stdout);
   copyFileSync(icoPath, join(ROOT, "app/favicon.ico"));
 
-  console.log("Circular favicons with gradient border → public/ & app/");
+  console.log("Square rounded favicons with gradient border → public/ & app/");
 }
 
 main().catch((err) => {

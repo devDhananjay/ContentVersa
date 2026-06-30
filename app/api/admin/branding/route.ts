@@ -8,6 +8,7 @@ import {
   type BrandingKey,
 } from "@/lib/data/site-branding";
 import { isValidGoogleFaviconUrl } from "@/lib/branding/favicon";
+import { isValidBrandLogoUrl } from "@/lib/branding/logo";
 
 const PostSchema = z.object({
   type: z.enum(["logo", "favicon", "loader"]),
@@ -48,6 +49,16 @@ export async function POST(req: Request) {
         {
           error:
             "Favicon must be a square PNG, ICO, WebP or SVG (not JPG). Use Admin → Branding or upload /favicon-48x48.png.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (body.type === "logo" && !isValidBrandLogoUrl(url)) {
+      return NextResponse.json(
+        {
+          error:
+            "Logo must be PNG, WebP or SVG (not JPG). Use /logo-icon.png or upload a square brand mark.",
         },
         { status: 400 }
       );

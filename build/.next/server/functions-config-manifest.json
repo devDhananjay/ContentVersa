@@ -1,9 +1,9 @@
 {
   "version": 1,
   "functions": {
-    "/api/auth/google/login": {},
     "/api/auth/firebase": {},
     "/api/auth/google/callback": {},
+    "/api/auth/google/login": {},
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
