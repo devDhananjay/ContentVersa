@@ -75,12 +75,15 @@ export type DailyArticlesResult = {
   skipped: number;
   failed: number;
   day: string;
+  runSlot: "all" | "first" | "second";
+  categoriesProcessed: number;
 };
 
 /** Generate up to `perCategory` fresh AI articles per category for today (IST). */
 export async function runDailyArticleGeneration(options?: {
   perCategory?: number;
   maxTotal?: number;
+  runSlot?: "all" | "first" | "second";
 }): Promise<DailyArticlesResult> {
   if (!isDatabaseConfigured()) {
     throw new Error("Database not configured");
@@ -90,9 +93,21 @@ export async function runDailyArticleGeneration(options?: {
   }
 
   const perCategory = options?.perCategory ?? PER_CATEGORY_DEFAULT;
+  const runSlot = options?.runSlot ?? "all";
+  const mid = Math.ceil(CATEGORIES.length / 2);
+  const categories =
+    runSlot === "first"
+      ? CATEGORIES.slice(0, mid)
+      : runSlot === "second"
+        ? CATEGORIES.slice(mid)
+        : CATEGORIES;
+
   const maxTotal =
     options?.maxTotal ??
-    Number(process.env.DAILY_AI_MAX_TOTAL || String(CATEGORIES.length * perCategory));
+    Number(
+      process.env.DAILY_AI_MAX_TOTAL ||
+        String(categories.length * perCategory)
+    );
 
   const owner = await prisma.user.findUnique({
     where: { email: PLATFORM_OWNER_EMAIL },
@@ -107,7 +122,7 @@ export async function runDailyArticleGeneration(options?: {
   let skipped = 0;
   let failed = 0;
 
-  for (const cat of CATEGORIES) {
+  for (const cat of categories) {
     const already = await countTodayPosts(cat.slug, day);
     const need = Math.max(0, perCategory - already);
     if (need === 0) {
@@ -218,5 +233,5 @@ export async function runDailyArticleGeneration(options?: {
     }
   }
 
-  return { created, skipped, failed, day };
+  return { created, skipped, failed, day, runSlot, categoriesProcessed: categories.length };
 }

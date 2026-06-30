@@ -10,7 +10,7 @@ function authorize(req: Request) {
   return bearer === secret || query === secret;
 }
 
-/** GET /api/cron/daily-articles — 1 AI article per category per IST day (default) */
+/** GET /api/cron/daily-articles — AI articles (slot=first|second for twice-daily runs) */
 export async function GET(req: Request) {
   if (!authorize(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -21,11 +21,15 @@ export async function GET(req: Request) {
   const maxTotal = url.searchParams.get("max")
     ? Number(url.searchParams.get("max"))
     : undefined;
+  const slotParam = url.searchParams.get("slot");
+  const runSlot =
+    slotParam === "first" || slotParam === "second" ? slotParam : "all";
 
   try {
     const result = await runDailyArticleGeneration({
       perCategory: Number.isFinite(perCategory) ? perCategory : 1,
       maxTotal,
+      runSlot,
     });
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {

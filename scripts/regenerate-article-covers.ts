@@ -5,35 +5,12 @@
  *   npm run db:regen-covers -- --limit=20
  *   npm run db:regen-covers -- --slug=my-article
  */
-import { readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
 import { BlogStatus, PrismaClient } from "@prisma/client";
 import { resolveArticleCoverImage } from "../lib/seo/article-cover";
 import { normalizeCoverUrl } from "../lib/seo/cover-image";
+import { loadScriptEnv } from "./load-script-env";
 
-function loadEnvFiles() {
-  for (const file of [".env.local", ".env"]) {
-    const path = join(process.cwd(), file);
-    if (!existsSync(path)) continue;
-    for (const line of readFileSync(path, "utf8").split("\n")) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith("#")) continue;
-      const eq = trimmed.indexOf("=");
-      if (eq === -1) continue;
-      const key = trimmed.slice(0, eq);
-      let val = trimmed.slice(eq + 1).trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      if (!process.env[key]) process.env[key] = val;
-    }
-  }
-}
-
-loadEnvFiles();
+loadScriptEnv();
 
 const prisma = new PrismaClient();
 
