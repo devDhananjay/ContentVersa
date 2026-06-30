@@ -1,18 +1,18 @@
-/** Square brand mark for header/footer — not arbitrary admin JPEG uploads. */
+/** Official navbar/footer mark — do not use arbitrary admin uploads here. */
 export const DEFAULT_LOGO_ICON = "/logo-icon.png";
 
-const LOGO_EXT = /\.(png|webp|svg)(\?.*)?$/i;
+const OFFICIAL_LOGO_PATHS = new Set([
+  DEFAULT_LOGO_ICON,
+  "/logo.png",
+  "/logo-mark.svg",
+]);
 
-/** Admin logo uploads must be PNG/WebP/SVG (same rule as favicon — no photos). */
-export function isValidBrandLogoUrl(url: string | null | undefined): boolean {
-  if (!url?.trim()) return false;
-  const path = url.trim().split("?")[0] ?? "";
-  if (path.endsWith(".jpg") || path.endsWith(".jpeg")) return false;
-  return LOGO_EXT.test(path);
-}
-
-/** Navbar/footer always use the official mark unless a valid brand PNG is set. */
+/**
+ * Only official bundled brand assets may replace the default mark.
+ * Admin uploads (e.g. WhatsApp photos) are ignored for consistent header/footer branding.
+ */
 export function resolveSiteLogo(custom: string | null | undefined): string | null {
-  if (custom && isValidBrandLogoUrl(custom)) return custom;
-  return null;
+  if (!custom?.trim()) return null;
+  const path = custom.trim().split("?")[0] ?? "";
+  return OFFICIAL_LOGO_PATHS.has(path) ? path : null;
 }
