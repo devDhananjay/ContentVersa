@@ -126,12 +126,19 @@ export function Hero({ categories, stats }: Props) {
             </Link>
           </div>
 
+          {[
+            { value: stats.creators, label: "Published creators" },
+            { value: stats.readers, label: "Article reads" },
+            { value: stats.paid, label: "Paid to creators" },
+          ].filter((stat) => stat.value !== "—").length > 0 && (
           <div className="mt-16 grid grid-cols-3 gap-8 md:gap-16">
             {[
-              { value: stats.creators, label: "Active Creators" },
-              { value: stats.readers, label: "Monthly Readers" },
-              { value: stats.paid, label: "Paid to Creators" },
-            ].map((stat) => (
+              { value: stats.creators, label: "Published creators" },
+              { value: stats.readers, label: "Article reads" },
+              { value: stats.paid, label: "Paid to creators" },
+            ]
+              .filter((stat) => stat.value !== "—")
+              .map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="font-display font-extrabold text-2xl md:text-4xl text-gradient">
                   {stat.value}
@@ -142,6 +149,7 @@ export function Hero({ categories, stats }: Props) {
               </div>
             ))}
           </div>
+          )}
         </motion.div>
       </div>
     </section>

@@ -10,7 +10,7 @@ const TESTIMONIALS = [
     quote:
       "I moved my entire writing practice here. The editor doesn't fight me, the audience is real, and the platform actually pays.",
     name: "Aarav Mehta",
-    role: "Builder · 48K followers",
+    role: "Builder & writer",
     avatar: "https://api.dicebear.com/8.x/notionists/svg?seed=Aarav",
   },
   {
@@ -22,7 +22,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "Hit 12K followers in 3 months without playing games. Just wrote what I actually believed.",
+      "Grew an audience here by writing what I actually believe — no growth hacks required.",
     name: "Maya Iyer",
     role: "Essayist",
     avatar: "https://api.dicebear.com/8.x/notionists/svg?seed=Maya",

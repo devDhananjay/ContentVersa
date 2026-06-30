@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Logo } from "@/components/site/logo";
 import { buildMetadata } from "@/lib/seo";
 import { getSiteLogoUrl } from "@/lib/branding/logo";
+import { getPlatformStats, platformStatItems } from "@/lib/data/platform-stats";
 
 export const metadata: Metadata = buildMetadata({
   title: "Sign in",
@@ -11,7 +12,8 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
-  const logoSrc = await getSiteLogoUrl();
+  const [logoSrc, stats] = await Promise.all([getSiteLogoUrl(), getPlatformStats()]);
+  const statRows = platformStatItems(stats);
 
   return (
     <div className="min-h-[calc(100vh-4rem)] grid lg:grid-cols-2">
@@ -25,20 +27,18 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
             Join the next generation of <span className="text-gradient">creators.</span>
           </h2>
           <p className="text-muted-foreground mt-4">
-            ContentVerse pays creators. Real money, real audience, real ownership — no algorithm cult required.
+            ContentVerse pays creators in rupees. Real audience, real ownership — no algorithm cult required.
           </p>
-          <div className="mt-8 grid grid-cols-3 gap-6">
-            {[
-              { v: "120K+", l: "Creators" },
-              { v: "8.4M", l: "Readers" },
-              { v: "$2.1M", l: "Paid out" },
-            ].map((s) => (
-              <div key={s.l}>
-                <div className="text-2xl font-display font-extrabold text-gradient">{s.v}</div>
-                <div className="text-xs text-muted-foreground">{s.l}</div>
-              </div>
-            ))}
-          </div>
+          {statRows.length > 0 && (
+            <div className="mt-8 grid grid-cols-3 gap-6">
+              {statRows.map((s) => (
+                <div key={s.label}>
+                  <div className="text-2xl font-display font-extrabold text-gradient">{s.value}</div>
+                  <div className="text-xs text-muted-foreground">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <div className="flex flex-col">

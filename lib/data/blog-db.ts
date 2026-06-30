@@ -396,37 +396,9 @@ export async function getFeaturedCreatorsHybrid(limit = 6) {
     .map((u) => mapUserToAuthor(u, u._count.blogs));
 }
 
-const DEMO_STATS = {
-  creators: "120K+",
-  readers: "8.4M",
-  paid: "$2.1M",
-} as const;
+import { getPlatformStats } from "@/lib/data/platform-stats";
 
+/** @deprecated Use getPlatformStats from lib/data/platform-stats */
 export async function getPlatformStatsHybrid() {
-  if (!isDatabaseConfigured()) return DEMO_STATS;
-
-  return safeDbQuery(DEMO_STATS, async () => {
-    const [userCount, agg] = await Promise.all([
-      prisma.user.count(),
-      prisma.blog.aggregate({
-        where: { status: "PUBLISHED" },
-        _sum: { views: true, likesCount: true },
-        _count: true,
-      }),
-    ]);
-
-    const views = agg._sum.views ?? 0;
-    const format = (n: number) =>
-      n >= 1_000_000
-        ? `${(n / 1_000_000).toFixed(1)}M`
-        : n >= 1000
-          ? `${Math.round(n / 1000)}K+`
-          : `${n}`;
-
-    return {
-      creators: userCount > 0 ? `${userCount}+` : "1+",
-      readers: views > 0 ? format(views) : "—",
-      paid: agg._sum.likesCount ? `$${format(agg._sum.likesCount * 2)}` : "—",
-    };
-  }, "stats");
+  return getPlatformStats();
 }
