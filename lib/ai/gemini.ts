@@ -4,7 +4,7 @@
  */
 
 const GEMINI_IMAGE_MODEL =
-  process.env.GEMINI_IMAGE_MODEL?.trim() || "gemini-2.0-flash-exp";
+  process.env.GEMINI_IMAGE_MODEL?.trim() || "gemini-2.5-flash-image";
 
 export type GeminiFailure = {
   status: number;
