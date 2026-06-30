@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FinanceBlogSection } from "@/components/finance/finance-blog-section";
+import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { buildMetadata } from "@/lib/seo";
 
@@ -17,5 +18,22 @@ export const metadata: Metadata = buildMetadata({
 export default async function FinanceHubPage() {
   const blogs = await getBlogsByCategoryHybrid("finance");
 
-  return <FinanceBlogSection blogs={blogs} />;
+  return (
+    <>
+      <HubEditorialIntro title="Finance on ContentVerse">
+        <p>
+          The Finance Hub shows live Indian market indices, top movers, and stock charts for
+          quick reference. These data widgets are not standalone articles — they support readers
+          who follow our finance writers. ContentVerse publishes original explainers on investing,
+          personal finance, markets, and the Indian economy, written by creators and reviewed
+          against our content policy.
+        </p>
+        <p>
+          Stock quote pages display third-party market data. For in-depth analysis, read the
+          finance blogs below or explore all articles in the Finance category.
+        </p>
+      </HubEditorialIntro>
+      <FinanceBlogSection blogs={blogs} />
+    </>
+  );
 }

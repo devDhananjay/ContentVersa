@@ -17,6 +17,7 @@ import { StayEngagedStrip } from "@/components/home/stay-engaged-strip";
 import { Testimonials } from "@/components/home/testimonials";
 import { SportsTeaser } from "@/components/home/sports-teaser";
 import { ForYouSection } from "@/components/home/for-you-section";
+import { HomeEditorialSection } from "@/components/home/home-editorial-section";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { SiteJsonLd } from "@/components/seo/site-json-ld";
@@ -38,6 +39,7 @@ export default async function HomePage() {
         <Hero stats={data.stats} categories={data.categories} />
       </div>
       <TrendingSection blogs={data.trending} />
+      <HomeEditorialSection />
       <ForYouSection />
       <SportsTeaser data={sportsTeaser} />
       <NewsIn60Section blogs={data.trending} />

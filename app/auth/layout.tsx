@@ -1,5 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Logo } from "@/components/site/logo";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Sign in",
+  description: "Sign in to your ContentVerse account.",
+  noIndex: true,
+});
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

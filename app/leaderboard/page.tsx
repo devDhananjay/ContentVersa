@@ -8,6 +8,7 @@ export const metadata: Metadata = buildMetadata({
   title: "Leaderboard",
   description: "Top ContentVerse creators ranked by reach, engagement and growth.",
   path: "/leaderboard",
+  noIndex: true,
 });
 
 export const dynamic = "force-dynamic";

@@ -5,6 +5,7 @@ import { SportsBlogSection } from "@/components/sports/sports-blog-section";
 import { SeriesCarousel } from "@/components/sports/series-carousel";
 import { ScheduleBlock } from "@/components/sports/schedule-block";
 import { SportsSectionHeader } from "@/components/sports/sports-section-header";
+import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getSportsHubDataCached } from "@/lib/sports/data";
 import { buildMetadata } from "@/lib/seo";
@@ -28,6 +29,19 @@ export default async function SportsHubPage() {
 
   return (
     <div className="space-y-8">
+      <HubEditorialIntro title="Sports on ContentVerse" className="container">
+        <p>
+          ContentVerse Sports Hub combines live cricket scores, fixtures, and headlines with
+          original sports writing from our community. Match pages and player stats are real-time
+          utilities for fans — our primary value for readers and search engines is editorial:
+          match previews, analysis, and long-form stories published by verified creators.
+        </p>
+        <p>
+          Explore sports blogs below or browse live matches. Writers can publish match reports,
+          opinion, and tutorials under the Sports category after signing up.
+        </p>
+      </HubEditorialIntro>
+
       <section>
         <SportsSectionHeader
           eyebrow="Matches"

@@ -4,6 +4,7 @@ import {
   getReelByIdCached,
 } from "@/lib/reels/data";
 import { ReelsFeedViewer } from "@/components/reels/reels-feed-viewer";
+import { buildMetadata } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -12,11 +13,13 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   const reel = await getReelByIdCached(id);
-  if (!reel) return { title: "Reel not found" };
-  return {
-    title: `${reel.author.name} on Reels | ContentVerse`,
+  if (!reel) return buildMetadata({ title: "Reel not found", noIndex: true });
+  return buildMetadata({
+    title: `${reel.author.name} on Reels`,
     description: reel.caption.slice(0, 160),
-  };
+    path: `/reels/${id}`,
+    noIndex: true,
+  });
 }
 
 export default async function ReelDetailPage({

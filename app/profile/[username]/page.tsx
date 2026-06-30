@@ -10,6 +10,7 @@ import { AUTHORS, BLOGS, type Author, type Blog } from "@/lib/data/blogs";
 import { getBlogsForProfile } from "@/lib/data/blog-db";
 import { formatNumber, getInitials } from "@/lib/utils";
 import { buildMetadata } from "@/lib/seo";
+import { isIndexableProfile } from "@/lib/seo/crawl-policy";
 
 export const dynamic = "force-dynamic";
 
@@ -21,11 +22,15 @@ export async function generateMetadata({
   const { username } = await params;
   const fromDb = await getBlogsForProfile(username);
   const user = fromDb?.user ?? AUTHORS.find((a) => a.username === username);
+  const articleCount =
+    fromDb?.blogs.length ??
+    BLOGS.filter((b) => b.author.username === username).length;
   return buildMetadata({
     title: user ? `@${user.username}` : "Profile",
     description: user?.bio,
     path: `/profile/${username}`,
     image: user?.avatar,
+    noIndex: !isIndexableProfile(articleCount),
   });
 }
 

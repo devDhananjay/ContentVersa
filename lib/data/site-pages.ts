@@ -353,6 +353,13 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
+        heading: "Editorial quality",
+        paragraphs: [
+          "Articles must be original, substantive, and useful to readers. We expect a minimum of roughly 600 words for standard posts (about three minutes of reading time). News-in-60 shorts are clearly labelled and are not submitted for search indexing.",
+          "Mass-produced AI content without human editing, plagiarism, and duplicate posts across categories are removed. Finance and health topics require careful sourcing and appropriate disclaimers.",
+        ],
+      },
+      {
         heading: "Moderation",
         paragraphs: [
           "Submissions may be pending review before going live. Moderators can approve, request edits, or reject work that breaks this policy.",

@@ -4,6 +4,7 @@ import { AlertCircle, ArrowRight } from "lucide-react";
 import { GovtJobCard } from "@/components/jobs/govt-job-card";
 import { JobsHubCards } from "@/components/jobs/jobs-browse-shell";
 import { JobsSectionHeader } from "@/components/jobs/jobs-section-header";
+import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { PrivateJobCard } from "@/components/jobs/private-job-card";
 import { Button } from "@/components/ui/button";
 import { getGovtJobsCached } from "@/lib/jobs/data";
@@ -26,6 +27,19 @@ export default async function JobsHubPage() {
 
   return (
     <div className="space-y-10">
+      <HubEditorialIntro title="Careers on ContentVerse">
+        <p>
+          The Jobs Hub aggregates government (sarkari) notifications and curated private-sector
+          openings for Indian readers. Listings link to official sources — ContentVerse does not
+          charge applicants. Alongside listings, we publish career guides, exam prep tips, and
+          workplace essays from writers in our Careers category.
+        </p>
+        <p>
+          If you write about jobs, freelancing, or professional growth, publish on ContentVerse
+          and apply for the Creator Program after two quality articles.
+        </p>
+      </HubEditorialIntro>
+
       {showWarning && (
         <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
           <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />

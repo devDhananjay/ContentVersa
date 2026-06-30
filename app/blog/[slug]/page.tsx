@@ -31,6 +31,7 @@ import { shouldSkipImageOptimization } from "@/lib/upload";
 import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
 import { buildMetadata, articleJsonLd, SITE } from "@/lib/seo";
 import { isDiscoverSyndicatedSlug } from "@/lib/feeds/discover-blog";
+import { isIndexableArticle } from "@/lib/seo/crawl-policy";
 import { CATEGORIES } from "@/lib/data/categories";
 import { resolveBlogCoverImage } from "@/lib/upload";
 import { SeriesNav } from "@/components/blog/series-nav";
@@ -48,6 +49,7 @@ export async function generateMetadata({
   const blog = await getBlogBySlugHybrid(slug);
   if (!blog) return buildMetadata({ title: "Not found", noIndex: true });
   const syndicated = isDiscoverSyndicatedSlug(blog.slug);
+  const thin = !isIndexableArticle({ slug: blog.slug, readingTime: blog.readingTime });
   return buildMetadata({
     title: blog.title,
     description: blog.excerpt,
@@ -57,7 +59,7 @@ export async function generateMetadata({
     publishedTime: blog.publishedAt,
     authors: [blog.author.name],
     keywords: blog.tags,
-    noIndex: syndicated,
+    noIndex: syndicated || thin,
   });
 }
 
