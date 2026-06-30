@@ -23,6 +23,8 @@
     "db:archive-discover": "tsx scripts/archive-discover-blogs.ts",
     "db:fix-covers": "tsx scripts/fix-missing-covers.ts",
     "db:fix-duplicate-covers": "tsx scripts/fix-duplicate-covers.ts",
+    "db:audit-duplicates": "tsx scripts/audit-duplicate-blogs.ts",
+    "db:regen-covers": "tsx scripts/regenerate-article-covers.ts",
     "db:expand-articles": "tsx scripts/expand-short-articles.ts",
     "db:daily-ai": "tsx scripts/daily-ai-articles.ts",
     "db:promote-admin": "tsx prisma/promote-owner-admin.ts",

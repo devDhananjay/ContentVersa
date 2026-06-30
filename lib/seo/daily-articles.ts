@@ -5,6 +5,8 @@ import { CATEGORIES } from "@/lib/data/categories";
 import { resolveArticleCoverImage } from "@/lib/seo/article-cover";
 import { istDayKey } from "@/lib/engagement/streak";
 import { generateSeoArticle } from "@/lib/seo/article-generator";
+import { passesArticleQualityGate } from "@/lib/seo/article-quality";
+import { suggestHotTopics, type HotTopic } from "@/lib/seo/hot-topics";
 import { readingTime, slugify } from "@/lib/utils";
 
 const PER_CATEGORY_DEFAULT = 1;
@@ -15,23 +17,6 @@ function sleep(ms: number) {
 
 function dailySlug(category: string, slot: number, day = istDayKey()) {
   return `${category}-daily-${day}-${slot}`;
-}
-
-function topicForSlot(
-  categorySlug: string,
-  slot: number,
-  day = istDayKey()
-): { slug: string; title: string; searchIntent: string } {
-  const cat = CATEGORIES.find((c) => c.slug === categorySlug);
-  const subs = cat?.subcategories ?? ["Guide"];
-  const idx = (day.split("-").join("").charCodeAt(0) + slot + categorySlug.length) % subs.length;
-  const sub = subs[idx];
-  const name = cat?.name ?? categorySlug;
-  return {
-    slug: dailySlug(categorySlug, slot, day),
-    title: `${sub} in India: What to Know Today (${day})`,
-    searchIntent: `${name} ${sub} guide India, tips, trends ${day}`,
-  };
 }
 
 async function countTodayPosts(categorySlug: string, day = istDayKey()) {
@@ -75,6 +60,14 @@ async function upsertTags(names: string[]) {
     tagIds.push(tag.id);
   }
   return tagIds;
+}
+
+async function topicsForCategory(
+  categorySlug: string,
+  count: number
+): Promise<HotTopic[]> {
+  const { topics } = await suggestHotTopics(categorySlug, count);
+  return topics.slice(0, count);
 }
 
 export type DailyArticlesResult = {
@@ -122,10 +115,18 @@ export async function runDailyArticleGeneration(options?: {
       continue;
     }
 
+    const hotTopics = await topicsForCategory(cat.slug, perCategory);
+
     for (let slot = 0; slot < perCategory && created < maxTotal; slot++) {
-      const topic = topicForSlot(cat.slug, slot, day);
+      const topic = hotTopics[slot];
+      if (!topic) {
+        failed++;
+        continue;
+      }
+
+      const slug = dailySlug(cat.slug, slot, day);
       const exists = await prisma.blog.findUnique({
-        where: { slug: topic.slug },
+        where: { slug },
         select: { id: true, status: true },
       });
       if (exists?.status === BlogStatus.PUBLISHED) {
@@ -135,7 +136,7 @@ export async function runDailyArticleGeneration(options?: {
       if (created >= maxTotal) break;
 
       const category = await ensureCategory(cat.slug);
-      const { article } = await generateSeoArticle({
+      const { article, reason } = await generateSeoArticle({
         title: topic.title,
         category: cat.name,
         categorySlug: cat.slug,
@@ -143,27 +144,33 @@ export async function runDailyArticleGeneration(options?: {
         affiliateNote:
           cat.slug === "finance"
             ? "Include educational disclaimer; no stock tips."
-            : undefined,
+            : `Editorial angle: ${topic.whyTrending}`,
       });
 
-      if (!article?.content || article.content.length < 400) {
+      if (!article?.content || !passesArticleQualityGate(article.content)) {
         failed++;
+        console.warn(
+          `[daily-articles] ${cat.slug} slot ${slot}: ${reason ?? "quality gate failed"} — "${topic.title}"`
+        );
         await sleep(3000);
         continue;
       }
 
       const tagIds = await upsertTags(article.tags);
-      const coverImage = await resolveArticleCoverImage({
-        categorySlug: cat.slug,
-        title: article.title,
-        excerpt: article.excerpt,
-        tags: article.tags,
-        coverKeywords: article.coverKeywords,
-        coverImagePrompt: article.coverImagePrompt,
-        searchIntent: topic.searchIntent,
-        contentSnippet: article.content.slice(0, 400),
-        slug: topic.slug,
-      });
+      const coverImage = await resolveArticleCoverImage(
+        {
+          categorySlug: cat.slug,
+          title: article.title,
+          excerpt: article.excerpt,
+          tags: article.tags,
+          coverKeywords: article.coverKeywords,
+          coverImagePrompt: article.coverImagePrompt,
+          searchIntent: topic.searchIntent,
+          contentSnippet: article.content.slice(0, 800),
+          slug,
+        },
+        { preferAi: true, retries: 2 }
+      );
 
       if (exists) {
         await prisma.blogTag.deleteMany({ where: { blogId: exists.id } });
@@ -189,7 +196,7 @@ export async function runDailyArticleGeneration(options?: {
         await prisma.blog.create({
           data: {
             title: article.title,
-            slug: topic.slug,
+            slug,
             excerpt: article.excerpt,
             content: article.content.trim(),
             coverImage,
@@ -207,7 +214,7 @@ export async function runDailyArticleGeneration(options?: {
       }
 
       created++;
-      await sleep(2500);
+      await sleep(3500);
     }
   }
 

@@ -9,6 +9,8 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { PrismaClient, BlogStatus } from "@prisma/client";
 import { generateSeoArticle } from "../lib/seo/article-generator";
+import { resolveArticleCoverImage } from "../lib/seo/article-cover";
+import { passesArticleQualityGate } from "../lib/seo/article-quality";
 import { readingTime } from "../lib/utils";
 
 function loadEnvFiles() {
@@ -37,8 +39,8 @@ loadEnvFiles();
 
 const prisma = new PrismaClient();
 
-const MIN_WORDS = 900;
-const MIN_READING_MIN = 5;
+const MIN_WORDS = 800;
+const MIN_READING_MIN = 4;
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -90,18 +92,32 @@ async function main() {
     const { article } = await generateSeoArticle({
       title: blog.title,
       category: blog.category?.name ?? "General",
+      categorySlug: blog.category?.slug ?? "technology",
       searchIntent: blog.metaKeywords || blog.excerpt || blog.title,
       expandFrom: blog.content,
-      minWords: 600,
-      maxWords: 850,
     });
 
-    if (!article?.content || article.content.length < 400) {
-      console.error("  ✗ Gemini failed or too short");
+    if (!article?.content || !passesArticleQualityGate(article.content)) {
+      console.error("  ✗ Gemini failed or below quality bar (800+ words)");
       failed++;
       await sleep(3000);
       continue;
     }
+
+    const coverImage = await resolveArticleCoverImage(
+      {
+        categorySlug: blog.category?.slug ?? "technology",
+        title: article.title || blog.title,
+        excerpt: article.excerpt,
+        tags: article.tags,
+        coverKeywords: article.coverKeywords,
+        coverImagePrompt: article.coverImagePrompt,
+        searchIntent: blog.metaKeywords ?? blog.excerpt ?? undefined,
+        contentSnippet: article.content.slice(0, 800),
+        slug: blog.slug,
+      },
+      { preferAi: true, retries: 2 }
+    );
 
     await prisma.blog.update({
       where: { id: blog.id },
@@ -109,6 +125,7 @@ async function main() {
         title: article.title || blog.title,
         excerpt: article.excerpt,
         content: article.content.trim(),
+        coverImage,
         readingTime: readingTime(article.content),
         metaDescription: article.metaDescription,
         metaKeywords: article.metaKeywords ?? article.tags.join(", "),

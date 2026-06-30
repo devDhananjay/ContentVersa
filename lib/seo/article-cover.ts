@@ -3,6 +3,10 @@ import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
 import type { CoverImageInput } from "@/lib/seo/cover-image";
 import { detectCoverTheme } from "@/lib/seo/cover-image";
 import { pickCoverForNewArticle } from "@/lib/seo/pick-cover";
+import {
+  coverPromptMatchesTitle,
+  extractSceneFromArticle,
+} from "@/lib/seo/article-quality";
 
 export type ArticleCoverInput = CoverImageInput & {
   slug: string;
@@ -68,7 +72,8 @@ export function buildCoverImagePrompt(input: {
     primary;
   const excerpt = input.excerpt?.trim().slice(0, 180) || "";
   const intent = input.searchIntent?.trim().slice(0, 120) || "";
-  const snippet = input.contentSnippet?.trim().slice(0, 200) || "";
+  const snippet = input.contentSnippet?.trim().slice(0, 280) || "";
+  const scene = snippet ? extractSceneFromArticle(snippet, input.title) : input.title;
   const category = input.categorySlug?.replace(/-/g, " ") || "general";
   const theme = detectCoverTheme({
     categorySlug: input.categorySlug ?? "technology",
@@ -96,6 +101,7 @@ export function buildCoverImagePrompt(input: {
     intent ? `Reader intent: ${intent}.` : "",
     excerpt ? `Article summary: ${excerpt}.` : "",
     snippet ? `Opening context: ${snippet}.` : "",
+    `Scene to depict: ${scene}.`,
     `MUST clearly show: ${primary}.`,
     `Visual elements: ${keywords}.`,
     themeHints[theme ?? ""] ?? `Mood fits ${category} but stay specific to the title, not generic stock.`,
@@ -119,28 +125,41 @@ function aiCoversEnabled(): boolean {
  */
 export async function resolveArticleCoverImage(
   input: ArticleCoverInput,
-  options?: { preferAi?: boolean }
+  options?: { preferAi?: boolean; retries?: number }
 ): Promise<string> {
   const preferAi = options?.preferAi ?? true;
+  const retries = Math.max(1, options?.retries ?? 2);
 
   if (preferAi && aiCoversEnabled()) {
-    try {
-      const prompt = buildCoverImagePrompt({
-        title: input.title,
-        excerpt: input.excerpt,
-        categorySlug: input.categorySlug,
-        coverKeywords: input.coverKeywords,
-        coverImagePrompt: input.coverImagePrompt,
-        searchIntent: input.searchIntent,
-        contentSnippet: input.contentSnippet,
-      });
-      const dataUrl = await callGeminiImage(prompt);
-      if (dataUrl && !dataUrl.includes("picsum.photos")) {
-        const uploaded = await normalizeCoverImageUrl(dataUrl);
-        if (uploaded) return uploaded;
+    let prompt = buildCoverImagePrompt({
+      title: input.title,
+      excerpt: input.excerpt,
+      categorySlug: input.categorySlug,
+      coverKeywords: input.coverKeywords,
+      coverImagePrompt: input.coverImagePrompt,
+      searchIntent: input.searchIntent,
+      contentSnippet: input.contentSnippet,
+    });
+
+    for (let attempt = 0; attempt < retries; attempt++) {
+      if (!coverPromptMatchesTitle(prompt, input.title) && input.contentSnippet) {
+        const scene = extractSceneFromArticle(input.contentSnippet, input.title);
+        prompt = `${prompt} Critical: the image must illustrate "${input.title}" — show ${scene}.`;
       }
-    } catch (error) {
-      console.warn("[article-cover] Gemini cover failed, using stock fallback:", error);
+
+      try {
+        const dataUrl = await callGeminiImage(prompt);
+        if (dataUrl && !dataUrl.includes("picsum.photos")) {
+          const uploaded = await normalizeCoverImageUrl(dataUrl);
+          if (uploaded) return uploaded;
+        }
+      } catch (error) {
+        console.warn(`[article-cover] Gemini attempt ${attempt + 1} failed:`, error);
+      }
+
+      if (attempt < retries - 1) {
+        await new Promise((r) => setTimeout(r, 1500));
+      }
     }
   }
 

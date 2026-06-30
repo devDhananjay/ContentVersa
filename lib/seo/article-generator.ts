@@ -4,6 +4,12 @@ import {
   type GeminiFailure,
 } from "@/lib/ai/gemini";
 import { detectCoverTheme } from "@/lib/seo/cover-image";
+import {
+  ARTICLE_TARGET_WORDS,
+  coverPromptMatchesTitle,
+  passesArticleQualityGate,
+  wordCount,
+} from "@/lib/seo/article-quality";
 
 function inferCoverKeywordsFromText(
   title: string,
@@ -90,6 +96,10 @@ function normalizeArticle(
     ? String(raw.coverImagePrompt).trim()
     : buildCoverImagePromptFallback(title, excerpt, tags, categorySlug, resolvedKeywords);
 
+  const finalPrompt = coverPromptMatchesTitle(coverImagePrompt, title)
+    ? coverImagePrompt
+    : buildCoverImagePromptFallback(title, excerpt, tags, categorySlug, resolvedKeywords);
+
   return {
     title,
     excerpt,
@@ -97,7 +107,7 @@ function normalizeArticle(
     metaKeywords: raw.metaKeywords ? String(raw.metaKeywords).trim() : undefined,
     tags,
     coverKeywords: resolvedKeywords,
-    coverImagePrompt,
+    coverImagePrompt: finalPrompt,
     content: String(raw.content).trim(),
   };
 }
@@ -128,7 +138,7 @@ export type GeneratedArticle = {
   content: string;
 };
 
-export const ARTICLE_TARGET_WORDS = { min: 550, max: 850 } as const;
+export { ARTICLE_TARGET_WORDS } from "@/lib/seo/article-quality";
 
 export type GenerateArticleResult = {
   article: GeneratedArticle | null;
@@ -158,21 +168,20 @@ function buildPrompts(input: {
   maxWords: number;
   expandFrom?: string;
 }) {
-  const system = `You are an expert content writer for ContentVerse (contentverse.co.in), an Indian creator platform.
-Write original, engaging articles in Markdown — concise and scannable, NOT long essays.
+  const system = `You are a senior editor for ContentVerse (contentverse.co.in), an Indian publishing platform targeting Google AdSense quality standards.
+Write original, expert-level articles in Markdown for Indian readers.
 Rules:
-- Target ${input.minWords}–${input.maxWords} words in "content" (about 3–5 min read). Never exceed ${input.maxWords} words.
+- Target ${input.minWords}–${input.maxWords} words in "content" (4–6 min read). Quality over length — no filler.
 - Use ## and ### headings only (no # h1 — title is separate)
-- Structure: short intro (2–3 sentences), 3–4 focused sections, 2 FAQ questions, brief conclusion
-- Short paragraphs (2–4 sentences max). Use bullet lists where helpful.
-- Write for Indian readers where relevant (₹, Indian cities, regulations)
-- Natural, conversational tone — not robotic, not keyword-stuffed
-- End with one line under "## Support creators" about tipping writers on ContentVerse
+- Structure: hook intro (why this matters now in India), 4–5 substantive sections with examples, 3 FAQ answers, actionable conclusion
+- Include specific details: Indian cities, ₹ prices, schemes, apps, or regulations where relevant
+- Short paragraphs (2–4 sentences). Use bullet lists for steps and comparisons.
+- Natural expert tone — cite general industry knowledge, never invent fake statistics or fake quotes
+- End with "## Support creators" — one line about tipping writers on ContentVerse
 ${input.affiliateNote ? `- ${input.affiliateNote}` : ""}
 - If finance: add disclaimer "This is educational content, not financial advice."
-- Do NOT invent fake statistics; use ranges and general guidance when exact data unknown
-- coverKeywords: exactly 4 short visual tags from the cover scene (sport name, objects, setting)
-- coverImagePrompt: ONE detailed sentence for a photorealistic hero photo that matches THIS exact article — name the sport/topic, action, setting, and key objects. For sports: specify cricket/football/hockey etc., never a generic gym. For movies: name the film vibe. Must NOT be generic category stock art.`;
+- coverKeywords: exactly 4 concrete visual nouns from the article (objects, place, action)
+- coverImagePrompt: ONE detailed sentence describing a photorealistic hero photo that a reader would expect from the TITLE. Name the exact subject (e.g. "cricket batsman at Wankhede", "UPI payment on PhonePe", "Jaipur Hawa Mahal at sunset"). Must NOT be generic stock art unrelated to the title.`;
 
   const user = input.expandFrom
     ? `Expand this article into a readable blog post (${input.minWords}–${input.maxWords} words). Keep the topic, add depth but stay concise — no fluff.
@@ -219,9 +228,14 @@ export async function generateSeoArticle(input: {
     8192
   );
 
-  if (jsonResult.ok && jsonResult.data.content?.length >= 400) {
+  if (jsonResult.ok && jsonResult.data.content) {
     const article = normalizeArticle(jsonResult.data, categorySlug);
-    if (article) return { article };
+    if (article && passesArticleQualityGate(article.content)) {
+      return { article };
+    }
+    if (article && wordCount(article.content) >= 500) {
+      return { article: null, reason: "short" };
+    }
   }
 
   const textResult = await callGeminiTextWithMeta(
@@ -234,8 +248,11 @@ Return ONLY valid JSON (no markdown fences) with keys: title, excerpt, metaDescr
 
   if (textResult.ok) {
     const parsed = parseArticleJson(textResult.text, categorySlug);
-    if (parsed?.content && parsed.content.length >= 400) {
+    if (parsed?.content && passesArticleQualityGate(parsed.content)) {
       return { article: parsed };
+    }
+    if (parsed?.content && wordCount(parsed.content) >= 500) {
+      return { article: null, reason: "short" };
     }
   }
 

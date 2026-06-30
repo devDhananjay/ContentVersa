@@ -4,7 +4,7 @@
  */
 
 /** Minimum reading minutes for blog posts in sitemap / Google index */
-export const MIN_INDEXABLE_READING_MINUTES = 3;
+export const MIN_INDEXABLE_READING_MINUTES = 4;
 
 /** Minimum published articles before a creator profile is indexable */
 export const MIN_PROFILE_ARTICLES = 2;

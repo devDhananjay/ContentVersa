@@ -78,9 +78,11 @@ export async function publishGeneratedArticle(input: {
     coverKeywords: input.article.coverKeywords,
     coverImagePrompt: input.article.coverImagePrompt,
     searchIntent: input.searchIntent,
-    contentSnippet: content.slice(0, 400),
-    slug,
-  });
+        contentSnippet: content.slice(0, 800),
+        slug,
+      },
+      { preferAi: true, retries: 2 }
+    );
 
   const status = input.publish !== false ? BlogStatus.PUBLISHED : BlogStatus.DRAFT;
 
