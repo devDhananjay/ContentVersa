@@ -1,6 +1,23 @@
 import Link from "next/link";
 import type { SitePageData } from "@/lib/data/site-pages";
-import { CONTACT_EMAIL } from "@/lib/site-contact";
+import { CONTACT_EMAIL, normalizeContactEmail } from "@/lib/site-contact";
+
+function TextWithEmail({ text }: { text: string }) {
+  const normalized = normalizeContactEmail(text);
+  if (!normalized.includes(CONTACT_EMAIL)) {
+    return <>{normalized}</>;
+  }
+  const [before, after] = normalized.split(CONTACT_EMAIL);
+  return (
+    <>
+      {before}
+      <Link href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-foreground hover:underline">
+        {CONTACT_EMAIL}
+      </Link>
+      {after}
+    </>
+  );
+}
 
 export function SitePageRenderer({ page }: { page: SitePageData }) {
   return (
@@ -30,13 +47,15 @@ export function SitePageRenderer({ page }: { page: SitePageData }) {
             )}
             {section.paragraphs?.map((p, j) => (
               <p key={j} className="text-muted-foreground leading-relaxed">
-                {p}
+                <TextWithEmail text={p} />
               </p>
             ))}
             {section.bullets && section.bullets.length > 0 && (
               <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
                 {section.bullets.map((b, j) => (
-                  <li key={j}>{b}</li>
+                  <li key={j}>
+                    <TextWithEmail text={b} />
+                  </li>
                 ))}
               </ul>
             )}
@@ -50,27 +69,18 @@ export function SitePageRenderer({ page }: { page: SitePageData }) {
                         {card.meta}
                       </p>
                     )}
-                    <p className="text-sm text-muted-foreground mt-2">{card.description}</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      <TextWithEmail text={card.description} />
+                    </p>
                   </div>
                 ))}
               </div>
             )}
             {section.callout && (
               <div className="rounded-2xl border border-neon-purple/30 bg-neon-purple/5 px-5 py-4 text-sm">
-                {section.callout.includes(CONTACT_EMAIL) ? (
-                  <p>
-                    {section.callout.split(CONTACT_EMAIL)[0]}
-                    <Link
-                      href={`mailto:${CONTACT_EMAIL}`}
-                      className="font-medium text-foreground hover:underline"
-                    >
-                      {CONTACT_EMAIL}
-                    </Link>
-                    {section.callout.split(CONTACT_EMAIL)[1]}
-                  </p>
-                ) : (
-                  <p>{section.callout}</p>
-                )}
+                <p>
+                  <TextWithEmail text={section.callout} />
+                </p>
               </div>
             )}
           </section>

@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL } from "@/lib/site-contact";
+
 export type SiteMapItem = {
   label: string;
   href?: string;
@@ -185,7 +187,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             href: "/creator-program",
             detail: "Verification badge & featuring",
             children: [
-              { label: "Apply via email", detail: "writewith@contentverses.in" },
+              { label: "Apply via email", detail: CONTACT_EMAIL },
               { label: "2 published posts required", detail: "Quality review ~7 days" },
             ],
           },

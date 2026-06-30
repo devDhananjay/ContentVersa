@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { CONTACT_EMAIL, LEGACY_CONTACT_EMAIL, normalizeContactEmail } from "@/lib/site-contact";
 
 export type SitePageSection = {
   heading?: string;
@@ -65,7 +66,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Questions? Write to writewith@contentverses.in — we read every message.",
+        callout: `Questions? Write to ${CONTACT_EMAIL} — we read every message.`,
       },
     ],
   },
@@ -106,7 +107,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Don't see your role? Email writewith@contentverses.in with your portfolio or GitHub.",
+        callout: `Don't see your role? Email ${CONTACT_EMAIL} with your portfolio or GitHub.`,
       },
     ],
   },
@@ -126,7 +127,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
       {
         heading: "Press contact",
         bullets: [
-          "Email: writewith@contentverses.in",
+          `Email: ${CONTACT_EMAIL}`,
           "Based in India",
           "Response within 2 business days",
         ],
@@ -182,7 +183,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Interested in early access? Contact writewith@contentverses.in from your creator dashboard email.",
+        callout: `Interested in early access? Contact ${CONTACT_EMAIL} from your creator dashboard email.`,
       },
     ],
   },
@@ -215,7 +216,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         cards: [
           { title: "1. Create account", description: "Sign up at contentverse.co.in and complete your profile.", meta: "Free" },
           { title: "2. Publish 2 posts", description: "Submit original articles for review.", meta: "Quality bar" },
-          { title: "3. Apply for verification", description: "Email writewith@contentverses.in with your username.", meta: "Review ~7 days" },
+          { title: "3. Apply for verification", description: `Email ${CONTACT_EMAIL} with your username.`, meta: "Review ~7 days" },
         ],
       },
     ],
@@ -256,7 +257,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Questions: writewith@contentverses.in",
+        callout: `Questions: ${CONTACT_EMAIL}`,
       },
     ],
   },
@@ -286,7 +287,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         heading: "Your choices",
         bullets: [
           "Update profile and notification settings in Dashboard",
-          "Request account deletion via writewith@contentverses.in",
+          `Request account deletion via ${CONTACT_EMAIL}`,
           "Disable push notifications in browser or device settings",
         ],
       },
@@ -359,11 +360,31 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
-        callout: "Report concerns: writewith@contentverses.in",
+        callout: `Report concerns: ${CONTACT_EMAIL}`,
       },
     ],
   },
 };
+
+function normalizeSitePageSections(sections: SitePageSection[]): SitePageSection[] {
+  return sections.map((section) => ({
+    ...section,
+    paragraphs: section.paragraphs?.map(normalizeContactEmail),
+    bullets: section.bullets?.map(normalizeContactEmail),
+    callout: section.callout ? normalizeContactEmail(section.callout) : section.callout,
+    cards: section.cards?.map((card) => ({
+      ...card,
+      description: normalizeContactEmail(card.description),
+      title: normalizeContactEmail(card.title),
+      meta: card.meta ? normalizeContactEmail(card.meta) : card.meta,
+    })),
+  }));
+}
+
+function sectionsContainLegacyEmail(sections: SitePageSection[]): boolean {
+  const blob = JSON.stringify(sections);
+  return blob.includes(LEGACY_CONTACT_EMAIL);
+}
 
 function mapDbRow(row: {
   slug: string;
@@ -373,9 +394,8 @@ function mapDbRow(row: {
   sections: unknown;
   updatedAt: Date;
 }): SitePageData {
-  const sections = Array.isArray(row.sections)
-    ? (row.sections as SitePageSection[])
-    : [];
+  const raw = Array.isArray(row.sections) ? (row.sections as SitePageSection[]) : [];
+  const sections = normalizeSitePageSections(raw);
   return {
     slug: row.slug,
     title: row.title,
@@ -411,6 +431,16 @@ export async function ensureSitePagesInDb() {
             sections: def.sections,
           }
         : {},
+    });
+  }
+
+  const rows = await prisma.sitePage.findMany({ select: { id: true, sections: true } });
+  for (const row of rows) {
+    const raw = Array.isArray(row.sections) ? (row.sections as SitePageSection[]) : [];
+    if (!sectionsContainLegacyEmail(raw)) continue;
+    await prisma.sitePage.update({
+      where: { id: row.id },
+      data: { sections: normalizeSitePageSections(raw) },
     });
   }
 }

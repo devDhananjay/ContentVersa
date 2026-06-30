@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL } from "@/lib/site-contact";
+
 export type HelpLink = { label: string; href: string };
 
 export type HelpSuggestion = {
@@ -87,9 +89,9 @@ export const HELP_FAQ: HelpFaqEntry[] = [
     id: "premium",
     keywords: ["premium", "pricing", "plan", "199", "499", "subscribe", "प्रीमियम", "प्लान", "कीमत"],
     answerEn:
-      "Creator Premium is **₹199/month** — AI writing assist, SEO tools, analytics & more. See /premium or email writewith@contentverses.in",
+      `Creator Premium is **₹199/month** — AI writing assist, SEO tools, analytics & more. See /premium or email ${CONTACT_EMAIL}`,
     answerHi:
-      "Creator Premium **₹199/महीना** है — AI assist, SEO, analytics आदि। /premium देखें या writewith@contentverses.in पर लिखें।",
+      `Creator Premium **₹199/महीना** है — AI assist, SEO, analytics आदि। /premium देखें या ${CONTACT_EMAIL} पर लिखें।`,
     links: [{ label: "Premium page", href: "/premium" }],
   },
   {
