@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { ContentVerseMark } from "@/components/icons/contentverse-mark";
+import { DEFAULT_LOGO_ICON } from "@/lib/branding/logo";
+import { shouldSkipImageOptimization } from "@/lib/upload";
 
 function LogoText({ className }: { className: string }) {
   return (
@@ -15,11 +17,13 @@ function LogoText({ className }: { className: string }) {
   );
 }
 
-/** Site logo — always the official ContentVerse mark + wordmark (ignores admin uploads). */
+/** Site logo — icon image + wordmark. Pass the same `src` everywhere for consistency. */
 export function Logo({
+  src = DEFAULT_LOGO_ICON,
   className,
   size = "md",
 }: {
+  src?: string;
   className?: string;
   size?: "sm" | "md" | "lg";
 }) {
@@ -35,7 +39,15 @@ export function Logo({
       href="/"
       className={cn("group inline-flex items-center gap-2 shrink-0 min-w-0", className)}
     >
-      <ContentVerseMark size={s.icon} />
+      <Image
+        src={src}
+        alt="ContentVerse"
+        width={s.icon}
+        height={s.icon}
+        className="shrink-0 rounded-[22%] object-contain"
+        unoptimized={shouldSkipImageOptimization(src)}
+        priority
+      />
       <LogoText className={s.text} />
     </Link>
   );

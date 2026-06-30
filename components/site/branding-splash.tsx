@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { ContentVerseMark } from "@/components/icons/contentverse-mark";
+import { DEFAULT_LOGO_ICON } from "@/lib/branding/logo";
+import { shouldSkipImageOptimization } from "@/lib/upload";
 
 const GRADIENT_RING =
   "conic-gradient(from 0deg, #3B82F6, #A855F7, #C084FC, #60A5FA, #3B82F6)";
@@ -39,17 +40,25 @@ function GradientLoaderRing({
 export function BrandingSplash() {
   const [visible, setVisible] = React.useState(true);
   const [loaderUrl, setLoaderUrl] = React.useState<string | null>(null);
+  const [logoUrl, setLogoUrl] = React.useState(DEFAULT_LOGO_ICON);
 
   React.useEffect(() => {
     let cancelled = false;
 
     void fetch("/api/site/branding")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { assets?: { loader?: { current?: string | null } } } | null) => {
-        if (!cancelled) {
+      .then(
+        (
+          data: {
+            assets?: { loader?: { current?: string | null } };
+            logoUrl?: string;
+          } | null
+        ) => {
+          if (cancelled) return;
           setLoaderUrl(data?.assets?.loader?.current ?? null);
+          if (data?.logoUrl) setLogoUrl(data.logoUrl);
         }
-      })
+      )
       .catch(() => undefined);
 
     const hide = () => {
@@ -91,7 +100,15 @@ export function BrandingSplash() {
         </GradientLoaderRing>
       ) : (
         <GradientLoaderRing size={76} ringWidth={5}>
-          <ContentVerseMark size={38} />
+          <Image
+            src={logoUrl}
+            alt=""
+            width={38}
+            height={38}
+            className="h-[38px] w-[38px] rounded-[22%] object-contain"
+            unoptimized={shouldSkipImageOptimization(logoUrl)}
+            priority
+          />
         </GradientLoaderRing>
       )}
     </div>

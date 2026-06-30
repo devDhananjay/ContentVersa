@@ -12,7 +12,7 @@ type BrandingState = Record<BrandingKey, BrandingAsset>;
 const LABELS: Record<BrandingKey, { title: string; hint: string }> = {
   logo: {
     title: "Website logo",
-    hint: "Shown in the navbar and footer. PNG, JPG, WebP or SVG. Max 5MB.",
+    hint: "Shown in navbar, footer, auth pages and loader. PNG or JPG recommended. Max 5MB.",
   },
   favicon: {
     title: "Favicon",
@@ -90,7 +90,7 @@ function BrandingRow({
         return;
       }
       onUpdated(type, data.asset);
-      setMessage("Saved. Refresh the site to see changes.");
+      setMessage("Saved. Logo updates across the whole site within a few seconds.");
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Upload failed");
     } finally {

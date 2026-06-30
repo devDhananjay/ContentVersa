@@ -39,7 +39,13 @@ const NAV_LINKS = [
   { href: "/site-map", label: "Site Map", icon: Map },
 ];
 
-export function Navbar({ embedded = false }: { embedded?: boolean }) {
+export function Navbar({
+  embedded = false,
+  logoSrc,
+}: {
+  embedded?: boolean;
+  logoSrc: string;
+}) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const isBlogsPage = pathname === "/blogs" || pathname?.startsWith("/blogs?");
@@ -49,7 +55,7 @@ export function Navbar({ embedded = false }: { embedded?: boolean }) {
   return (
     <header className={cn(!embedded && "fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50")}>
       <div className="container flex h-14 items-center gap-1.5 lg:gap-2 flex-nowrap min-w-0">
-        <Logo size="sm" className="shrink-0" />
+        <Logo src={logoSrc} size="sm" className="shrink-0" />
 
         <nav
           className="hidden lg:flex items-center gap-0 shrink-0"

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdminApi } from "@/lib/auth/require-admin-api";
 import {
@@ -8,7 +9,7 @@ import {
   type BrandingKey,
 } from "@/lib/data/site-branding";
 import { isValidGoogleFaviconUrl } from "@/lib/branding/favicon";
-import { resolveSiteLogo } from "@/lib/branding/logo";
+import { isValidLogoUrl } from "@/lib/branding/logo";
 
 const PostSchema = z.object({
   type: z.enum(["logo", "favicon", "loader"]),
@@ -54,17 +55,18 @@ export async function POST(req: Request) {
       );
     }
 
-    if (body.type === "logo" && !resolveSiteLogo(url)) {
+    if (body.type === "logo" && !isValidLogoUrl(url)) {
       return NextResponse.json(
         {
           error:
-            "Logo must be an official brand file: /logo-icon.png, /logo.png, or /logo-mark.svg.",
+            "Logo must be a PNG, JPG, WebP or SVG under /uploads/ or an official brand file.",
         },
         { status: 400 }
       );
     }
 
     const asset = await setBrandingAsset(body.type as BrandingKey, url);
+    revalidatePath("/", "layout");
     return NextResponse.json({ ok: true, type: body.type, asset });
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -86,6 +88,7 @@ export async function DELETE(req: Request) {
     await requireAdminApi();
     const body = DeleteSchema.parse(await req.json());
     const asset = await clearBrandingAsset(body.type as BrandingKey);
+    revalidatePath("/", "layout");
     return NextResponse.json({ ok: true, type: body.type, asset });
   } catch (err) {
     if (err instanceof z.ZodError) {
