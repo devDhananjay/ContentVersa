@@ -4,13 +4,18 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, Eye, Trash2, Loader2 } from "lucide-react";
+import { Eye, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { AdminListFilters, useAdminFilters } from "@/components/admin/admin-list-filters";
 import { formatNumber } from "@/lib/utils";
+import {
+  formatAdminDate,
+  inDateRange,
+  matchesSearch,
+} from "@/lib/admin/list-filters";
 import type { AdminBlogRow } from "@/lib/data/admin-data";
 
 const STATUS_VARIANT: Record<string, "success" | "warning" | "secondary" | "destructive"> = {
@@ -21,21 +26,83 @@ const STATUS_VARIANT: Record<string, "success" | "warning" | "secondary" | "dest
   ARCHIVED: "secondary",
 };
 
+const FILTER_DEFAULTS = {
+  q: "",
+  category: "all",
+  dateField: "createdAt",
+  dateFrom: "",
+  dateTo: "",
+  sort: "newest",
+};
+
+type BlogFilters = typeof FILTER_DEFAULTS;
+
+function sortBlogs(rows: AdminBlogRow[], sort: string): AdminBlogRow[] {
+  const copy = [...rows];
+  switch (sort) {
+    case "oldest":
+      return copy.sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+    case "views":
+      return copy.sort((a, b) => b.views - a.views);
+    case "title":
+      return copy.sort((a, b) => a.title.localeCompare(b.title));
+    case "published":
+      return copy.sort((a, b) => {
+        const ap = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const bp = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return bp - ap;
+      });
+    default:
+      return copy.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+  }
+}
+
+function applyBlogFilters(rows: AdminBlogRow[], f: BlogFilters): AdminBlogRow[] {
+  const filtered = rows.filter((b) => {
+    if (
+      !matchesSearch(
+        f.q,
+        b.title,
+        b.slug,
+        b.author.name,
+        b.author.username,
+        b.author.email,
+        b.category
+      )
+    ) {
+      return false;
+    }
+    if (f.category !== "all" && (b.category ?? "") !== f.category) return false;
+    const dateVal =
+      f.dateField === "publishedAt" ? b.publishedAt : b.createdAt;
+    if (!inDateRange(dateVal, f.dateFrom, f.dateTo)) return false;
+    return true;
+  });
+  return sortBlogs(filtered, f.sort);
+}
+
 function BlogTable({ rows }: { rows: AdminBlogRow[] }) {
   if (rows.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground py-10 text-center">No blogs in this tab.</p>
+      <p className="text-sm text-muted-foreground py-10 text-center">No blogs match your filters.</p>
     );
   }
 
   return (
-    <div className="rounded-2xl border bg-card overflow-hidden">
-      <table className="w-full">
+    <div className="rounded-2xl border bg-card overflow-hidden overflow-x-auto">
+      <table className="w-full min-w-[960px]">
         <thead className="text-left text-xs uppercase tracking-widest text-muted-foreground bg-muted/40">
           <tr>
             <th className="p-4">Post</th>
+            <th className="p-4">Category</th>
             <th className="p-4">Author</th>
             <th className="p-4">Status</th>
+            <th className="p-4">Created</th>
+            <th className="p-4">Published</th>
             <th className="p-4">Views</th>
             <th className="p-4 text-right">Actions</th>
           </tr>
@@ -59,6 +126,15 @@ function BlogTable({ rows }: { rows: AdminBlogRow[] }) {
                 </Link>
               </td>
               <td className="p-4">
+                {b.category ? (
+                  <Badge variant="secondary" className="text-[10px]">
+                    {b.category}
+                  </Badge>
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </td>
+              <td className="p-4">
                 <Link href={`/admin/users/${b.author.id}`} className="hover:underline">
                   <p className="font-medium">{b.author.name}</p>
                   <p className="text-xs text-muted-foreground">@{b.author.username}</p>
@@ -66,6 +142,12 @@ function BlogTable({ rows }: { rows: AdminBlogRow[] }) {
               </td>
               <td className="p-4">
                 <Badge variant={STATUS_VARIANT[b.status] ?? "secondary"}>{b.status}</Badge>
+              </td>
+              <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
+                {formatAdminDate(b.createdAt)}
+              </td>
+              <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
+                {formatAdminDate(b.publishedAt)}
               </td>
               <td className="p-4 font-semibold">{formatNumber(b.views)}</td>
               <td className="p-4 text-right">
@@ -99,17 +181,18 @@ export function AdminBlogsTable({
   archived: AdminBlogRow[];
 }) {
   const router = useRouter();
-  const [q, setQ] = React.useState("");
+  const { filters, set, clear, hasActive } = useAdminFilters(FILTER_DEFAULTS);
   const [deletingArchived, setDeletingArchived] = React.useState(false);
 
-  const filter = (rows: AdminBlogRow[]) =>
-    rows.filter(
-      (b) =>
-        b.title.toLowerCase().includes(q.toLowerCase()) ||
-        b.author.name.toLowerCase().includes(q.toLowerCase()) ||
-        b.author.email.toLowerCase().includes(q.toLowerCase())
-    );
+  const categories = React.useMemo(() => {
+    const set = new Set<string>();
+    for (const b of all) {
+      if (b.category) set.add(b.category);
+    }
+    return [...set].sort();
+  }, [all]);
 
+  const filter = (rows: AdminBlogRow[]) => applyBlogFilters(rows, filters);
   const filteredArchived = filter(archived);
 
   const deleteAllArchived = async () => {
@@ -142,15 +225,54 @@ export function AdminBlogsTable({
 
   return (
     <div>
-      <div className="relative max-w-sm mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search by title, author, email…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          className="pl-9"
-        />
-      </div>
+      <AdminListFilters
+        search={{
+          value: filters.q,
+          onChange: (v) => set("q", v),
+          placeholder: "Search title, slug, author, email…",
+        }}
+        dateFrom={{ value: filters.dateFrom, onChange: (v) => set("dateFrom", v) }}
+        dateTo={{ value: filters.dateTo, onChange: (v) => set("dateTo", v) }}
+        selects={[
+          {
+            id: "category",
+            value: filters.category,
+            onChange: (v) => set("category", v),
+            placeholder: "Category",
+            options: [
+              { value: "all", label: "All categories" },
+              ...categories.map((c) => ({ value: c, label: c })),
+            ],
+          },
+          {
+            id: "dateField",
+            value: filters.dateField,
+            onChange: (v) => set("dateField", v),
+            placeholder: "Date field",
+            options: [
+              { value: "createdAt", label: "Created date" },
+              { value: "publishedAt", label: "Published date" },
+            ],
+          },
+          {
+            id: "sort",
+            value: filters.sort,
+            onChange: (v) => set("sort", v),
+            placeholder: "Sort by",
+            options: [
+              { value: "newest", label: "Newest created" },
+              { value: "oldest", label: "Oldest created" },
+              { value: "published", label: "Recently published" },
+              { value: "views", label: "Most views" },
+              { value: "title", label: "Title A–Z" },
+            ],
+            className: "w-[180px]",
+          },
+        ]}
+        resultCount={filter(all).length}
+        showClear={hasActive}
+        onClear={clear}
+      />
 
       <Tabs defaultValue="all">
         <TabsList className="flex-wrap h-auto gap-1">

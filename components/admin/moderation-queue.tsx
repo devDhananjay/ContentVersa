@@ -11,9 +11,29 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials, timeAgo } from "@/lib/utils";
+import { AdminListFilters, useAdminFilters } from "@/components/admin/admin-list-filters";
+import { inDateRange, matchesSearch } from "@/lib/admin/list-filters";
 import type { Blog } from "@/lib/data/blogs";
 
 type QueueItem = Blog & { status: string; blogId: string };
+
+const MOD_FILTER_DEFAULTS = {
+  q: "",
+  category: "all",
+  dateFrom: "",
+  dateTo: "",
+};
+
+function filterModerationItems(items: QueueItem[], f: typeof MOD_FILTER_DEFAULTS) {
+  return items.filter((b) => {
+    if (!matchesSearch(f.q, b.title, b.author.name, b.author.username, b.excerpt)) {
+      return false;
+    }
+    if (f.category !== "all" && b.category !== f.category) return false;
+    if (!inDateRange(b.publishedAt, f.dateFrom, f.dateTo)) return false;
+    return true;
+  });
+}
 
 function ReviewCard({ blog }: { blog: QueueItem }) {
   const router = useRouter();
@@ -143,30 +163,72 @@ export function ModerationQueue({
   pending: QueueItem[];
   rejected: QueueItem[];
 }) {
+  const { filters, set, clear, hasActive } = useAdminFilters(MOD_FILTER_DEFAULTS);
+
+  const categories = React.useMemo(() => {
+    const set = new Set<string>();
+    for (const b of [...pending, ...rejected]) set.add(b.category);
+    return [...set].sort();
+  }, [pending, rejected]);
+
+  const filteredPending = filterModerationItems(pending, filters);
+  const filteredRejected = filterModerationItems(rejected, filters);
+
   return (
+    <div className="space-y-4">
+      <AdminListFilters
+        search={{
+          value: filters.q,
+          onChange: (v) => set("q", v),
+          placeholder: "Search title, author, excerpt…",
+        }}
+        dateFrom={{ value: filters.dateFrom, onChange: (v) => set("dateFrom", v) }}
+        dateTo={{ value: filters.dateTo, onChange: (v) => set("dateTo", v) }}
+        selects={[
+          {
+            id: "category",
+            value: filters.category,
+            onChange: (v) => set("category", v),
+            placeholder: "Category",
+            options: [
+              { value: "all", label: "All categories" },
+              ...categories.map((c) => ({ value: c, label: c })),
+            ],
+          },
+        ]}
+        resultCount={filteredPending.length + filteredRejected.length}
+        showClear={hasActive}
+        onClear={clear}
+      />
+
     <Tabs defaultValue="pending">
       <TabsList>
-        <TabsTrigger value="pending">Pending ({pending.length})</TabsTrigger>
-        <TabsTrigger value="rejected">Rejected ({rejected.length})</TabsTrigger>
+        <TabsTrigger value="pending">Pending ({filteredPending.length})</TabsTrigger>
+        <TabsTrigger value="rejected">Rejected ({filteredRejected.length})</TabsTrigger>
       </TabsList>
       <TabsContent value="pending" className="space-y-4">
-        {pending.length === 0 ? (
+        {filteredPending.length === 0 ? (
           <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
-            No posts waiting for review.
+            {pending.length === 0
+              ? "No posts waiting for review."
+              : "No pending posts match your filters."}
           </div>
         ) : (
-          pending.map((b) => <ReviewCard key={b.blogId} blog={b} />)
+          filteredPending.map((b) => <ReviewCard key={b.blogId} blog={b} />)
         )}
       </TabsContent>
       <TabsContent value="rejected" className="space-y-4">
-        {rejected.length === 0 ? (
+        {filteredRejected.length === 0 ? (
           <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
-            No rejected submissions.
+            {rejected.length === 0
+              ? "No rejected submissions."
+              : "No rejected posts match your filters."}
           </div>
         ) : (
-          rejected.map((b) => <ReviewCard key={b.blogId} blog={b} />)
+          filteredRejected.map((b) => <ReviewCard key={b.blogId} blog={b} />)
         )}
       </TabsContent>
     </Tabs>
+    </div>
   );
 }

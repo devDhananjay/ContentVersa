@@ -24,8 +24,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { timeAgo } from "@/lib/utils";
+import { AdminListFilters, useAdminFilters } from "@/components/admin/admin-list-filters";
+import { formatAdminDate, inDateRange, matchesSearch } from "@/lib/admin/list-filters";
 import type { AdminReportRow } from "@/lib/data/admin-reports";
+
+const REPORT_FILTER_DEFAULTS = {
+  q: "",
+  targetType: "all",
+  reason: "all",
+  dateFrom: "",
+  dateTo: "",
+};
+
+function applyReportFilters(rows: AdminReportRow[], f: typeof REPORT_FILTER_DEFAULTS) {
+  return rows.filter((r) => {
+    if (
+      !matchesSearch(
+        f.q,
+        r.reporter.username,
+        r.reporter.name,
+        r.targetLabel,
+        r.preview,
+        r.details
+      )
+    ) {
+      return false;
+    }
+    if (f.targetType !== "all" && r.targetType !== f.targetType) return false;
+    if (f.reason !== "all" && r.reasonCode !== f.reason) return false;
+    if (!inDateRange(r.createdAt, f.dateFrom, f.dateTo)) return false;
+    return true;
+  });
+}
 
 type ReportCounts = { pending: number; resolved: number; total: number };
 
@@ -60,6 +90,7 @@ export function ReportsQueue({
   initialTab?: "PENDING" | "RESOLVED" | "ALL";
 }) {
   const router = useRouter();
+  const { filters, set, clear, hasActive } = useAdminFilters(REPORT_FILTER_DEFAULTS);
   const [tab, setTab] = React.useState(initialTab);
   const [reports, setReports] = React.useState(initialReports);
   const [counts, setCounts] = React.useState(initialCounts);
@@ -137,8 +168,54 @@ export function ReportsQueue({
 
   const dismiss = (report: AdminReportRow) => runAction(report, "DISMISS");
 
+  const filteredReports = applyReportFilters(reports, filters);
+
   return (
     <>
+      <AdminListFilters
+        search={{
+          value: filters.q,
+          onChange: (v) => set("q", v),
+          placeholder: "Search reporter, target, preview…",
+        }}
+        dateFrom={{ value: filters.dateFrom, onChange: (v) => set("dateFrom", v), label: "From" }}
+        dateTo={{ value: filters.dateTo, onChange: (v) => set("dateTo", v), label: "To" }}
+        selects={[
+          {
+            id: "targetType",
+            value: filters.targetType,
+            onChange: (v) => set("targetType", v),
+            placeholder: "Target type",
+            options: [
+              { value: "all", label: "All types" },
+              { value: "BLOG", label: "Blog" },
+              { value: "COMMENT", label: "Comment" },
+              { value: "USER", label: "User" },
+              { value: "REEL", label: "Reel" },
+            ],
+          },
+          {
+            id: "reason",
+            value: filters.reason,
+            onChange: (v) => set("reason", v),
+            placeholder: "Reason",
+            options: [
+              { value: "all", label: "All reasons" },
+              { value: "SPAM", label: "Spam" },
+              { value: "HARASSMENT", label: "Harassment" },
+              { value: "HATE_SPEECH", label: "Hate speech" },
+              { value: "MISINFORMATION", label: "Misinformation" },
+              { value: "INAPPROPRIATE", label: "Inappropriate" },
+              { value: "OTHER", label: "Other" },
+            ],
+            className: "w-[170px]",
+          },
+        ]}
+        resultCount={filteredReports.length}
+        showClear={hasActive}
+        onClear={clear}
+      />
+
       <Tabs
         value={tab}
         onValueChange={(v) => setTab(v as typeof tab)}
@@ -157,10 +234,14 @@ export function ReportsQueue({
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-3" />
                 Loading reports…
               </div>
-            ) : reports.length === 0 ? (
+            ) : filteredReports.length === 0 ? (
               <div className="p-12 text-center text-muted-foreground">
                 <Flag className="h-10 w-10 mx-auto mb-3 opacity-40" />
-                <p className="font-medium">No reports in this queue</p>
+                <p className="font-medium">
+                  {reports.length === 0
+                    ? "No reports in this queue"
+                    : "No reports match your filters"}
+                </p>
                 <p className="text-sm mt-1">
                   Users can report blogs, comments, profiles, and reels from the site.
                 </p>
@@ -179,7 +260,7 @@ export function ReportsQueue({
                     </tr>
                   </thead>
                   <tbody>
-                    {reports.map((r) => (
+                    {filteredReports.map((r) => (
                       <tr key={r.id} className="border-t border-border/40 text-sm align-top">
                         <td className="p-4">
                           <Link
@@ -213,8 +294,8 @@ export function ReportsQueue({
                             </p>
                           )}
                         </td>
-                        <td className="p-4 text-muted-foreground whitespace-nowrap">
-                          {timeAgo(r.createdAt)}
+                        <td className="p-4 text-muted-foreground whitespace-nowrap text-xs">
+                          {formatAdminDate(r.createdAt)}
                         </td>
                         <td className="p-4 text-right">
                           <div className="flex flex-wrap justify-end gap-1.5">

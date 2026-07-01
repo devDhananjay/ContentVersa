@@ -10,7 +10,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials, timeAgo } from "@/lib/utils";
+import { AdminListFilters, useAdminFilters } from "@/components/admin/admin-list-filters";
+import { inDateRange, matchesSearch } from "@/lib/admin/list-filters";
 import type { AdminReelQueueItem } from "@/lib/data/admin-data";
+
+const REEL_FILTER_DEFAULTS = {
+  q: "",
+  mediaType: "all",
+  dateFrom: "",
+  dateTo: "",
+};
+
+function filterReels(items: AdminReelQueueItem[], f: typeof REEL_FILTER_DEFAULTS) {
+  return items.filter((r) => {
+    if (!matchesSearch(f.q, r.caption, r.author.name, r.author.username)) return false;
+    if (f.mediaType !== "all" && r.mediaType !== f.mediaType) return false;
+    if (!inDateRange(r.createdAt, f.dateFrom, f.dateTo)) return false;
+    return true;
+  });
+}
 
 function ReelReviewCard({ reel }: { reel: AdminReelQueueItem }) {
   const router = useRouter();
@@ -133,31 +151,67 @@ export function ReelModerationQueue({
   pending: AdminReelQueueItem[];
   rejected: AdminReelQueueItem[];
 }) {
+  const { filters, set, clear, hasActive } = useAdminFilters(REEL_FILTER_DEFAULTS);
+  const filteredPending = filterReels(pending, filters);
+  const filteredRejected = filterReels(rejected, filters);
+
   return (
+    <div className="space-y-4">
+      <AdminListFilters
+        search={{
+          value: filters.q,
+          onChange: (v) => set("q", v),
+          placeholder: "Search caption, author…",
+        }}
+        dateFrom={{ value: filters.dateFrom, onChange: (v) => set("dateFrom", v), label: "Submitted from" }}
+        dateTo={{ value: filters.dateTo, onChange: (v) => set("dateTo", v), label: "Submitted to" }}
+        selects={[
+          {
+            id: "mediaType",
+            value: filters.mediaType,
+            onChange: (v) => set("mediaType", v),
+            placeholder: "Media type",
+            options: [
+              { value: "all", label: "All types" },
+              { value: "VIDEO", label: "Video" },
+              { value: "IMAGE", label: "Image" },
+            ],
+          },
+        ]}
+        resultCount={filteredPending.length + filteredRejected.length}
+        showClear={hasActive}
+        onClear={clear}
+      />
+
     <Tabs defaultValue="pending">
       <TabsList>
-        <TabsTrigger value="pending">Pending ({pending.length})</TabsTrigger>
-        <TabsTrigger value="rejected">Rejected ({rejected.length})</TabsTrigger>
+        <TabsTrigger value="pending">Pending ({filteredPending.length})</TabsTrigger>
+        <TabsTrigger value="rejected">Rejected ({filteredRejected.length})</TabsTrigger>
       </TabsList>
       <TabsContent value="pending" className="space-y-4">
-        {pending.length === 0 ? (
+        {filteredPending.length === 0 ? (
           <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
             <Film className="h-8 w-8 mx-auto mb-3 opacity-50" />
-            No reels waiting for review.
+            {pending.length === 0
+              ? "No reels waiting for review."
+              : "No pending reels match your filters."}
           </div>
         ) : (
-          pending.map((reel) => <ReelReviewCard key={reel.id} reel={reel} />)
+          filteredPending.map((reel) => <ReelReviewCard key={reel.id} reel={reel} />)
         )}
       </TabsContent>
       <TabsContent value="rejected" className="space-y-4">
-        {rejected.length === 0 ? (
+        {filteredRejected.length === 0 ? (
           <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
-            No rejected reels.
+            {rejected.length === 0
+              ? "No rejected reels."
+              : "No rejected reels match your filters."}
           </div>
         ) : (
-          rejected.map((reel) => <ReelReviewCard key={reel.id} reel={reel} />)
+          filteredRejected.map((reel) => <ReelReviewCard key={reel.id} reel={reel} />)
         )}
       </TabsContent>
     </Tabs>
+    </div>
   );
 }
