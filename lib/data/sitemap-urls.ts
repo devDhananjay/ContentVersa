@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { BlogStatus } from "@prisma/client";
 import { BLOGS } from "@/lib/data/blogs";
-import { CATEGORIES } from "@/lib/data/categories";
+import { CATEGORIES, categoryPageHref } from "@/lib/data/categories";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { SITE } from "@/lib/seo";
 import {
@@ -10,6 +10,11 @@ import {
 } from "@/lib/seo/crawl-policy";
 
 type SitemapFreq = MetadataRoute.Sitemap[0]["changeFrequency"];
+
+/** Google-safe W3C datetime — no fractional seconds (GSC rejects .205Z). */
+export function formatSitemapLastMod(date: Date): string {
+  return date.toISOString().replace(/\.\d{3}Z$/, "Z");
+}
 
 const STATIC_PAGES: Array<{
   path: string;
@@ -49,7 +54,7 @@ function entry(
 ): MetadataRoute.Sitemap[0] {
   return {
     url: `${SITE.url}${path}`,
-    lastModified: opts.lastModified ?? new Date(),
+    lastModified: formatSitemapLastMod(opts.lastModified ?? new Date()),
     changeFrequency: opts.changeFrequency,
     priority: opts.priority,
   };
@@ -81,8 +86,20 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
   return blogEntries;
 }
 
+function dedupeSitemap(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
+  const byUrl = new Map<string, MetadataRoute.Sitemap[0]>();
+  for (const item of entries) {
+    const prev = byUrl.get(item.url);
+    if (!prev || (item.priority ?? 0) > (prev.priority ?? 0)) {
+      byUrl.set(item.url, item);
+    }
+  }
+  return [...byUrl.values()];
+}
+
 export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const staticPaths = new Set(STATIC_PAGES.map((p) => p.path || "/"));
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_PAGES.map((page) =>
     entry(page.path, {
@@ -92,8 +109,10 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  const categoryEntries: MetadataRoute.Sitemap = CATEGORIES.map((c) =>
-    entry(`/category/${c.slug}`, {
+  const categoryEntries: MetadataRoute.Sitemap = CATEGORIES.filter(
+    (c) => !staticPaths.has(categoryPageHref(c.slug))
+  ).map((c) =>
+    entry(categoryPageHref(c.slug), {
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.7,
@@ -108,7 +127,7 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   }
 
   if (dbEntries.length > 0) {
-    return [...staticEntries, ...categoryEntries, ...dbEntries];
+    return dedupeSitemap([...staticEntries, ...categoryEntries, ...dbEntries]);
   }
 
   const fallbackBlogs: MetadataRoute.Sitemap = BLOGS.filter((b) =>
@@ -121,5 +140,5 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  return [...staticEntries, ...categoryEntries, ...fallbackBlogs];
+  return dedupeSitemap([...staticEntries, ...categoryEntries, ...fallbackBlogs]);
 }
