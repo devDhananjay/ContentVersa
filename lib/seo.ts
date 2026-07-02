@@ -14,24 +14,30 @@ function siteUrl() {
 /** Square logo for Google Organization / Knowledge Graph (min ~112px). */
 export const SITE_LOGO_URL = "/icon-192.png";
 
+/** Main hub modules — prioritized for sitelinks & internal linking. */
+export const SITE_NAV_HUBS = [
+  { name: "Sports", path: "/sports", description: "Live cricket scores, fixtures and sports news" },
+  { name: "Finance", path: "/finance", description: "Nifty, Sensex, stocks and market updates" },
+  { name: "Jobs", path: "/jobs", description: "Government and private jobs across India" },
+  { name: "Reels", path: "/reels", description: "Short-form videos from Indian creators" },
+  { name: "Blogs", path: "/blogs", description: "Read articles and stories from creators" },
+] as const;
+
 /** Main site sections — helps Google understand navigation (sitelinks). */
 export const SITE_NAV_SECTIONS = [
-  { name: "Blogs", path: "/blogs", description: "Read articles and stories" },
+  ...SITE_NAV_HUBS,
   { name: "Categories", path: "/categories", description: "Browse topics" },
-  { name: "Sports", path: "/sports", description: "Live scores and cricket news" },
-  { name: "Jobs", path: "/jobs", description: "Government and private jobs" },
-  { name: "Finance", path: "/finance", description: "Markets and investing" },
-  { name: "Reels", path: "/reels", description: "Short-form creator videos" },
-  { name: "About", path: "/about", description: "About ContentVerse" },
+  { name: "About", path: "/about", description: "About ContentVerse India" },
   { name: "Contact", path: "/contact", description: "Get in touch" },
   { name: "Creator Program", path: "/creator-program", description: "Monetize your writing" },
 ] as const;
 
 export const SITE = {
   name: "ContentVerse",
+  legalName: "ContentVerse India",
   tagline: "Read. Create. Grow.",
   description:
-    "ContentVerse is India's creator platform for blogs, reels, sports, jobs and finance content. Read, create and grow with a community of bold writers.",
+    "ContentVerse India — read blogs, watch reels, follow live sports scores, track Nifty & Sensex, and find government & private jobs. India's creator platform for bold writers.",
   get url() {
     return siteUrl();
   },
@@ -112,6 +118,8 @@ export function organizationJsonLd() {
     "@type": "Organization",
     "@id": `${SITE.url}/#organization`,
     name: SITE.name,
+    legalName: SITE.legalName,
+    alternateName: ["ContentVerse India", "contentverse.co.in"],
     url: SITE.url,
     logo: {
       "@type": "ImageObject",
@@ -131,6 +139,7 @@ export function websiteJsonLd() {
     "@type": "WebSite",
     "@id": `${SITE.url}/#website`,
     name: SITE.name,
+    alternateName: ["ContentVerse India", "contentverse.co.in"],
     url: SITE.url,
     description: SITE.description,
     publisher: { "@id": `${SITE.url}/#organization` },
@@ -151,6 +160,37 @@ export function websiteJsonLd() {
       url: `${SITE.url}${section.path}`,
       position: index + 1,
       isPartOf: { "@id": `${SITE.url}/#website` },
+    })),
+  };
+}
+
+/** SiteNavigationElement — signals primary modules for Google sitelinks. */
+export function siteNavigationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@graph": SITE_NAV_HUBS.map((hub, index) => ({
+      "@type": "SiteNavigationElement",
+      "@id": `${SITE.url}/#nav-${hub.path.slice(1)}`,
+      name: hub.name,
+      description: hub.description,
+      url: `${SITE.url}${hub.path}`,
+      position: index + 1,
+    })),
+  };
+}
+
+/** ItemList of hub pages for homepage discovery. */
+export function platformModulesJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "ContentVerse platform modules",
+    itemListElement: SITE_NAV_HUBS.map((hub, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: hub.name,
+      description: hub.description,
+      url: `${SITE.url}${hub.path}`,
     })),
   };
 }

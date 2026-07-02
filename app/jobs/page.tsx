@@ -14,9 +14,9 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Jobs Hub — Government & Private Careers",
+  title: "Jobs — Government & Private Careers India",
   description:
-    "Latest sarkari jobs, results, admit cards and private-sector openings across India.",
+    "Latest sarkari jobs, results, admit cards and private-sector openings on ContentVerse India.",
   path: "/jobs",
   image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1600",
 });

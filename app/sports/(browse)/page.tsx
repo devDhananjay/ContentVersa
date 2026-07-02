@@ -13,9 +13,9 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Sports Hub",
+  title: "Sports — Live Cricket Scores & News",
   description:
-    "Live cricket scores, upcoming fixtures, match results and sports news — plus editorial blogs from ContentVerse writers.",
+    "Live cricket scores, upcoming fixtures, match results and sports news from ContentVerse India.",
   path: "/sports",
   image:
     "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1600",

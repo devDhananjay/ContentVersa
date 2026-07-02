@@ -7,9 +7,9 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Finance Hub — Live Indian Markets",
+  title: "Finance — Nifty, Sensex & Indian Markets",
   description:
-    "Live Nifty 50, Sensex, top gainers, losers and stock charts. Plus finance blogs from ContentVerse.",
+    "Live Nifty 50, Sensex, top gainers, losers and stock charts on ContentVerse India.",
   path: "/finance",
   image:
     "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1600",

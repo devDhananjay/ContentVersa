@@ -3,10 +3,10 @@ import { ReelsFeedViewer } from "@/components/reels/reels-feed-viewer";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
-  title: "Reels",
-  description: "Watch short videos and images from creators on ContentVerse.",
+  title: "Reels — Short Videos from Indian Creators",
+  description:
+    "Watch short-form videos and creator reels on ContentVerse India. Discover trending clips from writers and creators.",
   path: "/reels",
-  noIndex: true,
 });
 
 export default async function ReelsPage() {

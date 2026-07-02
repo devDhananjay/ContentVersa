@@ -8,10 +8,13 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
   {
     title: "Platform",
     links: [
-      { label: "Explore", href: "/blogs" },
+      { label: "Sports", href: "/sports" },
+      { label: "Finance", href: "/finance" },
+      { label: "Jobs", href: "/jobs" },
+      { label: "Reels", href: "/reels" },
+      { label: "Explore Blogs", href: "/blogs" },
       { label: "Categories", href: "/categories" },
       { label: "Leaderboard", href: "/leaderboard" },
-      { label: "Premium", href: "/premium" },
     ],
   },
   {
