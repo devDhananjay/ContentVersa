@@ -249,59 +249,125 @@ export async function callGeminiTextWithMeta(
   }));
 }
 
-/** Returns a data URL for generated image. */
-export async function callGeminiImage(prompt: string): Promise<string | null> {
-  const key = apiKey();
-  if (!key) return null;
+function imageModels(): string[] {
+  const configured = process.env.GEMINI_IMAGE_MODEL?.trim();
+  const chain = [
+    configured,
+    GEMINI_IMAGE_MODEL,
+    "gemini-2.5-flash-image",
+    "gemini-3.1-flash-image",
+  ].filter((m): m is string => Boolean(m));
+  return [...new Set(chain)];
+}
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_IMAGE_MODEL}:generateContent?key=${key}`;
+type GeminiImagePart = {
+  inlineData?: { mimeType?: string; data?: string };
+  inline_data?: { mime_type?: string; mimeType?: string; data?: string };
+};
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text: [
-                "Create a single photorealistic editorial photograph for a blog hero banner (16:9 wide shot).",
-                "Match the scene description exactly — do not substitute a generic category image.",
-                "No text, logos, watermarks, borders, or collage.",
-                `Scene: ${prompt.slice(0, 900)}`,
-              ].join(" "),
-            },
-          ],
-        },
-      ],
-      generationConfig: {
-        responseModalities: ["TEXT", "IMAGE"],
-      },
-    }),
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    console.error("[gemini image]", res.status, await res.text().catch(() => ""));
-    return null;
-  }
-
-  const data = (await res.json()) as {
-    candidates?: {
-      content?: {
-        parts?: { inlineData?: { mimeType?: string; data?: string } }[];
-      };
-    }[];
-  };
-
+function extractImageDataUrl(data: {
+  candidates?: { content?: { parts?: GeminiImagePart[] } }[];
+}): string | null {
   const parts = data.candidates?.[0]?.content?.parts || [];
   for (const part of parts) {
-    if (part.inlineData?.data) {
-      const mime = part.inlineData.mimeType || "image/png";
-      return `data:${mime};base64,${part.inlineData.data}`;
+    const inline = part.inlineData ?? part.inline_data;
+    if (inline?.data) {
+      const mime =
+        inline.mimeType ||
+        (inline as { mime_type?: string }).mime_type ||
+        "image/png";
+      return `data:${mime};base64,${inline.data}`;
+    }
+  }
+  return null;
+}
+
+export type GeminiImageResult =
+  | { ok: true; dataUrl: string; model: string }
+  | { ok: false; failure: GeminiFailure };
+
+/** Returns a data URL for generated image (tries multiple image models). */
+export async function callGeminiImageWithMeta(
+  prompt: string
+): Promise<GeminiImageResult> {
+  const key = apiKey();
+  if (!key) {
+    return {
+      ok: false,
+      failure: {
+        status: 503,
+        quotaExceeded: false,
+        message: "GEMINI_API_KEY not configured",
+      },
+    };
+  }
+
+  const body = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: [
+              "Create a single photorealistic editorial photograph for a blog hero banner (16:9 wide shot).",
+              "Match the scene description exactly — do not substitute a generic category image.",
+              "No text, logos, watermarks, borders, or collage.",
+              `Scene: ${prompt.slice(0, 900)}`,
+            ].join(" "),
+          },
+        ],
+      },
+    ],
+    generationConfig: {
+      responseModalities: ["TEXT", "IMAGE"],
+    },
+  };
+
+  let lastFailure: GeminiFailure = {
+    status: 503,
+    quotaExceeded: false,
+    message: "Image generation failed",
+  };
+
+  for (const model of imageModels()) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        cache: "no-store",
+      });
+      const text = await res.text().catch(() => "");
+      if (!res.ok) {
+        lastFailure = parseGeminiFailure(res.status, text);
+        console.error(`[gemini image ${model}]`, res.status, text.slice(0, 400));
+        continue;
+      }
+      const data = JSON.parse(text) as {
+        candidates?: { content?: { parts?: GeminiImagePart[] } }[];
+      };
+      const dataUrl = extractImageDataUrl(data);
+      if (dataUrl) return { ok: true, dataUrl, model };
+      lastFailure = {
+        status: 500,
+        quotaExceeded: false,
+        message: "Gemini returned no image data",
+      };
+    } catch (err) {
+      lastFailure = {
+        status: 500,
+        quotaExceeded: false,
+        message: err instanceof Error ? err.message : "Image request failed",
+      };
     }
   }
 
-  return null;
+  return { ok: false, failure: lastFailure };
+}
+
+/** Returns a data URL for generated image. */
+export async function callGeminiImage(prompt: string): Promise<string | null> {
+  const result = await callGeminiImageWithMeta(prompt);
+  return result.ok ? result.dataUrl : null;
 }

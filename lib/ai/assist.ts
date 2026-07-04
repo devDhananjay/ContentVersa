@@ -3,7 +3,12 @@
  * then smart heuristics when no API key is set.
  */
 
-import { callGeminiText, callGeminiImage, isGeminiConfigured } from "@/lib/ai/gemini";
+import {
+  callGeminiText,
+  callGeminiImageWithMeta,
+  isGeminiConfigured,
+  type GeminiFailure,
+} from "@/lib/ai/gemini";
 import { generateFullBlogFromTitle, type FullBlogPackage } from "@/lib/ai/generate-full-blog";
 import {
   guessCategoryFromTitle,
@@ -175,9 +180,15 @@ function heuristicAssist(input: AssistInput): string | string[] {
 
 export type AiAssistResult = string | string[] | FullBlogPackage;
 
+export type AiAssistResponse = {
+  result: AiAssistResult;
+  source: AiSource;
+  failure?: GeminiFailure;
+};
+
 export async function runAiAssist(
   input: AssistInput
-): Promise<{ result: AiAssistResult; source: AiSource }> {
+): Promise<AiAssistResponse> {
   if (input.action === "generate-from-title") {
     const { blog, source } = await generateFullBlogFromTitle({
       title: input.title || "",
@@ -201,11 +212,24 @@ export async function runAiAssist(
     const prompt =
       input.imagePrompt?.trim() ||
       `Blog cover: ${input.title || "ContentVerse article"}, ${input.category || "technology"} theme`;
-    if (isGeminiConfigured()) {
-      const image = await callGeminiImage(prompt);
-      if (image) return { result: image, source: "gemini" };
+    if (!isGeminiConfigured()) {
+      return {
+        result: buildPlaceholderImageUrl(prompt),
+        source: "local",
+        failure: {
+          status: 503,
+          quotaExceeded: false,
+          message: "GEMINI_API_KEY not configured",
+        },
+      };
     }
-    return { result: buildPlaceholderImageUrl(prompt), source: "local" };
+    const image = await callGeminiImageWithMeta(prompt);
+    if (image.ok) return { result: image.dataUrl, source: "gemini" };
+    return {
+      result: buildPlaceholderImageUrl(prompt),
+      source: "local",
+      failure: image.failure,
+    };
   }
 
   const prompts: Record<

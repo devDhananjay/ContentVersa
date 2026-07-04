@@ -202,6 +202,31 @@ export async function getBlogBySlugFromDb(slug: string) {
   }, "blogs");
 }
 
+/** Published for everyone; author can also open DRAFT / PENDING / REJECTED previews. */
+export async function getBlogBySlugForViewer(
+  slug: string,
+  viewerUserId?: string | null
+): Promise<(Blog & { status: BlogStatus }) | null> {
+  if (!isDatabaseConfigured()) {
+    const mock = getMockBlogBySlug(slug);
+    return mock ? { ...mock, status: "PUBLISHED" as BlogStatus } : null;
+  }
+  return safeDbQuery(null, async () => {
+    const row = await prisma.blog.findUnique({
+      where: { slug },
+      include: blogInclude,
+    });
+    if (!row) return null;
+    if (row.status === "PUBLISHED") {
+      return { ...mapDbBlogToBlog(row), status: row.status };
+    }
+    if (viewerUserId && row.authorId === viewerUserId) {
+      return { ...mapDbBlogToBlog(row), status: row.status };
+    }
+    return null;
+  }, "blogs");
+}
+
 export const getBlogBySlugHybrid = cache(async (slug: string) => {
   const fromDb = await getBlogBySlugFromDb(slug);
   if (fromDb) return fromDb;

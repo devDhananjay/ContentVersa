@@ -22,7 +22,7 @@ import { ArticleFeedback } from "@/components/blog/article-feedback";
 import { RecommendedBlogs } from "@/components/blog/recommended-blogs";
 import { TrackBlogRead } from "@/components/blog/track-reading";
 import { renderMarkdown, extractTOC } from "@/components/blog/markdown";
-import { getBlogBySlugHybrid } from "@/lib/data/blog-db";
+import { getBlogBySlugForViewer } from "@/lib/data/blog-db";
 import { getBlogEngagement } from "@/lib/data/blog-engagement";
 import { getCurrentUser } from "@/lib/auth";
 import { resolveUserId } from "@/lib/auth/resolve-user-id";
@@ -46,12 +46,15 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const blog = await getBlogBySlugHybrid(slug);
+  const session = await getCurrentUser();
+  const userId = session ? await resolveUserId(session) : null;
+  const blog = await getBlogBySlugForViewer(slug, userId);
   if (!blog) return buildMetadata({ title: "Not found", noIndex: true });
+  const isPublic = blog.status === "PUBLISHED";
   const syndicated = isDiscoverSyndicatedSlug(blog.slug);
   const thin = !isIndexableArticle({ slug: blog.slug, readingTime: blog.readingTime });
   return buildMetadata({
-    title: blog.title,
+    title: isPublic ? blog.title : `${blog.title} (Preview)`,
     description: blog.excerpt,
     path: `/blog/${blog.slug}`,
     image: blog.coverImage,
@@ -59,7 +62,7 @@ export async function generateMetadata({
     publishedTime: blog.publishedAt,
     authors: [blog.author.name],
     keywords: blog.tags,
-    noIndex: syndicated || thin,
+    noIndex: !isPublic || syndicated || thin,
   });
 }
 
@@ -69,18 +72,18 @@ export default async function BlogPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const blog = await getBlogBySlugHybrid(slug);
+  const session = await getCurrentUser();
+  const userId = session ? await resolveUserId(session) : null;
+  const blog = await getBlogBySlugForViewer(slug, userId);
   if (!blog) return notFound();
 
+  const isPublic = blog.status === "PUBLISHED";
   const category = CATEGORIES.find((c) => c.slug === blog.category);
   const toc = extractTOC(blog.content);
   const url = `${SITE.url}/blog/${blog.slug}`;
 
-  const session = await getCurrentUser();
-  const userId = session ? await resolveUserId(session) : null;
-
   const engagement =
-    isDatabaseConfigured() && blog.id
+    isPublic && isDatabaseConfigured() && blog.id
       ? await getBlogEngagement(blog.id, userId)
       : null;
 
@@ -90,16 +93,17 @@ export default async function BlogPage({
     Boolean(userId && blog.author.id && userId === blog.author.id) ||
     Boolean(session?.username && session.username === blog.author.username);
 
-  const jsonLd = syndicated
-    ? null
-    : articleJsonLd({
-        title: blog.title,
-        description: blog.excerpt,
-        url,
-        image: blog.coverImage,
-        datePublished: blog.publishedAt,
-        authorName: blog.author.name,
-      });
+  const jsonLd =
+    !isPublic || syndicated
+      ? null
+      : articleJsonLd({
+          title: blog.title,
+          description: blog.excerpt,
+          url,
+          image: blog.coverImage,
+          datePublished: blog.publishedAt,
+          authorName: blog.author.name,
+        });
 
   const coverSrc = resolveBlogCoverImage(
     blog.coverImage ||
@@ -114,12 +118,14 @@ export default async function BlogPage({
   return (
     <>
       <ReadingProgress />
-      <FloatingActions
-        blogRef={blog.slug}
-        likes={reactionCount}
-        initialBookmarked={engagement?.bookmarked}
-        initialUserReaction={engagement?.userReaction}
-      />
+      {isPublic ? (
+        <FloatingActions
+          blogRef={blog.slug}
+          likes={reactionCount}
+          initialBookmarked={engagement?.bookmarked}
+          initialUserReaction={engagement?.userReaction}
+        />
+      ) : null}
       {jsonLd ? (
         <script
           type="application/ld+json"
@@ -128,6 +134,32 @@ export default async function BlogPage({
       ) : null}
 
       <article className="container max-w-5xl py-8 md:py-12">
+        {!isPublic ? (
+          <div className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                {blog.status === "DRAFT"
+                  ? "Draft preview — only you can see this"
+                  : blog.status === "PENDING"
+                    ? "Pending review — only you can see this"
+                    : blog.status === "REJECTED"
+                      ? "Rejected — only you can see this"
+                      : "Private preview — only you can see this"}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Not public yet. Edit and submit when you are ready.
+              </p>
+            </div>
+            {blog.id ? (
+              <Link
+                href={`/dashboard/blogs/${blog.id}/edit`}
+                className="shrink-0 text-sm font-medium text-amber-800 dark:text-amber-200 underline underline-offset-2"
+              >
+                Edit blog
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
         {seriesMeta ? (
           <SeriesNav
             seriesSlug={seriesMeta.seriesSlug}
@@ -137,6 +169,9 @@ export default async function BlogPage({
         ) : null}
         <header className="mb-8">
           <div className="flex flex-wrap items-center gap-2 mb-5">
+            {!isPublic ? (
+              <Badge variant="warning">{blog.status}</Badge>
+            ) : null}
             {category && (
               <Link href={`/category/${category.slug}`}>
                 <Badge variant="gradient" className="shadow-lg">
@@ -161,7 +196,7 @@ export default async function BlogPage({
             </p>
           )}
 
-          <TrackBlogRead blogSlug={slug} />
+          {isPublic ? <TrackBlogRead blogSlug={slug} /> : null}
 
           <div className="mt-6">
             <NewsIn60Short
@@ -323,7 +358,9 @@ export default async function BlogPage({
 
           <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto overscroll-y-contain scrollbar-hide space-y-6">
             <TableOfContents items={toc} />
-            <GoogleAdSense format="rectangle" className="rounded-xl overflow-hidden" />
+            {isPublic ? (
+              <GoogleAdSense format="rectangle" className="rounded-xl overflow-hidden" />
+            ) : null}
           </aside>
         </div>
 

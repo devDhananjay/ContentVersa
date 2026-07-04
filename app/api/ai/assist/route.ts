@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       const prompt =
         parsed.imagePrompt?.trim() ||
         `Blog cover: ${parsed.title || "ContentVerse article"}`;
-      const { result, source } = await runAiAssist({
+      const { result, source, failure } = await runAiAssist({
         action: "generate-image",
         title: parsed.title,
         category: parsed.category,
@@ -57,12 +57,17 @@ export async function POST(req: Request) {
       });
       const imageUrl = typeof result === "string" ? result : buildPlaceholderImageUrl(prompt);
       if (imageUrl.includes("picsum.photos")) {
+        const missingKey = failure?.message?.includes("not configured");
+        const quota = failure?.quotaExceeded;
+        const error = missingKey
+          ? "GEMINI_API_KEY is not set on the server. Add it to .env and restart."
+          : quota
+            ? "Gemini image quota exceeded. Try again later or enable billing in Google AI Studio."
+            : failure?.message
+              ? `Gemini image failed: ${failure.message}`
+              : "Gemini image generation failed. Check GEMINI_API_KEY and image model access.";
         return NextResponse.json(
-          {
-            ok: false,
-            error: "Gemini image generation failed. Set GEMINI_API_KEY in .env.",
-            source,
-          },
+          { ok: false, error, source, failure },
           { status: 503 }
         );
       }

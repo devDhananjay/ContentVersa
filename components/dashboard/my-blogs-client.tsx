@@ -52,6 +52,9 @@ function BlogRow({
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = React.useState(false);
+  const isPublic = blog.status === "PUBLISHED";
+  const viewHref = `/blog/${blog.slug}`;
+  const editHref = `/dashboard/blogs/${blog.id}/edit`;
 
   const publicUrl =
     typeof window !== "undefined"
@@ -59,6 +62,9 @@ function BlogRow({
       : `/blog/${blog.slug}`;
 
   const copyLink = async () => {
+    if (!isPublic) {
+      toast.message("Draft is private — only you can open this link while signed in.");
+    }
     try {
       await navigator.clipboard.writeText(publicUrl);
       toast.success("Link copied to clipboard");
@@ -93,7 +99,7 @@ function BlogRow({
 
   return (
     <div className="flex items-center gap-4 p-4 rounded-2xl border bg-card hover:border-neon-purple/40 transition-colors">
-      <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
+      <Link href={viewHref} className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
         {blog.coverImage ? (
           <Image
             src={blog.coverImage}
@@ -104,28 +110,29 @@ function BlogRow({
             unoptimized={shouldSkipImageOptimization(blog.coverImage)}
           />
         ) : null}
-      </div>
+      </Link>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant={STATUS_VARIANTS[blog.status]}>{blog.status}</Badge>
           <span className="text-xs text-muted-foreground">{timeAgo(blog.publishedAt)}</span>
         </div>
-        <Link href={`/blog/${blog.slug}`}>
-          <h3 className="font-semibold truncate hover:text-foreground mt-1">{blog.title}</h3>
+        <Link href={viewHref}>
+          <h3 className="font-semibold truncate hover:text-neon-purple mt-1">{blog.title}</h3>
         </Link>
         <p className="text-xs text-muted-foreground mt-1">
-          {formatNumber(blog.views)} views · {formatNumber(blog.likes)} likes ·{" "}
-          {formatNumber(blog.comments)} comments
+          {isPublic
+            ? `${formatNumber(blog.views)} views · ${formatNumber(blog.likes)} likes · ${formatNumber(blog.comments)} comments`
+            : "Private preview — click title or eye to view"}
         </p>
       </div>
       <div className="flex items-center gap-1 shrink-0">
-        <Button variant="ghost" size="icon" aria-label="View" asChild>
-          <Link href={`/blog/${blog.slug}`} target="_blank">
+        <Button variant="ghost" size="icon" aria-label={isPublic ? "View" : "Preview"} asChild>
+          <Link href={viewHref} target="_blank">
             <Eye className="h-4 w-4" />
           </Link>
         </Button>
         <Button variant="ghost" size="icon" aria-label="Edit" asChild>
-          <Link href={`/dashboard/blogs/${blog.id}/edit`}>
+          <Link href={editHref}>
             <Edit3 className="h-4 w-4" />
           </Link>
         </Button>
@@ -151,13 +158,13 @@ function BlogRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem asChild>
-              <Link href={`/blog/${blog.slug}`} target="_blank" className="cursor-pointer">
+              <Link href={viewHref} target="_blank" className="cursor-pointer">
                 <ExternalLink className="h-4 w-4 mr-2" />
-                View article
+                {isPublic ? "View article" : "Preview draft"}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/dashboard/blogs/${blog.id}/edit`} className="cursor-pointer">
+              <Link href={editHref} className="cursor-pointer">
                 <Edit3 className="h-4 w-4 mr-2" />
                 Edit blog
               </Link>
@@ -193,14 +200,31 @@ export function MyBlogsClient({ initialRows }: { initialRows: DashboardBlogRow[]
     setRows((prev) => prev.filter((r) => r.id !== id));
   };
 
+  const counts = React.useMemo(() => {
+    const c = {
+      all: rows.length,
+      PUBLISHED: 0,
+      PENDING: 0,
+      DRAFT: 0,
+      REJECTED: 0,
+    };
+    for (const r of rows) {
+      if (r.status in c) c[r.status as keyof typeof c] += 1;
+    }
+    return c;
+  }, [rows]);
+
   return (
     <Tabs defaultValue="all">
-      <TabsList>
-        {TABS.map((t) => (
-          <TabsTrigger key={t.value} value={t.value}>
-            {t.label}
-          </TabsTrigger>
-        ))}
+      <TabsList className="flex-wrap h-auto gap-1">
+        {TABS.map((t) => {
+          const n = t.value === "all" ? counts.all : counts[t.value];
+          return (
+            <TabsTrigger key={t.value} value={t.value}>
+              {t.label} ({n})
+            </TabsTrigger>
+          );
+        })}
       </TabsList>
       {TABS.map((t) => {
         const filtered =

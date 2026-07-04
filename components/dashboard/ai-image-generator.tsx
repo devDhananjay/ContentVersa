@@ -45,12 +45,11 @@ export function AiImageGenerator({
         error?: string;
         note?: string;
       };
-      if (!res.ok || !data.imageUrl) {
-        throw new Error(data.error || data.note || "Generation failed");
-      }
-      if (data.imageUrl.includes("picsum.photos")) {
+      if (!res.ok || !data.imageUrl || data.imageUrl.includes("picsum.photos")) {
         throw new Error(
-          "Gemini image failed. Add GEMINI_API_KEY to .env and restart the server."
+          data.error ||
+            data.note ||
+            "Gemini image generation failed. Check API key and try again."
         );
       }
       if (data.prompt && !prompt) setPrompt(data.prompt);

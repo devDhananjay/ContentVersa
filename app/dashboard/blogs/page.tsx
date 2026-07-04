@@ -20,7 +20,8 @@ export default async function MyBlogs() {
             My Blogs
           </h1>
           <p className="text-muted-foreground mt-1">
-            {rows.length} {rows.length === 1 ? "post" : "posts"} — only your content is shown here.
+            {rows.length} {rows.length === 1 ? "post" : "posts"} total — click eye or title to
+            preview drafts (only you can see them).
           </p>
         </div>
         <Link href="/dashboard/create">
