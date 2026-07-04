@@ -225,39 +225,68 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     slug: "terms",
     badge: "Legal",
     title: "Terms of Service",
-    subtitle: "Last updated: June 2026. By using ContentVerse you agree to these terms.",
+    subtitle:
+      "Last updated: July 2026. By using ContentVerse (contentverse.co.in) you agree to these terms under Indian law.",
     sections: [
       {
+        heading: "Agreement & eligibility",
+        paragraphs: [
+          "These Terms govern access to ContentVerse, an India-first publishing platform operated for users in India and worldwide. By creating an account or using the site you accept these Terms, our Content Policy, Privacy Policy, and Cookie Policy.",
+          "You must be at least 18 years old, or use the service only with a parent or guardian’s consent where Indian law requires it. You must provide accurate registration details and keep your password secure.",
+        ],
+      },
+      {
         heading: "Using the platform",
-        paragraphs: [
-          "You must provide accurate account information and keep your credentials secure. You are responsible for activity under your account.",
-          "You may not scrape, spam, impersonate others, or attempt to disrupt the service.",
-        ],
-      },
-      {
-        heading: "Your content",
         bullets: [
-          "You retain ownership of what you publish.",
-          "You grant ContentVerse a license to host, display, and promote your work on the platform.",
-          "You confirm you have rights to all material you upload (text, images, media).",
-          "We may remove content that violates our Content Policy or applicable law.",
+          "You may read, publish, comment, tip creators, and use utilities (sports scores, market data, job listings) for personal, non-abusive purposes.",
+          "You may not scrape at scale, spam, impersonate others, distribute malware, or attempt to disrupt the service.",
+          "You must comply with the Information Technology Act, 2000, applicable criminal and civil law, and our Content Policy.",
         ],
       },
       {
-        heading: "Payments & tips",
+        heading: "Your content & licence",
+        bullets: [
+          "You retain ownership of original work you publish.",
+          "You grant ContentVerse a worldwide, non-exclusive licence to host, display, distribute, and promote your content on the platform and in related marketing.",
+          "You confirm you have all rights to text, images, and media you upload, and that your content does not infringe copyright, trademark, or privacy rights.",
+          "We may remove or restrict content that violates these Terms, our Content Policy, or Indian law, including orders under the IT Act and IT Rules, 2021.",
+        ],
+      },
+      {
+        heading: "Payments, tips & taxes",
         paragraphs: [
-          "Tips and earnings are shown in INR. Payout timing and methods are described in your dashboard and may change with notice.",
-          "Fees, taxes, and third-party payment processing may apply where relevant.",
+          "Tips and creator earnings are shown in Indian Rupees (₹). Payout methods, timelines, and fees are described in the dashboard and may change with reasonable notice.",
+          "You are responsible for any income tax, GST, or other statutory obligations on earnings. We may request KYC or tax information required by Indian payment partners or law.",
+        ],
+      },
+      {
+        heading: "Advertising",
+        paragraphs: [
+          "We may display third-party advertisements, including Google AdSense, on eligible pages. Ads are subject to Google’s publisher policies and our Cookie Policy. We do not guarantee ad revenue.",
+        ],
+      },
+      {
+        heading: "Intermediary status",
+        paragraphs: [
+          "ContentVerse acts as an intermediary under the Information Technology Act, 2000 and the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021. We provide tools for users to publish and interact; we do not pre-author every word, but we moderate reported content and enforce our policies.",
+          "We maintain a grievance redressal contact for complaints about content or accounts. Contact details appear below.",
         ],
       },
       {
         heading: "Limitation of liability",
         paragraphs: [
-          "ContentVerse is provided as-is to the extent permitted by law. We are not liable for indirect damages arising from use of the service.",
+          "To the extent permitted by Indian law, ContentVerse is provided on an “as is” and “as available” basis. We are not liable for indirect, incidental, or consequential damages arising from use of the service, third-party ads, or user-generated content.",
+          "Nothing in these Terms limits liability that cannot be limited under applicable law, including fraud or personal injury caused by negligence where such limits are prohibited.",
         ],
       },
       {
-        callout: `Questions: ${CONTACT_EMAIL}`,
+        heading: "Governing law",
+        paragraphs: [
+          "These Terms are governed by the laws of India. Courts in India shall have exclusive jurisdiction, subject to mandatory consumer protections that apply to you.",
+        ],
+      },
+      {
+        callout: `Grievance & legal: ${CONTACT_EMAIL}`,
       },
     ],
   },
@@ -265,37 +294,73 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     slug: "privacy",
     badge: "Legal",
     title: "Privacy Policy",
-    subtitle: "How we collect, use, and protect your information.",
+    subtitle:
+      "Last updated: July 2026. How ContentVerse collects, uses, and protects personal data under Indian law (including the DPDP Act, 2023).",
     sections: [
+      {
+        heading: "Who we are",
+        paragraphs: [
+          "ContentVerse (contentverse.co.in) is a publishing platform for readers and creators. This Privacy Policy explains how we process personal data when you visit, register, publish, tip, or interact with ads on our site.",
+        ],
+      },
       {
         heading: "Information we collect",
         bullets: [
-          "Account details: name, email, username, profile info",
-          "Usage data: pages read, reading time, likes, comments",
-          "Device & cookies: session, preferences, push notification tokens",
-          "Payment-related metadata for tips and payouts (not full card numbers on our servers)",
+          "Account details: name, email, username, profile photo, bio, and password (stored hashed)",
+          "Usage data: pages read, reading time, likes, comments, bookmarks, and device type",
+          "Device & cookies: session tokens, preferences, visitor keys, and push notification tokens",
+          "Payment-related metadata for tips and payouts (we do not store full card numbers on our servers)",
+          "Communications you send to support or grievance contacts",
         ],
       },
       {
-        heading: "How we use it",
+        heading: "Legal basis & purpose (India)",
         paragraphs: [
-          "To run the product — authentication, personalization, analytics for creators, moderation, and notifications you opt into.",
-          "We do not sell your personal data to third-party advertisers.",
+          "We process personal data to provide the service you request (account, publishing, tips), to keep the platform secure, to moderate content, to send notifications you enable, and to comply with Indian law.",
+          "We process data in line with the Digital Personal Data Protection Act, 2023 (DPDP Act) and applicable rules. Where consent is required, we seek it clearly; you may withdraw consent for optional processing (such as marketing or non-essential cookies) without affecting essential service functions.",
         ],
       },
       {
-        heading: "Your choices",
+        heading: "Advertising & Google AdSense",
+        paragraphs: [
+          "We may use Google AdSense and related Google advertising services to show ads on eligible pages. Google and its partners may use cookies or similar technologies to serve ads based on prior visits to this site or other sites, and to measure ad performance.",
+          "Google’s use of advertising cookies is described in Google’s Privacy Policy and Ad Settings (adssettings.google.com). You can opt out of personalised ads through Google Ad Settings and control cookies via your browser and our Cookie Policy.",
+          "We do not sell your personal data to third-party advertisers. Ad partners process data as independent controllers or as described in their policies.",
+        ],
+      },
+      {
+        heading: "How we use data",
         bullets: [
-          "Update profile and notification settings in Dashboard",
-          `Request account deletion via ${CONTACT_EMAIL}`,
-          "Disable push notifications in browser or device settings",
+          "Authentication, personalisation, and creator analytics",
+          "Moderation, fraud prevention, and security",
+          "Notifications you opt into (email or browser push)",
+          "Legal compliance, dispute resolution, and tax/payout records",
         ],
       },
       {
-        heading: "Data retention",
-        paragraphs: [
-          "We keep data while your account is active and as needed for legal, security, and payout records.",
+        heading: "Your rights",
+        bullets: [
+          "Access and update profile information in your Dashboard",
+          "Request correction or deletion of personal data where applicable under the DPDP Act",
+          `Contact our grievance / privacy contact at ${CONTACT_EMAIL}`,
+          "Disable push notifications in browser or device settings",
+          "Control non-essential cookies as described in the Cookie Policy",
         ],
+      },
+      {
+        heading: "Data retention & security",
+        paragraphs: [
+          "We retain account and content data while your account is active and for as long as needed for legal, security, tax, and payout obligations. We use reasonable technical and organisational measures to protect data; no method of transmission is fully secure.",
+        ],
+      },
+      {
+        heading: "Children",
+        paragraphs: [
+          "ContentVerse is not directed at children under 18. If you believe we have collected data from a minor without appropriate consent, contact us and we will take steps to delete it.",
+        ],
+      },
+      {
+        callout: `Privacy & grievance contact: ${CONTACT_EMAIL}`,
       },
     ],
   },
@@ -303,28 +368,47 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     slug: "cookies",
     badge: "Legal",
     title: "Cookie Policy",
-    subtitle: "How ContentVerse uses cookies and similar technologies.",
+    subtitle:
+      "Last updated: July 2026. How ContentVerse uses cookies and similar technologies, including advertising cookies for Google AdSense.",
     sections: [
       {
-        heading: "What we use cookies for",
+        heading: "What are cookies?",
+        paragraphs: [
+          "Cookies are small text files stored on your device. We also use similar technologies such as local storage and pixels. Some are essential for the site to work; others help us understand usage or show relevant ads.",
+        ],
+      },
+      {
+        heading: "Cookies we use",
         bullets: [
-          "Essential: sign-in sessions, security, load balancing",
+          "Essential: sign-in sessions, security, load balancing, and fraud prevention",
           "Preferences: theme (light/dark), remembered login identifier",
-          "Analytics: aggregated visit counts and reading patterns",
+          "Analytics: aggregated visit counts and reading patterns to improve the product",
           "Visitor key: anonymous reading history for recommendations",
+          "Advertising: Google AdSense and Google advertising cookies may be set to deliver and measure ads (including personalised ads where permitted)",
+        ],
+      },
+      {
+        heading: "Google advertising cookies",
+        paragraphs: [
+          "When AdSense or Google ads are active, Google may use cookies such as the DoubleClick / IDE cookie and other advertising identifiers to show ads based on your visits to this and other websites, and to limit how often you see an ad.",
+          "You can manage ad personalisation at Google Ad Settings (https://adssettings.google.com) and learn more at Google’s advertising policies. Blocking advertising cookies may still show non-personalised ads.",
         ],
       },
       {
         heading: "Managing cookies",
         paragraphs: [
-          "You can block cookies in your browser settings. Some features (sign-in, reading history, push) may not work correctly if essential cookies are disabled.",
+          "You can block or delete cookies in your browser settings. Essential cookies are required for sign-in and core security; if you block them, parts of ContentVerse may not work.",
+          "Where required, we will seek consent for non-essential cookies. You may withdraw consent by clearing cookies and adjusting browser settings.",
         ],
       },
       {
         heading: "Third parties",
         paragraphs: [
-          "We may use trusted providers for authentication, push delivery, and infrastructure. Their use of data is governed by their own policies.",
+          "We use trusted providers for authentication, hosting, push delivery, analytics, and advertising (including Google). Their processing is governed by their own policies in addition to this Cookie Policy and our Privacy Policy.",
         ],
+      },
+      {
+        callout: `Questions about cookies: ${CONTACT_EMAIL}`,
       },
     ],
   },
@@ -332,38 +416,55 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     slug: "policy",
     badge: "Legal",
     title: "Content Policy",
-    subtitle: "Standards for publishing on ContentVerse.",
+    subtitle:
+      "Last updated: July 2026. Editorial standards for publishing on ContentVerse — aligned with Indian law and Google AdSense publisher policies.",
     sections: [
+      {
+        heading: "Purpose",
+        paragraphs: [
+          "ContentVerse is built for original, useful long-form writing. This Content Policy protects readers, creators, and the integrity of the platform. It applies to articles, comments, profiles, reels captions, and other user-generated content.",
+        ],
+      },
       {
         heading: "We welcome",
         bullets: [
           "Original essays, reporting, tutorials, and opinion with clear sourcing",
           "Respectful debate and constructive criticism",
-          "Proper attribution for quotes, images, and data",
+          "Proper attribution for quotes, images, data, and third-party material",
+          "Content in English or Hindi that adds genuine value for Indian and global readers",
         ],
       },
       {
         heading: "Not allowed",
         bullets: [
-          "Hate speech, harassment, or threats",
-          "Plagiarism or mass AI spam without editorial value",
-          "Illegal content, malware, or dangerous instructions",
-          "Misleading health or financial claims without evidence",
-          "Explicit adult content or gratuitous violence",
+          "Hate speech, harassment, threats, or content that incites violence",
+          "Plagiarism, copyright infringement, or mass AI-generated spam without human editorial value",
+          "Illegal content under Indian law, including child sexual abuse material, malware, or instructions for serious crime",
+          "Misleading health, medical, or financial claims without evidence and appropriate disclaimers",
+          "Explicit adult content, gratuitous violence, or content that exploits minors",
+          "Impersonation, phishing, or deceptive practices",
+          "Content that violates Google AdSense / Google Publisher Policies (including dangerous, deceptive, or prohibited content categories)",
         ],
       },
       {
-        heading: "Editorial quality",
+        heading: "Editorial quality (AdSense-ready)",
         paragraphs: [
-          "Articles must be original, substantive, and useful to readers. We expect a minimum of roughly 600 words for standard posts (about three minutes of reading time). News-in-60 shorts are clearly labelled and are not submitted for search indexing.",
-          "Mass-produced AI content without human editing, plagiarism, and duplicate posts across categories are removed. Finance and health topics require careful sourcing and appropriate disclaimers.",
+          "Articles must be original, substantive, and useful. We expect a minimum of roughly 800 words for standard indexable posts (about four minutes of reading time). Thin pages, doorway pages, and keyword-stuffed content are not accepted.",
+          "Mass-produced AI content without meaningful human editing, duplicate posts across categories, and scraped third-party articles are removed. Finance and health topics require careful sourcing and disclaimers (not personalised advice).",
+          "Live scores, stock widgets, and job listings are reader utilities; they do not replace original editorial writing as our primary content.",
         ],
       },
       {
-        heading: "Moderation",
+        heading: "Moderation & IT Rules, 2021",
         paragraphs: [
           "Submissions may be pending review before going live. Moderators can approve, request edits, or reject work that breaks this policy.",
-          "Repeat violations may lead to suspension or removal from the Creator Program.",
+          "As an intermediary under the IT Act, 2000 and IT Rules, 2021, we act on valid legal orders and on user reports of unlawful content. Repeat violations may lead to suspension, removal from the Creator Program, or account termination.",
+        ],
+      },
+      {
+        heading: "Reporting & grievance",
+        paragraphs: [
+          `Report policy violations or unlawful content using in-product report tools or email ${CONTACT_EMAIL}. We aim to acknowledge grievances promptly and take action consistent with Indian law and this policy.`,
         ],
       },
       {
@@ -414,7 +515,13 @@ function mapDbRow(row: {
 }
 
 /** Slugs whose DB copy is refreshed from code defaults on boot. */
-const SYNC_FROM_DEFAULTS: SitePageSlug[] = ["premium"];
+const SYNC_FROM_DEFAULTS: SitePageSlug[] = [
+  "premium",
+  "terms",
+  "privacy",
+  "cookies",
+  "policy",
+];
 
 export async function ensureSitePagesInDb() {
   if (!isDatabaseConfigured()) return;
