@@ -57,11 +57,19 @@ type BlogDraft = {
   seriesPart: number | null;
 };
 
-export function BlogEditorForm({ blogId }: { blogId?: string }) {
+export function BlogEditorForm({
+  blogId,
+  adminMode = false,
+}: {
+  blogId?: string;
+  /** Admin can edit any blog and keep PUBLISHED in place. */
+  adminMode?: boolean;
+}) {
   const router = useRouter();
   const editorRef = React.useRef<BlockEditorHandle>(null);
   const [loadingDraft, setLoadingDraft] = React.useState(!!blogId);
   const [editingId, setEditingId] = React.useState<string | null>(blogId ?? null);
+  const [liveStatus, setLiveStatus] = React.useState<string>("DRAFT");
   const [editorKey, setEditorKey] = React.useState("new");
   const [initialMarkdown, setInitialMarkdown] = React.useState("");
   const [title, setTitle] = React.useState("");
@@ -94,6 +102,7 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
 
   const applyDraft = (data: BlogDraft) => {
     setEditingId(data.id);
+    setLiveStatus(data.status || "DRAFT");
     setTitle(data.title);
     setExcerpt(data.excerpt);
     setCover(data.coverImage);
@@ -115,7 +124,10 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
     (async () => {
       setLoadingDraft(true);
       try {
-        const res = await fetch(`/api/blogs/mine/${blogId}`);
+        const endpoint = adminMode
+          ? `/api/admin/blogs/${blogId}`
+          : `/api/blogs/mine/${blogId}`;
+        const res = await fetch(endpoint, { credentials: "include" });
         const json = (await res.json()) as { data?: BlogDraft; error?: string };
         if (!res.ok || !json.data) {
           throw new Error(json.error || "Could not load draft");
@@ -132,7 +144,7 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
     return () => {
       cancelled = true;
     };
-  }, [blogId]);
+  }, [blogId, adminMode]);
 
   const handleCoverFile = async (file: File) => {
     setCoverError(null);
@@ -230,7 +242,7 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
     }
   };
 
-  const saveBlog = async (status: "DRAFT" | "PENDING") => {
+  const saveBlog = async (status: "DRAFT" | "PENDING" | "PUBLISHED") => {
     setSubmitError(null);
     if (!title.trim()) {
       setSubmitError("Add a title first.");
@@ -241,8 +253,8 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
       setSubmitError("Write at least 20 characters before submitting for review.");
       return;
     }
-    if (status === "DRAFT" && !content) {
-      setSubmitError("Add some content to save a draft.");
+    if ((status === "DRAFT" || status === "PUBLISHED") && !content) {
+      setSubmitError("Add some content to save.");
       return;
     }
     if (title.trim().length < 3) {
@@ -269,17 +281,22 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
         status,
       };
 
-      const res = await fetch(
-        editingId ? `/api/blogs/mine/${editingId}` : "/api/blogs",
-        {
-          method: editingId ? "PATCH" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const endpoint =
+        adminMode && editingId
+          ? `/api/admin/blogs/${editingId}`
+          : editingId
+            ? `/api/blogs/mine/${editingId}`
+            : "/api/blogs";
+
+      const res = await fetch(endpoint, {
+        method: editingId ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;
-        blog?: { id: string };
+        blog?: { id: string; status?: string };
       };
       if (!res.ok) {
         throw new Error(data.error || "Could not save blog");
@@ -287,7 +304,8 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
       if (!editingId && data.blog?.id) {
         setEditingId(data.blog.id);
       }
-      router.push("/dashboard/blogs");
+      if (data.blog?.status) setLiveStatus(data.blog.status);
+      router.push(adminMode ? "/admin/blogs" : "/dashboard/blogs");
       router.refresh();
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Failed to save");
@@ -296,8 +314,10 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
     }
   };
 
+  const isLive = liveStatus === "PUBLISHED";
   const onSubmitForReview = () => saveBlog("PENDING");
   const onSaveDraft = () => saveBlog("DRAFT");
+  const onSavePublished = () => saveBlog("PUBLISHED");
 
   if (loadingDraft) {
     return (
@@ -314,7 +334,10 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
     <div className="container py-6 max-w-6xl">
       <div className="flex items-center justify-between mb-6 sticky top-16 z-20 bg-background/80 backdrop-blur-xl py-3 -mx-4 px-4 border-b border-border/40">
         <div className="flex items-center gap-3">
-          <Badge variant="gradient">{editingId ? "Editing" : "Draft"}</Badge>
+          <Badge variant={isLive ? "success" : "gradient"}>
+            {adminMode ? "Admin edit" : editingId ? "Editing" : "Draft"}
+            {isLive ? " · Live" : ""}
+          </Badge>
           <div className="text-sm text-muted-foreground">
             {saved ? (
               <span className="flex items-center gap-1.5">
@@ -327,13 +350,49 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="gap-1.5" onClick={onSaveDraft} disabled={submitting}>
-            <Save className="h-4 w-4" /> Save draft
-          </Button>
-          <Button variant="gradient" onClick={onSubmitForReview} disabled={submitting} className="gap-1.5">
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            Submit for review
-          </Button>
+          {isLive ? (
+            <>
+              <Button
+                variant="outline"
+                className="gap-1.5"
+                onClick={onSaveDraft}
+                disabled={submitting}
+              >
+                <Save className="h-4 w-4" /> Unpublish to draft
+              </Button>
+              <Button
+                variant="gradient"
+                onClick={onSavePublished}
+                disabled={submitting}
+                className="gap-1.5"
+              >
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Save changes
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" className="gap-1.5" onClick={onSaveDraft} disabled={submitting}>
+                <Save className="h-4 w-4" /> Save draft
+              </Button>
+              {adminMode ? (
+                <Button
+                  variant="gradient"
+                  onClick={onSavePublished}
+                  disabled={submitting}
+                  className="gap-1.5"
+                >
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  Save & publish
+                </Button>
+              ) : (
+                <Button variant="gradient" onClick={onSubmitForReview} disabled={submitting} className="gap-1.5">
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  Submit for review
+                </Button>
+              )}
+            </>
+          )}
         </div>
       </div>
 

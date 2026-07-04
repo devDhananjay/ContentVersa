@@ -34,7 +34,8 @@ const UpdateSchema = z.object({
   premium: z.boolean().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
-  status: z.enum(["DRAFT", "PENDING"]).optional(),
+  /** PUBLISHED only allowed when the post is already live (in-place edit). */
+  status: z.enum(["DRAFT", "PENDING", "PUBLISHED"]).optional(),
   seriesSlug: z
     .string()
     .optional()
@@ -137,7 +138,21 @@ export async function PATCH(
 
     const body = await req.json();
     const parsed = UpdateSchema.parse(body);
-    const status = parsed.status ?? existing.status;
+    let status = parsed.status ?? existing.status;
+
+    // Authors cannot self-publish; they may only keep PUBLISHED when already live.
+    if (status === "PUBLISHED" && existing.status !== "PUBLISHED") {
+      return NextResponse.json(
+        { error: "You cannot publish directly. Submit for review instead." },
+        { status: 400 }
+      );
+    }
+    if (
+      existing.status === "PUBLISHED" &&
+      parsed.status === undefined
+    ) {
+      status = "PUBLISHED";
+    }
 
     if (status === "PENDING" && parsed.content.trim().length < 20) {
       return NextResponse.json(

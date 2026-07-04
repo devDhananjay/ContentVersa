@@ -57,15 +57,35 @@ export function BlogModerationActions({
     }
   };
 
-  if (status === "DRAFT") {
+  const editHref = `/admin/blogs/${blogId}/edit`;
+
+  if (status === "PUBLISHED") {
+    return (
+      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5 space-y-3">
+        <h3 className="font-display font-bold">Published — edit live post</h3>
+        <p className="text-sm text-muted-foreground">
+          Changes save in place and stay published. Use Unpublish in the editor to take it offline.
+        </p>
+        <Link href={editHref}>
+          <Button variant="outline" className="gap-1.5">
+            <Pencil className="h-4 w-4" /> Edit published blog
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (status === "DRAFT" || status === "REJECTED" || status === "ARCHIVED") {
     return (
       <div className="rounded-2xl border border-violet-500/30 bg-violet-500/5 p-5 space-y-3">
-        <h3 className="font-display font-bold">Draft — review before publishing</h3>
+        <h3 className="font-display font-bold">
+          {status === "DRAFT" ? "Draft — review before publishing" : `${status} — edit or publish`}
+        </h3>
         <p className="text-sm text-muted-foreground">
           Edit title, cover, or content if needed, then publish when ready.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Link href={`/dashboard/blogs/${blogId}/edit`}>
+          <Link href={editHref}>
             <Button variant="outline" className="gap-1.5">
               <Pencil className="h-4 w-4" /> Edit
             </Button>
@@ -100,6 +120,11 @@ export function BlogModerationActions({
         className="min-h-[80px]"
       />
       <div className="flex flex-wrap gap-2">
+        <Link href={editHref}>
+          <Button variant="outline" className="gap-1.5" disabled={!!loading}>
+            <Pencil className="h-4 w-4" /> Edit
+          </Button>
+        </Link>
         <Button
           variant="destructive"
           className="gap-1.5"

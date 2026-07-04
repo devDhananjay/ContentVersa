@@ -61,12 +61,28 @@
       "namedRegex": "^/admin/blogs/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/admin/blogs/[id]/edit",
+      "regex": "^/admin/blogs/([^/]+?)/edit(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/blogs/(?<nxtPid>[^/]+?)/edit(?:/)?$"
+    },
+    {
       "page": "/admin/users/[id]",
       "regex": "^/admin/users/([^/]+?)(?:/)?$",
       "routeKeys": {
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/admin/users/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/admin/blogs/[id]",
+      "regex": "^/api/admin/blogs/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admin/blogs/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
       "page": "/api/admin/blogs/[id]/publish",

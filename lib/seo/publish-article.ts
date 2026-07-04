@@ -55,6 +55,8 @@ export async function publishGeneratedArticle(input: {
   slugHint?: string;
   publish?: boolean;
   searchIntent?: string;
+  /** Skip cover generation when pipeline already produced one. */
+  coverImage?: string | null;
 }) {
   if (!isDatabaseConfigured()) {
     throw new Error("Database not configured");
@@ -70,19 +72,22 @@ export async function publishGeneratedArticle(input: {
     `article-${Date.now().toString(36)}`;
   const slug = await uniqueSlug(baseSlug);
 
-  const coverImage = await resolveArticleCoverImage({
-    categorySlug: input.categorySlug,
-    title: input.article.title,
-    excerpt: input.article.excerpt,
-    tags: input.article.tags,
-    coverKeywords: input.article.coverKeywords,
-    coverImagePrompt: input.article.coverImagePrompt,
-    searchIntent: input.searchIntent,
+  const coverImage =
+    input.coverImage?.trim() ||
+    (await resolveArticleCoverImage(
+      {
+        categorySlug: input.categorySlug,
+        title: input.article.title,
+        excerpt: input.article.excerpt,
+        tags: input.article.tags,
+        coverKeywords: input.article.coverKeywords,
+        coverImagePrompt: input.article.coverImagePrompt,
+        searchIntent: input.searchIntent,
         contentSnippet: content.slice(0, 800),
         slug,
       },
       { preferAi: true, retries: 2 }
-    );
+    ));
 
   const status = input.publish !== false ? BlogStatus.PUBLISHED : BlogStatus.DRAFT;
 
