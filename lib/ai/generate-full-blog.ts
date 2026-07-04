@@ -1,6 +1,5 @@
-import { callGeminiJson, isGeminiConfigured } from "@/lib/ai/gemini";
+import { callGeminiText, isGeminiConfigured } from "@/lib/ai/gemini";
 import {
-  FULL_BLOG_JSON_SCHEMA,
   buildRichLocalFullBlog,
   normalizeCategorySlug,
   normalizeTags,
@@ -34,11 +33,18 @@ function finalizePackage(raw: Partial<FullBlogPackage>, title: string): FullBlog
   };
 }
 
+/**
+ * Full blog from title. Uses Gemini text→JSON (not responseSchema — Gemini often
+ * returns "The string did not match the expected pattern" with strict schemas).
+ * Always returns a usable package (local fallback).
+ */
 export async function generateFullBlogFromTitle(
   input: Input
 ): Promise<{ blog: FullBlogPackage; source: AiSource }> {
-  const title = input.title.trim();
-  const system = `You are an expert ContentVerse blog writer. Given a title, produce a complete publish-ready blog package as JSON.
+  const title = input.title.trim() || "Untitled blog";
+
+  try {
+    const system = `You are an expert ContentVerse blog writer. Given a title, produce a complete publish-ready blog package as JSON.
 Rules:
 - content: markdown body only (## section headings, NO # H1, NO article title repeated). Write 1200-1600 words across 6-8 sections with rich paragraphs and bullet lists.
 - excerpt: compelling 2-3 sentence card hook (max 220 chars).
@@ -46,36 +52,26 @@ Rules:
 - tags: exactly 5 lowercase hyphenated slugs relevant to the article.
 - metaTitle: SEO title under 70 chars.
 - metaDescription: SEO description under 160 chars.
-Tone: insightful, engaging, practical — for creators and readers. Use concrete examples.`;
+Tone: insightful, engaging, practical — for creators and readers. Use concrete examples.
+Return ONLY valid JSON with keys: excerpt, category, tags, metaTitle, metaDescription, content. No markdown fences.`;
 
-  const user = JSON.stringify({
-    title,
-    hintCategory: input.category || undefined,
-    existingExcerpt: input.excerpt || undefined,
-  });
+    const user = JSON.stringify({
+      title,
+      hintCategory: input.category || undefined,
+      existingExcerpt: input.excerpt || undefined,
+    });
 
-  if (isGeminiConfigured()) {
-    const json = await callGeminiJson<Partial<FullBlogPackage>>(
-      system,
-      user,
-      FULL_BLOG_JSON_SCHEMA,
-      8192
-    );
-    if (json?.content) {
-      return { blog: finalizePackage(json, title), source: "gemini" };
+    if (isGeminiConfigured()) {
+      const text = await callGeminiText(system, user, 8192);
+      if (text) {
+        const parsed = parseFullBlogJson(text, title);
+        if (parsed?.content) {
+          return { blog: finalizePackage(parsed, title), source: "gemini" };
+        }
+      }
     }
-
-    // Fallback: plain text then parse if model returned markdown wrapped in JSON string
-    const { callGeminiText } = await import("@/lib/ai/gemini");
-    const text = await callGeminiText(
-      system + " Return ONLY valid JSON matching the schema.",
-      user,
-      8192
-    );
-    if (text) {
-      const parsed = parseFullBlogJson(text, title);
-      if (parsed) return { blog: parsed, source: "gemini" };
-    }
+  } catch (err) {
+    console.error("[generate-full-blog]", err);
   }
 
   return {

@@ -166,6 +166,7 @@ export function AiAssistPanel({
         {tools.map((t) => (
           <Button
             key={t.action}
+            type="button"
             variant="outline"
             size="sm"
             className="w-full justify-start text-xs gap-2"

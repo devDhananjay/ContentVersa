@@ -209,12 +209,22 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
         error?: string;
         source?: string;
       };
-      if (!res.ok || !data.blog) {
-        throw new Error(data.error || "Generation failed");
+      if (!res.ok || !data.blog?.content) {
+        const msg = data.error || "Generation failed";
+        throw new Error(
+          /did not match the expected pattern/i.test(msg)
+            ? "AI could not format the draft. Try again with a clearer title."
+            : msg
+        );
       }
       applyFullBlog(data.blog, data.source);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Could not generate blog");
+      const msg = err instanceof Error ? err.message : "Could not generate blog";
+      setSubmitError(
+        /did not match the expected pattern/i.test(msg)
+          ? "AI could not format the draft. Try again with a clearer title."
+          : msg
+      );
     } finally {
       setGenerating(false);
     }
@@ -606,7 +616,10 @@ export function BlogEditorForm({ blogId }: { blogId?: string }) {
                   disabled={!title.trim()}
                 />
               </div>
-              <Select value={category} onValueChange={setCategory}>
+              <Select
+                value={category || undefined}
+                onValueChange={setCategory}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Pick a category" />
                 </SelectTrigger>

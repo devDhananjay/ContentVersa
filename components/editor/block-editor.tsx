@@ -473,7 +473,9 @@ function ImageBlock({
 
       {showUrl && (
         <input
-          type="url"
+          type="text"
+          inputMode="url"
+          autoComplete="off"
           placeholder="https://example.com/image.jpg"
           className="w-full max-w-sm rounded-lg border bg-background px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-neon-purple/40"
           onKeyDown={(e) => {
@@ -539,7 +541,9 @@ function EmbedBlock({
         {showUrl && (
           <input
             id={`block-${block.id}`}
-            type="url"
+            type="text"
+            inputMode="url"
+            autoComplete="off"
             autoFocus
             defaultValue={block.content}
             placeholder="https://www.youtube.com/watch?v=…"
@@ -579,7 +583,9 @@ function EmbedBlock({
         </p>
       </div>
       <input
-        type="url"
+        type="text"
+        inputMode="url"
+        autoComplete="off"
         placeholder="https://www.youtube.com/watch?v=…"
         className="w-full max-w-md rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neon-purple/40"
         onKeyDown={(e) => {

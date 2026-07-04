@@ -24,6 +24,22 @@ const Schema = z.object({
   imagePrompt: z.string().optional(),
 });
 
+function friendlyAiError(err: unknown): string {
+  const raw =
+    err instanceof Error
+      ? err.message
+      : typeof err === "string"
+        ? err
+        : "AI assist failed";
+  if (/did not match the expected pattern/i.test(raw)) {
+    return "AI could not format the draft. Try again, or write a clearer title.";
+  }
+  if (/quota|rate.?limit|RESOURCE_EXHAUSTED/i.test(raw)) {
+    return "AI quota exceeded. Try again in a few minutes.";
+  }
+  return raw.length > 160 ? "AI assist failed. Please try again." : raw;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -84,6 +100,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
     console.error("[ai assist]", err);
-    return NextResponse.json({ error: "AI assist failed" }, { status: 500 });
+    return NextResponse.json({ error: friendlyAiError(err) }, { status: 500 });
   }
 }
