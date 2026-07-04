@@ -47,13 +47,22 @@ export function Newsletter() {
   return (
     <section id="newsletter" className="container py-12 md:py-20 scroll-mt-24">
       <div className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-neon-blue/10 via-neon-purple/10 to-neon-pink/10 p-8 md:p-16 text-center">
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-neon-blue/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-neon-pink/20 rounded-full blur-3xl" />
+        <motion.div
+          className="absolute -top-32 -left-32 w-96 h-96 bg-neon-blue/25 rounded-full blur-3xl"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute -bottom-32 -right-32 w-96 h-96 bg-neon-pink/25 rounded-full blur-3xl"
+          animate={{ scale: [1.1, 1, 1.1], opacity: [0.5, 0.75, 0.5] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        />
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 28, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="relative max-w-2xl mx-auto"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/40 backdrop-blur border border-border/40 text-xs mb-6">

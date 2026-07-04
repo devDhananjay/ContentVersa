@@ -248,6 +248,86 @@ html.sr-reduce-motion .sitemap-tree-item::before {
   animation: none;
 }
 
+/* Home "Jump In" journey — marching dashed connectors + card shine */
+@keyframes journey-dash-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+@keyframes journey-shine {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateX(220%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+.journey-path {
+  fill: none;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 5 11;
+  animation: journey-dash-flow 0.9s linear infinite;
+}
+
+.journey-card-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.12) 48%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0.12) 52%,
+    transparent 60%
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+.journey-card:hover .journey-card-shine::after {
+  animation: journey-shine 0.85s ease-out;
+}
+
+.journey-path-purple {
+  stroke: #a855f7;
+}
+
+.journey-path-cyan {
+  stroke: #22d3ee;
+}
+
+.journey-path-pink {
+  stroke: #ec4899;
+}
+
+.journey-path-blue {
+  stroke: #3b82f6;
+}
+
+.journey-path-amber {
+  stroke: #f59e0b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-path {
+    animation: none;
+  }
+
+  .journey-card:hover .journey-card-shine::after {
+    animation: none;
+  }
+}
+
 /* Finance market strip — seamless marquee */
 @keyframes marquee {
   0% {

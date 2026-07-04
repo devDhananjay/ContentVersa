@@ -23,6 +23,7 @@ import { HomeEditorialSection } from "@/components/home/home-editorial-section";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { SiteJsonLd } from "@/components/seo/site-json-ld";
+import { Reveal } from "@/components/home/motion";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -59,21 +60,47 @@ export default async function HomePage() {
       </div>
       <PlatformModulesStrip />
       <TrendingSection blogs={data.trending} />
-      <HomeEditorialSection />
-      <ForYouSection />
-      <SportsTeaser data={sportsTeaser} />
-      <NewsIn60Section blogs={data.trending} />
-      <FeaturedCreators creators={data.creators} />
+      <Reveal delay={0.05}>
+        <ForYouSection />
+      </Reveal>
+      <Reveal>
+        <SportsTeaser data={sportsTeaser} />
+      </Reveal>
+      <Reveal>
+        <NewsIn60Section blogs={data.trending} />
+      </Reveal>
+      <Reveal>
+        <FeaturedCreators creators={data.creators} />
+      </Reveal>
       <PopularCategories categories={data.categories} />
-      <AIRecommended blogs={data.aiRecommended} />
-      <LatestSection blogs={data.latest} />
-      <EditorPick blogs={data.editorPicks} />
-      <CommunityPosts posts={data.communityPosts} />
-      <QuickPollSection />
-      <DailyQuizSection />
-      <WeeklyTrending topics={data.weeklyTopics} />
+      <Reveal>
+        <AIRecommended blogs={data.aiRecommended} />
+      </Reveal>
+      <Reveal>
+        <LatestSection blogs={data.latest} />
+      </Reveal>
+      <Reveal>
+        <EditorPick blogs={data.editorPicks} />
+      </Reveal>
+      <Reveal>
+        <CommunityPosts posts={data.communityPosts} />
+      </Reveal>
+      <Reveal>
+        <QuickPollSection />
+      </Reveal>
+      <Reveal>
+        <DailyQuizSection />
+      </Reveal>
+      <Reveal>
+        <WeeklyTrending topics={data.weeklyTopics} />
+      </Reveal>
       <StayEngagedStrip />
-      <Testimonials />
+      <Reveal>
+        <HomeEditorialSection />
+      </Reveal>
+      <Reveal>
+        <Testimonials />
+      </Reveal>
       <Newsletter />
     </>
   );

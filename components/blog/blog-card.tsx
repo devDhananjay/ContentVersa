@@ -34,11 +34,12 @@ export function BlogCard({
   if (variant === "featured") {
     return (
       <motion.article
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: index * 0.06 }}
-        className="group relative col-span-2 row-span-2 overflow-hidden rounded-3xl border bg-card hover:shadow-neon transition-all duration-500"
+        initial={eager ? false : { opacity: 0, y: 28, scale: 0.98 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.65, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+        whileHover={{ y: -4 }}
+        className="group relative col-span-2 row-span-2 overflow-hidden rounded-3xl border bg-card hover:shadow-neon transition-shadow duration-500"
       >
         <Link href={`/blog/${blog.slug}`} className="block">
           <div className="relative aspect-[16/10] overflow-hidden">
@@ -48,7 +49,7 @@ export function BlogCard({
               fill
               priority
               sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
               unoptimized={coverUnoptimized}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
@@ -153,13 +154,17 @@ export function BlogCard({
 
   return (
     <motion.article
-      initial={eager ? false : { opacity: 0, y: 20 }}
+      initial={eager ? false : { opacity: 0, y: 24 }}
       animate={eager ? { opacity: 1, y: 0 } : undefined}
       whileInView={eager ? undefined : { opacity: 1, y: 0 }}
-      viewport={eager ? undefined : { once: true }}
-      transition={{ duration: eager ? 0.2 : 0.35, delay: eager ? 0 : index * 0.04 }}
-      whileHover={{ y: -4 }}
-      className="group relative overflow-hidden rounded-2xl border bg-card hover:border-neon-purple/40 hover:shadow-neon transition-all duration-300"
+      viewport={eager ? undefined : { once: true, margin: "-40px" }}
+      transition={{
+        duration: eager ? 0.2 : 0.5,
+        delay: eager ? 0 : index * 0.05,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      whileHover={{ y: -6 }}
+      className="group relative overflow-hidden rounded-2xl border bg-card hover:border-neon-purple/40 hover:shadow-neon transition-shadow duration-300"
     >
       <Link href={`/blog/${blog.slug}`} className="block">
         <div className="relative aspect-[16/10] overflow-hidden">
@@ -168,7 +173,7 @@ export function BlogCard({
             alt={blog.title}
             fill
             sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             unoptimized={coverUnoptimized}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

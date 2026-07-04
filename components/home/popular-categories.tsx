@@ -39,11 +39,12 @@ export function PopularCategories({ categories }: Props) {
           return (
             <motion.div
               key={cat.slug}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.9, y: 12 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.02, duration: 0.25 }}
-              whileHover={{ scale: 1.03 }}
+              transition={{ delay: i * 0.03, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ scale: 1.06, y: -4 }}
+              whileTap={{ scale: 0.98 }}
             >
               <Link
                 href={categoryPageHref(cat.slug)}

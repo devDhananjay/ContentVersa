@@ -55,11 +55,12 @@ export function StayEngagedStrip() {
             const Icon = card.icon;
             const inner = (
               <motion.div
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="h-full rounded-xl border border-border/60 bg-card/80 p-4 hover:border-neon-purple/30 transition-colors"
+                transition={{ delay: i * 0.07, duration: 0.5 }}
+                whileHover={{ y: -6, transition: { type: "spring", stiffness: 400, damping: 18 } }}
+                className="h-full rounded-xl border border-border/60 bg-card/80 p-4 hover:border-neon-purple/40 hover:shadow-lg hover:shadow-neon-purple/10 transition-colors"
               >
                 <Icon className={cn("h-5 w-5 mb-2", card.accent)} />
                 <p className="font-semibold text-sm">{card.title}</p>
