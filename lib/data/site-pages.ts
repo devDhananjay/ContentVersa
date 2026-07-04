@@ -39,30 +39,86 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Company",
     title: "Building the home for bold writers",
     subtitle:
-      "ContentVerse is a creator-first publishing platform — built in India, for readers and writers who care about depth, design, and fair monetization.",
+      "ContentVerse is a creator-first publishing platform — built in India, for readers and writers who care about depth, design, and fair monetization in rupees.",
     sections: [
       {
         heading: "Our mission",
         paragraphs: [
-          "We started ContentVerse because great writing deserves more than a noisy feed and a broken payout model. Our goal is simple: help creators publish beautifully, grow an audience that actually reads, and earn in rupees — transparently.",
-          "From long-form essays and News in 60 shorts to polls, tips, and creator dashboards — every feature is designed around the writer's studio, not the algorithm's mood.",
+          "We started ContentVerse because great writing deserves more than a noisy feed and a broken payout model. Our goal is simple: help creators publish beautifully, grow an audience that actually reads, and earn in Indian Rupees — transparently.",
+          "From long-form essays and News in 60 shorts to polls, tips, and creator dashboards — every feature is designed around the writer’s studio, not the algorithm’s mood. We believe India’s internet deserves world-class editorial tools that respect both creators and readers.",
+          "ContentVerse (contentverse.co.in) is an India-first platform. We publish and host original work in English and Hindi, with human moderation, clear policies, and compliance with Indian law including the IT Act, 2000, IT Rules, 2021, and the Digital Personal Data Protection Act, 2023.",
+        ],
+      },
+      {
+        heading: "What we offer readers",
+        paragraphs: [
+          "Readers come to ContentVerse for long-form articles they can bookmark and share — explainers, tutorials, opinion, and reporting across technology, finance, lifestyle, sports, careers, and more.",
+          "Live cricket scores, market data, and job listings sit alongside our writing as utilities. They help you stay informed, but our primary value — and what we ask search engines to rank — is original editorial content that meets our quality bar.",
+        ],
+        bullets: [
+          "Original long-form articles with cover images, author profiles, and related reads",
+          "Threaded comments, reactions (like, love, fire, clap, insightful), and tips in ₹",
+          "Reading streaks, bookmarks, and personalised recommendations for signed-in readers",
+          "Clear legal pages: Content Policy, Privacy, Terms, and Cookies",
+        ],
+      },
+      {
+        heading: "What we offer creators",
+        paragraphs: [
+          "Creators get a full studio: drafts, scheduling, SEO fields, AI writing assist, analytics, and a wallet for tips. Submissions go through human review so the public library stays high quality.",
+          "Verified creators in our Creator Program can earn through tips, featuring, and transparent dashboards — always with payout rules and tax responsibilities explained in our Terms.",
+        ],
+        bullets: [
+          "Write, schedule, and edit posts (including live edits that stay published)",
+          "AI assist for drafts, excerpts, tags, and SEO metadata",
+          "Moderation queue with approve, request changes, or reject",
+          "Tips, leaderboard, and category featuring for quality work",
         ],
       },
       {
         heading: "What we believe",
         bullets: [
-          "Readers reward depth — not clickbait.",
-          "Creators should own their audience and their earnings.",
+          "Readers reward depth — not clickbait or thin AI spam.",
+          "Creators should own their audience and understand their earnings.",
           "Moderation should be human, fast, and fair.",
-          "India's internet deserves world-class editorial tools.",
+          "Advertising (including Google AdSense) must respect privacy and publisher policies.",
+          "India’s internet deserves world-class editorial tools built for local creators.",
         ],
       },
       {
         heading: "By the numbers",
         cards: [
-          { title: "Categories", description: "Technology, lifestyle, culture, and more — with room to grow.", meta: "21+ topics" },
-          { title: "Creator tools", description: "Drafts, SEO, AI assist, analytics, tips, and notifications.", meta: "All-in-one" },
-          { title: "Payouts", description: "Wallet, tips, and revenue tracking in INR.", meta: "₹ native" },
+          {
+            title: "Categories",
+            description:
+              "Technology, AI, finance, lifestyle, sports, careers, and more — with room to grow as the community expands.",
+            meta: "21+ topics",
+          },
+          {
+            title: "Creator tools",
+            description:
+              "Drafts, scheduling, SEO, AI assist, analytics, tips, notifications, and a full dashboard.",
+            meta: "All-in-one studio",
+          },
+          {
+            title: "Payouts",
+            description:
+              "Wallet, tips, and revenue tracking in INR with clear tax and KYC expectations.",
+            meta: "₹ native",
+          },
+          {
+            title: "Trust & safety",
+            description:
+              "Content Policy, human moderation, report tools, and grievance contact for readers and creators.",
+            meta: "Policy-first",
+          },
+        ],
+      },
+      {
+        heading: "Trust, ads & compliance",
+        paragraphs: [
+          "We may show Google AdSense and other ads on eligible pages. We disclose advertising cookies in our Cookie Policy and do not sell personal data. Creators and readers can review Privacy, Terms, and Content Policy anytime from the footer.",
+          "We act as an intermediary under Indian IT law: we host user content, enforce policies, and respond to valid legal orders and user reports.",
         ],
       },
       {
@@ -75,39 +131,73 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Careers",
     title: "Come build ContentVerse with us",
     subtitle:
-      "We're a small, focused team shipping fast for creators. If you love writing, product, or community — we'd like to meet you.",
+      "We’re a small, focused team shipping fast for creators across India. If you love writing, product, community, or engineering — we’d like to meet you.",
     sections: [
+      {
+        heading: "Why join ContentVerse",
+        paragraphs: [
+          "You’ll work on a real product used by readers and writers every day — not a slide deck. We care about editorial quality, fair monetization in rupees, and tools that respect Indian creators.",
+          "We are remote-friendly within India, async-first, and serious about ownership. You will ship visible features, talk to creators, and help set the standard for long-form publishing online.",
+        ],
+      },
       {
         heading: "Open roles",
         cards: [
           {
             title: "Full-stack Engineer",
-            description: "Next.js, Prisma, Postgres — ship creator-facing features end to end.",
+            description:
+              "Next.js, Prisma, Postgres — ship creator-facing features end to end: editor, scheduling, payments UX, and performance. You own problems from API to UI.",
             meta: "Remote · India",
           },
           {
             title: "Community & Creator Success",
-            description: "Onboard writers, run feedback loops, and grow the creator program.",
+            description:
+              "Onboard writers, run feedback loops, grow the Creator Program, and turn support tickets into product insights.",
             meta: "Remote · India",
           },
           {
             title: "Editorial Associate",
-            description: "Review submissions, improve discoverability, and uphold content quality.",
+            description:
+              "Review submissions, uphold the Content Policy, improve discoverability, and coach creators toward AdSense-quality long-form work.",
             meta: "Part-time · Remote",
+          },
+          {
+            title: "Growth & Partnerships",
+            description:
+              "Help creators and partners discover ContentVerse — campaigns, campus programs, and ethical growth experiments.",
+            meta: "Contract · India",
           },
         ],
       },
       {
         heading: "How we work",
         bullets: [
-          "Async-first with clear ownership",
-          "Ship weekly, measure what matters",
+          "Async-first with clear ownership and written decisions",
+          "Ship weekly, measure what matters (quality and retention, not vanity metrics)",
           "Creator feedback drives the roadmap",
-          "Inclusive, no-ego collaboration",
+          "Inclusive, no-ego collaboration — respect for every teammate and creator",
+          "Compliance-aware: privacy, content policy, and Indian legal norms are part of the job",
         ],
       },
       {
-        callout: `Don't see your role? Email ${CONTACT_EMAIL} with your portfolio or GitHub.`,
+        heading: "What we look for",
+        paragraphs: [
+          "We hire for craft and curiosity. You don’t need a famous resume — you need proof you can ship, write clearly, or care deeply about creators.",
+        ],
+        bullets: [
+          "Portfolio, GitHub, published writing, or community work we can review",
+          "Comfort with remote collaboration across Indian time zones",
+          "Respect for readers, copyright, and platform safety",
+        ],
+      },
+      {
+        heading: "How to apply",
+        paragraphs: [
+          `Email ${CONTACT_EMAIL} with the role in the subject line. Include a short note on why ContentVerse, links to your work, and your preferred start timeline. We aim to reply within two weeks.`,
+        ],
+      },
+      {
+        callout: `Don’t see your role? Email ${CONTACT_EMAIL} with your portfolio or GitHub — we hire for exceptional people, not only open listings.`,
       },
     ],
   },
@@ -116,12 +206,26 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Press",
     title: "Press & media",
     subtitle:
-      "Resources for journalists, partners, and creators covering ContentVerse.",
+      "Resources for journalists, partners, and creators covering ContentVerse — India’s home for long-form publishing.",
     sections: [
       {
         heading: "About ContentVerse",
         paragraphs: [
-          "ContentVerse (contentverse.co.in) is a creator publishing platform focused on long-form writing, short news formats, monetization in INR, and community features like polls, tips, and leaderboards.",
+          "ContentVerse (contentverse.co.in) is an India-first creator publishing platform focused on long-form writing, short news formats, monetization in INR, and community features like polls, tips, reactions, and leaderboards.",
+          "We combine a writer’s studio (drafts, scheduling, SEO, AI assist, analytics) with human moderation so the public library stays original and useful. Live sports scores, market data, and job listings complement articles as reader utilities — not as thin pages we ask search engines to rank.",
+          "Our policies align with Indian law (IT Act, IT Rules 2021, DPDP Act 2023) and Google AdSense publisher standards for quality content and advertising disclosures.",
+        ],
+      },
+      {
+        heading: "Boilerplate (short)",
+        paragraphs: [
+          "ContentVerse is a next-generation creator platform for readers and writers — built in India for depth, design, and fair rupee payouts.",
+        ],
+      },
+      {
+        heading: "Boilerplate (long)",
+        paragraphs: [
+          "ContentVerse is an India-first publishing platform where writers, journalists, and creators publish long-form articles, tutorials, and opinion in English and Hindi. The product includes editorial moderation, a Creator Program with tips and featuring, transparent analytics, and legal pages covering privacy, cookies (including Google advertising), terms, and content standards.",
         ],
       },
       {
@@ -129,16 +233,49 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         bullets: [
           `Email: ${CONTACT_EMAIL}`,
           "Based in India",
-          "Response within 2 business days",
+          "Response within 2 business days for media queries",
+          "For partnership or creator stories, mention “Press” in the subject line",
         ],
       },
       {
         heading: "Brand assets",
         cards: [
-          { title: "Logo & name", description: "Use “ContentVerse” — one word, capital C and V." },
-          { title: "Product description", description: "A next-generation creator platform for readers and writers." },
-          { title: "Founding narrative", description: "Built to give Indian creators fair tools, rupee payouts, and editorial quality." },
+          {
+            title: "Logo & name",
+            description:
+              "Use “ContentVerse” — one word, capital C and V. Do not alter the logo colours or stretch the mark.",
+            meta: "Brand",
+          },
+          {
+            title: "Product description",
+            description:
+              "A next-generation creator platform for readers and writers, with long-form publishing and INR monetization.",
+            meta: "One-liner",
+          },
+          {
+            title: "Founding narrative",
+            description:
+              "Built to give Indian creators fair tools, rupee payouts, editorial quality, and policies that respect Indian law.",
+            meta: "Story",
+          },
+          {
+            title: "Website",
+            description: "https://contentverse.co.in — primary product and press destination.",
+            meta: "URL",
+          },
         ],
+      },
+      {
+        heading: "Facts at a glance",
+        bullets: [
+          "Primary market: India (English & Hindi creators and readers)",
+          "Core product: long-form blogs, creator dashboard, tips in ₹",
+          "Trust: Content Policy, human moderation, privacy & cookie disclosures",
+          "Advertising: Google AdSense on eligible pages where configured",
+        ],
+      },
+      {
+        callout: `Media kit or interview requests: ${CONTACT_EMAIL}`,
       },
     ],
   },
@@ -192,32 +329,81 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Creators",
     title: "ContentVerse Creator Program",
     subtitle:
-      "Publish, grow, and earn — with editorial support, verification, and monetization built in.",
+      "Publish, grow, and earn — with editorial support, verification, and monetization built in. Quality over follower count.",
     sections: [
       {
-        heading: "Who it's for",
+        heading: "Who it’s for",
         paragraphs: [
-          "Writers, journalists, educators, and indie creators who publish original work in English or Hindi. You don't need a huge following — consistency and quality matter more.",
+          "Writers, journalists, educators, and indie creators who publish original work in English or Hindi. You don’t need a huge following — consistency, originality, and usefulness matter more.",
+          "If you write explainers, tutorials, reporting, or thoughtful opinion that readers would bookmark, you belong here. We are not a home for mass AI spam, scraped posts, or clickbait farms.",
         ],
       },
       {
         heading: "Benefits",
         bullets: [
           "Verified creator badge after approval",
-          "Tips in ₹ directly to your wallet",
-          "Leaderboard & category featuring",
+          "Tips in ₹ directly to your wallet (taxes and KYC may apply as described in Terms)",
+          "Leaderboard and category featuring for strong work",
           "Push notifications when readers engage",
-          "AI writing assist for drafts & SEO",
-          "Fair moderation with human review",
+          "AI writing assist for drafts, excerpts, tags, and SEO",
+          "Blog scheduling — set a future publish time in IST",
+          "Fair moderation with human review and clear feedback",
+          "Transparent analytics so you understand what readers finish",
+        ],
+      },
+      {
+        heading: "Quality bar",
+        paragraphs: [
+          "Indexable articles should be original and substantive — typically around 800+ words with clear structure, sourcing where needed, and no plagiarism. Finance and health topics need careful disclaimers.",
+          "Our Content Policy and Google AdSense publisher standards guide what stays live. Thin pages, duplicate posts, and prohibited categories are removed.",
         ],
       },
       {
         heading: "How to join",
         cards: [
-          { title: "1. Create account", description: "Sign up at contentverse.co.in and complete your profile.", meta: "Free" },
-          { title: "2. Publish 2 posts", description: "Submit original articles for review.", meta: "Quality bar" },
-          { title: "3. Apply for verification", description: `Email ${CONTACT_EMAIL} with your username.`, meta: "Review ~7 days" },
+          {
+            title: "1. Create account",
+            description:
+              "Sign up at contentverse.co.in, complete your profile photo and bio, and choose a clear username.",
+            meta: "Free",
+          },
+          {
+            title: "2. Publish quality posts",
+            description:
+              "Submit at least two original articles for review. Use the editor, SEO fields, and schedule if you want a future go-live time.",
+            meta: "Quality bar",
+          },
+          {
+            title: "3. Apply for verification",
+            description: `Email ${CONTACT_EMAIL} with your username and links to your best posts. We review within about seven days.`,
+            meta: "Review ~7 days",
+          },
+          {
+            title: "4. Grow & earn",
+            description:
+              "Engage readers, earn tips, track analytics, and stay within the Content Policy to keep your badge.",
+            meta: "Ongoing",
+          },
         ],
+      },
+      {
+        heading: "What we expect from verified creators",
+        bullets: [
+          "Original work you have the rights to publish",
+          "Respectful engagement in comments and community features",
+          "No harassment, hate, illegal content, or deceptive practices",
+          "Accurate profiles — no impersonation",
+          "Compliance with Terms, Privacy Policy, and Indian law",
+        ],
+      },
+      {
+        heading: "Earnings & transparency",
+        paragraphs: [
+          "Tips and wallet balances are shown in Indian Rupees. Payout timing, fees, and any tax documentation requirements are described in the dashboard and Terms of Service. We do not guarantee income; earnings depend on reader engagement and your consistency.",
+        ],
+      },
+      {
+        callout: `Ready to apply? Email ${CONTACT_EMAIL} with your username after publishing your first quality posts.`,
       },
     ],
   },
@@ -516,7 +702,11 @@ function mapDbRow(row: {
 
 /** Slugs whose DB copy is refreshed from code defaults on boot. */
 const SYNC_FROM_DEFAULTS: SitePageSlug[] = [
+  "about",
+  "careers",
+  "press",
   "premium",
+  "creator-program",
   "terms",
   "privacy",
   "cookies",

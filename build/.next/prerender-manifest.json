@@ -146,30 +146,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/site-map": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/site-map",
-      "dataRoute": "/site-map.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/contact": {
       "experimentalBypassFor": [
         {
@@ -194,7 +170,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/reels": {
+    "/site-map": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -207,32 +183,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/reels",
-      "dataRoute": "/reels.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/jobs/private": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/jobs/private",
-      "dataRoute": "/jobs/private.rsc",
+      "srcRoute": "/site-map",
+      "dataRoute": "/site-map.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -281,6 +233,54 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/auth/sign-up",
       "dataRoute": "/auth/sign-up.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/jobs/private": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/jobs/private",
+      "dataRoute": "/jobs/private.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/reels": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/reels",
+      "dataRoute": "/reels.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
