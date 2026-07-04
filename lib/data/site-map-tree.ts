@@ -130,7 +130,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             children: [
               { label: "Comments & replies", detail: "Threaded discussion" },
               { label: "Reactions", detail: "Like, love, fire, clap, insightful" },
-              { label: "Tip author", detail: "Send ₹ tips to creator wallet" },
+              { label: "Tip", detail: "Send ₹ tips to creator wallet" },
               { label: "Bookmark & repost", detail: "Save or share to profile" },
               { label: "AI summary", detail: "One-tap article summary" },
               { label: "Reading history", detail: "Track progress & time spent" },
@@ -161,10 +161,23 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             children: [
               { label: "AI writing assist", detail: "Draft, expand & SEO suggestions" },
               { label: "SEO fields", detail: "Meta title, description, slug" },
+              {
+                label: "Blog scheduling",
+                detail: "Pick future date/time (IST) — auto-publishes via cron",
+              },
               { label: "Submit for review", detail: "Goes to moderation queue" },
             ],
           },
-          { label: "My blogs", href: "/dashboard/blogs", detail: "Draft · Pending · Published · Archived" },
+          {
+            label: "My blogs",
+            href: "/dashboard/blogs",
+            detail: "All · Published · Pending · Drafts · Rejected",
+            children: [
+              { label: "Scheduled posts", detail: "Upcoming auto-publish times in IST" },
+              { label: "Draft preview", detail: "Author-only private preview before go-live" },
+              { label: "Edit live posts", detail: "Save changes without unpublishing" },
+            ],
+          },
           { label: "Edit blog", href: "/dashboard/blogs", detail: "Update published or draft posts" },
           { label: "Bookmarks", href: "/dashboard/bookmarks", detail: "Your saved reading list" },
         ],
@@ -478,7 +491,14 @@ export const SITE_MAP_ADMIN: SiteMapModule = {
           href: "/admin/blogs",
           detail: "Search & filter entire content library",
           children: [
-            { label: "Filter by status", detail: "Published · Pending · Draft · Rejected · Archived" },
+            {
+              label: "Filter by status",
+              detail: "Published · Pending · Scheduled · Draft · Rejected · Archived",
+            },
+            {
+              label: "Blog scheduling queue",
+              detail: "See posts set to auto-publish (IST times)",
+            },
             { label: "Search by title/author", detail: "Find any post quickly" },
             { label: "Archive / restore", detail: "Hide without deleting" },
           ],
@@ -489,6 +509,7 @@ export const SITE_MAP_ADMIN: SiteMapModule = {
           detail: "Edit any article regardless of owner",
           children: [
             { label: "Cover image & SEO fields", detail: "Full editorial control" },
+            { label: "Schedule publish", detail: "Set future go-live time in IST" },
             { label: "Force publish", detail: "Bypass creator submission flow" },
           ],
         },
@@ -497,6 +518,10 @@ export const SITE_MAP_ADMIN: SiteMapModule = {
           href: "/admin/ai-articles",
           detail: "Gemini-powered SEO content generation",
           children: [
+            {
+              label: "AI publishing pipeline",
+              detail: "Research → Writer → SEO → Image → Reviewer → Publisher",
+            },
             { label: "Hot topic picker", detail: "Trending subjects by category" },
             { label: "One-click generate", detail: "Draft + cover via GEMINI_API_KEY" },
             { label: "Daily cron articles", detail: "Scheduled via /api/cron/daily-articles" },
@@ -610,6 +635,10 @@ export const SITE_MAP_ADMIN: SiteMapModule = {
           detail: "Background jobs admins rely on",
           children: [
             { label: "Daily AI articles", detail: "/api/cron/daily-articles" },
+            {
+              label: "Blog scheduling publish",
+              detail: "/api/cron/publish-scheduled — every 10 min",
+            },
             { label: "Notification digests", detail: "/api/cron/notifications" },
             { label: "Stock & cricket alerts", detail: "/api/cron/push-alerts" },
             { label: "Sports data sync", detail: "/api/cron/sports-sync" },
