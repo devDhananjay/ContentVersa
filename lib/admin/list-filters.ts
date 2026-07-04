@@ -39,16 +39,19 @@ export function matchesSearch(
   return fields.some((f) => f?.toLowerCase().includes(needle));
 }
 
+/** Always Asia/Kolkata — EC2 runs UTC so bare toLocaleString() is ~5.5h behind IST. */
 export function formatAdminDate(value: Date | string | null | undefined): string {
   if (!value) return "—";
   const d = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(d.getTime())) return "—";
   return new Intl.DateTimeFormat("en-IN", {
     timeZone: "Asia/Kolkata",
-    day: "2-digit",
-    month: "short",
+    day: "numeric",
+    month: "numeric",
     year: "numeric",
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
   }).format(d);
 }

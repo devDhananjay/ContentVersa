@@ -54,6 +54,12 @@ function sortBlogs(rows: AdminBlogRow[], sort: string): AdminBlogRow[] {
         const bp = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
         return bp - ap;
       });
+    case "scheduled":
+      return copy.sort((a, b) => {
+        const ap = a.scheduledFor ? new Date(a.scheduledFor).getTime() : Number.MAX_SAFE_INTEGER;
+        const bp = b.scheduledFor ? new Date(b.scheduledFor).getTime() : Number.MAX_SAFE_INTEGER;
+        return ap - bp;
+      });
     default:
       return copy.sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -101,8 +107,9 @@ function BlogTable({ rows }: { rows: AdminBlogRow[] }) {
             <th className="p-4">Category</th>
             <th className="p-4">Author</th>
             <th className="p-4">Status</th>
-            <th className="p-4">Created</th>
-            <th className="p-4">Published</th>
+            <th className="p-4">Created (IST)</th>
+            <th className="p-4">Scheduled (IST)</th>
+            <th className="p-4">Published (IST)</th>
             <th className="p-4">Views</th>
             <th className="p-4 text-right">Actions</th>
           </tr>
@@ -141,10 +148,20 @@ function BlogTable({ rows }: { rows: AdminBlogRow[] }) {
                 </Link>
               </td>
               <td className="p-4">
-                <Badge variant={STATUS_VARIANT[b.status] ?? "secondary"}>{b.status}</Badge>
+                <div className="flex flex-col gap-1 items-start">
+                  <Badge variant={STATUS_VARIANT[b.status] ?? "secondary"}>{b.status}</Badge>
+                  {b.scheduledFor ? (
+                    <Badge variant="neon" className="text-[10px]">
+                      Scheduled
+                    </Badge>
+                  ) : null}
+                </div>
               </td>
               <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
                 {formatAdminDate(b.createdAt)}
+              </td>
+              <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
+                {formatAdminDate(b.scheduledFor)}
               </td>
               <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
                 {formatAdminDate(b.publishedAt)}
@@ -193,6 +210,17 @@ export function AdminBlogsTable({
   }, [all]);
 
   const filter = (rows: AdminBlogRow[]) => applyBlogFilters(rows, filters);
+  const scheduled = React.useMemo(
+    () =>
+      all
+        .filter((b) => b.scheduledFor)
+        .sort(
+          (a, b) =>
+            new Date(a.scheduledFor!).getTime() - new Date(b.scheduledFor!).getTime()
+        ),
+    [all]
+  );
+  const filteredScheduled = filter(scheduled);
   const filteredArchived = filter(archived);
 
   const deleteAllArchived = async () => {
@@ -263,6 +291,7 @@ export function AdminBlogsTable({
               { value: "newest", label: "Newest created" },
               { value: "oldest", label: "Oldest created" },
               { value: "published", label: "Recently published" },
+              { value: "scheduled", label: "Soonest scheduled" },
               { value: "views", label: "Most views" },
               { value: "title", label: "Title A–Z" },
             ],
@@ -279,6 +308,7 @@ export function AdminBlogsTable({
           <TabsTrigger value="all">All ({filter(all).length})</TabsTrigger>
           <TabsTrigger value="pending">Pending ({filter(pending).length})</TabsTrigger>
           <TabsTrigger value="published">Published ({filter(published).length})</TabsTrigger>
+          <TabsTrigger value="scheduled">Scheduled ({filteredScheduled.length})</TabsTrigger>
           <TabsTrigger value="rejected">Rejected ({filter(rejected).length})</TabsTrigger>
           <TabsTrigger value="draft">Drafts ({filter(draft).length})</TabsTrigger>
           <TabsTrigger value="archived">Archived ({filteredArchived.length})</TabsTrigger>
@@ -291,6 +321,14 @@ export function AdminBlogsTable({
         </TabsContent>
         <TabsContent value="published" className="mt-4">
           <BlogTable rows={filter(published)} />
+        </TabsContent>
+        <TabsContent value="scheduled" className="mt-4 space-y-3">
+          {filteredScheduled.length > 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Auto-publish when the scheduled time is reached (cron every 10 min, IST).
+            </p>
+          ) : null}
+          <BlogTable rows={filteredScheduled} />
         </TabsContent>
         <TabsContent value="rejected" className="mt-4">
           <BlogTable rows={filter(rejected)} />

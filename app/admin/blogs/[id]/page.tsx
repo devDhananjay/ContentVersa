@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BlogModerationActions } from "@/components/admin/blog-moderation-actions";
 import { renderMarkdown } from "@/components/blog/markdown";
 import { getAdminBlogDetail } from "@/lib/data/admin-data";
+import { formatAdminDate } from "@/lib/admin/list-filters";
 import { formatNumber, getInitials } from "@/lib/utils";
 
 const STATUS_VARIANT: Record<string, "success" | "warning" | "secondary" | "destructive"> = {
@@ -100,13 +101,17 @@ export default async function AdminBlogDetailPage({
         </div>
       </Link>
 
-      <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+      <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-sm">
         {[
-          { label: "Created", value: blog.createdAt.toLocaleString() },
-          { label: "Updated", value: blog.updatedAt.toLocaleString() },
+          { label: "Created (IST)", value: formatAdminDate(blog.createdAt) },
+          { label: "Updated (IST)", value: formatAdminDate(blog.updatedAt) },
           {
-            label: "Published",
-            value: blog.publishedAt ? blog.publishedAt.toLocaleString() : "—",
+            label: "Scheduled (IST)",
+            value: formatAdminDate(blog.scheduledFor),
+          },
+          {
+            label: "Published (IST)",
+            value: formatAdminDate(blog.publishedAt),
           },
           { label: "Slug", value: blog.slug },
         ].map((row) => (
@@ -125,7 +130,7 @@ export default async function AdminBlogDetailPage({
             <Badge variant="secondary">{blog.submission.decision}</Badge>
             {blog.submission.reviewedAt && (
               <span className="text-muted-foreground ml-2">
-                · {blog.submission.reviewedAt.toLocaleString()}
+                · {formatAdminDate(blog.submission.reviewedAt)}
               </span>
             )}
           </p>
@@ -143,7 +148,7 @@ export default async function AdminBlogDetailPage({
                 <li key={i} className="text-xs text-muted-foreground border-t pt-2">
                   <span className="font-medium text-foreground">{r.reviewer.name || r.reviewer.username}</span>{" "}
                   — {r.decision}
-                  {r.note ? `: ${r.note}` : ""} · {r.createdAt.toLocaleString()}
+                  {r.note ? `: ${r.note}` : ""} · {formatAdminDate(r.createdAt)}
                 </li>
               ))}
             </ul>

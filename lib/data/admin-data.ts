@@ -60,6 +60,7 @@ export type AdminBlogRow = {
   readingTime: number;
   createdAt: Date;
   publishedAt: Date | null;
+  scheduledFor: Date | null;
   author: {
     id: string;
     name: string;
@@ -115,6 +116,7 @@ type BlogForRow = {
   readingTime: number;
   createdAt: Date;
   publishedAt: Date | null;
+  scheduledFor: Date | null;
   author: { id: string; email: string; name: string | null; username: string; image: string | null };
   category: { name: string; slug: string } | null;
 };
@@ -133,6 +135,7 @@ function mapBlogRow(blog: BlogForRow): AdminBlogRow {
     readingTime: blog.readingTime,
     createdAt: blog.createdAt,
     publishedAt: blog.publishedAt,
+    scheduledFor: blog.scheduledFor ?? null,
     author: {
       id: blog.author.id,
       name: blog.author.name || blog.author.username,
@@ -351,6 +354,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
         readingTime: b.readingTime,
         createdAt: b.createdAt,
         publishedAt: b.publishedAt,
+        scheduledFor: b.scheduledFor,
         author: {
           id: user.id,
           email: user.email,
