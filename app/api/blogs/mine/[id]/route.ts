@@ -36,6 +36,7 @@ const UpdateSchema = z.object({
   metaDescription: z.string().optional(),
   /** PUBLISHED only allowed when the post is already live (in-place edit). */
   status: z.enum(["DRAFT", "PENDING", "PUBLISHED"]).optional(),
+  scheduledFor: z.union([z.string(), z.null()]).optional(),
   seriesSlug: z
     .string()
     .optional()
@@ -106,6 +107,7 @@ export async function GET(
         metaTitle: blog.metaTitle || "",
         metaDescription: blog.metaDescription || "",
         status: blog.status,
+        scheduledFor: blog.scheduledFor?.toISOString() ?? null,
         seriesSlug: blog.seriesSlug || "",
         seriesPart: blog.seriesPart ?? null,
       },
@@ -176,6 +178,30 @@ export async function PATCH(
 
     const coverImage = await normalizeCoverImageUrl(parsed.coverImage);
 
+    let scheduledFor: Date | null | undefined = undefined;
+    if (parsed.scheduledFor !== undefined) {
+      if (parsed.scheduledFor === null || parsed.scheduledFor === "") {
+        scheduledFor = null;
+      } else {
+        const d = new Date(parsed.scheduledFor);
+        if (Number.isNaN(d.getTime())) {
+          return NextResponse.json({ error: "Invalid schedule date" }, { status: 400 });
+        }
+        if (d.getTime() <= Date.now() && status !== "PUBLISHED") {
+          return NextResponse.json(
+            { error: "Schedule time must be in the future" },
+            { status: 400 }
+          );
+        }
+        scheduledFor = d;
+      }
+    }
+
+    // Scheduling forces draft until cron publishes.
+    if (scheduledFor) {
+      status = "DRAFT";
+    }
+
     const blog = await prisma.blog.update({
       where: { id: existing.id },
       data: {
@@ -190,6 +216,7 @@ export async function PATCH(
         metaDescription: parsed.metaDescription,
         seriesSlug: parsed.seriesSlug ?? null,
         seriesPart: parsed.seriesSlug ? (parsed.seriesPart ?? 1) : null,
+        ...(scheduledFor !== undefined ? { scheduledFor } : {}),
         ...(categoryId !== undefined ? { categoryId } : {}),
         ...(status === "PENDING" && existing.status === "DRAFT"
           ? {

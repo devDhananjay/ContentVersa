@@ -305,12 +305,19 @@ export async function getBlogsForProfile(username: string) {
   return null;
 }
 
-export type DashboardBlogRow = Blog & { status: BlogStatus };
+export type DashboardBlogRow = Blog & {
+  status: BlogStatus;
+  scheduledFor: string | null;
+};
 
 export function mapDbBlogToDashboardRow(
-  blog: BlogWithRelations & { status: BlogStatus }
+  blog: BlogWithRelations & { status: BlogStatus; scheduledFor?: Date | null }
 ): DashboardBlogRow {
-  return { ...mapDbBlogToBlog(blog), status: blog.status };
+  return {
+    ...mapDbBlogToBlog(blog),
+    status: blog.status,
+    scheduledFor: blog.scheduledFor?.toISOString() ?? null,
+  };
 }
 
 export async function getFeaturedHybrid(limit = 3) {

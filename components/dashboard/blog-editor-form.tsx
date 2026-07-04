@@ -14,12 +14,21 @@ import {
   CheckCircle2,
   Sparkles,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectTrigger,
@@ -53,9 +62,31 @@ type BlogDraft = {
   metaTitle: string;
   metaDescription: string;
   status: string;
+  scheduledFor: string | null;
   seriesSlug: string;
   seriesPart: number | null;
 };
+
+/** datetime-local value in the user's timezone */
+function toDatetimeLocalValue(iso: string | Date): string {
+  const d = typeof iso === "string" ? new Date(iso) : iso;
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function formatScheduleLabel(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(d);
+}
 
 export function BlogEditorForm({
   blogId,
@@ -85,6 +116,9 @@ export function BlogEditorForm({
   const [allowComments, setAllowComments] = React.useState(true);
   const [seriesSlug, setSeriesSlug] = React.useState("");
   const [seriesPart, setSeriesPart] = React.useState("");
+  const [scheduledFor, setScheduledFor] = React.useState<string | null>(null);
+  const [scheduleOpen, setScheduleOpen] = React.useState(false);
+  const [scheduleInput, setScheduleInput] = React.useState("");
   const [saved, setSaved] = React.useState<Date | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
   const [generating, setGenerating] = React.useState(false);
@@ -103,6 +137,7 @@ export function BlogEditorForm({
   const applyDraft = (data: BlogDraft) => {
     setEditingId(data.id);
     setLiveStatus(data.status || "DRAFT");
+    setScheduledFor(data.scheduledFor ?? null);
     setTitle(data.title);
     setExcerpt(data.excerpt);
     setCover(data.coverImage);
@@ -242,25 +277,31 @@ export function BlogEditorForm({
     }
   };
 
-  const saveBlog = async (status: "DRAFT" | "PENDING" | "PUBLISHED") => {
+  const saveBlog = async (
+    status: "DRAFT" | "PENDING" | "PUBLISHED",
+    opts?: { scheduledFor?: string | null; stayOnPage?: boolean }
+  ) => {
     setSubmitError(null);
     if (!title.trim()) {
       setSubmitError("Add a title first.");
-      return;
+      return false;
     }
     const content = (editorRef.current?.toMarkdown() ?? markdown).trim();
     if (status === "PENDING" && content.length < 20) {
       setSubmitError("Write at least 20 characters before submitting for review.");
-      return;
+      return false;
     }
     if ((status === "DRAFT" || status === "PUBLISHED") && !content) {
       setSubmitError("Add some content to save.");
-      return;
+      return false;
     }
     if (title.trim().length < 3) {
       setSubmitError("Title must be at least 3 characters.");
-      return;
+      return false;
     }
+
+    const nextSchedule =
+      opts && "scheduledFor" in opts ? opts.scheduledFor : scheduledFor;
 
     setSubmitting(true);
     try {
@@ -278,7 +319,8 @@ export function BlogEditorForm({
         seriesPart: seriesSlug.trim()
           ? Math.max(1, parseInt(seriesPart, 10) || 1)
           : undefined,
-        status,
+        status: nextSchedule ? "DRAFT" : status,
+        scheduledFor: nextSchedule === undefined ? undefined : nextSchedule,
       };
 
       const endpoint =
@@ -305,19 +347,69 @@ export function BlogEditorForm({
         setEditingId(data.blog.id);
       }
       if (data.blog?.status) setLiveStatus(data.blog.status);
+      if (opts && "scheduledFor" in opts) {
+        setScheduledFor(opts.scheduledFor ?? null);
+      }
+      if (opts?.stayOnPage) {
+        router.refresh();
+        return true;
+      }
       router.push(adminMode ? "/admin/blogs" : "/dashboard/blogs");
       router.refresh();
+      return true;
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Failed to save");
+      return false;
     } finally {
       setSubmitting(false);
     }
   };
 
   const isLive = liveStatus === "PUBLISHED";
-  const onSubmitForReview = () => saveBlog("PENDING");
-  const onSaveDraft = () => saveBlog("DRAFT");
-  const onSavePublished = () => saveBlog("PUBLISHED");
+  const onSubmitForReview = () => saveBlog("PENDING", { scheduledFor: null });
+  const onSaveDraft = () => saveBlog("DRAFT"); // keeps existing schedule if any
+  const onSavePublished = () => saveBlog("PUBLISHED", { scheduledFor: null });
+
+  const openScheduleDialog = () => {
+    const base =
+      scheduledFor != null
+        ? toDatetimeLocalValue(scheduledFor)
+        : toDatetimeLocalValue(new Date(Date.now() + 60 * 60 * 1000));
+    setScheduleInput(base);
+    setScheduleOpen(true);
+  };
+
+  const confirmSchedule = async () => {
+    if (!scheduleInput) {
+      setSubmitError("Pick a date and time.");
+      return;
+    }
+    const when = new Date(scheduleInput);
+    if (Number.isNaN(when.getTime())) {
+      setSubmitError("Invalid schedule date.");
+      return;
+    }
+    if (when.getTime() <= Date.now()) {
+      setSubmitError("Schedule time must be in the future.");
+      return;
+    }
+    const ok = await saveBlog("DRAFT", {
+      scheduledFor: when.toISOString(),
+      stayOnPage: true,
+    });
+    if (ok) {
+      setScheduleOpen(false);
+      toast.success(`Scheduled for ${formatScheduleLabel(when.toISOString())}`);
+    }
+  };
+
+  const clearSchedule = async () => {
+    const ok = await saveBlog("DRAFT", { scheduledFor: null, stayOnPage: true });
+    if (ok) {
+      setScheduleOpen(false);
+      toast.success("Schedule cleared — saved as draft");
+    }
+  };
 
   if (loadingDraft) {
     return (
@@ -771,9 +863,29 @@ export function BlogEditorForm({
                 </div>
               ) : null}
             </div>
-            <Button variant="outline" className="w-full gap-2">
-              <Calendar className="h-4 w-4" /> Schedule
-            </Button>
+            <div className="space-y-2 pt-2 border-t">
+              {scheduledFor ? (
+                <div className="rounded-xl border border-neon-purple/30 bg-neon-purple/5 px-3 py-2 text-xs">
+                  <p className="font-medium text-neon-purple flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5" />
+                    Scheduled
+                  </p>
+                  <p className="text-muted-foreground mt-0.5">
+                    {formatScheduleLabel(scheduledFor)} IST
+                  </p>
+                </div>
+              ) : null}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full gap-2"
+                disabled={submitting || generating}
+                onClick={openScheduleDialog}
+              >
+                <Calendar className="h-4 w-4" />
+                {scheduledFor ? "Edit schedule" : "Schedule"}
+              </Button>
+            </div>
           </motion.div>
 
           <AiAssistPanel
@@ -819,6 +931,53 @@ export function BlogEditorForm({
           </motion.div>
         </aside>
       </div>
+
+      <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Schedule publish</DialogTitle>
+            <DialogDescription>
+              Save as draft and auto-publish at the chosen time (Asia/Kolkata). You can edit or
+              clear the schedule anytime before it goes live.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            <Label htmlFor="schedule-at">Publish date & time</Label>
+            <Input
+              id="schedule-at"
+              type="datetime-local"
+              value={scheduleInput}
+              min={toDatetimeLocalValue(new Date(Date.now() + 5 * 60 * 1000))}
+              onChange={(e) => setScheduleInput(e.target.value)}
+            />
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            {scheduledFor ? (
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={submitting}
+                onClick={clearSchedule}
+              >
+                Clear schedule
+              </Button>
+            ) : null}
+            <Button type="button" variant="outline" onClick={() => setScheduleOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="gradient"
+              disabled={submitting}
+              onClick={confirmSchedule}
+              className="gap-1.5"
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Calendar className="h-4 w-4" />}
+              Schedule
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

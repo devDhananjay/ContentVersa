@@ -114,6 +114,18 @@ function BlogRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant={STATUS_VARIANTS[blog.status]}>{blog.status}</Badge>
+          {blog.scheduledFor ? (
+            <Badge variant="neon" className="text-[10px]">
+              Scheduled{" "}
+              {new Intl.DateTimeFormat("en-IN", {
+                timeZone: "Asia/Kolkata",
+                day: "2-digit",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit",
+              }).format(new Date(blog.scheduledFor))}
+            </Badge>
+          ) : null}
           <span className="text-xs text-muted-foreground">{timeAgo(blog.publishedAt)}</span>
         </div>
         <Link href={viewHref}>
@@ -122,7 +134,9 @@ function BlogRow({
         <p className="text-xs text-muted-foreground mt-1">
           {isPublic
             ? `${formatNumber(blog.views)} views · ${formatNumber(blog.likes)} likes · ${formatNumber(blog.comments)} comments`
-            : "Private preview — click title or eye to view"}
+            : blog.scheduledFor
+              ? "Will auto-publish at the scheduled time"
+              : "Private preview — click title or eye to view"}
         </p>
       </div>
       <div className="flex items-center gap-1 shrink-0">

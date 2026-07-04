@@ -35,6 +35,7 @@ const UpdateSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   status: z.enum(["DRAFT", "PENDING", "PUBLISHED", "REJECTED", "ARCHIVED"]).optional(),
+  scheduledFor: z.union([z.string(), z.null()]).optional(),
   seriesSlug: z
     .string()
     .optional()
@@ -96,6 +97,7 @@ export async function GET(
         metaTitle: blog.metaTitle || "",
         metaDescription: blog.metaDescription || "",
         status: blog.status,
+        scheduledFor: blog.scheduledFor?.toISOString() ?? null,
         seriesSlug: blog.seriesSlug || "",
         seriesPart: blog.seriesPart,
       },
@@ -130,7 +132,27 @@ export async function PATCH(
     }
 
     const parsed = UpdateSchema.parse(await req.json());
-    const status = (parsed.status ?? existing.status) as BlogStatus;
+    let status = (parsed.status ?? existing.status) as BlogStatus;
+
+    let scheduledFor: Date | null | undefined = undefined;
+    if (parsed.scheduledFor !== undefined) {
+      if (parsed.scheduledFor === null || parsed.scheduledFor === "") {
+        scheduledFor = null;
+      } else {
+        const d = new Date(parsed.scheduledFor);
+        if (Number.isNaN(d.getTime())) {
+          return NextResponse.json({ error: "Invalid schedule date" }, { status: 400 });
+        }
+        if (d.getTime() <= Date.now() && status !== BlogStatus.PUBLISHED) {
+          return NextResponse.json(
+            { error: "Schedule time must be in the future" },
+            { status: 400 }
+          );
+        }
+        scheduledFor = d;
+        status = BlogStatus.DRAFT;
+      }
+    }
 
     let categoryId: string | null | undefined = undefined;
     if (parsed.category !== undefined) {
@@ -163,6 +185,7 @@ export async function PATCH(
         metaDescription: parsed.metaDescription,
         seriesSlug: parsed.seriesSlug ?? null,
         seriesPart: parsed.seriesSlug ? (parsed.seriesPart ?? 1) : null,
+        ...(scheduledFor !== undefined ? { scheduledFor } : {}),
         ...(categoryId !== undefined ? { categoryId } : {}),
         ...(becomingPublished ? { publishedAt: existing.publishedAt ?? new Date() } : {}),
       },

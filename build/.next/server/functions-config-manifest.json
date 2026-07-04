@@ -2,11 +2,11 @@
   "version": 1,
   "functions": {
     "/api/auth/google/login": {},
-    "/api/auth/firebase": {},
-    "/api/auth/google/callback": {},
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
+    "/api/auth/google/callback": {},
+    "/api/auth/firebase": {},
     "/api/reels/upload": {},
     "/api/upload": {},
     "/uploads/[filename]": {}

@@ -38,6 +38,7 @@ const CreateSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   status: z.enum(["DRAFT", "PENDING"]).optional().default("PENDING"),
+  scheduledFor: z.union([z.string(), z.null()]).optional(),
   seriesSlug: z
     .string()
     .optional()
@@ -163,6 +164,24 @@ export async function POST(req: Request) {
     const slug = `${slugify(parsed.title)}-${Date.now().toString(36)}`;
     const coverImage = await normalizeCoverImageUrl(parsed.coverImage);
 
+    let scheduledFor: Date | null = null;
+    if (parsed.scheduledFor) {
+      const d = new Date(parsed.scheduledFor);
+      if (Number.isNaN(d.getTime())) {
+        return NextResponse.json({ error: "Invalid schedule date" }, { status: 400 });
+      }
+      if (d.getTime() <= Date.now()) {
+        return NextResponse.json(
+          { error: "Schedule time must be in the future" },
+          { status: 400 }
+        );
+      }
+      scheduledFor = d;
+    }
+
+    // Scheduled posts stay draft until cron publishes them.
+    const status = scheduledFor ? "DRAFT" : parsed.status;
+
     const blog = await prisma.blog.create({
       data: {
         title: parsed.title,
@@ -171,7 +190,8 @@ export async function POST(req: Request) {
         content: parsed.content,
         coverImage,
         readingTime: readingTime(parsed.content),
-        status: parsed.status,
+        status,
+        scheduledFor,
         isPremium: parsed.premium || false,
         metaTitle: parsed.metaTitle,
         metaDescription: parsed.metaDescription,
@@ -179,7 +199,7 @@ export async function POST(req: Request) {
         categoryId,
         seriesSlug: parsed.seriesSlug ?? null,
         seriesPart: parsed.seriesSlug ? (parsed.seriesPart ?? 1) : null,
-        ...(parsed.status === "PENDING"
+        ...(status === "PENDING"
           ? {
               submission: {
                 create: {
