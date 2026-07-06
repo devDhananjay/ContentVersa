@@ -334,6 +334,32 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
     ],
   },
   {
+    id: "moneyverse",
+    label: "MoneyVerse",
+    color: "emerald",
+    href: "/moneyverse",
+    summary: "Expense tracker, budgets, reminders & UPI screenshot OCR for India",
+    groups: [
+      {
+        heading: "Tracking",
+        items: [
+          { label: "MoneyVerse hub", href: "/moneyverse", detail: "Monthly expenses, budgets & reports" },
+          {
+            label: "Screenshot Scan (OCR)",
+            href: "/moneyverse/screenshot-scan",
+            detail: "Upload UPI payment screenshot — OCR auto-fills amount & merchant",
+            children: [
+              { label: "PhonePe / GPay / Paytm", detail: "Payment success screen images" },
+              { label: "Review & save", detail: "Edit category before saving expense" },
+            ],
+          },
+          { label: "Budget planner", href: "/moneyverse", detail: "Per-category monthly limits" },
+          { label: "Payment reminders", href: "/moneyverse", detail: "Credit card, SIP & custom due dates" },
+        ],
+      },
+    ],
+  },
+  {
     id: "jobs",
     label: "Jobs",
     color: "orange",

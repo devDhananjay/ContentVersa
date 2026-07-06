@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
-import { HuidVerificationGuide } from "@/components/jewellers/huid-verification-guide";
-import { HuidVerifyPanel } from "@/components/jewellers/huid-verify-panel";
+import { HuidVerificationGuide } from "@/components/goldverse/huid-verification-guide";
+import { HuidVerifyPanel } from "@/components/goldverse/huid-verify-panel";
 import { HuidVerificationJsonLd } from "@/components/seo/huid-verification-json-ld";
-import { HUID_SEO_KEYWORDS, HUID_VERIFICATION_PATH } from "@/lib/jewellers/huid-seo";
+import { HUID_SEO_KEYWORDS, HUID_VERIFICATION_PATH } from "@/lib/goldverse/huid-seo";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-static";
@@ -41,8 +41,8 @@ export default function HuidVerificationPage() {
         </p>
         <p className="text-xs text-muted-foreground">
           Part of{" "}
-          <Link href="/jewellers" className="text-amber-400 hover:underline">
-            ContentVerse Jewellers Hub
+          <Link href="/goldverse" className="text-amber-400 hover:underline">
+            ContentVerse GoldVerse
           </Link>
           — gold rates, hallmark guide and buyer tools.
         </p>

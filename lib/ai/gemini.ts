@@ -249,6 +249,43 @@ export async function callGeminiTextWithMeta(
   }));
 }
 
+/** Vision + JSON — e.g. receipt / UPI screenshot parsing. */
+export async function callGeminiVisionJson<T>(
+  system: string,
+  userText: string,
+  image: { mimeType: string; data: string },
+  responseSchema: object,
+  maxTokens = 1024
+): Promise<T | null> {
+  const result = await generateAcrossModels(() => ({
+    systemInstruction: { parts: [{ text: system }] },
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: userText.slice(0, 4000) },
+          { inlineData: { mimeType: image.mimeType, data: image.data } },
+        ],
+      },
+    ],
+    generationConfig: {
+      maxOutputTokens: maxTokens,
+      temperature: 0.2,
+      responseMimeType: "application/json",
+      responseSchema,
+    },
+  }));
+
+  if (!result.ok) return null;
+
+  try {
+    return JSON.parse(result.text) as T;
+  } catch {
+    console.error("[gemini vision json] parse failed", result.text.slice(0, 200));
+    return null;
+  }
+}
+
 function imageModels(): string[] {
   const configured = process.env.GEMINI_IMAGE_MODEL?.trim();
   const chain = [

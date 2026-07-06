@@ -167,6 +167,9 @@ model User {
   movieWatchlist   MovieWatchlistItem[]
   huidQuota        HuidVerificationQuota?
   huidVerifications HuidVerificationLog[]
+  moneyExpenses    MoneyExpense[]
+  moneyBudgets     MoneyBudget[]
+  moneyReminders   MoneyReminder[]
   payoutRequests   PayoutRequest[]
   referredProfiles Profile[]         @relation("Referrals")
   reels            Reel[]
@@ -509,6 +512,79 @@ model HuidVerificationLog {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+}
+
+enum MoneyExpenseCategory {
+  FOOD
+  TRANSPORT
+  SHOPPING
+  BILLS
+  ENTERTAINMENT
+  HEALTH
+  EDUCATION
+  INVESTMENT
+  RENT
+  OTHER
+}
+
+enum MoneyPaymentMethod {
+  UPI
+  CASH
+  CARD
+  NET_BANKING
+  OTHER
+}
+
+enum MoneyReminderType {
+  CREDIT_CARD
+  SIP
+  CUSTOM
+}
+
+model MoneyExpense {
+  id        String               @id @default(cuid())
+  userId    String
+  amount    Int
+  category  MoneyExpenseCategory @default(OTHER)
+  note      String?
+  method    MoneyPaymentMethod   @default(UPI)
+  spentAt   DateTime             @default(now())
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, spentAt])
+}
+
+model MoneyBudget {
+  id          String               @id @default(cuid())
+  userId      String
+  category    MoneyExpenseCategory
+  limitAmount Int
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@index([userId])
+}
+
+model MoneyReminder {
+  id        String             @id @default(cuid())
+  userId    String
+  type      MoneyReminderType
+  title     String
+  amount    Int?
+  dueDay    Int
+  isActive  Boolean            @default(true)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // ---------------------- Moderation ----------------------

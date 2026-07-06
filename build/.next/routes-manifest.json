@@ -10,6 +10,24 @@
       "internal": true,
       "statusCode": 308,
       "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    },
+    {
+      "source": "/jewellers",
+      "destination": "/goldverse",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/jewellers(?:/)?$"
+    },
+    {
+      "source": "/jewellers/:path*",
+      "destination": "/goldverse/:path*",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/jewellers(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    },
+    {
+      "source": "/api/jewellers/:path*",
+      "destination": "/api/goldverse/:path*",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/api/jewellers(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
     }
   ],
   "headers": [
@@ -220,6 +238,22 @@
         "nxtPslug": "nxtPslug"
       },
       "namedRegex": "^/api/feeds/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/moneyverse/expenses/[id]",
+      "regex": "^/api/moneyverse/expenses/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/moneyverse/expenses/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/moneyverse/reminders/[id]",
+      "regex": "^/api/moneyverse/reminders/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/moneyverse/reminders/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
       "page": "/api/polls/[slug]",
@@ -734,6 +768,12 @@
       "namedRegex": "^/firebase\\-messaging\\-sw\\.js(?:/)?$"
     },
     {
+      "page": "/goldverse",
+      "regex": "^/goldverse(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/goldverse(?:/)?$"
+    },
+    {
       "page": "/huid-verification",
       "regex": "^/huid\\-verification(?:/)?$",
       "routeKeys": {},
@@ -744,12 +784,6 @@
       "regex": "^/icon\\.png(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/icon\\.png(?:/)?$"
-    },
-    {
-      "page": "/jewellers",
-      "regex": "^/jewellers(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/jewellers(?:/)?$"
     },
     {
       "page": "/jobs",
@@ -780,6 +814,18 @@
       "regex": "^/manifest\\.webmanifest(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/manifest\\.webmanifest(?:/)?$"
+    },
+    {
+      "page": "/moneyverse",
+      "regex": "^/moneyverse(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/moneyverse(?:/)?$"
+    },
+    {
+      "page": "/moneyverse/screenshot-scan",
+      "regex": "^/moneyverse/screenshot\\-scan(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/moneyverse/screenshot\\-scan(?:/)?$"
     },
     {
       "page": "/policy",

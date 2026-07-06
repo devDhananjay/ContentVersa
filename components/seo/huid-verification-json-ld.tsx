@@ -2,7 +2,7 @@ import {
   huidVerificationBreadcrumbJsonLd,
   huidVerificationFaqJsonLd,
   huidVerificationWebAppJsonLd,
-} from "@/lib/jewellers/huid-seo";
+} from "@/lib/goldverse/huid-seo";
 
 export function HuidVerificationJsonLd() {
   const blocks = [

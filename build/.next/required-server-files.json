@@ -373,7 +373,24 @@
     "configFileName": "next.config.ts",
     "turbopack": {
       "root": "/Users/meondev/Desktop/ContentVerse"
-    }
+    },
+    "_originalRedirects": [
+      {
+        "source": "/jewellers",
+        "destination": "/goldverse",
+        "permanent": true
+      },
+      {
+        "source": "/jewellers/:path*",
+        "destination": "/goldverse/:path*",
+        "permanent": true
+      },
+      {
+        "source": "/api/jewellers/:path*",
+        "destination": "/api/goldverse/:path*",
+        "permanent": true
+      }
+    ]
   },
   "appDir": "/Users/meondev/Desktop/ContentVerse",
   "relativeAppDir": "",

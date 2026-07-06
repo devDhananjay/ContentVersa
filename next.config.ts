@@ -30,6 +30,25 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion", "date-fns"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/jewellers",
+        destination: "/goldverse",
+        permanent: true,
+      },
+      {
+        source: "/jewellers/:path*",
+        destination: "/goldverse/:path*",
+        permanent: true,
+      },
+      {
+        source: "/api/jewellers/:path*",
+        destination: "/api/goldverse/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

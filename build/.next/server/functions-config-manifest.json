@@ -1,14 +1,14 @@
 {
   "version": 1,
   "functions": {
+    "/api/auth/firebase": {},
     "/api/auth/google/callback": {},
     "/api/auth/google/login": {},
+    "/api/reels/upload": {},
+    "/api/upload": {},
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
-    "/api/auth/firebase": {},
-    "/api/reels/upload": {},
-    "/api/upload": {},
     "/uploads/[filename]": {}
   }
 }
