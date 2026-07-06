@@ -84,6 +84,7 @@ export async function fetchCineverseHubData(): Promise<CineverseHubData> {
 }
 
 /** Fetch a single movie by TMDB id (watchlist hydration). */
+/** Fetch a single movie by TMDB id (watchlist hydration). */
 export async function fetchTmdbMoviesByIds(ids: string[]): Promise<CineMovie[]> {
   if (!ids.length) return [];
   const unique = [...new Set(ids)];
@@ -99,4 +100,23 @@ export async function fetchTmdbMoviesByIds(ids: string[]): Promise<CineMovie[]> 
     })
   );
   return movies.filter((m): m is CineMovie => m !== null);
+}
+
+/** Search movies by title via TMDB. */
+export async function searchTmdbMovies(
+  query: string,
+  limit = 12
+): Promise<CineMovie[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  return fetchTmdbList(
+    "/search/movie",
+    {
+      query: q,
+      language: "en-US",
+      region: "IN",
+      include_adult: "false",
+    },
+    limit
+  );
 }

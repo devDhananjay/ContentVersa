@@ -35,7 +35,12 @@ export function MovieCard({
       )}
     >
       <Link href={movie.href} className="block">
-        <div className={cn("relative aspect-[2/3] bg-muted", compact && "aspect-[3/4]")}>
+        <div
+          className={cn(
+            "relative aspect-[2/3] bg-muted/40 dark:bg-muted/60",
+            compact && "aspect-[3/4]"
+          )}
+        >
           {movie.posterUrl ? (
             <Image
               src={movie.posterUrl}

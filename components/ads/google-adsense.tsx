@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { cn } from "@/lib/utils";
 
 const ADSENSE_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID?.trim();
 
@@ -28,10 +29,15 @@ export function GoogleAdSense({
   }, []);
 
   return (
-    <div className={className}>
+    <div
+      className={cn(
+        "overflow-hidden rounded-xl bg-muted/10 dark:bg-muted/20 [&_.adsbygoogle]:bg-transparent",
+        className
+      )}
+    >
       <ins
-        className="adsbygoogle block"
-        style={{ display: "block" }}
+        className="adsbygoogle block min-h-0 bg-transparent"
+        style={{ display: "block", background: "transparent" }}
         data-ad-client={ADSENSE_ID}
         data-ad-slot={slot || undefined}
         data-ad-format={format}

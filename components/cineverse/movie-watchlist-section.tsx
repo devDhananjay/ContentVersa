@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Clapperboard } from "lucide-react";
 import type { CineMovie } from "@/lib/cineverse/types";
+import { cn } from "@/lib/utils";
 import { MovieCard } from "./movie-card";
 
 export function MovieWatchlistSection() {
@@ -61,6 +62,8 @@ export function MovieWatchlistSection() {
     );
   }
 
+  const fewItems = movies.length <= 3;
+
   return (
     <section>
       <div className="mb-4">
@@ -69,9 +72,20 @@ export function MovieWatchlistSection() {
         </h2>
         <p className="text-sm text-muted-foreground">{movies.length} saved</p>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div
+        className={cn(
+          fewItems
+            ? "flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            : "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+        )}
+      >
         {movies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} compact />
+          <MovieCard
+            key={movie.id}
+            movie={movie}
+            compact
+            className={fewItems ? "w-[9.5rem] shrink-0 sm:w-40" : undefined}
+          />
         ))}
       </div>
     </section>
