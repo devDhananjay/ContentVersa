@@ -18,7 +18,9 @@ export const SITE_LOGO_URL = "/icon-192.png";
 export const SITE_NAV_HUBS = [
   { name: "Sports", path: "/sports", description: "Live cricket scores, fixtures and sports news" },
   { name: "Finance", path: "/finance", description: "Nifty, Sensex, stocks and market updates" },
-  { name: "Jobs", path: "/jobs", description: "Government and private jobs across India" },
+  { name: "CineVerse", path: "/cineverse", description: "Movies, OTT and watchlist India" },
+  { name: "Jewellers", path: "/jewellers", description: "HUID verify, gold rates and BIS hallmark tools" },
+  { name: "HUID Verification", path: "/huid-verification", description: "Verify BIS gold hallmark HUID online India" },
   { name: "Reels", path: "/reels", description: "Short-form videos from Indian creators" },
   { name: "Blogs", path: "/blogs", description: "Read articles and stories from creators" },
 ] as const;

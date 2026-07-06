@@ -18,6 +18,7 @@ import {
   Briefcase,
   Map,
   Clapperboard,
+  Gem,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { UserNav, MobileUserNav } from "@/components/auth/user-nav";
@@ -34,6 +35,7 @@ const NAV_LINKS = [
   { href: "/sports", label: "Sports", icon: Medal },
   { href: "/finance", label: "Finance", icon: TrendingUp },
   { href: "/cineverse", label: "CineVerse", icon: Clapperboard },
+  { href: "/jewellers", label: "Jewellers", icon: Gem },
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/reels", label: "Reels", icon: Film },
   { href: "/categories", label: "Categories", icon: LayoutDashboard },
