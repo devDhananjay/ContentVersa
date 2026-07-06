@@ -10,6 +10,7 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
     links: [
       { label: "Sports", href: "/sports" },
       { label: "Finance", href: "/finance" },
+      { label: "CineVerse", href: "/cineverse" },
       { label: "Jobs", href: "/jobs" },
       { label: "Reels", href: "/reels" },
       { label: "Explore Blogs", href: "/blogs" },

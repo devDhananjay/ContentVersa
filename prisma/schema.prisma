@@ -70,6 +70,8 @@ enum NotificationType {
   CATEGORY_NEW
   CRICKET_MATCH_REMINDER
   STOCK_WATCHLIST_ALERT
+  CINEVERSE_TRAILER
+  OTT_WEEKLY
 }
 
 enum RevenueSource {
@@ -162,6 +164,7 @@ model User {
   tipsReceived   Tip[]             @relation("Tippee")
   siteVisits     SiteVisitor[]
   financeWatchlist FinanceWatchlistItem[]
+  movieWatchlist   MovieWatchlistItem[]
   payoutRequests   PayoutRequest[]
   referredProfiles Profile[]         @relation("Referrals")
   reels            Reel[]
@@ -471,6 +474,20 @@ model FinanceWatchlistItem {
   @@index([userId])
 }
 
+model MovieWatchlistItem {
+  id                     String   @id @default(cuid())
+  userId                 String
+  tmdbId                 String
+  trailerNotify          Boolean  @default(true)
+  lastNotifiedTrailerKey String?
+  createdAt              DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tmdbId])
+  @@index([userId])
+}
+
 // ---------------------- Moderation ----------------------
 
 model SubmissionQueue {
@@ -698,6 +715,7 @@ model NewsletterSubscriber {
   email        String   @unique
   verified     Boolean  @default(false)
   weeklyDigest Boolean  @default(true)
+  ottDigest    Boolean  @default(false)
   createdAt    DateTime @default(now())
 }
 

@@ -7,7 +7,10 @@ export function newsletterUnsubscribeUrl(subscriberId: string) {
   return `${getAppUrl()}/api/newsletter/unsubscribe?id=${subscriberId}`;
 }
 
-export async function subscribeToNewsletter(email: string) {
+export async function subscribeToNewsletter(
+  email: string,
+  opts?: { ottDigest?: boolean }
+) {
   const normalized = email.trim().toLowerCase();
   if (!isDatabaseConfigured()) {
     return { ok: false as const, error: "Database not configured" };
@@ -18,12 +21,13 @@ export async function subscribeToNewsletter(email: string) {
   });
 
   if (existing) {
-    if (!existing.weeklyDigest) {
-      await prisma.newsletterSubscriber.update({
-        where: { id: existing.id },
-        data: { weeklyDigest: true },
-      });
-    }
+    await prisma.newsletterSubscriber.update({
+      where: { id: existing.id },
+      data: {
+        weeklyDigest: true,
+        ...(opts?.ottDigest ? { ottDigest: true } : {}),
+      },
+    });
     const { subject, html } = newsletterWelcomeEmail(
       newsletterUnsubscribeUrl(existing.id)
     );
@@ -32,7 +36,12 @@ export async function subscribeToNewsletter(email: string) {
   }
 
   const subscriber = await prisma.newsletterSubscriber.create({
-    data: { email: normalized, verified: true, weeklyDigest: true },
+    data: {
+      email: normalized,
+      verified: true,
+      weeklyDigest: true,
+      ottDigest: opts?.ottDigest ?? false,
+    },
   });
 
   const { subject, html } = newsletterWelcomeEmail(

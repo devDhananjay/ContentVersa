@@ -375,6 +375,14 @@
       "namedRegex": "^/category/(?<nxtPslug>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/cineverse/movie/[id]",
+      "regex": "^/cineverse/movie/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/cineverse/movie/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/dashboard/blogs/[id]/edit",
       "regex": "^/dashboard/blogs/([^/]+?)/edit(?:/)?$",
       "routeKeys": {
@@ -616,6 +624,12 @@
       "regex": "^/categories(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/categories(?:/)?$"
+    },
+    {
+      "page": "/cineverse",
+      "regex": "^/cineverse(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/cineverse(?:/)?$"
     },
     {
       "page": "/contact",

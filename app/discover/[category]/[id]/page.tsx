@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { FeedDetailView } from "@/components/feeds/feed-detail-view";
 import { getCurrentUser } from "@/lib/auth";
@@ -42,6 +42,9 @@ export default async function DiscoverItemPage({
   params: Promise<{ category: string; id: string }>;
 }) {
   const { category, id } = await params;
+  if (category === "movies" && /^\d+$/.test(id)) {
+    redirect(`/cineverse/movie/${id}`);
+  }
   if (!hasCategoryFeed(category) || category === "finance") notFound();
   if (!getCategoryBySlug(category)) notFound();
 

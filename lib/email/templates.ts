@@ -79,6 +79,31 @@ export function weeklyDigestEmail(opts: {
   return { subject: "Your weekly ContentVerse digest", html };
 }
 
+export function ottWeeklyEmail(opts: {
+  movies: { title: string; href: string; releaseDate?: string }[];
+  unsubscribeUrl: string;
+}) {
+  const site = getAppUrl();
+  const list = opts.movies
+    .map(
+      (m) =>
+        `<li style="margin-bottom:14px;">
+          <a href="${site}${m.href}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${escapeHtml(m.title)}</a>
+          ${m.releaseDate ? `<span style="display:block;font-size:12px;color:#a1a1aa;margin-top:4px;">Release: ${escapeHtml(m.releaseDate)}</span>` : ""}
+        </li>`
+    )
+    .join("");
+
+  const html = layout(
+    `<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">🎬 CineVerse · OTT picks</h1>
+    <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Trending & upcoming in India this week</p>
+    <ul style="margin:0;padding:0;list-style:none;">${list}</ul>
+    ${btn(site + "/cineverse", "Open CineVerse")}`,
+    `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`
+  );
+  return { subject: "CineVerse — this week on OTT & theatres", html };
+}
+
 export function trendingArticleEmail(opts: {
   title: string;
   slug: string;

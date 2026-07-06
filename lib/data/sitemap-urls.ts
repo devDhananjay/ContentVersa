@@ -41,6 +41,7 @@ const STATIC_PAGES: Array<{
   { path: "/finance", changeFrequency: "hourly", priority: 0.85 },
   { path: "/jobs", changeFrequency: "daily", priority: 0.8 },
   { path: "/reels", changeFrequency: "daily", priority: 0.75 },
+  { path: "/cineverse", changeFrequency: "hourly", priority: 0.82 },
   { path: "/jobs/govt", changeFrequency: "hourly", priority: 0.78 },
   { path: "/jobs/private", changeFrequency: "daily", priority: 0.72 },
 ];
