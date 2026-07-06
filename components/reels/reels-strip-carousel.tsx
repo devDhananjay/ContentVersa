@@ -80,7 +80,7 @@ export function ReelsStripCarousel({ reels, viewedReelIds = [] }: ReelsStripCaro
   }, [syncViewed]);
 
   return (
-    <div className="border-b border-border/30 bg-transparent">
+    <div data-reels-strip className="border-b border-border/30 bg-transparent">
       <div className="container flex items-stretch">
         <div className="shrink-0 flex flex-col justify-center gap-1.5 pr-5 py-[var(--reels-strip-py)] border-r border-border/25 min-w-[88px] self-stretch">
           <div className="flex items-center gap-2">

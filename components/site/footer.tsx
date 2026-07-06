@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./logo";
 import { FooterVisitorCount } from "./footer-visitor-count";
-import { getSiteLogoUrl } from "@/lib/branding/logo";
+import { getSiteLogoUrl } from "@/lib/branding/site-logo";
 import { Github, Twitter, Instagram, Youtube } from "lucide-react";
 
 const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[] = [

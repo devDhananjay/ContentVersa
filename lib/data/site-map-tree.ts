@@ -32,6 +32,9 @@ export const SITE_MAP_NAV = {
     { label: "Reels", href: "/reels" },
     { label: "Sports", href: "/sports" },
     { label: "Finance", href: "/finance" },
+    { label: "CineVerse", href: "/cineverse" },
+    { label: "GoldVerse", href: "/goldverse" },
+    { label: "MoneyVerse", href: "/moneyverse" },
     { label: "Jobs", href: "/jobs" },
   ],
   actions: [
@@ -99,6 +102,41 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
           { label: "Newsletter signup", detail: "Weekly digest subscription" },
           { label: "Reading streaks", href: "/dashboard", detail: "Track daily reading habit" },
           { label: "Site stats", detail: "Articles, creators & readers count" },
+        ],
+      },
+      {
+        heading: "Platform flow · Verse hubs",
+        items: [
+          {
+            label: "CineVerse",
+            href: "/cineverse",
+            detail: "Movies, OTT & AI watchlist",
+            children: [
+              { label: "TMDB movie search", detail: "Find films by title" },
+              { label: "Personal watchlist", detail: "Save films to watch later" },
+              { label: "AI picks", detail: "Recommendations for you" },
+            ],
+          },
+          {
+            label: "GoldVerse",
+            href: "/goldverse",
+            detail: "Gold rates & hallmark tools",
+            children: [
+              { label: "316+ city gold rates", detail: "Daily 22K / 24K prices" },
+              { label: "HUID verification", href: "/huid-verification", detail: "Free BIS hallmark check" },
+              { label: "Hallmark buyer guide", detail: "Spot fake gold tips" },
+            ],
+          },
+          {
+            label: "MoneyVerse",
+            href: "/moneyverse",
+            detail: "UPI expense tracker India",
+            children: [
+              { label: "Screenshot Scan (OCR)", href: "/moneyverse/screenshot-scan", detail: "UPI image → auto-fill expense" },
+              { label: "Budget planner", detail: "Per-category monthly limits" },
+              { label: "SIP & card reminders", detail: "Never miss a due date" },
+            ],
+          },
         ],
       },
     ],
@@ -334,6 +372,66 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
     ],
   },
   {
+    id: "cineverse",
+    label: "CineVerse",
+    color: "violet",
+    href: "/cineverse",
+    summary: "Movies, OTT releases and AI-powered watchlist for India",
+    groups: [
+      {
+        heading: "Discover",
+        items: [
+          { label: "CineVerse hub", href: "/cineverse", detail: "Trending movies & streaming picks" },
+          {
+            label: "Movie search",
+            href: "/cineverse",
+            detail: "TMDB-powered lookup",
+            children: [
+              { label: "Search by title", detail: "Find any film instantly" },
+              { label: "Movie detail page", href: "/cineverse", detail: "Cast, plot & ratings" },
+            ],
+          },
+          { label: "Watchlist", href: "/cineverse", detail: "Save films — sign in to sync" },
+          { label: "AI picks", href: "/cineverse", detail: "Personalized recommendations" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "goldverse",
+    label: "GoldVerse",
+    color: "amber",
+    href: "/goldverse",
+    summary: "Live gold rates, BIS HUID verification and hallmark buyer tools",
+    groups: [
+      {
+        heading: "Gold & hallmark",
+        items: [
+          {
+            label: "Gold rates",
+            href: "/goldverse",
+            detail: "316+ Indian cities — 22K & 24K",
+            children: [
+              { label: "City search", detail: "Find rate in your city" },
+              { label: "Daily refresh", detail: "Updated market prices" },
+            ],
+          },
+          {
+            label: "HUID verification",
+            href: "/huid-verification",
+            detail: "Verify BIS Hallmark Unique ID online",
+            children: [
+              { label: "5 free checks", detail: "Per ContentVerse account" },
+              { label: "Official BIS database", detail: "Purity & jeweller details" },
+            ],
+          },
+          { label: "Hallmark guide", href: "/goldverse", detail: "Understand BIS marking" },
+          { label: "Fake gold checklist", href: "/goldverse", detail: "Buyer safety before you pay" },
+        ],
+      },
+    ],
+  },
+  {
     id: "moneyverse",
     label: "MoneyVerse",
     color: "emerald",
@@ -341,7 +439,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
     summary: "Expense tracker, budgets, reminders & UPI screenshot OCR for India",
     groups: [
       {
-        heading: "Tracking",
+        heading: "Expense tracking",
         items: [
           { label: "MoneyVerse hub", href: "/moneyverse", detail: "Monthly expenses, budgets & reports" },
           {
@@ -350,9 +448,17 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             detail: "Upload UPI payment screenshot — OCR auto-fills amount & merchant",
             children: [
               { label: "PhonePe / GPay / Paytm", detail: "Payment success screen images" },
+              { label: "Amount & merchant extract", detail: "AI reads the image" },
               { label: "Review & save", detail: "Edit category before saving expense" },
             ],
           },
+          { label: "Manual expense entry", href: "/moneyverse", detail: "UPI, cash, card & categories" },
+          { label: "Monthly report", href: "/moneyverse", detail: "Category-wise spending bars" },
+        ],
+      },
+      {
+        heading: "Planning",
+        items: [
           { label: "Budget planner", href: "/moneyverse", detail: "Per-category monthly limits" },
           { label: "Payment reminders", href: "/moneyverse", detail: "Credit card, SIP & custom due dates" },
         ],

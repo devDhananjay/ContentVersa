@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { CategoryWithCount } from "@/lib/data/home-data";
 import { categoryPageHref } from "@/lib/data/categories";
+import { isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
 import { AnimatedGrid, FloatingOrbs } from "@/components/home/motion";
+import { cn } from "@/lib/utils";
 
 const ROTATING_WORDS = ["Read.", "Create.", "Grow.", "Earn.", "Build."];
 const easeOut = [0.22, 1, 0.36, 1] as const;
@@ -83,6 +85,7 @@ interface Props {
 
 export function Hero({ categories, stats }: Props) {
   const reduce = useReducedMotion();
+  const cinematic = isHomeHeroVideoEnabled();
 
   const quickCategories = categories.slice(0, 8);
   const visibleStats = [
@@ -93,10 +96,14 @@ export function Hero({ categories, stats }: Props) {
 
   return (
     <section className="relative overflow-hidden">
-      <FloatingOrbs />
-      <AnimatedGrid />
+      {!cinematic ? (
+        <>
+          <FloatingOrbs />
+          <AnimatedGrid />
+        </>
+      ) : null}
 
-      <div className="container relative pt-8 md:pt-14 pb-20 md:pb-28">
+      <div className="container relative pt-8 md:pt-16 pb-20 md:pb-28">
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
@@ -110,7 +117,12 @@ export function Hero({ categories, stats }: Props) {
           >
             <Badge
               variant="neon"
-              className="mb-6 py-1.5 px-4 text-xs gap-1.5 border-neon-cyan/30 bg-neon-cyan/10 shadow-[0_0_24px_-6px] shadow-neon-cyan/40"
+              className={cn(
+                "mb-6 py-1.5 px-4 text-xs gap-1.5",
+                cinematic
+                  ? "border-white/20 bg-white/10 text-white shadow-[0_0_24px_-6px_rgba(255,255,255,0.25)]"
+                  : "border-neon-cyan/30 bg-neon-cyan/10 shadow-[0_0_24px_-6px] shadow-neon-cyan/40"
+              )}
             >
               <motion.span
                 animate={reduce ? undefined : { rotate: [0, 12, -8, 0] }}
@@ -123,7 +135,12 @@ export function Hero({ categories, stats }: Props) {
             </Badge>
           </motion.div>
 
-          <h1 className="font-display font-extrabold tracking-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] max-w-5xl">
+          <h1
+            className={cn(
+              "font-display font-extrabold tracking-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] max-w-5xl",
+              cinematic && "drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+            )}
+          >
             <motion.span
               className="block"
               initial={reduce ? false : { opacity: 0, y: 24 }}
@@ -134,7 +151,7 @@ export function Hero({ categories, stats }: Props) {
               <TypewriterWord words={ROTATING_WORDS} reduce={reduce} />
             </motion.span>
             <motion.span
-              className="block text-foreground mt-1"
+              className={cn("block text-foreground mt-1", cinematic && "text-white")}
               initial={reduce ? false : { opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.28, duration: 0.7, ease: easeOut }}
@@ -144,7 +161,10 @@ export function Hero({ categories, stats }: Props) {
           </h1>
 
           <motion.p
-            className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed"
+            className={cn(
+              "mt-6 text-lg md:text-xl max-w-2xl leading-relaxed",
+              cinematic ? "text-white/75" : "text-muted-foreground"
+            )}
             initial={reduce ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
@@ -166,7 +186,12 @@ export function Hero({ categories, stats }: Props) {
               <Input
                 name="q"
                 placeholder="Search ‘AI agents’, ‘growth loops’, ‘TypeScript’…"
-                className="h-16 pl-14 pr-32 text-base rounded-2xl shadow-glow bg-card/90 backdrop-blur border-border/80 focus-visible:ring-neon-purple/40"
+                className={cn(
+                  "h-16 pl-14 pr-32 text-base rounded-2xl shadow-glow backdrop-blur focus-visible:ring-neon-purple/40",
+                  cinematic
+                    ? "bg-white/10 border-white/20 text-white placeholder:text-white/45"
+                    : "bg-card/90 border-border/80"
+                )}
               />
               <Button
                 variant="gradient"
@@ -202,7 +227,12 @@ export function Hero({ categories, stats }: Props) {
               >
                 <Link
                   href={categoryPageHref(cat.slug)}
-                  className="text-xs rounded-full border border-border/60 px-3 py-1.5 hover:border-neon-purple/60 hover:bg-neon-purple/5 hover:text-foreground text-muted-foreground transition-colors backdrop-blur"
+                  className={cn(
+                    "text-xs rounded-full border px-3 py-1.5 transition-colors backdrop-blur",
+                    cinematic
+                      ? "border-white/20 text-white/80 hover:border-white/40 hover:bg-white/10 hover:text-white"
+                      : "border-border/60 hover:border-neon-purple/60 hover:bg-neon-purple/5 hover:text-foreground text-muted-foreground"
+                  )}
                 >
                   #{cat.name}
                 </Link>
@@ -230,7 +260,14 @@ export function Hero({ categories, stats }: Props) {
             </motion.div>
             <motion.div whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.98 }}>
               <Link href="/blogs">
-                <Button variant="outline" size="xl" className="gap-2 backdrop-blur bg-card/40">
+                <Button
+                  variant="outline"
+                  size="xl"
+                  className={cn(
+                    "gap-2 backdrop-blur",
+                    cinematic ? "border-white/25 bg-white/10 text-white hover:bg-white/15" : "bg-card/40"
+                  )}
+                >
                   <TrendingUp className="h-5 w-5" />
                   Explore Articles
                 </Button>
@@ -270,8 +307,12 @@ export function Hero({ categories, stats }: Props) {
         </motion.div>
       </div>
 
-      {/* Bottom fade into next section */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t to-transparent",
+          cinematic ? "from-background via-background/80" : "from-background"
+        )}
+      />
     </section>
   );
 }

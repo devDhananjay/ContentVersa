@@ -24,6 +24,10 @@ import {
   Mail,
   BadgeCheck,
   PenSquare,
+  Clapperboard,
+  Gem,
+  Wallet,
+  ScanLine,
   type LucideIcon,
 } from "lucide-react";
 import { Reveal } from "@/components/home/motion";
@@ -43,7 +47,7 @@ type Hub = {
   glow: string;
 };
 
-const HUBS: Hub[] = [
+const CORE_HUBS: Hub[] = [
   {
     name: "Blogs",
     path: "/blogs",
@@ -110,6 +114,60 @@ const HUBS: Hub[] = [
     glow: "rgba(236,72,153,0.5)",
   },
 ];
+
+const VERSE_HUBS: Hub[] = [
+  {
+    name: "CineVerse",
+    path: "/cineverse",
+    tagline: "Movies & OTT India",
+    description: "Discover films, build your watchlist and get AI picks — TMDB-powered for Indian audiences.",
+    badge: "Verse",
+    features: ["TMDB search", "Watchlist", "AI picks"],
+    metric: "OTT",
+    metricLabel: "movies",
+    icon: Clapperboard,
+    color: "#a78bfa",
+    glow: "rgba(167,139,250,0.5)",
+  },
+  {
+    name: "GoldVerse",
+    path: "/goldverse",
+    tagline: "Gold rates & HUID",
+    description: "Live gold prices across Indian cities, BIS hallmark tools and free HUID verification.",
+    badge: "Verse",
+    features: ["316+ cities", "HUID verify", "Hallmark guide"],
+    metric: "BIS",
+    metricLabel: "hallmark",
+    icon: Gem,
+    color: "#fbbf24",
+    glow: "rgba(251,191,36,0.5)",
+  },
+  {
+    name: "MoneyVerse",
+    path: "/moneyverse",
+    tagline: "UPI expense tracker",
+    description: "Track spending, plan budgets, set SIP reminders — plus Screenshot Scan (OCR) for UPI payments.",
+    badge: "Verse",
+    features: ["Screenshot OCR", "Budgets", "SIP reminders"],
+    metric: "OCR",
+    metricLabel: "UPI scan",
+    icon: Wallet,
+    color: "#34d399",
+    glow: "rgba(52,211,153,0.5)",
+  },
+];
+
+const ALL_HUBS: Hub[] = [...CORE_HUBS, ...VERSE_HUBS];
+
+/** Extra OCR card links to dedicated SEO page */
+const MONEYVERSE_OCR = {
+  name: "Screenshot OCR",
+  path: "/moneyverse/screenshot-scan",
+  tagline: "UPI → expense auto-fill",
+  features: ["PhonePe / GPay", "Amount extract", "Save expense"],
+  icon: ScanLine,
+  color: "#8b5cf6",
+};
 
 type FlowTool = {
   name: string;
@@ -372,9 +430,10 @@ function DropConnector({
 }
 
 /** Collector under public cards → center stem down. */
-function CollectorRail() {
-  const colors = ["#a855f7", "#22d3ee", "#3b82f6", "#f59e0b", "#ec4899"];
-  const xs = [100, 300, 500, 700, 900];
+function CollectorRail({ hubColors }: { hubColors: string[] }) {
+  const xs = Array.from({ length: hubColors.length }, (_, i) =>
+    Math.round(((i + 0.5) / hubColors.length) * 1000)
+  );
 
   return (
     <div className="pointer-events-none relative z-0 -mt-0.5 hidden h-16 w-full lg:block" aria-hidden>
@@ -383,7 +442,7 @@ function CollectorRail() {
           <linearGradient id="spine-grad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#a855f7" />
             <stop offset="50%" stopColor="#3b82f6" />
-            <stop offset="100%" stopColor="#ec4899" />
+            <stop offset="100%" stopColor="#34d399" />
           </linearGradient>
         </defs>
         {xs.map((x, i) => (
@@ -391,19 +450,18 @@ function CollectorRail() {
             <path
               d={`M${x} 4 V30`}
               fill="none"
-              stroke={colors[i]}
+              stroke={hubColors[i]}
               strokeWidth="2.2"
               strokeDasharray="4 6"
               strokeLinecap="round"
               className="journey-path"
             />
-            <circle cx={x} cy="4" r="3.5" fill="none" stroke={colors[i]} strokeWidth="1.6" />
-            <circle cx={x} cy="4" r="1.4" fill={colors[i]} />
+            <circle cx={x} cy="4" r="3.5" fill="none" stroke={hubColors[i]} strokeWidth="1.6" />
+            <circle cx={x} cy="4" r="1.4" fill={hubColors[i]} />
           </g>
         ))}
-        {/* Stepped spine */}
         <path
-          d="M100 30 H300 V38 H500 V30 H700 V38 H900"
+          d={`M${xs[0]} 30 H${xs[xs.length - 1]}`}
           fill="none"
           stroke="url(#spine-grad)"
           strokeWidth="2.4"
@@ -412,10 +470,8 @@ function CollectorRail() {
           strokeDasharray="4 6"
           className="journey-path"
         />
-        {/* Center hub */}
         <circle cx="500" cy="34" r="7" fill="#f9731633" />
         <circle cx="500" cy="34" r="4" fill="#f97316" />
-        {/* Stem down — arrow drawn explicitly pointing down */}
         <path
           d="M500 38 V54"
           fill="none"
@@ -720,7 +776,7 @@ function LayerLabel({
 }: {
   icon: LucideIcon;
   label: string;
-  tone: "public" | "creator" | "admin";
+  tone: "public" | "creator" | "admin" | "verse";
 }) {
   return (
     <div
@@ -733,6 +789,7 @@ function LayerLabel({
         className={cn(
           "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em]",
           tone === "public" && "border-neon-purple/30 bg-neon-purple/10 text-neon-purple",
+          tone === "verse" && "border-violet-400/40 bg-violet-500/10 text-violet-300",
           tone === "creator" && "border-teal-400/40 bg-teal-500/10 text-teal-300",
           tone === "admin" && "border-orange-400/40 bg-orange-500/10 text-orange-300"
         )}
@@ -786,9 +843,12 @@ function LayerBadge({
 /** Process-flow board — fixed arrows + richer card detailing. */
 export function PlatformModulesStrip() {
   const reduce = useReducedMotion();
-  const jogs: Array<"up" | "down"> = ["up", "down", "up", "down"];
+  const coreJogs: Array<"up" | "down"> = ["up", "down", "up", "down"];
+  const verseJogs: Array<"up" | "down"> = ["up", "down"];
   const cardOffset = ["", "-translate-y-3", "translate-y-1", "translate-y-4", "-translate-y-2"];
-  const stepLabels = ["01→02", "02→03", "03→04", "04→05"];
+  const coreStepLabels = ["01→02", "02→03", "03→04", "04→05"];
+  const verseStepLabels = ["V1→V2", "V2→V3"];
+  const hubColors = ALL_HUBS.map((h) => h.color);
 
   return (
     <section
@@ -813,13 +873,14 @@ export function PlatformModulesStrip() {
               Explore <span className="text-gradient">ContentVerse</span>
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-              Follow the dashed path — public hubs, creator studio, then staff control room.
+              Follow the dashed path — public hubs, Verse tools (Cine · Gold · Money), creator studio, then staff ops.
             </p>
 
             {/* Pipeline stats */}
             <div className="mx-auto mt-5 flex flex-wrap items-center justify-center gap-2">
               {[
-                { label: "5 public hubs", icon: Activity },
+                { label: "8 public hubs", icon: Activity },
+                { label: "3 Verse modules", icon: Gem },
                 { label: "4 creator tools", icon: PenSquare },
                 { label: "5 staff tools", icon: Shield },
               ].map((s) => (
@@ -837,10 +898,10 @@ export function PlatformModulesStrip() {
 
         {/* ── Desktop flowchart ── */}
         <div className="mx-auto hidden max-w-6xl lg:block">
-          <LayerLabel icon={Compass} label="Public layer · reader experience" tone="public" />
+          <LayerLabel icon={Compass} label="Public layer · read · watch · earn" tone="public" />
 
           <div className="relative flex items-stretch gap-0 px-1 pt-2">
-            {HUBS.map((hub, i) => (
+            {CORE_HUBS.map((hub, i) => (
               <div key={hub.path} className="contents">
                 <HubCard
                   hub={hub}
@@ -848,18 +909,61 @@ export function PlatformModulesStrip() {
                   reduce={reduce}
                   className={cardOffset[i]}
                 />
-                {i < HUBS.length - 1 && (
+                {i < CORE_HUBS.length - 1 && (
                   <StepConnector
                     color={hub.color}
-                    jog={jogs[i]}
-                    label={stepLabels[i]}
+                    jog={coreJogs[i]}
+                    label={coreStepLabels[i]}
                   />
                 )}
               </div>
             ))}
           </div>
 
-          <CollectorRail />
+          <div className="relative z-10 my-5 flex flex-col items-center">
+            <DropConnector from="#ec4899" to="#a78bfa" label="verse" id="drop-verse" />
+            <LayerLabel
+              icon={Sparkles}
+              label="Verse hubs · CineVerse · GoldVerse · MoneyVerse"
+              tone="verse"
+            />
+          </div>
+
+          <div className="relative mx-auto flex max-w-4xl items-stretch gap-0 px-1">
+            {VERSE_HUBS.map((hub, i) => (
+              <div key={hub.path} className="contents">
+                <HubCard
+                  hub={hub}
+                  index={CORE_HUBS.length + i}
+                  reduce={reduce}
+                  className={i === 1 ? "translate-y-2" : i === 2 ? "-translate-y-1" : ""}
+                />
+                {i < VERSE_HUBS.length - 1 && (
+                  <StepConnector
+                    color={hub.color}
+                    jog={verseJogs[i]}
+                    label={verseStepLabels[i]}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <Link
+            href={MONEYVERSE_OCR.path}
+            className="mx-auto mt-4 hidden max-w-md items-center justify-between gap-3 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2.5 text-xs backdrop-blur transition hover:bg-violet-500/15 lg:flex"
+          >
+            <span className="inline-flex items-center gap-2 font-semibold text-violet-200">
+              <ScanLine className="h-4 w-4" />
+              MoneyVerse — Screenshot Scan (OCR)
+            </span>
+            <span className="text-muted-foreground">
+              {MONEYVERSE_OCR.features.join(" · ")}
+            </span>
+            <ArrowRight className="h-3.5 w-3.5 shrink-0 text-violet-300" />
+          </Link>
+
+          <CollectorRail hubColors={hubColors} />
 
           {/* Creator studio */}
           <div className="relative z-10 flex flex-col items-center">
@@ -958,7 +1062,7 @@ export function PlatformModulesStrip() {
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-neon-purple">
               Public layer
             </p>
-            {HUBS.map((hub, i) => (
+            {CORE_HUBS.map((hub, i) => (
               <div key={hub.path} className="relative">
                 <span
                   className="absolute -left-[2.15rem] top-6 flex h-4 w-4 items-center justify-center rounded-full ring-4 ring-background"
@@ -969,6 +1073,40 @@ export function PlatformModulesStrip() {
                 <HubCard hub={hub} index={i} reduce={reduce} />
               </div>
             ))}
+
+            <div className="relative py-2">
+              <span className="absolute -left-[2.15rem] top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-violet-500 ring-4 ring-background shadow-[0_0_14px_rgba(139,92,246,0.6)]">
+                <Gem className="h-3 w-3 text-white" />
+              </span>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-300">
+                Verse hubs · CineVerse · GoldVerse · MoneyVerse
+              </p>
+            </div>
+
+            {VERSE_HUBS.map((hub, i) => (
+              <div key={hub.path} className="relative">
+                <span
+                  className="absolute -left-[2.15rem] top-6 flex h-4 w-4 items-center justify-center rounded-full ring-4 ring-background"
+                  style={{ background: hub.color, boxShadow: `0 0 12px ${hub.glow}` }}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                </span>
+                <HubCard hub={hub} index={CORE_HUBS.length + i} reduce={reduce} />
+              </div>
+            ))}
+
+            <Link
+              href={MONEYVERSE_OCR.path}
+              className="relative rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-sm"
+            >
+              <span className="flex items-center gap-2 font-semibold text-violet-200">
+                <ScanLine className="h-4 w-4" />
+                Screenshot Scan (OCR)
+              </span>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                {MONEYVERSE_OCR.tagline} — {MONEYVERSE_OCR.features.join(" · ")}
+              </p>
+            </Link>
 
             <div className="relative py-2">
               <span className="absolute -left-[2.15rem] top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-teal-500 ring-4 ring-background shadow-[0_0_14px_rgba(20,184,166,0.6)]">

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import { HomeHeroShell } from "@/components/home/home-hero-shell";
 import { Hero } from "@/components/home/hero";
 import { PlatformModulesStrip } from "@/components/home/platform-modules-strip";
 import { ReelsStripSection } from "@/components/reels/reels-strip-section";
-import { AmbientPageBackground } from "@/components/site/ambient-page-background";
 import { TrendingSection } from "@/components/home/trending";
 import { FeaturedCreators } from "@/components/home/featured-creators";
 import { PopularCategories } from "@/components/home/popular-categories";
@@ -53,11 +53,10 @@ export default async function HomePage() {
   return (
     <>
       <SiteJsonLd />
-      <div className="relative overflow-hidden">
-        <AmbientPageBackground />
+      <HomeHeroShell>
         <ReelsStripSection />
         <Hero stats={data.stats} categories={data.categories} />
-      </div>
+      </HomeHeroShell>
       <PlatformModulesStrip />
       <TrendingSection blogs={data.trending} />
       <Reveal delay={0.05}>

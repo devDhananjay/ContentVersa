@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Logo } from "@/components/site/logo";
 import { buildMetadata } from "@/lib/seo";
-import { getSiteLogoUrl } from "@/lib/branding/logo";
+import { getSiteLogoUrl } from "@/lib/branding/site-logo";
 import { getPlatformStats, platformStatItems } from "@/lib/data/platform-stats";
 
 export const metadata: Metadata = buildMetadata({
