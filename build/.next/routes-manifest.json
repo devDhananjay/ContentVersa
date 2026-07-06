@@ -734,10 +734,22 @@
       "namedRegex": "^/firebase\\-messaging\\-sw\\.js(?:/)?$"
     },
     {
+      "page": "/huid-verification",
+      "regex": "^/huid\\-verification(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/huid\\-verification(?:/)?$"
+    },
+    {
       "page": "/icon.png",
       "regex": "^/icon\\.png(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/icon\\.png(?:/)?$"
+    },
+    {
+      "page": "/jewellers",
+      "regex": "^/jewellers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/jewellers(?:/)?$"
     },
     {
       "page": "/jobs",

@@ -6,9 +6,9 @@
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
+    "/api/auth/firebase": {},
     "/api/reels/upload": {},
     "/api/upload": {},
-    "/api/auth/firebase": {},
     "/uploads/[filename]": {}
   }
 }
