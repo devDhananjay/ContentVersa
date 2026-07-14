@@ -21,6 +21,9 @@ if [[ -z "$CRON_SECRET" ]]; then
   exit 1
 fi
 echo "[cron] daily-articles slot=${SLOT} perCategory=${PER_CAT} max=${MAX}"
-curl -sfS -H "Authorization: Bearer ${CRON_SECRET}" \
-  "${APP_URL}/api/cron/daily-articles?slot=${SLOT}&perCategory=${PER_CAT}&max=${MAX}"
+# Run in-process — HTTP cron hits 504 when Gemini takes >60s across many categories.
+npx tsx scripts/daily-ai-articles.ts \
+  --slot="${SLOT}" \
+  --per-category="${PER_CAT}" \
+  --max="${MAX}"
 echo ""

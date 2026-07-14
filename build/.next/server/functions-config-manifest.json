@@ -3,12 +3,12 @@
   "functions": {
     "/api/auth/google/login": {},
     "/api/auth/google/callback": {},
+    "/api/auth/firebase": {},
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
-    "/api/upload": {},
     "/api/reels/upload": {},
-    "/uploads/[filename]": {},
-    "/api/auth/firebase": {}
+    "/api/upload": {},
+    "/uploads/[filename]": {}
   }
 }

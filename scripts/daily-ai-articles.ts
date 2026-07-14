@@ -32,19 +32,34 @@ function loadEnvFiles() {
 
 loadEnvFiles();
 
-function parseArgs() {
+function parseArgs(): {
+  perCategory: number;
+  maxTotal: number | undefined;
+  runSlot: "all" | "first" | "second";
+} {
   const perCat = process.argv.find((a) => a.startsWith("--per-category="));
   const maxArg = process.argv.find((a) => a.startsWith("--max="));
+  const slotArg = process.argv.find((a) => a.startsWith("--slot="));
+  const slotRaw = slotArg?.split("=")[1];
+  const runSlot: "all" | "first" | "second" =
+    slotRaw === "first" || slotRaw === "second" ? slotRaw : "all";
   return {
     perCategory: perCat ? Number(perCat.split("=")[1]) : 1,
     maxTotal: maxArg ? Number(maxArg.split("=")[1]) : undefined,
+    runSlot,
   };
 }
 
 async function main() {
-  const { perCategory, maxTotal } = parseArgs();
-  console.log(`Daily AI articles — ${perCategory} per category (IST)`);
-  const result = await runDailyArticleGeneration({ perCategory, maxTotal });
+  const { perCategory, maxTotal, runSlot } = parseArgs();
+  console.log(
+    `Daily AI articles — ${perCategory} per category, slot=${runSlot} (IST)`
+  );
+  const result = await runDailyArticleGeneration({
+    perCategory,
+    maxTotal,
+    runSlot,
+  });
   console.log(
     `\nDay ${result.day}: ${result.created} created, ${result.skipped} skipped, ${result.failed} failed.`
   );
