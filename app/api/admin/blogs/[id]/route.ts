@@ -30,7 +30,10 @@ const UpdateSchema = z.object({
   content: z.string().min(1, "Content is required"),
   coverImage: coverImageSchema,
   category: z.string().optional(),
-  tags: z.array(z.string()).max(5).optional(),
+  tags: z
+    .array(z.string())
+    .optional()
+    .transform((t) => (t ? t.slice(0, 5) : t)),
   premium: z.boolean().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
@@ -92,7 +95,7 @@ export async function GET(
         content: blog.content,
         coverImage: blog.coverImage || "",
         category: blog.category?.slug || "",
-        tags: blog.tags.map((t) => t.tag.slug),
+        tags: blog.tags.map((t) => t.tag.slug).slice(0, 5),
         premium: blog.isPremium,
         metaTitle: blog.metaTitle || "",
         metaDescription: blog.metaDescription || "",

@@ -222,6 +222,37 @@ export function stockWatchlistDigestEmail(opts: {
   return { subject, html };
 }
 
+export function blogPendingReviewAdminEmail(opts: {
+  title: string;
+  blogId: string;
+  authorName: string;
+  authorEmail?: string | null;
+  excerpt?: string | null;
+  categoryName?: string | null;
+}) {
+  const site = getAppUrl();
+  const reviewUrl = `${site}/admin/blogs/${opts.blogId}`;
+  const authorLine = opts.authorEmail
+    ? `${escapeHtml(opts.authorName)} (${escapeHtml(opts.authorEmail)})`
+    : escapeHtml(opts.authorName);
+  const html = layout(
+    `<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">New blog awaiting approval</h1>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">A creator submitted a post for review on ContentVerse.</p>
+    <p style="margin:0 0 8px;font-size:18px;font-weight:600;color:#fff;">${escapeHtml(opts.title)}</p>
+    <p style="margin:0 0 6px;color:#a1a1aa;font-size:14px;">By ${authorLine}</p>
+    ${opts.categoryName ? `<p style="margin:0 0 12px;color:#a855f7;font-size:13px;">Category: ${escapeHtml(opts.categoryName)}</p>` : ""}
+    ${opts.excerpt ? `<p style="margin:0 0 16px;color:#a1a1aa;line-height:1.6;font-size:14px;">${escapeHtml(opts.excerpt.slice(0, 200))}${opts.excerpt.length > 200 ? "…" : ""}</p>` : ""}
+    ${btn(reviewUrl, "Review in admin")}
+    <p style="margin:16px 0 0;text-align:center;">
+      <a href="${site}/admin/moderation" style="color:#a855f7;font-size:13px;">Open moderation queue</a>
+    </p>`
+  );
+  return {
+    subject: `Review needed: ${opts.title.slice(0, 60)}`,
+    html,
+  };
+}
+
 export function notificationEmail(opts: {
   title: string;
   message: string;

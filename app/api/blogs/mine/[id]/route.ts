@@ -6,6 +6,7 @@ import { requireUser } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { readingTime, slugify } from "@/lib/utils";
 import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
+import { notifyAdminsOfPendingBlog } from "@/lib/notifications/blog-pending-admin";
 
 const coverImageSchema = z
   .string()
@@ -30,7 +31,10 @@ const UpdateSchema = z.object({
   content: z.string().min(1, "Content is required"),
   coverImage: coverImageSchema,
   category: z.string().optional(),
-  tags: z.array(z.string()).max(5).optional(),
+  tags: z
+    .array(z.string())
+    .optional()
+    .transform((t) => (t ? t.slice(0, 5) : t)),
   premium: z.boolean().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
@@ -102,7 +106,7 @@ export async function GET(
         content: blog.content,
         coverImage: blog.coverImage || "",
         category: blog.category?.slug || "",
-        tags: blog.tags.map((t) => t.tag.slug),
+        tags: blog.tags.map((t) => t.tag.slug).slice(0, 5),
         premium: blog.isPremium,
         metaTitle: blog.metaTitle || "",
         metaDescription: blog.metaDescription || "",
@@ -218,7 +222,8 @@ export async function PATCH(
         seriesPart: parsed.seriesSlug ? (parsed.seriesPart ?? 1) : null,
         ...(scheduledFor !== undefined ? { scheduledFor } : {}),
         ...(categoryId !== undefined ? { categoryId } : {}),
-        ...(status === "PENDING" && existing.status === "DRAFT"
+        ...(status === "PENDING" &&
+        (existing.status === "DRAFT" || existing.status === "REJECTED")
           ? {
               submission: {
                 upsert: {
@@ -235,9 +240,17 @@ export async function PATCH(
       await connectTags(blog.id, parsed.tags);
     }
 
+    if (
+      blog.status === "PENDING" &&
+      existing.status !== "PENDING"
+    ) {
+      void notifyAdminsOfPendingBlog(blog.id);
+    }
+
     revalidatePath("/dashboard/blogs");
     revalidatePath("/dashboard");
     revalidatePath(`/blog/${blog.slug}`);
+    revalidatePath("/admin/moderation");
 
     return NextResponse.json({
       ok: true,

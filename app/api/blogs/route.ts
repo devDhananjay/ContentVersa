@@ -9,6 +9,7 @@ import { requireUser } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { readingTime, slugify } from "@/lib/utils";
 import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
+import { notifyAdminsOfPendingBlog } from "@/lib/notifications/blog-pending-admin";
 
 const coverImageSchema = z
   .string()
@@ -33,7 +34,10 @@ const CreateSchema = z.object({
   content: z.string().min(1, "Content is required"),
   coverImage: coverImageSchema,
   category: z.string().optional(),
-  tags: z.array(z.string()).max(5).optional(),
+  tags: z
+    .array(z.string())
+    .optional()
+    .transform((t) => (t ? t.slice(0, 5) : t)),
   premium: z.boolean().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
@@ -214,6 +218,10 @@ export async function POST(req: Request) {
 
     if (parsed.tags?.length) {
       await connectTags(blog.id, parsed.tags);
+    }
+
+    if (blog.status === "PENDING") {
+      void notifyAdminsOfPendingBlog(blog.id);
     }
 
     revalidatePath("/dashboard/blogs");
