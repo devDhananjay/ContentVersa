@@ -142,7 +142,7 @@ export function BlogEditorForm({
     setExcerpt(data.excerpt);
     setCover(data.coverImage);
     setCategory(data.category);
-    setTags(data.tags);
+    setTags((data.tags ?? []).slice(0, 5));
     setInitialMarkdown(data.content);
     setMarkdown(data.content);
     setSeoTitle(data.metaTitle);
@@ -311,7 +311,7 @@ export function BlogEditorForm({
         content,
         coverImage: cover.trim() || undefined,
         category: category || undefined,
-        tags,
+        tags: tags.slice(0, 5),
         premium,
         metaTitle: seoTitle.trim() || undefined,
         metaDescription: seoDescription.trim() || undefined,

@@ -1,6 +1,9 @@
-import { callGeminiText, isGeminiConfigured } from "@/lib/ai/gemini";
 import {
-  buildRichLocalFullBlog,
+  callGeminiTextWithMeta,
+  isGeminiConfigured,
+  type GeminiFailure,
+} from "@/lib/ai/gemini";
+import {
   normalizeCategorySlug,
   normalizeTags,
   parseFullBlogJson,
@@ -8,6 +11,17 @@ import {
   VALID_CATEGORY_SLUGS,
 } from "@/lib/ai/full-blog-package";
 import type { AiSource } from "@/lib/ai/assist";
+
+export class BlogGenerationError extends Error {
+  constructor(
+    message: string,
+    readonly code: "GEMINI_QUOTA" | "GEMINI_FAILED" | "NOT_CONFIGURED",
+    readonly failure?: GeminiFailure
+  ) {
+    super(message);
+    this.name = "BlogGenerationError";
+  }
+}
 
 type Input = {
   title: string;
@@ -36,15 +50,20 @@ function finalizePackage(raw: Partial<FullBlogPackage>, title: string): FullBlog
 /**
  * Full blog from title. Uses Gemini text→JSON (not responseSchema — Gemini often
  * returns "The string did not match the expected pattern" with strict schemas).
- * Always returns a usable package (local fallback).
  */
 export async function generateFullBlogFromTitle(
   input: Input
 ): Promise<{ blog: FullBlogPackage; source: AiSource }> {
   const title = input.title.trim() || "Untitled blog";
 
-  try {
-    const system = `You are an expert ContentVerse blog writer. Given a title, produce a complete publish-ready blog package as JSON.
+  if (!isGeminiConfigured()) {
+    throw new BlogGenerationError(
+      "GEMINI_API_KEY is not set on the server. Add it to .env and restart.",
+      "NOT_CONFIGURED"
+    );
+  }
+
+  const system = `You are an expert ContentVerse blog writer. Given a title, produce a complete publish-ready blog package as JSON.
 Rules:
 - content: markdown body only (## section headings, NO # H1, NO article title repeated). Write 1200-1600 words across 6-8 sections with rich paragraphs and bullet lists.
 - excerpt: compelling 2-3 sentence card hook (max 220 chars).
@@ -55,29 +74,37 @@ Rules:
 Tone: insightful, engaging, practical — for creators and readers. Use concrete examples.
 Return ONLY valid JSON with keys: excerpt, category, tags, metaTitle, metaDescription, content. No markdown fences.`;
 
-    const user = JSON.stringify({
-      title,
-      hintCategory: input.category || undefined,
-      existingExcerpt: input.excerpt || undefined,
-    });
+  const user = JSON.stringify({
+    title,
+    hintCategory: input.category || undefined,
+    existingExcerpt: input.excerpt || undefined,
+  });
 
-    if (isGeminiConfigured()) {
-      const text = await callGeminiText(system, user, 8192);
-      if (text) {
-        const parsed = parseFullBlogJson(text, title);
-        if (parsed?.content) {
-          return { blog: finalizePackage(parsed, title), source: "gemini" };
-        }
-      }
+  const result = await callGeminiTextWithMeta(system, user, 8192);
+  if (!result.ok) {
+    if (result.failure.quotaExceeded) {
+      throw new BlogGenerationError(
+        "Gemini daily quota exceeded (free tier ~20 requests/day per model). Enable billing in Google AI Studio or try again tomorrow.",
+        "GEMINI_QUOTA",
+        result.failure
+      );
     }
-  } catch (err) {
-    console.error("[generate-full-blog]", err);
+    throw new BlogGenerationError(
+      result.failure.message || "Gemini could not generate this blog.",
+      "GEMINI_FAILED",
+      result.failure
+    );
   }
 
-  return {
-    blog: buildRichLocalFullBlog(title, input.category),
-    source: "local",
-  };
+  const parsed = parseFullBlogJson(result.text, title);
+  if (!parsed?.content) {
+    throw new BlogGenerationError(
+      "Gemini returned an invalid blog draft. Try again with a clearer title.",
+      "GEMINI_FAILED"
+    );
+  }
+
+  return { blog: finalizePackage(parsed, title), source: "gemini" };
 }
 
 export type { FullBlogPackage };

@@ -66,8 +66,17 @@ export function AiAssistPanel({
         blog?: FullBlogPackage;
         source?: string;
         error?: string;
+        code?: string;
       };
-      if (!res.ok) throw new Error(data.error || "Failed");
+      if (!res.ok) {
+        if (data.code === "GEMINI_QUOTA") {
+          throw new Error(
+            data.error ||
+              "Gemini quota exceeded for today. Enable billing in Google AI Studio or try again tomorrow."
+          );
+        }
+        throw new Error(data.error || "Failed");
+      }
 
       if (action === "generate-from-title") {
         const blog = data.blog ?? (isFullBlogPackage(data.result) ? data.result : null);

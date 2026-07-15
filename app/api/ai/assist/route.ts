@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { runAiAssist, buildPlaceholderImageUrl, type AiAction } from "@/lib/ai/assist";
+import { BlogGenerationError } from "@/lib/ai/generate-full-blog";
 import { isGeminiConfigured } from "@/lib/ai/gemini";
 
 const Schema = z.object({
@@ -80,14 +81,29 @@ export async function POST(req: Request) {
       });
     }
 
-    const { result, source } = await runAiAssist({
-      action: parsed.action as AiAction,
-      title: parsed.title,
-      excerpt: parsed.excerpt,
-      content: parsed.content,
-      category: parsed.category,
-      imagePrompt: parsed.imagePrompt,
-    });
+    let result: Awaited<ReturnType<typeof runAiAssist>>["result"];
+    let source: Awaited<ReturnType<typeof runAiAssist>>["source"];
+    try {
+      ({ result, source } = await runAiAssist({
+        action: parsed.action as AiAction,
+        title: parsed.title,
+        excerpt: parsed.excerpt,
+        content: parsed.content,
+        category: parsed.category,
+        imagePrompt: parsed.imagePrompt,
+      }));
+    } catch (err) {
+      if (err instanceof BlogGenerationError) {
+        return NextResponse.json(
+          {
+            error: err.message,
+            code: err.code,
+          },
+          { status: err.code === "GEMINI_QUOTA" ? 429 : 503 }
+        );
+      }
+      throw err;
+    }
 
     if (parsed.action === "generate-from-title" && typeof result === "object" && result !== null && "content" in result) {
       const blog = result as import("@/lib/ai/full-blog-package").FullBlogPackage;

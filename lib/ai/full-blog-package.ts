@@ -87,11 +87,15 @@ function section(title: string, paragraphs: string[], bullets?: string[]) {
   return md;
 }
 
-/** Rich offline blog when Gemini is unavailable — still fills all editor fields. */
+/** Rich offline blog when Gemini is unavailable — topic must match title/category. */
 export function buildRichLocalFullBlog(title: string, categoryHint?: string): FullBlogPackage {
   const category = normalizeCategorySlug(categoryHint, title);
   const catName = CATEGORIES.find((c) => c.slug === category)?.name || "Technology";
   const topic = title.replace(/\.$/, "").trim();
+
+  if (category === "movies" || /movie|film|ott|streaming|cinema|show/i.test(topic)) {
+    return buildMoviesListicleFallback(topic, category, catName);
+  }
 
   const content = [
     section("Introduction", [
@@ -139,6 +143,58 @@ export function buildRichLocalFullBlog(title: string, categoryHint?: string): Fu
     category
   );
 
+  const metaTitle = `${topic.slice(0, 55)} | ContentVerse`.slice(0, 70);
+  const metaDescription = excerpt.slice(0, 160);
+
+  return { excerpt, category, tags, metaTitle, metaDescription, content };
+}
+
+function buildMoviesListicleFallback(
+  topic: string,
+  category: string,
+  catName: string
+): FullBlogPackage {
+  const content = [
+    section("Introduction", [
+      `${topic} — if that is what your family group chat has been debating, you are not alone. Indian OTT libraries refresh every month, and summer holidays are when everyone from kids to grandparents wants something worth finishing together.`,
+      `This guide lists practical picks across Netflix, Disney+ Hotstar, Prime Video, and JioCinema. Availability shifts with licensing—confirm in your app before you plan snacks and blankets.`,
+    ]),
+    section("What makes a good family watch", [
+      `The best shared watches balance energy and heart: clear storytelling, humour that lands across ages, and nothing that forces an awkward mid-movie exit. We leaned toward titles with strong word-of-mouth in India and rewatch value.`,
+    ], [
+      "Mix animation, Hindi cinema, and international hits",
+      "Note age guidance where tone gets intense",
+      "Prefer complete films over cliffhanger bait for one-night plans",
+      "Keep one backup pick if your first choice left a platform",
+    ]),
+    section("Animated picks everyone can enjoy", [
+      `Recent sequels and originals on Disney+ Hotstar and Netflix—think Pixar-level emotion or light martial-arts comedy—work when you need a safe default. They carry younger viewers while giving adults craft and jokes worth catching on a second pass.`,
+    ]),
+    section("Hindi and Indian stories", [
+      `Not every family night needs dubbing. Films like gentle comedies, inspiring biographical dramas, or comfort web-series episodes on Prime Video give you cultural context kids can relate to. Pair with subtitles if your group mixes languages.`,
+    ]),
+    section("International favourites on Indian OTT", [
+      `Stunning animation, superhero multiverse spectacle, and fairy-tale musicals still dominate shared watchlists. Queue one spectacle title and one quieter pick so the room can vote after dinner.`,
+    ]),
+    section("How to plan a summer movie marathon", [
+      `Rotate who chooses, prep snacks before hitting play, and track finished titles so you do not repeat the same film twice in a week. Bookmark options on CineVerse to see what newly landed on streaming each week.`,
+    ], [
+      "Set a simple age rule before horror or intense action",
+      "Use subtitles to keep everyone following along",
+      "Stop after one great film—marathon fatigue is real",
+    ]),
+    section("Conclusion", [
+      `${topic} is really about time together—not perfect algorithms. Pick one title tonight, discuss it afterward, and save the rest for lazy afternoons and rainy evenings.`,
+      `Streaming catalogues change; treat this list as a starting point and verify availability on your apps before the popcorn goes in the microwave.`,
+    ]),
+  ].join("\n\n");
+
+  const excerpt = `Planning family screen time this summer? A practical OTT shortlist for Indian viewers—animation, Hindi picks, and crowd-pleasers across major streaming apps.`;
+  const tags = normalizeTags(
+    ["ott", "family-movies", "streaming-india", catName.toLowerCase()],
+    topic,
+    category
+  );
   const metaTitle = `${topic.slice(0, 55)} | ContentVerse`.slice(0, 70);
   const metaDescription = excerpt.slice(0, 160);
 

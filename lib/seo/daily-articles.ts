@@ -48,7 +48,7 @@ async function ensureCategory(slug: string) {
 
 async function upsertTags(names: string[]) {
   const tagIds: string[] = [];
-  for (const name of names.slice(0, 8)) {
+  for (const name of names.slice(0, 5)) {
     const slug = slugify(name);
     if (!slug) continue;
     const tag = await prisma.tag.upsert({
