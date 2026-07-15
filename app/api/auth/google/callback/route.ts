@@ -98,7 +98,15 @@ export async function GET(req: Request) {
 
   if (isDatabaseConfigured()) {
     try {
-      const user = await persistGoogleUser(profile);
+      const { user, isNew } = await persistGoogleUser(profile);
+      if (isNew) {
+        const { welcomeNewUser } = await import("@/lib/notifications/welcome-user");
+        void welcomeNewUser({
+          userId: user.id,
+          email: user.email,
+          name: user.name,
+        });
+      }
       return signInAndRedirect(sessionFromDbUser(user, profile), next);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

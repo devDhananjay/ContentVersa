@@ -222,6 +222,79 @@ export function stockWatchlistDigestEmail(opts: {
   return { subject, html };
 }
 
+export function welcomeUserEmail(opts: {
+  name?: string | null;
+  unsubscribeUrl?: string;
+}) {
+  const site = getAppUrl();
+  const first = (opts.name || "").trim().split(/\s+/)[0] || "there";
+  const html = layout(
+    `<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Welcome to ContentVerse, ${escapeHtml(first)} 👋</h1>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">You’re in. ContentVerse is where Indian creators read, publish, and grow — blogs, movies, money tools, and more in one place.</p>
+    <p style="margin:0 0 8px;font-weight:600;color:#fff;">Start in 60 seconds</p>
+    <ul style="margin:0 0 20px;padding-left:18px;color:#a1a1aa;line-height:1.7;font-size:14px;">
+      <li><a href="${site}/blogs" style="color:#c4b5fd;">Read what’s trending</a> — fresh stories every day</li>
+      <li><a href="${site}/dashboard/create" style="color:#c4b5fd;">Write your first draft</a> — publish when you’re ready</li>
+      <li><a href="${site}/cineverse" style="color:#c4b5fd;">Open CineVerse</a> — OTT &amp; movie picks</li>
+      <li><a href="${site}/moneyverse" style="color:#c4b5fd;">Try MoneyVerse</a> — track expenses &amp; screenshot scan</li>
+    </ul>
+    ${btn(`${site}/dashboard`, "Go to your dashboard")}
+    <p style="margin:20px 0 0;font-size:13px;color:#71717a;line-height:1.6;">Tip: enable browser / app alerts in Dashboard → Notifications so you never miss replies and tips.</p>`,
+    opts.unsubscribeUrl
+      ? `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`
+      : ""
+  );
+  return {
+    subject: "Welcome to ContentVerse — you’re in ✨",
+    html,
+  };
+}
+
+export function newUserNudgeEmail(opts: {
+  name?: string | null;
+  focus: "write" | "explore" | "notify";
+  unsubscribeUrl?: string;
+}) {
+  const site = getAppUrl();
+  const first = (opts.name || "").trim().split(/\s+/)[0] || "there";
+  const copy =
+    opts.focus === "write"
+      ? {
+          title: `${first}, your first post is waiting`,
+          body: "Creators who publish in their first week grow the fastest. Draft something short today — even 300 words counts.",
+          cta: "Start writing",
+          href: `${site}/dashboard/create`,
+        }
+      : opts.focus === "notify"
+        ? {
+            title: "Turn on alerts so you don’t miss replies",
+            body: "Tips, comments, and trending picks land in your notification centre — enable push so nothing slips by.",
+            cta: "Open notifications",
+            href: `${site}/dashboard/notifications`,
+          }
+        : {
+            title: "Come back — here’s what’s live",
+            body: "Fresh blogs, CineVerse picks, and MoneyVerse tools are waiting. Pick one hub and explore for 5 minutes.",
+            cta: "Explore ContentVerse",
+            href: `${site}/blogs`,
+          };
+
+  const html = layout(
+    `<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">${escapeHtml(copy.title)}</h1>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">${escapeHtml(copy.body)}</p>
+    ${btn(copy.href, copy.cta)}
+    <p style="margin:16px 0 0;text-align:center;font-size:13px;">
+      <a href="${site}/cineverse" style="color:#a855f7;margin:0 8px;">CineVerse</a>
+      <a href="${site}/moneyverse" style="color:#a855f7;margin:0 8px;">MoneyVerse</a>
+      <a href="${site}/goldverse" style="color:#a855f7;margin:0 8px;">GoldVerse</a>
+    </p>`,
+    opts.unsubscribeUrl
+      ? `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`
+      : ""
+  );
+  return { subject: copy.title.slice(0, 70), html };
+}
+
 export function blogPendingReviewAdminEmail(opts: {
   title: string;
   blogId: string;

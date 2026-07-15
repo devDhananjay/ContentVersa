@@ -220,6 +220,7 @@ sudo systemctl enable --now crond
 # Crontab (UTC time — India = UTC+5:30)
 crontab -e
 # 0 10 * * *   .../scripts/cron-notifications.sh inactive
+# 0 11 * * *   .../scripts/cron-notifications.sh onboarding
 # 0 18 * * *   .../scripts/cron-notifications.sh trending
 # 0 9 * * 5    .../scripts/cron-notifications.sh weekly
 # */5 * * * *  .../scripts/cron-push-alerts.sh cricket       # 30 min before match
@@ -229,7 +230,9 @@ crontab -e
 
 Push alerts manual test: `./scripts/cron-push-alerts.sh cricket`
 
-Notification cron manual test: `./scripts/cron-notifications.sh trending`
+Notification cron manual test: `./scripts/cron-notifications.sh trending`  
+New-user onboarding nudge: `./scripts/cron-notifications.sh onboarding`  
+Welcome existing users: `npm run db:welcome-users -- --days=14`
 
 ---
 

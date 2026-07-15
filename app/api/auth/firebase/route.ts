@@ -91,6 +91,7 @@ export async function POST(req: Request) {
               },
             },
           });
+          return { user, isNew: true as const };
         } else {
           // 3. Existing user → backfill phone + verification, link Firebase account.
           await tx.account.upsert({
@@ -126,32 +127,41 @@ export async function POST(req: Request) {
               },
             });
           }
+          return { user, isNew: false as const };
         }
-        return user;
       });
 
+      if (upserted.isNew) {
+        const { welcomeNewUser } = await import("@/lib/notifications/welcome-user");
+        void welcomeNewUser({
+          userId: upserted.user.id,
+          email: upserted.user.email,
+          name: upserted.user.name,
+        });
+      }
+
       const token = await signSession({
-        sub: upserted.id,
-        email: upserted.email,
-        username: upserted.username,
-        role: upserted.role as
+        sub: upserted.user.id,
+        email: upserted.user.email,
+        username: upserted.user.username,
+        role: upserted.user.role as
           | "USER"
           | "ADMIN"
           | "MODERATOR"
           | "VERIFIED_CREATOR"
           | "SUPER_ADMIN"
           | "GUEST",
-        name: upserted.name || undefined,
-        image: upserted.image || undefined,
+        name: upserted.user.name || undefined,
+        image: upserted.user.image || undefined,
       });
       await setSessionCookie(token);
       return NextResponse.json({
         ok: true,
         user: {
-          id: upserted.id,
-          username: upserted.username,
-          name: upserted.name,
-          phone: upserted.phone,
+          id: upserted.user.id,
+          username: upserted.user.username,
+          name: upserted.user.name,
+          phone: upserted.user.phone,
         },
       });
     } catch (err) {

@@ -40,6 +40,12 @@ export async function POST(req: Request) {
       });
       const { applyReferralOnSignup } = await import("@/lib/referral");
       void applyReferralOnSignup(user.id, ref);
+      const { welcomeNewUser } = await import("@/lib/notifications/welcome-user");
+      void welcomeNewUser({
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+      });
       const token = await signSession({
         sub: user.id,
         email: user.email,

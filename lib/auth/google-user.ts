@@ -6,7 +6,10 @@ function googleDisplayName(profile: GoogleProfile) {
 }
 
 /** Link or create a Google user without a long interactive transaction. */
-export async function persistGoogleUser(profile: GoogleProfile) {
+export async function persistGoogleUser(profile: GoogleProfile): Promise<{
+  user: Awaited<ReturnType<typeof prisma.user.create>>;
+  isNew: boolean;
+}> {
   const displayName = googleDisplayName(profile);
   const displayImage = profile.picture || null;
 
@@ -20,7 +23,7 @@ export async function persistGoogleUser(profile: GoogleProfile) {
       username = deriveUsername(profile);
     }
 
-    return prisma.user.create({
+    const created = await prisma.user.create({
       data: {
         email: profile.email,
         username,
@@ -37,6 +40,7 @@ export async function persistGoogleUser(profile: GoogleProfile) {
         },
       },
     });
+    return { user: created, isNew: true };
   }
 
   await prisma.account.upsert({
@@ -66,7 +70,7 @@ export async function persistGoogleUser(profile: GoogleProfile) {
     update: {},
   });
 
-  return prisma.user.update({
+  const updated = await prisma.user.update({
     where: { id: user.id },
     data: {
       name: displayName ?? user.name,
@@ -75,4 +79,5 @@ export async function persistGoogleUser(profile: GoogleProfile) {
         user.emailVerified ?? (profile.verified_email ? new Date() : null),
     },
   });
+  return { user: updated, isNew: false };
 }
