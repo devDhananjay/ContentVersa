@@ -28,6 +28,7 @@
     "db:regen-covers": "tsx scripts/regenerate-article-covers.ts",
     "db:expand-articles": "tsx scripts/expand-short-articles.ts",
     "db:daily-ai": "tsx scripts/daily-ai-articles.ts",
+    "db:welcome-users": "tsx scripts/welcome-recent-users.ts",
     "db:promote-admin": "tsx prisma/promote-owner-admin.ts",
     "db:setup-admin": "tsx prisma/setup-admin-access.ts",
     "db:local": "bash scripts/start-local-db.sh",
