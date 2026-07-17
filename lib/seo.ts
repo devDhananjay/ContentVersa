@@ -24,6 +24,8 @@ export const SITE_NAV_HUBS = [
   { name: "Screenshot Scan (OCR)", path: "/moneyverse/screenshot-scan", description: "UPI payment screenshot OCR — auto-fill expenses from PhonePe, GPay, Paytm" },
   { name: "HUID Verification", path: "/huid-verification", description: "Verify BIS gold hallmark HUID online India" },
   { name: "India Tools", path: "/tools", description: "Free IFSC, pincode, RTO, EMI, SIP, fuel price and vehicle tools India" },
+  { name: "Vehicle RC Check", path: "/tools/vehicle-rc", description: "Check vehicle RC details by number plate India" },
+  { name: "e-Challan Check", path: "/tools/echallan", description: "Check traffic e-challan by vehicle number India" },
   { name: "IFSC Finder", path: "/tools/ifsc-finder", description: "Find Indian bank IFSC branch details free" },
   { name: "RTO Finder", path: "/tools/rto-finder", description: "Find RTO code and office address by city India" },
   { name: "Fuel Price", path: "/tools/fuel-price", description: "Petrol and diesel price by city India today" },

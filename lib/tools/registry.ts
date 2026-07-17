@@ -1,20 +1,11 @@
-import type { LucideIcon } from "lucide-react";
-import {
-  Banknote,
-  Calculator,
-  Car,
-  Fuel,
-  IndianRupee,
-  MapPin,
-  Search,
-  ShieldCheck,
-} from "lucide-react";
-
 export type ToolSlug =
   | "ifsc-finder"
   | "pincode-finder"
   | "rto-finder"
   | "vehicle-plate-decoder"
+  | "vehicle-rc"
+  | "echallan"
+  | "fastag"
   | "pan-gstin-checker"
   | "emi-calculator"
   | "sip-calculator"
@@ -26,7 +17,6 @@ export type ToolDef = {
   shortTitle: string;
   description: string;
   keywords: string[];
-  icon: LucideIcon;
   badge?: string;
 };
 
@@ -45,7 +35,6 @@ export const TOOL_REGISTRY: ToolDef[] = [
       "bank branch ifsc",
       "neft rtgs ifsc india",
     ],
-    icon: Banknote,
     badge: "Banking",
   },
   {
@@ -55,17 +44,52 @@ export const TOOL_REGISTRY: ToolDef[] = [
     description:
       "Search any 6-digit Indian pincode to find post offices, district, state, and delivery status. Free India Post data.",
     keywords: ["pincode finder", "post office pincode", "area pincode india", "pin code search"],
-    icon: MapPin,
     badge: "Address",
+  },
+  {
+    slug: "vehicle-rc",
+    title: "Vehicle RC Details — Owner & Registration Check India",
+    shortTitle: "Vehicle RC Check",
+    description:
+      "Check Indian vehicle registration (RC) details by number plate via ULIP Vahan — maker, model, fitness, insurance validity and more.",
+    keywords: [
+      "vehicle rc check",
+      "car number owner details",
+      "vahan vehicle details",
+      "rc status india",
+    ],
+    badge: "Vehicle",
+  },
+  {
+    slug: "echallan",
+    title: "e-Challan Check by Vehicle Number India",
+    shortTitle: "e-Challan Check",
+    description:
+      "Check pending traffic e-challans against a vehicle registration number using ULIP e-Challan data.",
+    keywords: [
+      "echallan check",
+      "traffic challan by vehicle number",
+      "pending challan india",
+      "parivahan challan",
+    ],
+    badge: "Vehicle",
+  },
+  {
+    slug: "fastag",
+    title: "FASTag Status Check by Vehicle Number India",
+    shortTitle: "FASTag Check",
+    description:
+      "Look up FASTag status linked to an Indian vehicle registration number via ULIP NETC data.",
+    keywords: ["fastag check", "fastag status vehicle number", "netc fastag india"],
+    badge: "Vehicle",
   },
   {
     slug: "rto-finder",
     title: "RTO Code Finder — Vehicle Registration Office India",
     shortTitle: "RTO Finder",
     description:
-      "Search RTO codes by city or state. Find which Regional Transport Office issued a vehicle registration in India.",
-    keywords: ["rto code finder", "rto office india", "vehicle rto code", "mh12 rto"],
-    icon: Car,
+      "Search 1,200+ RTO codes by city or state with office address across India.",
+    keywords: ["rto code finder", "rto office india", "vehicle rto code", "mh12 rto", "bareilly rto"],
     badge: "Vehicle",
   },
   {
@@ -80,7 +104,6 @@ export const TOOL_REGISTRY: ToolDef[] = [
       "car registration state",
       "bh series plate",
     ],
-    icon: Search,
     badge: "Vehicle",
   },
   {
@@ -90,7 +113,6 @@ export const TOOL_REGISTRY: ToolDef[] = [
     description:
       "Validate PAN and GSTIN number format instantly. Decode entity type, state code, and checksum — format check only, not live government verification.",
     keywords: ["pan validation", "gstin checker", "gstin format verify", "pan format india"],
-    icon: ShieldCheck,
     badge: "Tax ID",
   },
   {
@@ -100,7 +122,6 @@ export const TOOL_REGISTRY: ToolDef[] = [
     description:
       "Calculate monthly EMI, total interest, and total payment for home loans, car loans, and personal loans in India.",
     keywords: ["emi calculator", "home loan emi", "car loan emi india", "loan calculator"],
-    icon: Calculator,
     badge: "Finance",
   },
   {
@@ -110,7 +131,6 @@ export const TOOL_REGISTRY: ToolDef[] = [
     description:
       "Estimate mutual fund SIP maturity value, total invested amount, and expected returns over time.",
     keywords: ["sip calculator", "mutual fund sip", "sip returns india", "investment calculator"],
-    icon: IndianRupee,
     badge: "Finance",
   },
   {
@@ -125,7 +145,6 @@ export const TOOL_REGISTRY: ToolDef[] = [
       "fuel price by city",
       "petrol rate today",
     ],
-    icon: Fuel,
     badge: "Daily",
   },
 ];

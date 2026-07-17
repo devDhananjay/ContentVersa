@@ -483,6 +483,21 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
         heading: "Vehicle",
         items: [
           {
+            label: "Vehicle RC Check",
+            href: "/tools/vehicle-rc",
+            detail: "RC / Vahan details by vehicle number",
+          },
+          {
+            label: "e-Challan Check",
+            href: "/tools/echallan",
+            detail: "Pending traffic challans by vehicle number",
+          },
+          {
+            label: "FASTag Check",
+            href: "/tools/fastag",
+            detail: "FASTag status by vehicle number",
+          },
+          {
             label: "RTO Finder",
             href: "/tools/rto-finder",
             detail: "1,200+ RTO codes with office address",

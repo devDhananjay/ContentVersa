@@ -16,6 +16,8 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
       { label: "Screenshot Scan (OCR)", href: "/moneyverse/screenshot-scan" },
       { label: "HUID Verification", href: "/huid-verification" },
       { label: "India Tools", href: "/tools" },
+      { label: "Vehicle RC Check", href: "/tools/vehicle-rc" },
+      { label: "e-Challan Check", href: "/tools/echallan" },
       { label: "RTO Finder", href: "/tools/rto-finder" },
       { label: "Fuel Price", href: "/tools/fuel-price" },
       { label: "IFSC Finder", href: "/tools/ifsc-finder" },

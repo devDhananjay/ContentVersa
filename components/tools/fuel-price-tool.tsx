@@ -12,16 +12,20 @@ import type { CityFuelPrice } from "@/lib/tools/fuel-price";
 export function FuelPriceTool() {
   const [query, setQuery] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [suggestions, setSuggestions] = React.useState<CityFuelPrice[]>([]);
+  const [results, setResults] = React.useState<CityFuelPrice[]>([]);
   const [selected, setSelected] = React.useState<CityFuelPrice | null>(null);
-
+  const skipSearchRef = React.useRef(false);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   React.useEffect(() => {
+    if (skipSearchRef.current) {
+      skipSearchRef.current = false;
+      return;
+    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     const q = query.trim();
     if (q.length < 2) {
-      setSuggestions([]);
+      setResults([]);
       return;
     }
     debounceRef.current = setTimeout(async () => {
@@ -29,38 +33,42 @@ export function FuelPriceTool() {
       try {
         const res = await fetch(`/api/tools/fuel-price?q=${encodeURIComponent(q)}`);
         const data = await res.json();
-        setSuggestions(data.results ?? []);
+        const list: CityFuelPrice[] = data.results ?? [];
+        setResults(list);
+        // Auto-show first match so prices appear without an extra click
+        if (list.length === 1) {
+          setSelected(list[0]);
+        } else if (list.length > 1) {
+          const exact = list.find(
+            (c) => c.city.toLowerCase() === q.toLowerCase().split(",")[0].trim()
+          );
+          setSelected(exact ?? list[0]);
+        } else {
+          setSelected(null);
+        }
       } catch {
-        setSuggestions([]);
+        setResults([]);
+        setSelected(null);
+        toast.error("Could not load fuel prices");
       } finally {
         setLoading(false);
       }
-    }, 350);
+    }, 300);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [query]);
 
-  async function loadCity(city: string, state: string) {
-    setLoading(true);
+  function pickCity(city: CityFuelPrice) {
+    skipSearchRef.current = true;
+    setSelected(city);
+    setQuery(city.city);
+    setResults([city]);
+  }
+
+  function searchCity(name: string) {
     setSelected(null);
-    try {
-      const res = await fetch(
-        `/api/tools/fuel-price?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`
-      );
-      const data = await res.json();
-      if (!data.ok) {
-        toast.error("City not found in fuel data");
-        return;
-      }
-      setSelected(data.data);
-      setQuery(`${city}, ${state}`);
-      setSuggestions([]);
-    } catch {
-      toast.error("Could not load fuel prices");
-    } finally {
-      setLoading(false);
-    }
+    setQuery(name);
   }
 
   return (
@@ -69,7 +77,7 @@ export function FuelPriceTool() {
         <CardHeader>
           <CardTitle className="text-lg">Search city</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-3">
           <Label htmlFor="fuel-city" className="sr-only">
             City
           </Label>
@@ -87,27 +95,59 @@ export function FuelPriceTool() {
               <Loader2 className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-muted-foreground" />
             ) : null}
           </div>
-          {suggestions.length > 0 ? (
-            <ul className="rounded-lg border border-border/60 divide-y">
-              {suggestions.map((s) => (
-                <li key={`${s.city}-${s.state}`}>
-                  <button
-                    type="button"
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-muted/50"
-                    onClick={() => loadCity(s.city, s.state)}
-                  >
-                    <span className="font-medium">{s.city}</span>
-                    <span className="text-muted-foreground"> · {s.state}</span>
-                  </button>
-                </li>
-              ))}
+
+          <div className="flex flex-wrap gap-2">
+            {["Delhi", "Mumbai", "Bangalore", "Chennai", "Pune", "Hyderabad"].map((city) => (
+              <Button
+                key={city}
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => searchCity(city)}
+              >
+                {city}
+              </Button>
+            ))}
+          </div>
+
+          {results.length > 1 ? (
+            <ul className="rounded-lg border border-border/60 divide-y max-h-48 overflow-y-auto">
+              {results.map((s) => {
+                const petrol = s.rates.find((r) => r.fuel === "Petrol")?.price;
+                const diesel = s.rates.find((r) => r.fuel === "Diesel")?.price;
+                const active =
+                  selected?.city === s.city && selected?.state === s.state;
+                return (
+                  <li key={`${s.city}-${s.state}`}>
+                    <button
+                      type="button"
+                      className={`w-full px-3 py-2.5 text-left text-sm hover:bg-muted/50 ${
+                        active ? "bg-primary/10" : ""
+                      }`}
+                      onClick={() => pickCity(s)}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <span>
+                          <span className="font-medium">{s.city}</span>
+                          <span className="text-muted-foreground"> · {s.state}</span>
+                        </span>
+                        <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                          {petrol != null ? `P ₹${petrol.toFixed(2)}` : ""}
+                          {petrol != null && diesel != null ? " · " : ""}
+                          {diesel != null ? `D ₹${diesel.toFixed(2)}` : ""}
+                        </span>
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           ) : null}
         </CardContent>
       </Card>
 
       {selected ? (
-        <Card>
+        <Card className="border-primary/30">
           <CardHeader>
             <CardTitle>
               {selected.city}, {selected.state}
@@ -120,10 +160,10 @@ export function FuelPriceTool() {
             {selected.rates.map((r) => (
               <div
                 key={r.fuel}
-                className="rounded-lg border border-border/60 p-4 text-center"
+                className="rounded-lg border border-border/60 bg-muted/20 p-4 text-center"
               >
                 <p className="text-sm text-muted-foreground">{r.fuel}</p>
-                <p className="text-2xl font-bold text-primary">₹{r.price.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-primary">₹{r.price.toFixed(2)}</p>
                 <p className="text-xs text-muted-foreground">per litre</p>
               </div>
             ))}
@@ -136,20 +176,14 @@ export function FuelPriceTool() {
             </p>
           ) : null}
         </Card>
+      ) : query.trim().length >= 2 && !loading ? (
+        <p className="text-sm text-muted-foreground">
+          No fuel prices found for “{query.trim()}”. Try Delhi, Mumbai, or Pune.
+        </p>
       ) : (
-        <div className="flex flex-wrap gap-2">
-          {["Mumbai", "Delhi", "Bangalore", "Chennai", "Pune"].map((city) => (
-            <Button
-              key={city}
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setQuery(city)}
-            >
-              {city}
-            </Button>
-          ))}
-        </div>
+        <p className="text-sm text-muted-foreground">
+          Type a city name or tap a quick city above to see today’s petrol & diesel rates.
+        </p>
       )}
     </div>
   );
