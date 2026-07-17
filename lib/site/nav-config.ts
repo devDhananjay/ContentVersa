@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   TrendingUp,
   Wallet,
+  Wrench,
 } from "lucide-react";
 
 export type NavLinkItem = {
@@ -63,6 +64,7 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
         icon: ScanLine,
       },
       { href: "/huid-verification", label: "HUID Check", description: "Verify BIS hallmark", icon: ShieldCheck },
+      { href: "/tools", label: "India Tools", description: "IFSC, pincode, RTO & more", icon: Wrench },
     ],
   },
 ];

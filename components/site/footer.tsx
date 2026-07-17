@@ -15,6 +15,7 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
       { label: "MoneyVerse", href: "/moneyverse" },
       { label: "Screenshot Scan (OCR)", href: "/moneyverse/screenshot-scan" },
       { label: "HUID Verification", href: "/huid-verification" },
+      { label: "India Tools", href: "/tools" },
       { label: "Jobs", href: "/jobs" },
       { label: "Reels", href: "/reels" },
       { label: "Explore Blogs", href: "/blogs" },

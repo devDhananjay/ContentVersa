@@ -23,6 +23,7 @@ export const SITE_NAV_HUBS = [
   { name: "MoneyVerse", path: "/moneyverse", description: "Expense tracker, budget planner, UPI spending & screenshot OCR scan India" },
   { name: "Screenshot Scan (OCR)", path: "/moneyverse/screenshot-scan", description: "UPI payment screenshot OCR — auto-fill expenses from PhonePe, GPay, Paytm" },
   { name: "HUID Verification", path: "/huid-verification", description: "Verify BIS gold hallmark HUID online India" },
+  { name: "India Tools", path: "/tools", description: "Free IFSC, pincode, RTO, EMI, SIP, fuel price and vehicle tools India" },
   { name: "Reels", path: "/reels", description: "Short-form videos from Indian creators" },
   { name: "Blogs", path: "/blogs", description: "Read articles and stories from creators" },
 ] as const;
