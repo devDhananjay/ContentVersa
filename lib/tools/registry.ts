@@ -3,13 +3,26 @@ export type ToolSlug =
   | "pincode-finder"
   | "rto-finder"
   | "vehicle-plate-decoder"
-  | "vehicle-rc"
-  | "echallan"
-  | "fastag"
   | "pan-gstin-checker"
+  | "fssai-checker"
   | "emi-calculator"
   | "sip-calculator"
-  | "fuel-price";
+  | "fuel-price"
+  | "weather"
+  | "currency-converter"
+  | "age-calculator"
+  | "qr-generator"
+  | "barcode-generator"
+  | "uuid-generator"
+  | "indian-holidays"
+  | "election-info"
+  | "geo-location"
+  | "nearby-places"
+  | "nearby-hotels"
+  | "nearby-restaurants"
+  | "nearby-hospitals"
+  | "nearby-schools"
+  | "nearby-atms";
 
 export type ToolDef = {
   slug: ToolSlug;
@@ -29,12 +42,7 @@ export const TOOL_REGISTRY: ToolDef[] = [
     shortTitle: "IFSC Finder",
     description:
       "Find bank name, branch address, MICR, and payment modes (NEFT, RTGS, IMPS, UPI) from any Indian IFSC code. Free lookup powered by Razorpay open data.",
-    keywords: [
-      "ifsc code finder",
-      "ifsc lookup",
-      "bank branch ifsc",
-      "neft rtgs ifsc india",
-    ],
+    keywords: ["ifsc code finder", "ifsc lookup", "bank branch ifsc", "neft rtgs ifsc india"],
     badge: "Banking",
   },
   {
@@ -47,41 +55,143 @@ export const TOOL_REGISTRY: ToolDef[] = [
     badge: "Address",
   },
   {
-    slug: "vehicle-rc",
-    title: "Vehicle RC Details — Owner & Registration Check India",
-    shortTitle: "Vehicle RC Check",
+    slug: "weather",
+    title: "Weather Forecast by City India",
+    shortTitle: "Weather",
     description:
-      "Check Indian vehicle registration (RC) details by number plate via ULIP Vahan — maker, model, fitness, insurance validity and more.",
-    keywords: [
-      "vehicle rc check",
-      "car number owner details",
-      "vahan vehicle details",
-      "rc status india",
-    ],
-    badge: "Vehicle",
+      "Check current weather and 7-day forecast for any city in India — temperature, rain, wind, and humidity. Free, no sign-up.",
+    keywords: ["weather india", "weather today city", "forecast india", "temperature delhi mumbai"],
+    badge: "Daily",
   },
   {
-    slug: "echallan",
-    title: "e-Challan Check by Vehicle Number India",
-    shortTitle: "e-Challan Check",
+    slug: "currency-converter",
+    title: "Currency Converter — INR & World Rates",
+    shortTitle: "Currency Converter",
     description:
-      "Check pending traffic e-challans against a vehicle registration number using ULIP e-Challan data.",
-    keywords: [
-      "echallan check",
-      "traffic challan by vehicle number",
-      "pending challan india",
-      "parivahan challan",
-    ],
-    badge: "Vehicle",
+      "Convert between INR and major world currencies with live mid-market rates. Free currency calculator for travel and remittance.",
+    keywords: ["currency converter", "inr to usd", "forex converter india", "exchange rate today"],
+    badge: "Finance",
   },
   {
-    slug: "fastag",
-    title: "FASTag Status Check by Vehicle Number India",
-    shortTitle: "FASTag Check",
+    slug: "age-calculator",
+    title: "Age Calculator — Exact Years Months Days",
+    shortTitle: "Age Calculator",
     description:
-      "Look up FASTag status linked to an Indian vehicle registration number via ULIP NETC data.",
-    keywords: ["fastag check", "fastag status vehicle number", "netc fastag india"],
-    badge: "Vehicle",
+      "Calculate exact age from date of birth in years, months, and days. Useful for forms, exams, and eligibility checks in India.",
+    keywords: ["age calculator", "dob age calculator", "exact age years months days"],
+    badge: "Utility",
+  },
+  {
+    slug: "qr-generator",
+    title: "QR Code Generator — Free Online",
+    shortTitle: "QR Generator",
+    description:
+      "Generate a QR code from any text, URL, UPI ID, or Wi‑Fi string. Download as PNG instantly — free, no sign-up.",
+    keywords: ["qr code generator", "upi qr generator", "free qr maker india"],
+    badge: "Utility",
+  },
+  {
+    slug: "barcode-generator",
+    title: "Barcode Generator — CODE128 Free Online",
+    shortTitle: "Barcode Generator",
+    description:
+      "Create printable CODE128 barcodes from any text or number. Useful for inventory, labels, and shop tags.",
+    keywords: ["barcode generator", "code128 barcode", "barcode maker free"],
+    badge: "Utility",
+  },
+  {
+    slug: "uuid-generator",
+    title: "UUID Generator — Free Online",
+    shortTitle: "UUID Generator",
+    description:
+      "Generate random UUID v4 identifiers for apps, databases, and APIs. Copy one or many at once.",
+    keywords: ["uuid generator", "guid generator", "uuid v4 online"],
+    badge: "Dev",
+  },
+  {
+    slug: "fssai-checker",
+    title: "FSSAI License Format Checker India",
+    shortTitle: "FSSAI Check",
+    description:
+      "Validate 14-digit FSSAI license / registration number format instantly. Format check only — live status on FoSCoS portal.",
+    keywords: ["fssai license check", "fssai number verify", "food license format india"],
+    badge: "Food",
+  },
+  {
+    slug: "indian-holidays",
+    title: "Indian Public Holidays Calendar",
+    shortTitle: "Indian Holidays",
+    description:
+      "View public holidays in India for the current and next year — Republic Day, Diwali window references, and national holidays list.",
+    keywords: ["indian holidays", "public holidays india", "national holidays calendar"],
+    badge: "Calendar",
+  },
+  {
+    slug: "election-info",
+    title: "Voter ID & Election Info India",
+    shortTitle: "Election Info",
+    description:
+      "Check EPIC / Voter ID format and find official Election Commission links to verify voter status, booth, and elections.",
+    keywords: ["voter id check", "epic number format", "election commission india", "voter status"],
+    badge: "Govt",
+  },
+  {
+    slug: "geo-location",
+    title: "Geo Location Finder — Lat Long & Address",
+    shortTitle: "Geo Location",
+    description:
+      "Detect your current location (with permission) or look up latitude/longitude and reverse address. Free browser + OpenStreetMap data.",
+    keywords: ["geo location", "lat long finder", "my location address india"],
+    badge: "Maps",
+  },
+  {
+    slug: "nearby-places",
+    title: "Nearby Places Finder India",
+    shortTitle: "Nearby Places",
+    description:
+      "Find hotels, restaurants, hospitals, schools, ATMs and more near you or any city using Google Places.",
+    keywords: ["nearby places", "places near me india", "find nearby hotel hospital atm"],
+    badge: "Maps",
+  },
+  {
+    slug: "nearby-hotels",
+    title: "Nearby Hotels Finder India",
+    shortTitle: "Nearby Hotels",
+    description: "Find hotels and lodging near your location or any Indian city.",
+    keywords: ["hotels near me", "nearby hotels india", "find hotel by location"],
+    badge: "Maps",
+  },
+  {
+    slug: "nearby-restaurants",
+    title: "Nearby Restaurants Finder India",
+    shortTitle: "Nearby Restaurants",
+    description: "Discover restaurants and cafes near you or around any city in India.",
+    keywords: ["restaurants near me", "nearby food india", "find restaurants"],
+    badge: "Maps",
+  },
+  {
+    slug: "nearby-hospitals",
+    title: "Nearby Hospitals Finder India",
+    shortTitle: "Nearby Hospitals",
+    description: "Locate hospitals and clinics near your location or city for emergencies and care.",
+    keywords: ["hospitals near me", "nearby hospital india", "find clinic"],
+    badge: "Maps",
+  },
+  {
+    slug: "nearby-schools",
+    title: "Nearby Schools Finder India",
+    shortTitle: "Nearby Schools",
+    description: "Find schools near any location or city across India.",
+    keywords: ["schools near me", "nearby schools india", "find school"],
+    badge: "Maps",
+  },
+  {
+    slug: "nearby-atms",
+    title: "Nearby ATMs Finder India",
+    shortTitle: "Nearby ATMs",
+    description: "Find cash ATMs near you or around any Indian city.",
+    keywords: ["atm near me", "nearby atm india", "find atm"],
+    badge: "Maps",
   },
   {
     slug: "rto-finder",

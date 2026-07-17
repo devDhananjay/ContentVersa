@@ -7,17 +7,18 @@ import { toolsHubJsonLd } from "@/lib/tools/tools-seo";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Free India Utility Tools — IFSC, Pincode, RTO, EMI & More",
+  title: "Free India Utility Tools — Weather, IFSC, Pincode, QR & More",
   description:
-    "Free daily-use tools for India — IFSC bank lookup, pincode finder, RTO code search, vehicle plate decoder, PAN/GSTIN format check, EMI & SIP calculators, and petrol/diesel prices.",
+    "Free daily-use tools for India — weather, currency converter, QR & barcode generator, FSSAI format check, holidays, nearby hotels & hospitals, IFSC, pincode, RTO, EMI, SIP, and fuel prices.",
   path: TOOLS_HUB_PATH,
   keywords: [
     "india utility tools",
+    "weather india",
+    "qr code generator",
+    "nearby places india",
     "ifsc finder",
     "pincode search",
-    "rto code",
     "emi calculator india",
-    "petrol price today",
   ],
 });
 

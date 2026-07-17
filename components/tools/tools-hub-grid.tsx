@@ -49,9 +49,10 @@ export function ToolsHubIntro() {
         India Utility Tools
       </h1>
       <p className="text-sm text-muted-foreground md:text-base leading-relaxed">
-        Free daily-use tools for Indian users — IFSC bank lookup, pincode search, RTO
-        codes, vehicle plate decoder, PAN/GSTIN format check, EMI & SIP calculators, and
-        petrol/diesel prices by city. No sign-up required.
+        Free daily-use tools for Indian users — weather, currency, QR & barcode generators, FSSAI
+        format check, public holidays, nearby hotels & hospitals, IFSC lookup, pincode search, RTO
+        codes, PAN/GSTIN format check, EMI & SIP calculators, and petrol/diesel prices. No sign-up
+        required.
       </p>
     </header>
   );

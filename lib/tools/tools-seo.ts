@@ -1,5 +1,6 @@
 import { SITE } from "@/lib/seo";
-import { getToolBySlug, TOOLS_HUB_PATH, type ToolDef } from "./registry";
+import { TOOL_REGISTRY, TOOLS_HUB_PATH, type ToolDef } from "./registry";
+import { LOCATION_CATEGORIES, LOCATION_CITIES } from "./places";
 
 export function toolsHubUrl() {
   return `${SITE.url}${TOOLS_HUB_PATH}`;
@@ -17,14 +18,14 @@ export function toolFaq(tool: ToolDef) {
     },
     {
       q: "Is this an official government website?",
-      a: "No. ContentVerse is an independent platform. We use public datasets and open APIs. For official records, use government portals like Parivahan, GST, or your bank.",
+      a: "No. ContentVerse is an independent platform. We use public datasets and open APIs. For official records, use government portals like Parivahan, GST, FoSCoS, or ECI.",
     },
   ];
 
-  if (tool.slug === "pan-gstin-checker") {
+  if (tool.slug === "pan-gstin-checker" || tool.slug === "fssai-checker" || tool.slug === "election-info") {
     base.push({
-      q: "Does this verify PAN or GSTIN with the government?",
-      a: "This tool checks format and checksum only. It does not confirm active registration with CBDT or GSTN.",
+      q: "Does this verify with the government live?",
+      a: "This tool checks format and provides official links only. It does not confirm active registration with government databases.",
     });
   }
 
@@ -32,6 +33,13 @@ export function toolFaq(tool: ToolDef) {
     base.push({
       q: "Can I get vehicle owner details from the number plate?",
       a: "No. Owner details require the official Vahan portal. Our decoder only identifies state and RTO code from the plate format.",
+    });
+  }
+
+  if (tool.slug.startsWith("nearby-") || tool.slug === "geo-location") {
+    base.push({
+      q: "Why do nearby results need location permission?",
+      a: "Near me uses your browser GPS. City search uses geocoding instead — no GPS needed.",
     });
   }
 
@@ -88,79 +96,17 @@ export function toolsHubJsonLd() {
     "@type": "CollectionPage",
     name: "Free India Utility Tools",
     description:
-      "IFSC finder, pincode lookup, RTO code search with address, PAN/GSTIN checker, EMI & SIP calculators, fuel prices, and vehicle plate decoder.",
+      "IFSC, pincode, weather, currency, QR/barcode, FSSAI format, holidays, nearby places, RTO, fuel, EMI, SIP, and more.",
     url: toolsHubUrl(),
     isPartOf: { "@type": "WebSite", name: SITE.name, url: SITE.url },
     mainEntity: {
       "@type": "ItemList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "IFSC Finder",
-          url: toolPageUrl("ifsc-finder"),
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Pincode Finder",
-          url: toolPageUrl("pincode-finder"),
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: "Vehicle RC Check",
-          url: toolPageUrl("vehicle-rc"),
-        },
-        {
-          "@type": "ListItem",
-          position: 4,
-          name: "e-Challan Check",
-          url: toolPageUrl("echallan"),
-        },
-        {
-          "@type": "ListItem",
-          position: 5,
-          name: "FASTag Check",
-          url: toolPageUrl("fastag"),
-        },
-        {
-          "@type": "ListItem",
-          position: 6,
-          name: "RTO Finder",
-          url: toolPageUrl("rto-finder"),
-        },
-        {
-          "@type": "ListItem",
-          position: 7,
-          name: "Vehicle Plate Decoder",
-          url: toolPageUrl("vehicle-plate-decoder"),
-        },
-        {
-          "@type": "ListItem",
-          position: 8,
-          name: "PAN / GSTIN Checker",
-          url: toolPageUrl("pan-gstin-checker"),
-        },
-        {
-          "@type": "ListItem",
-          position: 9,
-          name: "EMI Calculator",
-          url: toolPageUrl("emi-calculator"),
-        },
-        {
-          "@type": "ListItem",
-          position: 10,
-          name: "SIP Calculator",
-          url: toolPageUrl("sip-calculator"),
-        },
-        {
-          "@type": "ListItem",
-          position: 11,
-          name: "Fuel Price",
-          url: toolPageUrl("fuel-price"),
-        },
-      ],
+      itemListElement: TOOL_REGISTRY.map((tool, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: tool.shortTitle,
+        url: toolPageUrl(tool.slug),
+      })),
     },
   };
 }
@@ -175,7 +121,17 @@ export function getToolMetadata(tool: ToolDef) {
 }
 
 export function getToolBySlugOrThrow(slug: string): ToolDef {
-  const tool = getToolBySlug(slug);
+  const tool = TOOL_REGISTRY.find((t) => t.slug === slug);
   if (!tool) throw new Error(`Unknown tool: ${slug}`);
   return tool;
+}
+
+export function locationPagePaths() {
+  return LOCATION_CITIES.flatMap((city) =>
+    LOCATION_CATEGORIES.map((category) => ({
+      path: `${TOOLS_HUB_PATH}/locations/${city.slug}/${category}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.82,
+    }))
+  );
 }

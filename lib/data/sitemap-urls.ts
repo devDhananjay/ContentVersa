@@ -8,6 +8,8 @@ import {
   isIndexableArticle,
   MIN_INDEXABLE_READING_MINUTES,
 } from "@/lib/seo/crawl-policy";
+import { TOOL_REGISTRY, TOOLS_HUB_PATH } from "@/lib/tools/registry";
+import { locationPagePaths } from "@/lib/tools/tools-seo";
 
 type SitemapFreq = MetadataRoute.Sitemap[0]["changeFrequency"];
 
@@ -47,17 +49,12 @@ const STATIC_PAGES: Array<{
   { path: "/moneyverse/screenshot-scan", changeFrequency: "weekly", priority: 0.88 },
   { path: "/huid-verification", changeFrequency: "daily", priority: 0.9 },
   { path: "/tools", changeFrequency: "daily", priority: 0.92 },
-  { path: "/tools/ifsc-finder", changeFrequency: "weekly", priority: 0.9 },
-  { path: "/tools/pincode-finder", changeFrequency: "weekly", priority: 0.88 },
-  { path: "/tools/rto-finder", changeFrequency: "weekly", priority: 0.9 },
-  { path: "/tools/vehicle-rc", changeFrequency: "daily", priority: 0.93 },
-  { path: "/tools/echallan", changeFrequency: "daily", priority: 0.93 },
-  { path: "/tools/fastag", changeFrequency: "weekly", priority: 0.88 },
-  { path: "/tools/vehicle-plate-decoder", changeFrequency: "weekly", priority: 0.88 },
-  { path: "/tools/pan-gstin-checker", changeFrequency: "weekly", priority: 0.86 },
-  { path: "/tools/emi-calculator", changeFrequency: "weekly", priority: 0.88 },
-  { path: "/tools/sip-calculator", changeFrequency: "weekly", priority: 0.86 },
-  { path: "/tools/fuel-price", changeFrequency: "daily", priority: 0.91 },
+  ...TOOL_REGISTRY.map((t) => ({
+    path: `${TOOLS_HUB_PATH}/${t.slug}`,
+    changeFrequency: "weekly" as SitemapFreq,
+    priority: t.slug.startsWith("nearby-") ? 0.84 : 0.87,
+  })),
+  ...locationPagePaths(),
   { path: "/jobs/govt", changeFrequency: "hourly", priority: 0.78 },
   { path: "/jobs/private", changeFrequency: "daily", priority: 0.72 },
 ];

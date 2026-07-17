@@ -470,8 +470,32 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
     label: "India Tools",
     color: "sky",
     href: "/tools",
-    summary: "Free daily-use checkers — IFSC, pincode, RTO, fuel, EMI, SIP, PAN/GSTIN",
+    summary: "Free daily-use checkers — weather, currency, QR, nearby places, IFSC, pincode, RTO, fuel, EMI, SIP",
     groups: [
+      {
+        heading: "Daily & generators",
+        items: [
+          { label: "Weather", href: "/tools/weather", detail: "7-day forecast by Indian city" },
+          { label: "Currency Converter", href: "/tools/currency-converter", detail: "INR & world rates" },
+          { label: "Age Calculator", href: "/tools/age-calculator", detail: "Exact years, months, days" },
+          { label: "QR Generator", href: "/tools/qr-generator", detail: "URL, UPI, text → PNG" },
+          { label: "Barcode Generator", href: "/tools/barcode-generator", detail: "CODE128 labels" },
+          { label: "UUID Generator", href: "/tools/uuid-generator", detail: "Random UUID v4" },
+          { label: "Indian Holidays", href: "/tools/indian-holidays", detail: "Public holiday calendar" },
+        ],
+      },
+      {
+        heading: "Maps & nearby",
+        items: [
+          { label: "Geo Location", href: "/tools/geo-location", detail: "Lat/long & reverse address" },
+          { label: "Nearby Places", href: "/tools/nearby-places", detail: "Hotels, food, hospitals & more" },
+          { label: "Nearby Hotels", href: "/tools/nearby-hotels", detail: "Lodging near you or city" },
+          { label: "Nearby Restaurants", href: "/tools/nearby-restaurants", detail: "Food near you or city" },
+          { label: "Nearby Hospitals", href: "/tools/nearby-hospitals", detail: "Clinics & hospitals" },
+          { label: "Nearby Schools", href: "/tools/nearby-schools", detail: "Schools by location" },
+          { label: "Nearby ATMs", href: "/tools/nearby-atms", detail: "Cash ATMs nearby" },
+        ],
+      },
       {
         heading: "Banking & address",
         items: [
@@ -482,21 +506,6 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
       {
         heading: "Vehicle",
         items: [
-          {
-            label: "Vehicle RC Check",
-            href: "/tools/vehicle-rc",
-            detail: "RC / Vahan details by vehicle number",
-          },
-          {
-            label: "e-Challan Check",
-            href: "/tools/echallan",
-            detail: "Pending traffic challans by vehicle number",
-          },
-          {
-            label: "FASTag Check",
-            href: "/tools/fastag",
-            detail: "FASTag status by vehicle number",
-          },
           {
             label: "RTO Finder",
             href: "/tools/rto-finder",
@@ -519,6 +528,8 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
           { label: "EMI Calculator", href: "/tools/emi-calculator", detail: "Home / car / personal loan EMI" },
           { label: "SIP Calculator", href: "/tools/sip-calculator", detail: "Mutual fund SIP maturity estimate" },
           { label: "PAN / GSTIN Check", href: "/tools/pan-gstin-checker", detail: "Format & checksum validation" },
+          { label: "FSSAI Check", href: "/tools/fssai-checker", detail: "14-digit license format" },
+          { label: "Election Info", href: "/tools/election-info", detail: "EPIC format & ECI links" },
         ],
       },
       {
