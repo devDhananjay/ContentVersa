@@ -421,7 +421,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             href: "/huid-verification",
             detail: "Verify BIS Hallmark Unique ID online",
             children: [
-              { label: "5 free checks", detail: "Per ContentVerse account" },
+              { label: "3 free checks", detail: "Per ContentVerse account" },
               { label: "Official BIS database", detail: "Purity & jeweller details" },
             ],
           },

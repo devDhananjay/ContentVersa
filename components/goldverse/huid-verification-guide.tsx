@@ -70,7 +70,7 @@ export function HuidVerificationGuide() {
         <Link href={HUID_VERIFICATION_PATH} className="font-medium text-amber-400 hover:underline">
           HUID verification
         </Link>{" "}
-        is free with 5 checks per account.
+        is free with 3 checks per account.
       </p>
     </div>
   );

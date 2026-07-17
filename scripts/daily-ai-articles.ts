@@ -1,8 +1,9 @@
 /**
- * Daily AI articles — 1 per category (IST) by default.
+ * Daily AI draft articles — 1 per category (IST), Google News trending topics.
+ * Content only (no cover). Cron: 11:00 PM IST.
  *
  *   npm run db:daily-ai
- *   npm run db:daily-ai -- --per-category=1 --max=24
+ *   npm run db:daily-ai -- --per-category=1 --max=24 --slot=all
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";

@@ -153,7 +153,7 @@ export function HuidVerifyPanel({
               <p className="mt-1 max-w-lg text-sm text-muted-foreground">
                 Official BIS database check — 6-character code on your gold jewellery.
                 Sign in required.{" "}
-                <strong className="text-foreground">5 free checks</strong> per account.
+                <strong className="text-foreground">3 free checks</strong> per account.
               </p>
             </div>
             {quota?.loggedIn ? (

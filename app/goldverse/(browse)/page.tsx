@@ -35,7 +35,7 @@ export default function GoldVersePage() {
             HUID verification online
           </Link>{" "}
           tool to check any 6-character Hallmark Unique ID. Sign in for{" "}
-          <strong>5 free BIS HUID checks</strong> per account. Jewellery businesses
+          <strong>3 free BIS HUID checks</strong> per account. Jewellery businesses
           needing higher volume can contact us for API access.
         </p>
       </HubEditorialIntro>

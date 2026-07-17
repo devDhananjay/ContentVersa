@@ -2,10 +2,11 @@ import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
 import { CATEGORIES } from "@/lib/data/categories";
-import { resolveArticleCoverImage } from "@/lib/seo/article-cover";
+import { callGeminiJson } from "@/lib/ai/gemini";
 import { istDayKey } from "@/lib/engagement/streak";
 import { generateSeoArticle } from "@/lib/seo/article-generator";
 import { passesArticleQualityGate } from "@/lib/seo/article-quality";
+import { fetchGoogleNewsHeadlines } from "@/lib/seo/google-news-trends";
 import { suggestHotTopics, type HotTopic } from "@/lib/seo/hot-topics";
 import { readingTime, slugify } from "@/lib/utils";
 
@@ -19,12 +20,13 @@ function dailySlug(category: string, slot: number, day = istDayKey()) {
   return `${category}-daily-${day}-${slot}`;
 }
 
+/** Count today's daily-cron posts (draft or published) so we don't regenerate. */
 async function countTodayPosts(categorySlug: string, day = istDayKey()) {
   const prefix = `${categorySlug}-daily-${day}-`;
   return prisma.blog.count({
     where: {
       slug: { startsWith: prefix },
-      status: BlogStatus.PUBLISHED,
+      status: { in: [BlogStatus.DRAFT, BlogStatus.PUBLISHED] },
     },
   });
 }
@@ -62,10 +64,93 @@ async function upsertTags(names: string[]) {
   return tagIds;
 }
 
+const NEWS_TOPIC_SCHEMA = {
+  type: "object",
+  properties: {
+    topics: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          searchIntent: { type: "string" },
+          whyTrending: { type: "string" },
+        },
+        required: ["title", "searchIntent", "whyTrending"],
+      },
+    },
+  },
+  required: ["topics"],
+};
+
+/**
+ * Prefer Google News headlines → Gemini blog angles; fall back to suggestHotTopics.
+ */
 async function topicsForCategory(
   categorySlug: string,
   count: number
 ): Promise<HotTopic[]> {
+  const cat = CATEGORIES.find((c) => c.slug === categorySlug);
+  const name = cat?.name ?? categorySlug;
+  const headlines = await fetchGoogleNewsHeadlines(categorySlug);
+
+  if (headlines.length > 0) {
+    const day = istDayKey();
+    const headlineLines = headlines
+      .map(
+        (h, i) =>
+          `${i + 1}. ${h.title}${h.source ? ` (${h.source})` : ""}`
+      )
+      .join("\n");
+
+    const system = `You are an editorial strategist for ContentVerse (contentverse.co.in), an Indian content platform.
+Turn real Google News headlines into specific, SEO-friendly blog article ideas.
+Do not invent unrelated topics — ground each idea in the provided headlines.
+Return JSON only.`;
+
+    const user = `Today (IST): ${day}
+Category: ${name} (${categorySlug})
+
+Today's Google News headlines for this category:
+${headlineLines}
+
+Suggest exactly ${count} blog article idea(s) for Indian readers, based on the most important / most searchable headline(s) above.
+Each title under 90 characters. Make it a blog angle (explainer, listicle, take, guide) — not a news wire rewrite.
+
+Return JSON: { "topics": [{ "title": "...", "searchIntent": "...", "whyTrending": "..." }] }`;
+
+    const jsonResult = await callGeminiJson<{ topics: HotTopic[] }>(
+      system,
+      user,
+      NEWS_TOPIC_SCHEMA,
+      2048
+    );
+
+    const fromNews = jsonResult?.topics
+      ?.filter(
+        (t) =>
+          t &&
+          typeof t.title === "string" &&
+          typeof t.searchIntent === "string" &&
+          typeof t.whyTrending === "string"
+      )
+      .map((t) => ({
+        title: t.title.trim().slice(0, 90),
+        searchIntent: t.searchIntent.trim(),
+        whyTrending: t.whyTrending.trim(),
+      }));
+
+    if (fromNews?.length) {
+      console.log(
+        `[daily-articles] ${categorySlug}: topic from Google News (${headlines.length} headlines)`
+      );
+      return fromNews.slice(0, count);
+    }
+  }
+
+  console.warn(
+    `[daily-articles] ${categorySlug}: Google News empty/failed — falling back to hot-topics`
+  );
   const { topics } = await suggestHotTopics(categorySlug, count);
   return topics.slice(0, count);
 }
@@ -79,7 +164,10 @@ export type DailyArticlesResult = {
   categoriesProcessed: number;
 };
 
-/** Generate up to `perCategory` fresh AI articles per category for today (IST). */
+/**
+ * Generate up to `perCategory` fresh AI draft articles per category for today (IST).
+ * Content only — no cover image; status DRAFT for manual cover + publish.
+ */
 export async function runDailyArticleGeneration(options?: {
   perCategory?: number;
   maxTotal?: number;
@@ -144,7 +232,11 @@ export async function runDailyArticleGeneration(options?: {
         where: { slug },
         select: { id: true, status: true },
       });
-      if (exists?.status === BlogStatus.PUBLISHED) {
+      if (
+        exists &&
+        (exists.status === BlogStatus.PUBLISHED ||
+          exists.status === BlogStatus.DRAFT)
+      ) {
         skipped++;
         continue;
       }
@@ -172,20 +264,8 @@ export async function runDailyArticleGeneration(options?: {
       }
 
       const tagIds = await upsertTags(article.tags);
-      const coverImage = await resolveArticleCoverImage(
-        {
-          categorySlug: cat.slug,
-          title: article.title,
-          excerpt: article.excerpt,
-          tags: article.tags,
-          coverKeywords: article.coverKeywords,
-          coverImagePrompt: article.coverImagePrompt,
-          searchIntent: topic.searchIntent,
-          contentSnippet: article.content.slice(0, 800),
-          slug,
-        },
-        { preferAi: true, retries: 2 }
-      );
+      // Content-only: operator adds cover image before publishing.
+      const coverImage = null;
 
       if (exists) {
         await prisma.blogTag.deleteMany({ where: { blogId: exists.id } });
@@ -197,11 +277,11 @@ export async function runDailyArticleGeneration(options?: {
             content: article.content.trim(),
             coverImage,
             readingTime: readingTime(article.content),
-            status: BlogStatus.PUBLISHED,
+            status: BlogStatus.DRAFT,
             metaTitle: article.title,
             metaDescription: article.metaDescription,
             metaKeywords: article.metaKeywords ?? article.tags.join(", "),
-            publishedAt: new Date(),
+            publishedAt: null,
             authorId: owner.id,
             categoryId: category.id,
             tags: { create: tagIds.map((tagId) => ({ tagId })) },
@@ -216,11 +296,10 @@ export async function runDailyArticleGeneration(options?: {
             content: article.content.trim(),
             coverImage,
             readingTime: readingTime(article.content),
-            status: BlogStatus.PUBLISHED,
+            status: BlogStatus.DRAFT,
             metaTitle: article.title,
             metaDescription: article.metaDescription,
             metaKeywords: article.metaKeywords ?? article.tags.join(", "),
-            publishedAt: new Date(),
             authorId: owner.id,
             categoryId: category.id,
             tags: { create: tagIds.map((tagId) => ({ tagId })) },
@@ -229,6 +308,9 @@ export async function runDailyArticleGeneration(options?: {
       }
 
       created++;
+      console.log(
+        `[daily-articles] DRAFT created: ${slug} — "${article.title}"`
+      );
       await sleep(3500);
     }
   }

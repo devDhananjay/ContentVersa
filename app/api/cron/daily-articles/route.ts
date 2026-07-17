@@ -10,7 +10,7 @@ function authorize(req: Request) {
   return bearer === secret || query === secret;
 }
 
-/** GET /api/cron/daily-articles — AI articles (slot=first|second for twice-daily runs) */
+/** GET /api/cron/daily-articles — nightly Google News drafts (prefer shell: cron-daily-articles.sh) */
 export async function GET(req: Request) {
   if (!authorize(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

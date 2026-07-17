@@ -12,7 +12,7 @@ export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "HUID Verification Online — Verify BIS Gold Hallmark India",
   description:
-    "Free online HUID verification for gold jewellery in India. Check BIS Hallmark Unique ID — verify purity, jeweller, weight and marking date. 5 free checks per account.",
+    "Free online HUID verification for gold jewellery in India. Check BIS Hallmark Unique ID — verify purity, jeweller, weight and marking date. 3 free checks per account.",
   path: HUID_VERIFICATION_PATH,
   keywords: [...HUID_SEO_KEYWORDS],
   image:

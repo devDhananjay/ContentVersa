@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-export const HUID_FREE_LIMIT = 5;
+export const HUID_FREE_LIMIT = 3;
 
 export class HuidQuotaExceededError extends Error {
   constructor() {

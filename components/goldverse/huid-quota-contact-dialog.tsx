@@ -93,7 +93,7 @@ export function HuidQuotaContactDialog({
               name="message"
               rows={4}
               required
-              defaultValue="Hi, I've used my 5 free HUID verifications. I'd like to discuss API access for my jewellery business. Please share pricing and integration options."
+              defaultValue="Hi, I've used my 3 free HUID verifications. I'd like to discuss API access for my jewellery business. Please share pricing and integration options."
             />
           </div>
           <Button

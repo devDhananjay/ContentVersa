@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Daily AI articles — run twice on EC2 crontab for better quality (half categories each run)
-#   6:30 AM IST:  bash scripts/cron-daily-articles.sh first
-#   6:30 PM IST:  bash scripts/cron-daily-articles.sh second
+# Daily AI articles — one draft blog per category from Google News trending topics.
+# Content only (no cover). Schedule on EC2:
+#   11:00 PM IST = 17:30 UTC
+#   30 17 * * * cd /home/ec2-user/ContentVersa && bash scripts/cron-daily-articles.sh all >> /tmp/daily-articles.log 2>&1
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ENV_FILE=".env"
@@ -14,8 +15,8 @@ APP_URL=$(grep -E '^APP_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"')
 APP_URL=${APP_URL:-https://contentverse.co.in}
 PER_CAT="${DAILY_AI_PER_CATEGORY:-1}"
 SLOT="${1:-all}"
-# Half of 24 categories per run when using first/second
-MAX="${DAILY_AI_MAX_TOTAL:-12}"
+# All categories (~21) in one nightly run
+MAX="${DAILY_AI_MAX_TOTAL:-24}"
 if [[ -z "$CRON_SECRET" ]]; then
   echo "CRON_SECRET not set in .env" >&2
   exit 1

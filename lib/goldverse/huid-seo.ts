@@ -26,7 +26,7 @@ export const HUID_VERIFICATION_FAQ = [
   },
   {
     q: "Is HUID verification free?",
-    a: "Yes. Every registered user gets 5 free HUID verification checks. Jewellery shops and businesses needing higher volume can contact ContentVerse for API access.",
+    a: "Yes. Every registered user gets 3 free HUID verification checks. Jewellery shops and businesses needing higher volume can contact ContentVerse for API access.",
   },
   {
     q: "Where is the HUID marked on gold jewellery?",
@@ -83,7 +83,7 @@ export function huidVerificationWebAppJsonLd() {
       "@type": "Offer",
       price: "0",
       priceCurrency: "INR",
-      description: "5 free HUID verification checks per account",
+      description: "3 free HUID verification checks per account",
     },
   };
 }
