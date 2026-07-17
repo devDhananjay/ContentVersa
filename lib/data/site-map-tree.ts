@@ -133,6 +133,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             detail: "UPI expense tracker India",
             children: [
               { label: "Screenshot Scan (OCR)", href: "/moneyverse/screenshot-scan", detail: "UPI image → auto-fill expense" },
+              { label: "Bank Statement Analyzer", href: "/moneyverse/bank-statement-analyzer", detail: "PDF/image → transactions, cash flow & CSV" },
               { label: "Budget planner", detail: "Per-category monthly limits" },
               { label: "SIP & card reminders", detail: "Never miss a due date" },
             ],
@@ -450,6 +451,16 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
               { label: "PhonePe / GPay / Paytm", detail: "Payment success screen images" },
               { label: "Amount & merchant extract", detail: "AI reads the image" },
               { label: "Review & save", detail: "Edit category before saving expense" },
+            ],
+          },
+          {
+            label: "Bank Statement Analyzer",
+            href: "/moneyverse/bank-statement-analyzer",
+            detail: "Analyze statement PDF/image — credits, debits, categories & CSV",
+            children: [
+              { label: "5 free analyses", detail: "Per signed-in user" },
+              { label: "Admin unlimited", detail: "ADMIN & SUPER_ADMIN" },
+              { label: "Private processing", detail: "Files and results are not stored" },
             ],
           },
           { label: "Manual expense entry", href: "/moneyverse", detail: "UPI, cash, card & categories" },

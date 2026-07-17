@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
+  serverExternalPackages: ["pdf-parse"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

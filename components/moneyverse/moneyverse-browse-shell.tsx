@@ -1,9 +1,20 @@
 import Image from "next/image";
-import { Wallet } from "lucide-react";
+import Link from "next/link";
+import { FileSearch, ScanLine, Wallet } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1600";
+
+const TABS = [
+  { href: "/moneyverse", label: "Expenses", icon: Wallet },
+  { href: "/moneyverse/screenshot-scan", label: "Screenshot Scan", icon: ScanLine },
+  {
+    href: "/moneyverse/bank-statement-analyzer",
+    label: "Bank Statement Analyzer",
+    icon: FileSearch,
+  },
+] as const;
 
 export function MoneyVerseBrowseShell({ children }: { children: React.ReactNode }) {
   return (
@@ -30,11 +41,29 @@ export function MoneyVerseBrowseShell({ children }: { children: React.ReactNode 
             Money<span className="text-emerald-400">Verse</span>
           </h1>
           <p className="mt-1 max-w-xl text-xs text-muted-foreground md:text-sm">
-            Track expenses, plan budgets, monthly reports &{" "}
-            <span className="text-violet-300">Screenshot Scan (OCR)</span> for UPI payments
+            Track expenses, plan budgets, Screenshot Scan (OCR) & Bank Statement Analyzer
           </p>
         </div>
       </section>
+
+      <div className="container pt-4">
+        <nav className="flex flex-wrap gap-2 border-b border-border/50 pb-3">
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/5 px-3 py-1.5 text-xs font-medium text-emerald-200 transition-colors hover:border-emerald-500/50 hover:bg-emerald-500/10"
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {tab.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
       <div className="container py-6">{children}</div>
     </div>
   );

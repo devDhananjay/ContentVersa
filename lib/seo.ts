@@ -22,6 +22,7 @@ export const SITE_NAV_HUBS = [
   { name: "GoldVerse", path: "/goldverse", description: "HUID verify, gold rates and BIS hallmark tools" },
   { name: "MoneyVerse", path: "/moneyverse", description: "Expense tracker, budget planner, UPI spending & screenshot OCR scan India" },
   { name: "Screenshot Scan (OCR)", path: "/moneyverse/screenshot-scan", description: "UPI payment screenshot OCR — auto-fill expenses from PhonePe, GPay, Paytm" },
+  { name: "Bank Statement Analyzer", path: "/moneyverse/bank-statement-analyzer", description: "AI bank statement PDF analysis — credits, debits, expenses and CSV India" },
   { name: "HUID Verification", path: "/huid-verification", description: "Verify BIS gold hallmark HUID online India" },
   { name: "India Tools", path: "/tools", description: "Free weather, currency, QR, nearby places, IFSC, pincode, RTO, EMI, SIP tools India" },
   { name: "Weather India", path: "/tools/weather", description: "Free weather forecast by city India" },

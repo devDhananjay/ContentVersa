@@ -9,24 +9,25 @@ function sessionSubAsUserId(sub: string): string | null {
 
 /** Resolve Prisma user id from JWT session (handles legacy `google:…` subs). */
 export async function resolveUserId(session: SessionUser): Promise<string | null> {
-  if (!session.sub) return null;
+  if (!session.sub && !session.email) return null;
   if (!isDatabaseConfigured()) return sessionSubAsUserId(session.sub);
 
   const dbId = await safeDbQuery(null, async () => {
-    if (!session.sub.includes(":")) {
-      const byId = await prisma.user.findUnique({
-        where: { id: session.sub },
-        select: { id: true },
-      });
-      if (byId) return byId.id;
-    }
-
+    // Email is authoritative — matches /api/auth/me role refresh when JWT sub is stale.
     if (session.email) {
       const byEmail = await prisma.user.findUnique({
         where: { email: session.email },
         select: { id: true },
       });
-      return byEmail?.id ?? null;
+      if (byEmail) return byEmail.id;
+    }
+
+    if (session.sub && !session.sub.includes(":")) {
+      const byId = await prisma.user.findUnique({
+        where: { id: session.sub },
+        select: { id: true },
+      });
+      if (byId) return byId.id;
     }
 
     return null;

@@ -6,6 +6,7 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
+  FileSearch,
   IndianRupee,
   Loader2,
   Plus,
@@ -270,6 +271,23 @@ export function MoneyVerseHub() {
           <p className="text-[11px] text-muted-foreground">credit card · SIP · custom</p>
         </div>
       </div>
+
+      <Link
+        href="/moneyverse/bank-statement-analyzer"
+        className="block rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 via-card to-card p-5 transition-colors hover:border-emerald-500/50"
+      >
+        <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-300">
+          <FileSearch className="h-3.5 w-3.5" />
+          Bank Statement Analyzer
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Upload a bank statement PDF or image — AI extracts credits, debits, categories,
+          recurring payments and cash-flow. Download CSV. 5 free analyses per user.
+        </p>
+        <span className="mt-3 inline-flex text-sm font-medium text-emerald-300">
+          Open analyzer →
+        </span>
+      </Link>
 
       {loggedIn ? (
         <div id="screenshot-scan-ocr" className="space-y-2">

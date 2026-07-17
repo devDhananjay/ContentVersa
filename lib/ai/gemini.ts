@@ -172,14 +172,17 @@ export async function callGeminiJson<T>(
   system: string,
   user: string,
   responseSchema: object,
-  maxTokens = 8192
+  maxTokens = 8192,
+  options?: { maxInputChars?: number; temperature?: number }
 ): Promise<T | null> {
+  const maxInput = options?.maxInputChars ?? 14_000;
+  const temperature = options?.temperature ?? 0.7;
   const result = await generateAcrossModels(() => ({
     systemInstruction: { parts: [{ text: system }] },
-    contents: [{ role: "user", parts: [{ text: user.slice(0, 14000) }] }],
+    contents: [{ role: "user", parts: [{ text: user.slice(0, maxInput) }] }],
     generationConfig: {
       maxOutputTokens: maxTokens,
-      temperature: 0.7,
+      temperature,
       responseMimeType: "application/json",
       responseSchema,
     },

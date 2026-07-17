@@ -14,6 +14,7 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
       { label: "GoldVerse", href: "/goldverse" },
       { label: "MoneyVerse", href: "/moneyverse" },
       { label: "Screenshot Scan (OCR)", href: "/moneyverse/screenshot-scan" },
+      { label: "Bank Statement Analyzer", href: "/moneyverse/bank-statement-analyzer" },
       { label: "HUID Verification", href: "/huid-verification" },
       { label: "India Tools", href: "/tools" },
       { label: "Weather", href: "/tools/weather" },

@@ -47,6 +47,7 @@ const STATIC_PAGES: Array<{
   { path: "/goldverse", changeFrequency: "hourly", priority: 0.84 },
   { path: "/moneyverse", changeFrequency: "daily", priority: 0.86 },
   { path: "/moneyverse/screenshot-scan", changeFrequency: "weekly", priority: 0.88 },
+  { path: "/moneyverse/bank-statement-analyzer", changeFrequency: "weekly", priority: 0.9 },
   { path: "/huid-verification", changeFrequency: "daily", priority: 0.9 },
   { path: "/tools", changeFrequency: "daily", priority: 0.92 },
   ...TOOL_REGISTRY.map((t) => ({
