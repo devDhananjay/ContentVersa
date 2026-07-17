@@ -128,6 +128,13 @@ export function FuelPriceTool() {
               </div>
             ))}
           </CardContent>
+          {selected.source || selected.date ? (
+            <p className="px-6 pb-4 text-xs text-muted-foreground">
+              {selected.source ? `${selected.source}. ` : ""}
+              {selected.date ? `As of ${selected.date}. ` : ""}
+              Prices vary by outlet — confirm locally before purchase.
+            </p>
+          ) : null}
         </Card>
       ) : (
         <div className="flex flex-wrap gap-2">

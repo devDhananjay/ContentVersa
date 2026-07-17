@@ -63,6 +63,15 @@ export function VehiclePlateDecoderTool() {
                 jobs across states.
               </p>
             ) : null}
+            {result.rto ? (
+              <div className="sm:col-span-2 rounded-lg border border-border/60 p-3">
+                <p className="text-xs text-muted-foreground">RTO office</p>
+                <p className="font-medium">
+                  {result.rto.code} — {result.rto.city}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{result.rto.address}</p>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       ) : null}

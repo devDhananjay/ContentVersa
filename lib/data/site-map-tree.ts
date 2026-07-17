@@ -466,6 +466,59 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
     ],
   },
   {
+    id: "india-tools",
+    label: "India Tools",
+    color: "sky",
+    href: "/tools",
+    summary: "Free daily-use checkers — IFSC, pincode, RTO, fuel, EMI, SIP, PAN/GSTIN",
+    groups: [
+      {
+        heading: "Banking & address",
+        items: [
+          { label: "IFSC Finder", href: "/tools/ifsc-finder", detail: "Bank branch, MICR, NEFT/RTGS/UPI" },
+          { label: "Pincode Finder", href: "/tools/pincode-finder", detail: "Post office, district & state" },
+        ],
+      },
+      {
+        heading: "Vehicle",
+        items: [
+          {
+            label: "RTO Finder",
+            href: "/tools/rto-finder",
+            detail: "1,200+ RTO codes with office address",
+            children: [
+              { label: "Search by city", detail: "e.g. Bareilly, Pune, Delhi" },
+              { label: "Search by code", detail: "e.g. UP25, MH12, DL01" },
+            ],
+          },
+          {
+            label: "Vehicle Plate Decoder",
+            href: "/tools/vehicle-plate-decoder",
+            detail: "State, RTO & BH series from number plate",
+          },
+        ],
+      },
+      {
+        heading: "Finance calculators",
+        items: [
+          { label: "EMI Calculator", href: "/tools/emi-calculator", detail: "Home / car / personal loan EMI" },
+          { label: "SIP Calculator", href: "/tools/sip-calculator", detail: "Mutual fund SIP maturity estimate" },
+          { label: "PAN / GSTIN Check", href: "/tools/pan-gstin-checker", detail: "Format & checksum validation" },
+        ],
+      },
+      {
+        heading: "Daily rates",
+        items: [
+          {
+            label: "Petrol & Diesel Price",
+            href: "/tools/fuel-price",
+            detail: "City-wise fuel prices India",
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "jobs",
     label: "Jobs",
     color: "orange",

@@ -88,8 +88,62 @@ export function toolsHubJsonLd() {
     "@type": "CollectionPage",
     name: "Free India Utility Tools",
     description:
-      "IFSC finder, pincode lookup, RTO code search, PAN/GSTIN checker, EMI & SIP calculators, fuel prices, and vehicle plate decoder.",
+      "IFSC finder, pincode lookup, RTO code search with address, PAN/GSTIN checker, EMI & SIP calculators, fuel prices, and vehicle plate decoder.",
     url: toolsHubUrl(),
+    isPartOf: { "@type": "WebSite", name: SITE.name, url: SITE.url },
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "IFSC Finder",
+          url: toolPageUrl("ifsc-finder"),
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Pincode Finder",
+          url: toolPageUrl("pincode-finder"),
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "RTO Finder",
+          url: toolPageUrl("rto-finder"),
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Vehicle Plate Decoder",
+          url: toolPageUrl("vehicle-plate-decoder"),
+        },
+        {
+          "@type": "ListItem",
+          position: 5,
+          name: "PAN / GSTIN Checker",
+          url: toolPageUrl("pan-gstin-checker"),
+        },
+        {
+          "@type": "ListItem",
+          position: 6,
+          name: "EMI Calculator",
+          url: toolPageUrl("emi-calculator"),
+        },
+        {
+          "@type": "ListItem",
+          position: 7,
+          name: "SIP Calculator",
+          url: toolPageUrl("sip-calculator"),
+        },
+        {
+          "@type": "ListItem",
+          position: 8,
+          name: "Fuel Price",
+          url: toolPageUrl("fuel-price"),
+        },
+      ],
+    },
   };
 }
 
