@@ -506,6 +506,15 @@
       "namedRegex": "^/sports/team/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/tools/locations/[city]/[category]",
+      "regex": "^/tools/locations/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcity": "nxtPcity",
+        "nxtPcategory": "nxtPcategory"
+      },
+      "namedRegex": "^/tools/locations/(?<nxtPcity>[^/]+?)/(?<nxtPcategory>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/tools/[slug]",
       "regex": "^/tools/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -828,6 +837,12 @@
       "regex": "^/moneyverse(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/moneyverse(?:/)?$"
+    },
+    {
+      "page": "/moneyverse/bank-statement-analyzer",
+      "regex": "^/moneyverse/bank\\-statement\\-analyzer(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/moneyverse/bank\\-statement\\-analyzer(?:/)?$"
     },
     {
       "page": "/moneyverse/screenshot-scan",

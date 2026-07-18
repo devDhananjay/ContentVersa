@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Search, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, Search, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -259,7 +259,7 @@ export function Hero({ categories, stats }: Props) {
               </Link>
             </motion.div>
             <motion.div whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.98 }}>
-              <Link href="/blogs">
+              <Link href="#explore-modules">
                 <Button
                   variant="outline"
                   size="xl"
@@ -268,8 +268,8 @@ export function Hero({ categories, stats }: Props) {
                     cinematic ? "border-white/25 bg-white/10 text-white hover:bg-white/15" : "bg-card/40"
                   )}
                 >
-                  <TrendingUp className="h-5 w-5" />
-                  Explore Articles
+                  Explore modules
+                  <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
             </motion.div>

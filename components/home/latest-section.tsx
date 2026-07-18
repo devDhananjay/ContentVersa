@@ -10,7 +10,7 @@ interface Props {
 
 export function LatestSection({ blogs }: Props) {
   return (
-    <section className="container py-12 md:py-20">
+    <section className="container py-12 md:py-20" id="home-latest">
       <div className="flex items-end justify-between mb-8">
         <div>
           <span className="text-sm font-semibold uppercase tracking-widest text-neon-cyan">

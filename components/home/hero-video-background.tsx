@@ -76,7 +76,7 @@ export function HeroVideoBackground({ className }: { className?: string }) {
           preload="auto"
           disablePictureInPicture
           controls={false}
-          className="absolute inset-0 h-full w-full object-cover scale-[1.02]"
+          className="absolute left-1/2 top-1/2 h-full w-full min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover object-center scale-[1.35] sm:scale-[1.4] lg:scale-[1.45]"
           onError={() => setFailed(true)}
         >
           <source src={url} type="video/mp4" />
@@ -85,10 +85,10 @@ export function HeroVideoBackground({ className }: { className?: string }) {
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-background" />
       )}
 
-      {/* Overlays — lighter so video stays visible */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-background/95" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.15),transparent_55%)]" />
-      <div className="absolute inset-0 opacity-10 grid-noise" />
+      {/* Overlays — keep text readable without washing out the zoomed video */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-background/90" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(0,0,0,0.35)_100%)]" />
+      <div className="absolute inset-0 opacity-[0.07] grid-noise" />
     </div>
   );
 }

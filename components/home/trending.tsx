@@ -17,7 +17,7 @@ export function TrendingSection({ blogs }: Props) {
   const reduce = useReducedMotion();
 
   return (
-    <section className="container py-12 md:py-20 relative">
+    <section className="container py-12 md:py-20 relative" id="home-articles">
       <Reveal>
         <div className="flex items-end justify-between mb-8">
           <div>

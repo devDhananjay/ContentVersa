@@ -17,7 +17,7 @@ export function SportsTeaser({ data }: SportsTeaserProps) {
   if (!featuredMatches.length && !data.news.length) return null;
 
   return (
-    <section className="container py-12 md:py-16">
+    <section className="container py-12 md:py-16" id="home-sports">
       <div className="flex items-end justify-between mb-8">
         <div>
           <Badge variant="neon" className="mb-2 gap-1">
