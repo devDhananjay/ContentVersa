@@ -155,31 +155,62 @@ export function parseNewsIndex(raw: any): CricketNewsItem[] {
 }
 
 export function parseNewsDetail(raw: any): CricketNewsDetail | null {
-  if (!raw?.id) return null;
+  const story = raw?.story && typeof raw.story === "object" ? raw.story : raw;
+  if (!story || typeof story !== "object") return null;
+
+  const id = Number(story.id ?? story.storyId ?? raw?.id ?? raw?.storyId);
+  if (!Number.isFinite(id) || id <= 0) return null;
 
   const paragraphs: string[] = [];
-  for (const block of raw.content ?? []) {
-    const value = block?.content?.contentValue;
+  const blocks = Array.isArray(story.content)
+    ? story.content
+    : Array.isArray(raw?.content)
+      ? raw.content
+      : [];
+
+  for (const block of blocks) {
+    const value =
+      block?.content?.contentValue ??
+      block?.contentValue ??
+      block?.text ??
+      (typeof block === "string" ? block : null);
     if (typeof value === "string" && value.trim()) {
       paragraphs.push(value.trim());
     }
   }
 
-  const imageId = raw.coverImage?.id ?? raw.imageId;
+  const intro =
+    (typeof story.intro === "string" && story.intro.trim()) ||
+    paragraphs[0] ||
+    "";
+  if (intro && !paragraphs.includes(intro)) {
+    // Prefer full article body; keep intro available when content empty.
+  }
+
+  const imageId = story.coverImage?.id ?? story.imageId ?? raw?.coverImage?.id;
+  const publishedRaw = story.publishTime ?? story.pubTime ?? raw?.publishTime;
 
   return {
-    id: raw.id,
-    headline: raw.headline ?? raw.hline ?? "Untitled",
-    intro: paragraphs[0] ?? "",
-    context: raw.context,
-    storyType: raw.storyType,
-    source: raw.source ?? raw.coverImage?.source,
-    publishedAt: raw.publishTime
-      ? new Date(Number(raw.publishTime)).toISOString()
+    id,
+    headline: story.headline ?? story.hline ?? story.seoHeadline ?? "Untitled",
+    intro,
+    context: story.context,
+    storyType: story.storyType,
+    source: story.source ?? story.coverImage?.source,
+    publishedAt: publishedRaw
+      ? new Date(Number(publishedRaw)).toISOString()
       : new Date().toISOString(),
     imageId,
     imageUrl: cricbuzzImageUrl(imageId, "640x360"),
-    content: paragraphs,
+    content: paragraphs.length ? paragraphs : intro ? [intro] : [],
+  };
+}
+
+/** Build a readable detail page from index card data when full article isn't cached. */
+export function newsDetailFromIndexItem(item: CricketNewsItem): CricketNewsDetail {
+  return {
+    ...item,
+    content: item.intro ? [item.intro] : [],
   };
 }
 

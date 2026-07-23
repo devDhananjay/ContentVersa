@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft, CalendarDays } from "lucide-react";
@@ -17,11 +17,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const series = await getSeriesDetailData(Number(id));
-  if (!series) return buildMetadata({ title: "Series" });
+  if (!series) return buildMetadata({ title: "Series", noIndex: true });
   return buildMetadata({
     title: series.name,
     description: `${series.name} — matches, squads, points table and news.`,
     path: `/sports/series/${id}`,
+    noIndex: true,
   });
 }
 
@@ -32,10 +33,10 @@ export default async function SeriesPage({
 }) {
   const { id } = await params;
   const seriesId = Number(id);
-  if (!Number.isFinite(seriesId)) notFound();
+  if (!Number.isFinite(seriesId)) redirect("/sports");
 
   const series = await getSeriesDetailData(seriesId);
-  if (!series) notFound();
+  if (!series) redirect("/sports");
 
   return (
     <div className="container py-8 md:py-12">

@@ -1,12 +1,13 @@
 import { cache } from "react";
 import { cricbuzzFetch, isSportsApiConfigured, SportsApiError } from "./cricbuzz-client";
-import { readSportsPayload } from "./cache-reader";
+import { isSportsDbCacheEnabled, readSportsPayload } from "./cache-reader";
 import { SPORTS_CACHE } from "./cache-keys";
 import {
   parseCommentary,
   parseGroupedMatches,
   parseMatchDetail,
   parseMatchesResponse,
+  newsDetailFromIndexItem,
   parseNewsDetail,
   parseNewsIndex,
   parsePlayerProfile,
@@ -42,6 +43,7 @@ import type {
   TeamPlayer,
   TeamSummary,
 } from "./types";
+import { isDatabaseConfigured } from "@/lib/prisma";
 
 export async function getLiveMatches(): Promise<SportMatch[]> {
   if (!isSportsApiConfigured()) return [];
@@ -86,13 +88,44 @@ export async function getCricketNews(limit = 12): Promise<CricketNewsItem[]> {
 export async function getCricketNewsDetail(
   id: number
 ): Promise<CricketNewsDetail | null> {
-  if (!isSportsApiConfigured()) return null;
+  if (!Number.isFinite(id) || id <= 0) return null;
+
   const { key, ttl, staleTtl } = SPORTS_CACHE.newsDetail(id);
-  const raw = await readSportsPayload(key, ttl, staleTtl, () =>
-    cricbuzzFetch<unknown>(`/news/v1/detail/${id}`)
-  );
-  if (!raw) return null;
-  return parseNewsDetail(raw);
+
+  // Prefer cached / live detail payload when available.
+  if (isSportsApiConfigured() || isDatabaseConfigured()) {
+    const raw = await readSportsPayload(key, ttl, staleTtl, () =>
+      cricbuzzFetch<unknown>(`/news/v1/detail/${id}`)
+    );
+    if (raw) {
+      const parsed = parseNewsDetail(raw);
+      if (parsed) return parsed;
+    }
+
+    // DB-cache mode often only prefetches a few details — try a live hit for
+    // articles that are already linked from the news index.
+    if (isSportsApiConfigured()) {
+      try {
+        const live = await cricbuzzFetch<unknown>(`/news/v1/detail/${id}`);
+        const parsed = parseNewsDetail(live);
+        if (parsed) {
+          if (isSportsDbCacheEnabled()) {
+            const { setSportsDbCache } = await import("./db-cache");
+            await setSportsDbCache(key, "news-detail-live", live);
+          }
+          return parsed;
+        }
+      } catch {
+        // Fall through to index summary.
+      }
+    }
+  }
+
+  // Last resort: serve headline/intro from the news index so hub links don't 404.
+  const fromIndex = (await getCricketNews(40)).find((item) => item.id === id);
+  if (fromIndex) return newsDetailFromIndexItem(fromIndex);
+
+  return null;
 }
 
 async function findMatchInCachedLists(matchId: number): Promise<SportMatch | null> {

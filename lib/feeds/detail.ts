@@ -250,8 +250,8 @@ async function fetchHackerNewsDetail(id: string): Promise<FeedItem | null> {
     score?: number;
     descendants?: number;
     kids?: number[];
-  };
-  if (!item.title) return null;
+  } | null;
+  if (!item?.title) return null;
 
   const preview = item.url ? await fetchLinkPreview(item.url) : null;
   const hnText = item.text ? stripHtml(item.text) : "";
@@ -369,14 +369,27 @@ async function fetchHfPaperDetail(paperId: string): Promise<FeedItem | null> {
 
 async function fetchRedditDetail(url: string): Promise<FeedItem | null> {
   const cached = await cache.get<FeedItem>(itemCacheKey("ai", url));
+  if (cached?.title) {
+    const preview = await fetchLinkPreview(url);
+    return {
+      id: url,
+      title: cached.title,
+      externalUrl: url,
+      subtitle: cached.subtitle || preview?.description?.slice(0, 160),
+      description: preview?.description || cached.description,
+      image: preview?.image || cached.image,
+    };
+  }
+
   const preview = await fetchLinkPreview(url);
+  if (!preview?.title && !preview?.description) return null;
 
   return {
     id: url,
-    title: cached?.title || preview?.title || "Community discussion",
+    title: preview.title || "Community discussion",
     externalUrl: url,
-    subtitle: cached?.subtitle || preview?.description?.slice(0, 160),
-    description: preview?.description,
-    image: preview?.image,
+    subtitle: preview.description?.slice(0, 160),
+    description: preview.description,
+    image: preview.image,
   };
 }

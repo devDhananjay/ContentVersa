@@ -3,15 +3,6 @@ Allow: /
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /api
-Disallow: /discover/
 Disallow: /auth/
-Disallow: /reels/
-Disallow: /finance/stock/
-Disallow: /sports/match/
-Disallow: /sports/player/
-Disallow: /sports/team/
-Disallow: /sports/series/
-Disallow: /sports/news/
-Disallow: /leaderboard
 
 Sitemap: https://contentverse.co.in/sitemap.xml

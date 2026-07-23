@@ -1,6 +1,10 @@
 /**
  * Google indexing rules — keep the public index focused on original editorial content.
- * Thin API/widget pages (live scores, stock tickers, auth, reels) are noindex.
+ *
+ * Thin public widgets (live scores, stock tickers, reels, discover, leaderboard)
+ * stay crawlable but use page-level `noIndex` so Google can see canonicals without
+ * indexing them. Private surfaces (/dashboard, /admin, /api, /auth) are Disallow'd
+ * in app/robots.ts.
  */
 
 /** Minimum reading minutes for blog posts in sitemap / Google index */

@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -25,12 +25,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const profile = await getPlayerProfile(Number(id));
-  if (!profile) return buildMetadata({ title: "Player" });
+  if (!profile) return buildMetadata({ title: "Player", noIndex: true });
   return buildMetadata({
     title: profile.name,
     description: `${profile.name} — ${profile.role ?? "Cricket player"} profile and stats.`,
     path: `/sports/player/${id}`,
     image: profile.imageUrl,
+    noIndex: true,
   });
 }
 
@@ -41,7 +42,7 @@ export default async function PlayerPage({
 }) {
   const { id } = await params;
   const playerId = Number(id);
-  if (!Number.isFinite(playerId)) notFound();
+  if (!Number.isFinite(playerId)) redirect("/sports/players");
 
   const [profile, batting, bowling, news] = await Promise.all([
     getPlayerProfile(playerId),
@@ -50,7 +51,7 @@ export default async function PlayerPage({
     getPlayerNews(playerId, 6),
   ]);
 
-  if (!profile) notFound();
+  if (!profile) redirect("/sports/players");
 
   const img =
     profile.imageUrl ?? playerFaceImageUrl(playerId);

@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${name} Stock Price`,
     description: `Live ${name} stock price, chart and market data on ContentVerse Finance Hub.`,
     path: `/finance/stock/${symbol}`,
+    noIndex: true,
   });
 }
 

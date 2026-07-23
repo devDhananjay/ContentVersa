@@ -40,12 +40,28 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/jewellers/:path*",
-        destination: "/goldverse/:path*",
+        destination: "/goldverse",
         permanent: true,
       },
       {
         source: "/api/jewellers/:path*",
         destination: "/api/goldverse/:path*",
+        permanent: true,
+      },
+      // Old jewellers deep links that were rewritten to missing /goldverse/* paths
+      {
+        source: "/goldverse/rates",
+        destination: "/goldverse",
+        permanent: true,
+      },
+      {
+        source: "/goldverse/hallmark",
+        destination: "/huid-verification",
+        permanent: true,
+      },
+      {
+        source: "/goldverse/huid",
+        destination: "/huid-verification",
         permanent: true,
       },
     ];

@@ -6,10 +6,10 @@
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
+    "/api/moneyverse/bank-statement/quota": {},
     "/api/moneyverse/bank-statement/analyze": {},
     "/api/reels/upload": {},
     "/api/upload": {},
-    "/api/moneyverse/bank-statement/quota": {},
     "/api/auth/firebase": {},
     "/uploads/[filename]": {}
   }

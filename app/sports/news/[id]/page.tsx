@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -18,7 +18,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const article = await getCricketNewsDetail(Number(id));
-  if (!article) return buildMetadata({ title: "Cricket News" });
+  if (!article) return buildMetadata({ title: "Cricket News", noIndex: true });
   return buildMetadata({
     title: article.headline,
     description: article.intro,
@@ -26,6 +26,7 @@ export async function generateMetadata({
     image: article.imageUrl,
     type: "article",
     publishedTime: article.publishedAt,
+    noIndex: true,
   });
 }
 
@@ -36,10 +37,10 @@ export default async function CricketNewsPage({
 }) {
   const { id } = await params;
   const newsId = Number(id);
-  if (!Number.isFinite(newsId)) notFound();
+  if (!Number.isFinite(newsId)) redirect("/sports");
 
   const article = await getCricketNewsDetail(newsId);
-  if (!article) notFound();
+  if (!article) redirect("/sports");
 
   return (
     <article className="container py-8 md:py-12 max-w-3xl">

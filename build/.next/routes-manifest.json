@@ -19,7 +19,7 @@
     },
     {
       "source": "/jewellers/:path*",
-      "destination": "/goldverse/:path*",
+      "destination": "/goldverse",
       "statusCode": 308,
       "regex": "^(?!/_next)/jewellers(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
     },
@@ -28,6 +28,24 @@
       "destination": "/api/goldverse/:path*",
       "statusCode": 308,
       "regex": "^(?!/_next)/api/jewellers(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    },
+    {
+      "source": "/goldverse/rates",
+      "destination": "/goldverse",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/goldverse/rates(?:/)?$"
+    },
+    {
+      "source": "/goldverse/hallmark",
+      "destination": "/huid-verification",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/goldverse/hallmark(?:/)?$"
+    },
+    {
+      "source": "/goldverse/huid",
+      "destination": "/huid-verification",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/goldverse/huid(?:/)?$"
     }
   ],
   "headers": [

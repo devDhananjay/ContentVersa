@@ -108,7 +108,7 @@ async function buildDynamicEndpoints(): Promise<{ key: string; path: string }[]>
 
   if (newsRaw) {
     for (const id of uniqueNumbers(
-      parseNewsIndex(newsRaw).slice(0, 3).map((n) => n.id)
+      parseNewsIndex(newsRaw).slice(0, 12).map((n) => n.id)
     )) {
       endpoints.push({
         key: SPORTS_CACHE.newsDetail(id).key,

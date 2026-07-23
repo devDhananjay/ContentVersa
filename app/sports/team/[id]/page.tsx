@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -24,11 +24,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const team = await getTeamById(Number(id));
-  if (!team) return buildMetadata({ title: "Team" });
+  if (!team) return buildMetadata({ title: "Team", noIndex: true });
   return buildMetadata({
     title: team.name,
     description: `${team.name} cricket team — squad, schedule and results.`,
     path: `/sports/team/${id}`,
+    noIndex: true,
   });
 }
 
@@ -39,7 +40,7 @@ export default async function TeamPage({
 }) {
   const { id } = await params;
   const teamId = Number(id);
-  if (!Number.isFinite(teamId)) notFound();
+  if (!Number.isFinite(teamId)) redirect("/sports/teams");
 
   const [team, players, schedule, results] = await Promise.all([
     getTeamById(teamId),
@@ -48,7 +49,7 @@ export default async function TeamPage({
     getTeamResults(teamId),
   ]);
 
-  if (!team) notFound();
+  if (!team) redirect("/sports/teams");
 
   const img = cricbuzzImageUrl(team.imageId, "120x120");
 

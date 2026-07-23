@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -25,11 +25,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const match = await getMatchDetail(Number(id));
-  if (!match) return buildMetadata({ title: "Match" });
+  if (!match) return buildMetadata({ title: "Match", noIndex: true });
   return buildMetadata({
     title: `${match.team1.shortName} vs ${match.team2.shortName}`,
     description: `${match.seriesName} — ${match.status}`,
     path: `/sports/match/${id}`,
+    noIndex: true,
   });
 }
 
@@ -40,7 +41,7 @@ export default async function MatchDetailPage({
 }) {
   const { id } = await params;
   const matchId = Number(id);
-  if (!Number.isFinite(matchId)) notFound();
+  if (!Number.isFinite(matchId)) redirect("/sports");
 
   const [match, blogs, scorecard, commentary] = await Promise.all([
     getMatchDetail(matchId),
@@ -48,7 +49,7 @@ export default async function MatchDetailPage({
     getMatchScorecard(matchId),
     getMatchCommentary(matchId),
   ]);
-  if (!match) notFound();
+  if (!match) redirect("/sports");
 
   const scores = getMatchScoreSummary(match);
   const team1Img = cricbuzzImageUrl(match.team1.imageId, "80x80");
