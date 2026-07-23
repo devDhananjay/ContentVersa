@@ -47,6 +47,7 @@ import { useRouter } from "next/navigation";
 import { AiAssistPanel } from "@/components/dashboard/ai-assist-panel";
 import { AiImageGenerator } from "@/components/dashboard/ai-image-generator";
 import { TryWithAiButton } from "@/components/dashboard/try-with-ai-button";
+import { ImageCropDialog } from "@/components/media/image-crop-dialog";
 import type { FullBlogPackage } from "@/lib/ai/full-blog-package";
 
 type BlogDraft = {
@@ -125,6 +126,9 @@ export function BlogEditorForm({
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [coverUploading, setCoverUploading] = React.useState(false);
   const [coverError, setCoverError] = React.useState<string | null>(null);
+  const [cropFile, setCropFile] = React.useState<File | null>(null);
+  const [cropSourceUrl, setCropSourceUrl] = React.useState<string | null>(null);
+  const [cropOpen, setCropOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("write");
   const [aiNotice, setAiNotice] = React.useState<string | null>(null);
   const coverInputRef = React.useRef<HTMLInputElement>(null);
@@ -180,6 +184,25 @@ export function BlogEditorForm({
       cancelled = true;
     };
   }, [blogId, adminMode]);
+
+  const openCoverCrop = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setCoverError("Only image files are supported.");
+      return;
+    }
+    setCoverError(null);
+    setCropSourceUrl(null);
+    setCropFile(file);
+    setCropOpen(true);
+  };
+
+  const openCoverRecrop = () => {
+    if (!cover.trim()) return;
+    setCoverError(null);
+    setCropFile(null);
+    setCropSourceUrl(cover.trim());
+    setCropOpen(true);
+  };
 
   const handleCoverFile = async (file: File) => {
     setCoverError(null);
@@ -517,9 +540,23 @@ export function BlogEditorForm({
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) handleCoverFile(f);
+                  if (f) openCoverCrop(f);
                   e.target.value = "";
                 }}
+              />
+              <ImageCropDialog
+                open={cropOpen}
+                file={cropFile}
+                sourceUrl={cropSourceUrl}
+                variant="cover"
+                onOpenChange={(open) => {
+                  setCropOpen(open);
+                  if (!open) {
+                    setCropFile(null);
+                    setCropSourceUrl(null);
+                  }
+                }}
+                onCropped={handleCoverFile}
               />
               {cover ? (
                 <div className="relative aspect-[16/8] rounded-3xl overflow-hidden border">
@@ -532,6 +569,13 @@ export function BlogEditorForm({
                     unoptimized={shouldSkipImageOptimization(cover)}
                   />
                   <div className="absolute top-3 right-3 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={openCoverRecrop}
+                      className="px-3 py-1.5 rounded-full bg-black/60 text-white text-xs backdrop-blur hover:bg-black/80"
+                    >
+                      Crop
+                    </button>
                     <button
                       type="button"
                       onClick={() => coverInputRef.current?.click()}
@@ -554,7 +598,7 @@ export function BlogEditorForm({
                   onDrop={(e) => {
                     e.preventDefault();
                     const f = e.dataTransfer.files?.[0];
-                    if (f) handleCoverFile(f);
+                    if (f) openCoverCrop(f);
                   }}
                   className="w-full aspect-[16/6] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center gap-3 text-muted-foreground hover:border-neon-purple/60 hover:text-foreground transition-colors"
                 >
@@ -566,7 +610,9 @@ export function BlogEditorForm({
                   <span className="font-medium">
                     {coverUploading ? "Uploading…" : "Upload cover image"}
                   </span>
-                  <span className="text-xs">PNG, JPG, WebP up to 5MB · 1600×900 recommended</span>
+                  <span className="text-xs">
+                    PNG, JPG, WebP up to 5MB · crop to 16:9 before upload
+                  </span>
                   <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
                     <Button
                       type="button"

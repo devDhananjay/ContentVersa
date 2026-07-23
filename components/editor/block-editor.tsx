@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { shouldSkipImageOptimization, uploadImage } from "@/lib/upload";
 import { toYoutubeEmbedUrl } from "@/lib/youtube";
 import { YouTubeEmbed } from "@/components/blog/youtube-embed";
+import { ImageCropDialog } from "@/components/media/image-crop-dialog";
 import {
   defaultEditorBlocks,
   markdownToBlocks,
@@ -366,6 +367,28 @@ function ImageBlock({
   const [uploading, setUploading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [showUrl, setShowUrl] = React.useState(false);
+  const [cropFile, setCropFile] = React.useState<File | null>(null);
+  const [cropSourceUrl, setCropSourceUrl] = React.useState<string | null>(null);
+  const [cropOpen, setCropOpen] = React.useState(false);
+
+  const openCrop = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setError("Only image files are supported.");
+      return;
+    }
+    setError(null);
+    setCropSourceUrl(null);
+    setCropFile(file);
+    setCropOpen(true);
+  };
+
+  const openRecrop = () => {
+    if (!block.content) return;
+    setError(null);
+    setCropFile(null);
+    setCropSourceUrl(block.content);
+    setCropOpen(true);
+  };
 
   const handleFile = async (file: File) => {
     setError(null);
@@ -379,6 +402,23 @@ function ImageBlock({
       setUploading(false);
     }
   };
+
+  const cropDialog = (
+    <ImageCropDialog
+      open={cropOpen}
+      file={cropFile}
+      sourceUrl={cropSourceUrl}
+      variant="inline"
+      onOpenChange={(open) => {
+        setCropOpen(open);
+        if (!open) {
+          setCropFile(null);
+          setCropSourceUrl(null);
+        }
+      }}
+      onCropped={handleFile}
+    />
+  );
 
   if (block.content) {
     return (
@@ -394,6 +434,13 @@ function ImageBlock({
           />
         </div>
         <div className="absolute top-2 right-2 flex gap-1.5">
+          <button
+            type="button"
+            onClick={openRecrop}
+            className="px-2.5 py-1 rounded-full bg-black/60 text-white text-xs backdrop-blur hover:bg-black/80"
+          >
+            Crop
+          </button>
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
@@ -417,10 +464,11 @@ function ImageBlock({
           className="hidden"
           onChange={(e) => {
             const f = e.target.files?.[0];
-            if (f) handleFile(f);
+            if (f) openCrop(f);
             e.target.value = "";
           }}
         />
+        {cropDialog}
       </div>
     );
   }
@@ -435,7 +483,7 @@ function ImageBlock({
       onDrop={(e) => {
         e.preventDefault();
         const f = e.dataTransfer.files?.[0];
-        if (f) handleFile(f);
+        if (f) openCrop(f);
       }}
     >
       <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
@@ -450,7 +498,7 @@ function ImageBlock({
           {uploading ? "Uploading…" : "Add an image"}
         </p>
         <p className="text-xs text-muted-foreground">
-          PNG, JPG, GIF or WebP up to 5MB — or drop a file here
+          PNG, JPG, GIF or WebP up to 5MB — crop before upload
         </p>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-2">
@@ -499,10 +547,11 @@ function ImageBlock({
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];
-          if (f) handleFile(f);
+          if (f) openCrop(f);
           e.target.value = "";
         }}
       />
+      {cropDialog}
     </div>
   );
 }
