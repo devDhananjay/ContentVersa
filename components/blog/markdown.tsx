@@ -4,6 +4,7 @@ import rehypeHighlight from "rehype-highlight";
 import { createHeadingIdAllocator } from "@/lib/utils";
 import { splitMarkdownEmbeds } from "@/lib/youtube";
 import { YouTubeEmbed } from "@/components/blog/youtube-embed";
+import { InlinePollEmbed } from "@/components/blog/inline-poll-embed";
 
 function makeHeading(
   Tag: "h1" | "h2" | "h3",
@@ -53,13 +54,17 @@ export function renderMarkdown(content: string) {
 
   return (
     <article className="prose-content">
-      {parts.map((part, i) =>
-        part.type === "youtube" ? (
-          <YouTubeEmbed key={`yt-${i}-${part.src}`} src={part.src} />
-        ) : (
+      {parts.map((part, i) => {
+        if (part.type === "youtube") {
+          return <YouTubeEmbed key={`yt-${i}-${part.src}`} src={part.src} />;
+        }
+        if (part.type === "poll") {
+          return <InlinePollEmbed key={`poll-${i}`} body={part.body} />;
+        }
+        return (
           <MarkdownChunk key={`md-${i}`} content={part.value} idFor={idFor} />
-        )
-      )}
+        );
+      })}
     </article>
   );
 }

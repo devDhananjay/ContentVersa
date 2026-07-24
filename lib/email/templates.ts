@@ -79,6 +79,43 @@ export function weeklyDigestEmail(opts: {
   return { subject: "Your weekly ContentVerse digest", html };
 }
 
+export function creatorWeeklyDigestEmail(opts: {
+  name?: string | null;
+  views: number;
+  newFollowers: number;
+  topComment?: { content: string; blogTitle: string; blogSlug: string } | null;
+}) {
+  const site = getAppUrl();
+  const greeting = opts.name ? `Hey ${escapeHtml(opts.name.split(" ")[0])}` : "Hey creator";
+  const commentBlock = opts.topComment
+    ? `<div style="margin-top:20px;padding:16px;background:#09090b;border-radius:12px;border:1px solid #27272a;">
+        <p style="margin:0 0 6px;font-size:11px;color:#a855f7;text-transform:uppercase;letter-spacing:0.06em;">Top comment this week</p>
+        <p style="margin:0 0 8px;color:#e4e4e7;font-size:15px;line-height:1.5;">“${escapeHtml(opts.topComment.content.slice(0, 180))}${opts.topComment.content.length > 180 ? "…" : ""}”</p>
+        <a href="${site}/blog/${opts.topComment.blogSlug}" style="color:#a1a1aa;font-size:13px;text-decoration:none;">on ${escapeHtml(opts.topComment.blogTitle)}</a>
+      </div>`
+    : `<p style="margin:16px 0 0;color:#71717a;font-size:13px;">No new comments this week — share your latest post to spark a conversation.</p>`;
+
+  const html = layout(
+    `<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">${greeting}, your week in numbers</h1>
+    <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Creator digest · last 7 days</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 8px;">
+      <tr>
+        <td style="width:50%;padding:12px;background:#09090b;border-radius:12px 0 0 12px;border:1px solid #27272a;border-right:none;">
+          <p style="margin:0;font-size:11px;color:#71717a;text-transform:uppercase;">Reads</p>
+          <p style="margin:4px 0 0;font-size:28px;font-weight:800;color:#fff;">${opts.views.toLocaleString("en-IN")}</p>
+        </td>
+        <td style="width:50%;padding:12px;background:#09090b;border-radius:0 12px 12px 0;border:1px solid #27272a;">
+          <p style="margin:0;font-size:11px;color:#71717a;text-transform:uppercase;">New followers</p>
+          <p style="margin:4px 0 0;font-size:28px;font-weight:800;color:#fff;">${opts.newFollowers.toLocaleString("en-IN")}</p>
+        </td>
+      </tr>
+    </table>
+    ${commentBlock}
+    ${btn(site + "/dashboard", "Open dashboard")}`,
+  );
+  return { subject: "Your ContentVerse creator report", html };
+}
+
 export function ottWeeklyEmail(opts: {
   movies: { title: string; href: string; releaseDate?: string }[];
   unsubscribeUrl: string;

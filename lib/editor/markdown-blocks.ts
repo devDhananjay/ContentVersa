@@ -8,7 +8,8 @@ export type BlockType =
   | "code"
   | "image"
   | "embed"
-  | "callout";
+  | "callout"
+  | "poll";
 
 export interface EditorBlock {
   id: string;
@@ -51,10 +52,23 @@ function parseSection(section: string): EditorBlock | EditorBlock[] | null {
     return { id: nextBlockId(), type: "embed", content: s };
   }
 
+  if (s.startsWith("```poll")) {
+    const lines = s.split("\n");
+    const end = lines[lines.length - 1] === "```" ? -1 : undefined;
+    const body = lines.slice(1, end).join("\n").replace(/\n```$/, "");
+    return { id: nextBlockId(), type: "poll", content: body };
+  }
+
   if (s.startsWith("```")) {
     const lines = s.split("\n");
-    const code = lines.slice(1, lines[lines.length - 1] === "```" ? -1 : undefined).join("\n");
-    return { id: nextBlockId(), type: "code", content: code.replace(/\n```$/, "") };
+    const code = lines
+      .slice(1, lines[lines.length - 1] === "```" ? -1 : undefined)
+      .join("\n");
+    return {
+      id: nextBlockId(),
+      type: "code",
+      content: code.replace(/\n```$/, ""),
+    };
   }
 
   if (s.startsWith("# ")) {

@@ -127,6 +127,7 @@ export async function getUserReadingStats(userId: string) {
         title: string;
         secondsRead: number;
         progress: number;
+        coverImage?: string | null;
       }[],
     };
   }
@@ -138,7 +139,7 @@ export async function getUserReadingStats(userId: string) {
     select: {
       secondsRead: true,
       progress: true,
-      blog: { select: { id: true, slug: true, title: true } },
+      blog: { select: { id: true, slug: true, title: true, coverImage: true } },
     },
   });
 
@@ -153,8 +154,45 @@ export async function getUserReadingStats(userId: string) {
       title: r.blog.title,
       secondsRead: r.secondsRead,
       progress: r.progress,
+      coverImage: r.blog.coverImage,
     })),
   };
+}
+
+/** Unfinished articles for the home “Continue reading” strip. */
+export async function getContinueReading(userId: string, limit = 8) {
+  if (!isDatabaseConfigured()) return [];
+
+  const rows = await prisma.readingHistory.findMany({
+    where: {
+      userId,
+      progress: { gte: 5, lt: 85 },
+    },
+    orderBy: { updatedAt: "desc" },
+    take: limit,
+    select: {
+      progress: true,
+      blog: {
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          coverImage: true,
+          status: true,
+        },
+      },
+    },
+  });
+
+  return rows
+    .filter((r) => r.blog.status === "PUBLISHED")
+    .map((r) => ({
+      blogId: r.blog.id,
+      slug: r.blog.slug,
+      title: r.blog.title,
+      coverImage: r.blog.coverImage,
+      progress: r.progress,
+    }));
 }
 
 export async function getBlogReadingForReader(

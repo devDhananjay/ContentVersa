@@ -8,6 +8,7 @@ import {
   trendingArticleEmail,
   weeklyDigestEmail,
   notificationEmail,
+  creatorWeeklyDigestEmail,
 } from "@/lib/email/templates";
 import { newsletterUnsubscribeUrl } from "@/lib/newsletter/subscribe";
 import { buildPersonalizedDigestArticles } from "@/lib/notifications/weekly-digest-personal";
@@ -232,6 +233,130 @@ export async function sendWeeklyDigest() {
     });
     return { to: email, subject, html };
   });
+
+  return { sent, emails };
+}
+
+/** Weekly stats for writers — views, new followers, top comment. */
+export async function sendCreatorWeeklyDigest() {
+  if (!isDatabaseConfigured()) return { sent: 0, emails: 0 };
+
+  const weekAgo = new Date(Date.now() - 7 * 86400000);
+  const digestSince = new Date(Date.now() - 6 * 86400000);
+  const CREATOR_TITLE = "Your creator weekly report";
+
+  const authors = await prisma.user.findMany({
+    where: {
+      blogs: { some: { status: "PUBLISHED" } },
+    },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      blogs: {
+        where: { status: "PUBLISHED" },
+        select: { id: true, title: true, slug: true },
+      },
+    },
+    take: USER_BATCH,
+  });
+
+  const payloads = [];
+  const emailJobs: {
+    email: string;
+    name: string | null;
+    views: number;
+    newFollowers: number;
+    topComment: {
+      content: string;
+      blogTitle: string;
+      blogSlug: string;
+    } | null;
+  }[] = [];
+
+  for (const author of authors) {
+    const blogIds = author.blogs.map((b) => b.id);
+    if (!blogIds.length) continue;
+
+    const dup = await prisma.notification.findFirst({
+      where: {
+        userId: author.id,
+        type: NotificationType.SYSTEM,
+        title: CREATOR_TITLE,
+        createdAt: { gte: digestSince },
+      },
+    });
+    if (dup) continue;
+
+    const [views, newFollowers, topComment] = await Promise.all([
+      prisma.readingHistory.count({
+        where: {
+          blogId: { in: blogIds },
+          updatedAt: { gte: weekAgo },
+        },
+      }),
+      prisma.follower.count({
+        where: {
+          followingId: author.id,
+          createdAt: { gte: weekAgo },
+        },
+      }),
+      prisma.comment.findFirst({
+        where: {
+          blogId: { in: blogIds },
+          isHidden: false,
+          createdAt: { gte: weekAgo },
+          userId: { not: author.id },
+        },
+        orderBy: [{ likes: "desc" }, { createdAt: "desc" }],
+        select: {
+          content: true,
+          blog: { select: { title: true, slug: true } },
+        },
+      }),
+    ]);
+
+    const top = topComment
+      ? {
+          content: topComment.content,
+          blogTitle: topComment.blog.title,
+          blogSlug: topComment.blog.slug,
+        }
+      : null;
+
+    const message = `${views.toLocaleString("en-IN")} reads · ${newFollowers} new followers${
+      top ? ` · top comment on “${top.blogTitle}”` : ""
+    }`;
+
+    payloads.push({
+      userId: author.id,
+      type: NotificationType.SYSTEM,
+      title: CREATOR_TITLE,
+      message,
+      link: "/dashboard",
+    });
+
+    if (author.email) {
+      emailJobs.push({
+        email: author.email,
+        name: author.name,
+        views,
+        newFollowers,
+        topComment: top,
+      });
+    }
+  }
+
+  const sent = await createUserNotificationsBulk(payloads);
+
+  const emails = await sendEmailBulk(
+    emailJobs.map((j) => j.email),
+    (email) => {
+      const job = emailJobs.find((j) => j.email === email)!;
+      const { subject, html } = creatorWeeklyDigestEmail(job);
+      return { to: email, subject, html };
+    }
+  );
 
   return { sent, emails };
 }

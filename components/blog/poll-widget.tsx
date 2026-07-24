@@ -27,6 +27,7 @@ type PollData = {
 export function PollWidget({
   pollSlug = "ai-replace-jobs",
   blogContext,
+  inlinePoll,
   author,
   className,
 }: {
@@ -39,6 +40,8 @@ export function PollWidget({
     tags?: string[];
     excerpt?: string;
   };
+  /** Writer-inserted poll — creates on first load via API. */
+  inlinePoll?: { question: string; options: string[] };
   author?: {
     id: string;
     name: string;
@@ -65,6 +68,10 @@ export function PollWidget({
         if (blogContext.tags?.length) params.set("tags", blogContext.tags.join(","));
         if (blogContext.blogId) params.set("blogId", blogContext.blogId);
       }
+      if (inlinePoll) {
+        params.set("question", inlinePoll.question);
+        params.set("options", inlinePoll.options.join("|"));
+      }
       const qs = params.toString();
       const res = await fetch(`/api/polls/${slug}${qs ? `?${qs}` : ""}`, {
         credentials: "include",
@@ -74,7 +81,16 @@ export function PollWidget({
     } finally {
       setLoading(false);
     }
-  }, [slug, blogContext?.blogSlug, blogContext?.title, blogContext?.category, blogContext?.blogId, blogContext?.tags?.join(",")]);
+  }, [
+    slug,
+    blogContext?.blogSlug,
+    blogContext?.title,
+    blogContext?.category,
+    blogContext?.blogId,
+    blogContext?.tags?.join(","),
+    inlinePoll?.question,
+    inlinePoll?.options?.join("|"),
+  ]);
 
   React.useEffect(() => {
     load();

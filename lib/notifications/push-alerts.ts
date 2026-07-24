@@ -162,3 +162,49 @@ export async function sendStockWatchlistSessionAlerts(phase: StockPhase) {
 export async function sendStockWatchlistAlerts() {
   return sendStockWatchlistSessionAlerts("close");
 }
+
+/**
+ * Evening reminder for users with an active streak who haven't read enough today.
+ * Cron: /api/cron/push-alerts?job=streak
+ */
+export async function sendStreakAtRiskAlerts() {
+  if (!isDatabaseConfigured()) return { sent: 0, push: 0 };
+
+  const dateKey = istDateKey();
+  const yesterdayDate = new Date(`${dateKey}T12:00:00+05:30`);
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterday = istDateKey(yesterdayDate);
+
+  const atRisk = await prisma.profile.findMany({
+    where: {
+      streakDays: { gte: 1 },
+      streakLastDate: yesterday,
+    },
+    select: {
+      userId: true,
+      streakDays: true,
+    },
+    take: 2000,
+  });
+
+  if (!atRisk.length) return { sent: 0, push: 0 };
+
+  const payloads: NotificationPayload[] = [];
+
+  for (const row of atRisk) {
+    const alertKey = `streak-risk:${row.userId}:${dateKey}`;
+    const claimed = await claimAlertDispatch(alertKey);
+    if (!claimed) continue;
+
+    const days = row.streakDays;
+    payloads.push({
+      userId: row.userId,
+      type: NotificationType.SYSTEM,
+      title: "Streak break hone wali hai",
+      message: `Your ${days}-day reading streak ends tonight — padh lo before midnight IST.`,
+      link: "/blogs",
+    });
+  }
+
+  return notifyUsers(payloads);
+}

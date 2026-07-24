@@ -18,6 +18,7 @@ import { SportsTeaser } from "@/components/home/sports-teaser";
 import { FinanceTeaser } from "@/components/home/finance-teaser";
 import { TrendingSection } from "@/components/home/trending";
 import { LatestSection } from "@/components/home/latest-section";
+import { ContinueReadingStrip } from "@/components/home/continue-reading-strip";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { getFinanceTickerDataCached } from "@/lib/finance/data";
@@ -49,6 +50,7 @@ export const metadata: Metadata = buildMetadata({
 
 const HOME_SIDEBAR_SECTIONS = [
   { id: "home-top", label: "Home" },
+  { id: "continue-reading", label: "Continue" },
   { id: "explore-modules", label: "Modules" },
   { id: "home-sports", label: "Sports" },
   { id: "home-finance", label: "Finance" },
@@ -136,6 +138,8 @@ export default async function HomePage() {
           <Hero stats={data.stats} categories={data.categories} />
         </HomeHeroShell>
       </div>
+
+      <ContinueReadingStrip />
 
       <PlatformModulesStrip previews={modulePreviews} />
 

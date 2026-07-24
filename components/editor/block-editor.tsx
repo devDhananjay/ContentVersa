@@ -21,6 +21,7 @@ import {
   Link2,
   Loader2,
   X,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { shouldSkipImageOptimization, uploadImage } from "@/lib/upload";
@@ -46,6 +47,7 @@ const SLASH_COMMANDS: { type: BlockType; label: string; description: string; ico
   { type: "code", label: "Code block", description: "Highlighted snippet", icon: Code },
   { type: "image", label: "Image", description: "Embed image URL", icon: ImageIcon },
   { type: "embed", label: "YouTube", description: "Paste a YouTube URL", icon: Youtube },
+  { type: "poll", label: "Poll", description: "1-question reader poll", icon: BarChart3 },
   { type: "callout", label: "Callout", description: "Highlight a note", icon: Sparkles },
 ];
 
@@ -59,6 +61,7 @@ const placeholders: Record<BlockType, string> = {
   code: "// paste your code here",
   image: "Image URL",
   embed: "YouTube URL",
+  poll: "Your question?\nOption A\nOption B",
   callout: "Important note — heads up.",
 };
 
@@ -127,7 +130,9 @@ export const BlockEditor = React.forwardRef<
   };
 
   const applyCommand = (block: Block, type: BlockType) => {
-    updateBlock(block.id, { type, content: "" });
+    const content =
+      type === "poll" ? "Your question?\nYes\nNo\nMaybe" : "";
+    updateBlock(block.id, { type, content });
     setSlashOpenFor(null);
   };
 
@@ -159,6 +164,8 @@ export const BlockEditor = React.forwardRef<
             const embedUrl = toYoutubeEmbedUrl(b.content) ?? b.content.trim();
             return `\n<iframe src="${embedUrl}" />\n`;
           }
+          case "poll":
+            return "```poll\n" + (b.content.trim() || "Your question?\nYes\nNo") + "\n```";
           case "callout":
             return `> 💡 ${b.content}`;
           default:
@@ -316,6 +323,10 @@ function BlockRenderer({
 
   if (block.type === "embed") {
     return <EmbedBlock block={block} onChange={onChange} />;
+  }
+
+  if (block.type === "poll") {
+    return <PollBlock block={block} onChange={onChange} />;
   }
 
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -645,6 +656,92 @@ function EmbedBlock({
           }
         }}
       />
+    </div>
+  );
+}
+
+function PollBlock({
+  block,
+  onChange,
+}: {
+  block: Block;
+  onChange: (v: string) => void;
+}) {
+  const lines = block.content.split("\n");
+  const question = lines[0] ?? "";
+  const options = lines.slice(1);
+
+  const setQuestion = (q: string) => {
+    onChange([q, ...options].join("\n"));
+  };
+
+  const setOption = (idx: number, value: string) => {
+    const next = [...options];
+    next[idx] = value;
+    onChange([question, ...next].join("\n"));
+  };
+
+  const addOption = () => {
+    if (options.length >= 6) return;
+    onChange([question, ...options, `Option ${options.length + 1}`].join("\n"));
+  };
+
+  const removeOption = (idx: number) => {
+    if (options.length <= 2) return;
+    onChange([question, ...options.filter((_, i) => i !== idx)].join("\n"));
+  };
+
+  return (
+    <div
+      id={`block-${block.id}`}
+      className="rounded-2xl border border-neon-purple/25 bg-neon-purple/5 p-4 space-y-3"
+    >
+      <div className="flex items-center gap-2 text-neon-purple">
+        <BarChart3 className="h-4 w-4" />
+        <span className="text-xs font-bold uppercase tracking-widest">
+          Inline poll
+        </span>
+      </div>
+      <input
+        type="text"
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+        placeholder="Your question?"
+        className="w-full rounded-lg border bg-background px-3 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-neon-purple/40"
+      />
+      <div className="space-y-2">
+        {options.map((opt, i) => (
+          <div key={i} className="flex gap-2">
+            <input
+              type="text"
+              value={opt}
+              onChange={(e) => setOption(i, e.target.value)}
+              placeholder={`Option ${i + 1}`}
+              className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neon-purple/40"
+            />
+            <button
+              type="button"
+              onClick={() => removeOption(i)}
+              disabled={options.length <= 2}
+              className="rounded-lg border px-2 text-muted-foreground hover:text-destructive disabled:opacity-40"
+              aria-label="Remove option"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={addOption}
+        disabled={options.length >= 6}
+        className="text-xs font-medium text-neon-purple hover:underline disabled:opacity-40"
+      >
+        + Add option
+      </button>
+      <p className="text-[11px] text-muted-foreground">
+        Readers vote inline in the article. 2–6 options.
+      </p>
     </div>
   );
 }

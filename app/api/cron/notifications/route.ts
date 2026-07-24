@@ -3,10 +3,11 @@ import {
   sendInactiveReaderReminders,
   sendTrendingArticleAlert,
   sendWeeklyDigest,
+  sendCreatorWeeklyDigest,
 } from "@/lib/notifications/cron";
 import { sendNewUserOnboardingNudges } from "@/lib/notifications/new-user-nudge";
 
-const JOBS = ["inactive", "trending", "weekly", "onboarding"] as const;
+const JOBS = ["inactive", "trending", "weekly", "onboarding", "creator"] as const;
 
 function authorize(req: Request) {
   const secret = process.env.CRON_SECRET?.trim();
@@ -25,7 +26,10 @@ export async function GET(req: Request) {
   const job = new URL(req.url).searchParams.get("job");
   if (!job || !JOBS.includes(job as (typeof JOBS)[number])) {
     return NextResponse.json(
-      { error: "Invalid job. Use ?job=inactive|trending|weekly|onboarding" },
+      {
+        error:
+          "Invalid job. Use ?job=inactive|trending|weekly|onboarding|creator",
+      },
       { status: 400 }
     );
   }
@@ -41,6 +45,10 @@ export async function GET(req: Request) {
     }
     if (job === "onboarding") {
       const result = await sendNewUserOnboardingNudges();
+      return NextResponse.json({ ok: true, job, ...result });
+    }
+    if (job === "creator") {
+      const result = await sendCreatorWeeklyDigest();
       return NextResponse.json({ ok: true, job, ...result });
     }
     const result = await sendWeeklyDigest();

@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { getPollBySlug, castPollVote, getPollForBlog } from "@/lib/data/polls";
+import {
+  getPollBySlug,
+  castPollVote,
+  getPollForBlog,
+  getInlinePoll,
+} from "@/lib/data/polls";
 
 const VoteSchema = z.object({ optionId: z.string().min(1) });
 
@@ -23,9 +28,17 @@ export async function GET(
   const category = url.searchParams.get("category") || undefined;
   const tags = url.searchParams.get("tags")?.split(",").filter(Boolean);
   const blogId = url.searchParams.get("blogId") || undefined;
+  const question = url.searchParams.get("question") || undefined;
+  const optionsParam = url.searchParams.get("options") || undefined;
+  const options = optionsParam
+    ?.split("|")
+    .map((o) => o.trim())
+    .filter(Boolean);
 
   let poll;
-  if (slug.startsWith("blog-") && title) {
+  if (slug.startsWith("inline-") && question && options && options.length >= 2) {
+    poll = await getInlinePoll({ slug, question, options }, key);
+  } else if (slug.startsWith("blog-") && title) {
     poll = await getPollForBlog(
       {
         blogSlug: slug.replace(/^blog-/, ""),

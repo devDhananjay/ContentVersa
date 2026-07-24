@@ -10,7 +10,7 @@ fi
 CRON_SECRET=$(grep -E '^CRON_SECRET=' "$ENV_FILE" | head -1 | cut -d= -f2-)
 APP_URL=$(grep -E '^APP_URL=' "$ENV_FILE" | head -1 | cut -d= -f2-)
 APP_URL=${APP_URL:-https://contentverse.co.in}
-JOB="${1:?Usage: cron-push-alerts.sh cricket|stocks-open|stocks-close}"
+JOB="${1:?Usage: cron-push-alerts.sh cricket|stocks-open|stocks-close|streak}"
 if [[ -z "$CRON_SECRET" ]]; then
   echo "CRON_SECRET not set in .env" >&2
   exit 1

@@ -259,6 +259,67 @@ export async function getPollForBlog(
   return mapPollDto(poll, voterKey);
 }
 
+/** Writer-inserted 1-question poll (```poll fence). Creates once, then reuses. */
+export async function ensureInlinePoll(input: {
+  slug: string;
+  question: string;
+  options: string[];
+}) {
+  const options = input.options
+    .map((o) => o.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  const question = input.question.trim();
+  if (!question || options.length < 2) return null;
+
+  if (!isDatabaseConfigured()) {
+    return {
+      id: `mock-${input.slug}`,
+      slug: input.slug,
+      question,
+      isActive: true,
+      options: options.map((label, i) => ({
+        id: `mock-${input.slug}-${i}`,
+        label,
+        sortOrder: i,
+      })),
+    };
+  }
+
+  let poll = await prisma.poll.findUnique({
+    where: { slug: input.slug },
+    include: { options: { orderBy: { sortOrder: "asc" } } },
+  });
+
+  if (!poll) {
+    poll = await prisma.poll.create({
+      data: {
+        slug: input.slug,
+        question,
+        isActive: true,
+        options: {
+          create: options.map((label, i) => ({
+            label,
+            sortOrder: i,
+          })),
+        },
+      },
+      include: { options: { orderBy: { sortOrder: "asc" } } },
+    });
+  }
+
+  return poll;
+}
+
+export async function getInlinePoll(
+  input: { slug: string; question: string; options: string[] },
+  voterKey?: string | null
+) {
+  const poll = await ensureInlinePoll(input);
+  if (!poll) return null;
+  return mapPollDto(poll, voterKey);
+}
+
 export async function castPollVote(
   pollSlug: string,
   optionId: string,

@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import {
   sendCricketMatchReminders,
   sendStockWatchlistSessionAlerts,
+  sendStreakAtRiskAlerts,
 } from "@/lib/notifications/push-alerts";
 
-const JOBS = ["cricket", "stocks-open", "stocks-close"] as const;
+const JOBS = ["cricket", "stocks-open", "stocks-close", "streak"] as const;
 
 function authorize(req: Request) {
   const secret = process.env.CRON_SECRET?.trim();
@@ -23,7 +24,10 @@ export async function GET(req: Request) {
   const job = new URL(req.url).searchParams.get("job");
   if (!job || !JOBS.includes(job as (typeof JOBS)[number])) {
     return NextResponse.json(
-      { error: "Invalid job. Use ?job=cricket|stocks-open|stocks-close" },
+      {
+        error:
+          "Invalid job. Use ?job=cricket|stocks-open|stocks-close|streak",
+      },
       { status: 400 }
     );
   }
@@ -35,6 +39,10 @@ export async function GET(req: Request) {
     }
     if (job === "stocks-open") {
       const result = await sendStockWatchlistSessionAlerts("open");
+      return NextResponse.json({ ok: true, job, ...result });
+    }
+    if (job === "streak") {
+      const result = await sendStreakAtRiskAlerts();
       return NextResponse.json({ ok: true, job, ...result });
     }
     const result = await sendStockWatchlistSessionAlerts("close");

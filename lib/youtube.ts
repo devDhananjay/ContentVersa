@@ -40,24 +40,61 @@ export function toYoutubeEmbedUrl(input: string): string | null {
 const IFRAME_RE =
   /<iframe\b[^>]*\bsrc=["']([^"']+)["'][^>]*(?:\/>|><\/iframe>)/gi;
 
-/** Extract YouTube iframe blocks from markdown for custom rendering. */
+/** Extract YouTube iframe blocks and ```poll fences from markdown for custom rendering. */
 export function splitMarkdownEmbeds(content: string) {
-  const parts: Array<{ type: "markdown"; value: string } | { type: "youtube"; src: string }> =
-    [];
+  type Part =
+    | { type: "markdown"; value: string }
+    | { type: "youtube"; src: string }
+    | { type: "poll"; body: string };
+
+  const parts: Part[] = [];
+  const POLL_RE = /```poll\s*\n([\s\S]*?)```/gi;
+
   let last = 0;
   let match: RegExpExecArray | null;
-
-  IFRAME_RE.lastIndex = 0;
-  while ((match = IFRAME_RE.exec(content)) !== null) {
-    if (match.index > last) {
-      parts.push({ type: "markdown", value: content.slice(last, match.index) });
-    }
-    parts.push({ type: "youtube", src: match[1] });
-    last = match.index + match[0].length;
+  POLL_RE.lastIndex = 0;
+  const pollHits: { index: number; length: number; body: string }[] = [];
+  while ((match = POLL_RE.exec(content)) !== null) {
+    pollHits.push({
+      index: match.index,
+      length: match[0].length,
+      body: match[1].trim(),
+    });
   }
 
-  if (last < content.length) {
-    parts.push({ type: "markdown", value: content.slice(last) });
+  const segments: Part[] = [];
+  let cursor = 0;
+  for (const hit of pollHits) {
+    if (hit.index > cursor) {
+      segments.push({ type: "markdown", value: content.slice(cursor, hit.index) });
+    }
+    segments.push({ type: "poll", body: hit.body });
+    cursor = hit.index + hit.length;
+  }
+  if (cursor < content.length) {
+    segments.push({ type: "markdown", value: content.slice(cursor) });
+  }
+  if (!segments.length) {
+    segments.push({ type: "markdown", value: content });
+  }
+
+  for (const seg of segments) {
+    if (seg.type !== "markdown") {
+      parts.push(seg);
+      continue;
+    }
+    last = 0;
+    IFRAME_RE.lastIndex = 0;
+    while ((match = IFRAME_RE.exec(seg.value)) !== null) {
+      if (match.index > last) {
+        parts.push({ type: "markdown", value: seg.value.slice(last, match.index) });
+      }
+      parts.push({ type: "youtube", src: match[1] });
+      last = match.index + match[0].length;
+    }
+    if (last < seg.value.length) {
+      parts.push({ type: "markdown", value: seg.value.slice(last) });
+    }
   }
 
   if (parts.length === 0) {
