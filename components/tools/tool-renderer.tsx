@@ -22,6 +22,7 @@ import { MergePdfTool } from "./merge-pdf-tool";
 import { SplitPdfTool } from "./split-pdf-tool";
 import { CompressPdfTool } from "./compress-pdf-tool";
 import { ImagesToPdfTool } from "./images-to-pdf-tool";
+import { SalaryTaxCalculatorTool } from "./salary-tax-calculator-tool";
 
 const TOOL_COMPONENTS: Record<ToolSlug, React.ComponentType> = {
   "ifsc-finder": IfscFinderTool,
@@ -52,6 +53,7 @@ const TOOL_COMPONENTS: Record<ToolSlug, React.ComponentType> = {
   "split-pdf": SplitPdfTool,
   "compress-pdf": CompressPdfTool,
   "images-to-pdf": ImagesToPdfTool,
+  "salary-tax-calculator": SalaryTaxCalculatorTool,
 };
 
 export function ToolRenderer({ slug }: { slug: ToolSlug }) {

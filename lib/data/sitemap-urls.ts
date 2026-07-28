@@ -54,7 +54,12 @@ const STATIC_PAGES: Array<{
   ...TOOL_REGISTRY.map((t) => ({
     path: `${TOOLS_HUB_PATH}/${t.slug}`,
     changeFrequency: "weekly" as SitemapFreq,
-    priority: t.slug.startsWith("nearby-") ? 0.84 : 0.87,
+    priority:
+      t.slug === "salary-tax-calculator"
+        ? 0.9
+        : t.slug.startsWith("nearby-")
+          ? 0.84
+          : 0.87,
   })),
   ...locationPagePaths(),
   { path: "/jobs/govt", changeFrequency: "hourly", priority: 0.78 },

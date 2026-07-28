@@ -66,6 +66,17 @@ export function toolFaq(tool: ToolDef) {
     });
   }
 
+  if (tool.slug === "salary-tax-calculator") {
+    base.push({
+      q: "Which financial year does this tax calculator use?",
+      a: "FY 2026–27 (AY 2027–28) slab rates under the new default regime (nil up to ₹4 lakh) and the old regime, including standard deduction and Section 87A rebate estimates.",
+    });
+    base.push({
+      q: "Is this an official Income Tax Department calculator?",
+      a: "No. It is an independent estimate for planning. Always verify on the Income Tax e-filing portal or with a tax professional before filing returns.",
+    });
+  }
+
   return base;
 }
 

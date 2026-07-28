@@ -8,12 +8,14 @@ import { toolsHubJsonLd } from "@/lib/tools/tools-seo";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Free India Utility Tools — Weather, IFSC, Pincode, QR & More",
+  title: "Free India Utility Tools — Weather, Tax, PDF, IFSC & More",
   description:
-    "Free daily-use tools for India — weather, currency converter, QR & barcode generator, merge/split/compress PDF, FSSAI format check, holidays, nearby hotels & hospitals, IFSC, pincode, RTO, EMI, SIP, and fuel prices.",
+    "Free daily-use tools for India — salary & income tax calculator, weather, currency converter, QR & barcode, merge/split/compress PDF, FSSAI format check, holidays, nearby hotels & hospitals, IFSC, pincode, RTO, EMI, SIP, and fuel prices.",
   path: TOOLS_HUB_PATH,
   keywords: [
     "india utility tools",
+    "income tax calculator india",
+    "salary calculator",
     "merge pdf free",
     "weather india",
     "qr code generator",

@@ -26,7 +26,8 @@ export type ToolSlug =
   | "merge-pdf"
   | "split-pdf"
   | "compress-pdf"
-  | "images-to-pdf";
+  | "images-to-pdf"
+  | "salary-tax-calculator";
 
 export type ToolDef = {
   slug: ToolSlug;
@@ -245,6 +246,21 @@ export const TOOL_REGISTRY: ToolDef[] = [
     description:
       "Estimate mutual fund SIP maturity value, total invested amount, and expected returns over time.",
     keywords: ["sip calculator", "mutual fund sip", "sip returns india", "investment calculator"],
+    badge: "Finance",
+  },
+  {
+    slug: "salary-tax-calculator",
+    title: "Salary & Income Tax Calculator India FY 2026-27",
+    shortTitle: "Salary Tax Calculator",
+    description:
+      "Free India salary and income tax calculator — compare New vs Old tax regime, estimate annual tax, monthly TDS, and take-home salary for FY 2026–27.",
+    keywords: [
+      "income tax calculator",
+      "salary calculator india",
+      "new vs old tax regime",
+      "in hand salary calculator",
+      "tax calculator fy 2026-27",
+    ],
     badge: "Finance",
   },
   {

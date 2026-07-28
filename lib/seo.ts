@@ -24,7 +24,7 @@ export const SITE_NAV_HUBS = [
   { name: "Screenshot Scan (OCR)", path: "/moneyverse/screenshot-scan", description: "UPI payment screenshot OCR — auto-fill expenses from PhonePe, GPay, Paytm" },
   { name: "Bank Statement Analyzer", path: "/moneyverse/bank-statement-analyzer", description: "AI bank statement PDF analysis — credits, debits, expenses and CSV India" },
   { name: "HUID Verification", path: "/huid-verification", description: "Verify BIS gold hallmark HUID online India" },
-  { name: "India Tools", path: "/tools", description: "Free weather, PDF merge/split, currency, QR, nearby places, IFSC, pincode, RTO, EMI, SIP tools India" },
+  { name: "India Tools", path: "/tools", description: "Free weather, salary tax calculator, PDF merge/split, currency, QR, nearby places, IFSC, pincode, RTO, EMI, SIP tools India" },
   { name: "Merge PDF", path: "/tools/merge-pdf", description: "Combine PDF files free in browser India" },
   { name: "Compress PDF", path: "/tools/compress-pdf", description: "Reduce PDF size free online India" },
   { name: "Weather India", path: "/tools/weather", description: "Free weather forecast by city India" },
@@ -33,6 +33,11 @@ export const SITE_NAV_HUBS = [
   { name: "RTO Finder", path: "/tools/rto-finder", description: "Find RTO code and office address by city India" },
   { name: "Fuel Price", path: "/tools/fuel-price", description: "Petrol and diesel price by city India today" },
   { name: "EMI Calculator", path: "/tools/emi-calculator", description: "Home and car loan EMI calculator India" },
+  {
+    name: "Salary Tax Calculator",
+    path: "/tools/salary-tax-calculator",
+    description: "Income tax and in-hand salary calculator India new vs old regime",
+  },
   { name: "Reels", path: "/reels", description: "Short-form videos from Indian creators" },
   { name: "Blogs", path: "/blogs", description: "Read articles and stories from creators" },
 ] as const;

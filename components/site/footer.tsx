@@ -30,6 +30,7 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
       { label: "HUID Verification", href: "/huid-verification" },
       { label: "India Tools", href: "/tools" },
       { label: "Merge PDF", href: "/tools/merge-pdf" },
+      { label: "Salary Tax Calculator", href: "/tools/salary-tax-calculator" },
       { label: "Weather", href: "/tools/weather" },
       { label: "Nearby Places", href: "/tools/nearby-places" },
       { label: "RTO Finder", href: "/tools/rto-finder" },
