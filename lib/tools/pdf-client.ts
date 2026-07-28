@@ -42,6 +42,21 @@ async function fileToBytes(file: File): Promise<Uint8Array> {
   return new Uint8Array(buf);
 }
 
+/** Load PDFs including ones with owner/restrictive encryption flags. */
+async function loadPdf(bytes: Uint8Array, label?: string) {
+  try {
+    return await PDFDocument.load(bytes, { ignoreEncryption: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (/encrypt|password|decrypt/i.test(msg)) {
+      throw new Error(
+        `${label ? `“${label}”` : "This PDF"} is password-protected. Remove the password and try again.`
+      );
+    }
+    throw err instanceof Error ? err : new Error(msg);
+  }
+}
+
 export async function mergePdfs(files: File[]): Promise<Uint8Array> {
   if (files.length < 2) throw new Error("Add at least 2 PDF files to merge.");
   if (files.length > PDF_MAX_FILES) {
@@ -50,9 +65,7 @@ export async function mergePdfs(files: File[]): Promise<Uint8Array> {
   const out = await PDFDocument.create();
   for (const file of files) {
     assertPdfFile(file);
-    const src = await PDFDocument.load(await fileToBytes(file), {
-      ignoreEncryption: false,
-    });
+    const src = await loadPdf(await fileToBytes(file), file.name);
     const pages = await out.copyPages(src, src.getPageIndices());
     pages.forEach((p) => out.addPage(p));
   }
@@ -66,9 +79,7 @@ export async function splitPdf(
   toPage: number
 ): Promise<Uint8Array> {
   assertPdfFile(file);
-  const src = await PDFDocument.load(await fileToBytes(file), {
-    ignoreEncryption: false,
-  });
+  const src = await loadPdf(await fileToBytes(file), file.name);
   const total = src.getPageCount();
   if (total < 1) throw new Error("This PDF has no pages.");
   const from = Math.max(1, Math.floor(fromPage));
@@ -83,9 +94,7 @@ export async function splitPdf(
 
 export async function getPdfPageCount(file: File): Promise<number> {
   assertPdfFile(file);
-  const src = await PDFDocument.load(await fileToBytes(file), {
-    ignoreEncryption: false,
-  });
+  const src = await loadPdf(await fileToBytes(file), file.name);
   return src.getPageCount();
 }
 
@@ -100,9 +109,7 @@ export async function compressPdf(file: File): Promise<{
 }> {
   assertPdfFile(file);
   const before = file.size;
-  const src = await PDFDocument.load(await fileToBytes(file), {
-    ignoreEncryption: false,
-  });
+  const src = await loadPdf(await fileToBytes(file), file.name);
   const out = await PDFDocument.create();
   const pages = await out.copyPages(src, src.getPageIndices());
   pages.forEach((p) => out.addPage(p));
