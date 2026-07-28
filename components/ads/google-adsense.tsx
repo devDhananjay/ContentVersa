@@ -2,8 +2,11 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { normalizeAdSenseClientId } from "@/lib/adsense";
 
-const ADSENSE_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID?.trim();
+const ADSENSE_ID = normalizeAdSenseClientId(
+  process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID
+);
 
 type Props = {
   slot?: string;

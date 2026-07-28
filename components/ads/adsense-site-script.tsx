@@ -1,4 +1,8 @@
-const ADSENSE_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID?.trim();
+import { normalizeAdSenseClientId } from "@/lib/adsense";
+
+const ADSENSE_ID = normalizeAdSenseClientId(
+  process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID
+);
 
 /**
  * Literal <script> in SSR HTML — required for AdSense site verification.
