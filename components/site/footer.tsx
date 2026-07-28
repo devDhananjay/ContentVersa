@@ -1,8 +1,20 @@
 import Link from "next/link";
+import type { ElementType } from "react";
 import { Logo } from "./logo";
 import { FooterVisitorCount } from "./footer-visitor-count";
 import { getSiteLogoUrl } from "@/lib/branding/site-logo";
 import { Github, Twitter, Instagram, Youtube } from "lucide-react";
+import { SITE } from "@/lib/seo";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+
+const SOCIAL_LINKS: { label: string; href: string; Icon: ElementType }[] = [
+  { label: "Twitter / X", href: SITE.sameAs[0] || "https://twitter.com/contentverse", Icon: Twitter },
+  { label: "Instagram", href: SITE.sameAs[1] || "https://www.instagram.com/contentverse", Icon: Instagram },
+  { label: "YouTube", href: SITE.sameAs[2] || "https://www.youtube.com/@contentverse", Icon: Youtube },
+  { label: "GitHub", href: SITE.sameAs[3] || "https://github.com/devDhananjay/ContentVersa", Icon: Github },
+];
+
+const WHATSAPP_CHANNEL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL?.trim();
 
 const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[] = [
   {
@@ -73,16 +85,29 @@ export async function Footer() {
               A next-generation creator platform built for the 2026 internet. Read deeply, create boldly, grow with a community of bold writers.
             </p>
             <div className="mt-6 flex items-center gap-2">
-              {[Twitter, Github, Instagram, Youtube].map((Icon, i) => (
+              {SOCIAL_LINKS.map(({ label, href, Icon }) => (
                 <a
-                  key={i}
-                  href="#"
-                  aria-label="social link"
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
                   className="h-9 w-9 rounded-xl border border-border/60 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-neon-purple/60 transition-colors"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
               ))}
+              {WHATSAPP_CHANNEL ? (
+                <a
+                  href={WHATSAPP_CHANNEL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="WhatsApp Channel"
+                  className="h-9 w-9 rounded-xl border border-[#25D366]/40 flex items-center justify-center text-[#25D366] hover:border-[#25D366] transition-colors"
+                >
+                  <WhatsAppIcon className="h-4 w-4" />
+                </a>
+              ) : null}
             </div>
           </div>
 

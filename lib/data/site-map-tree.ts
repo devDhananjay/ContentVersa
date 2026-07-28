@@ -861,7 +861,7 @@ export const SITE_MAP_ADMIN: SiteMapModule = {
               label: "Blog scheduling publish",
               detail: "/api/cron/publish-scheduled — every 10 min",
             },
-            { label: "Notification digests", detail: "/api/cron/notifications (inactive|trending|weekly|onboarding|creator)" },
+            { label: "Notification digests", detail: "/api/cron/notifications (inactive|trending|weekly|onboarding|creator|briefing)" },
             { label: "Stock, cricket & streak alerts", detail: "/api/cron/push-alerts (cricket|stocks-open|stocks-close|streak)" },
             { label: "Sports data sync", detail: "/api/cron/sports-sync" },
           ],

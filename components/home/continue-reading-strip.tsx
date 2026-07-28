@@ -1,20 +1,24 @@
 import Link from "next/link";
 import Image from "next/image";
 import { BookOpen } from "lucide-react";
+import { cookies } from "next/headers";
 import { getCurrentUser } from "@/lib/auth";
 import { resolveUserId } from "@/lib/auth/resolve-user-id";
 import { getContinueReading } from "@/lib/data/reading-history";
 import { shouldSkipImageOptimization } from "@/lib/upload";
 
-/** Logged-in users: unfinished articles from reading history. */
+/** Logged-in or guest (cv_reader cookie): unfinished articles from reading history. */
 export async function ContinueReadingStrip() {
   const session = await getCurrentUser();
-  if (!session) return null;
+  const userId = session
+    ? await resolveUserId(session).catch(() => null)
+    : null;
+  const jar = await cookies();
+  const visitorKey = jar.get("cv_reader")?.value ?? null;
 
-  const userId = await resolveUserId(session).catch(() => null);
-  if (!userId) return null;
+  if (!userId && !visitorKey) return null;
 
-  const items = await getContinueReading(userId, 8);
+  const items = await getContinueReading({ userId, visitorKey }, 8);
   if (!items.length) return null;
 
   return (
@@ -37,12 +41,21 @@ export async function ContinueReadingStrip() {
               Continue reading
             </h2>
           </div>
-          <Link
-            href="/dashboard/bookmarks"
-            className="hidden text-sm font-medium text-muted-foreground transition hover:text-foreground sm:block"
-          >
-            Your library
-          </Link>
+          {userId ? (
+            <Link
+              href="/dashboard/bookmarks"
+              className="hidden text-sm font-medium text-muted-foreground transition hover:text-foreground sm:block"
+            >
+              Your library
+            </Link>
+          ) : (
+            <Link
+              href="/auth/sign-in?next=/"
+              className="hidden text-sm font-medium text-muted-foreground transition hover:text-foreground sm:block"
+            >
+              Sign in to sync
+            </Link>
+          )}
         </div>
 
         <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory">
@@ -70,7 +83,9 @@ export async function ContinueReadingStrip() {
                 <div className="absolute inset-x-0 bottom-0 h-1 bg-black/40">
                   <div
                     className="h-full bg-neon-cyan"
-                    style={{ width: `${Math.min(100, Math.max(4, item.progress))}%` }}
+                    style={{
+                      width: `${Math.min(100, Math.max(4, item.progress))}%`,
+                    }}
                   />
                 </div>
               </div>

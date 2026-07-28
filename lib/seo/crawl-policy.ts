@@ -17,7 +17,7 @@ export function isDiscoverSyndicatedSlug(slug: string): boolean {
   return slug.startsWith("discover-");
 }
 
-/** Auto-generated daily cron articles (thin/generic titles). */
+/** Legacy auto-generated daily cron articles (thin/generic titles). New AI drafts use title-based slugs. */
 export function isAutoDailyCronSlug(slug: string): boolean {
   return /-daily-\d{4}-\d{2}-\d{2}-/.test(slug);
 }

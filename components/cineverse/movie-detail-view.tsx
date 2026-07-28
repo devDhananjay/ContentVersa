@@ -119,7 +119,7 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
 
           <StreamingProviders providers={movie.providers} movieTitle={movie.title} />
 
-          <GoogleAdSense format="horizontal" className="min-h-[90px]" />
+          <GoogleAdSense slotKey="horizontal" format="horizontal" />
 
           <SponsoredOttBanner />
 

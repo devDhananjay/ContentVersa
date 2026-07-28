@@ -116,6 +116,31 @@ export function creatorWeeklyDigestEmail(opts: {
   return { subject: "Your ContentVerse creator report", html };
 }
 
+export function morningBriefingEmail(opts: {
+  items: { title: string; slug: string; hub: string }[];
+  unsubscribeUrl: string;
+}) {
+  const site = getAppUrl();
+  const list = opts.items
+    .map(
+      (a) =>
+        `<li style="margin-bottom:14px;">
+          <span style="display:block;font-size:11px;color:#22d3ee;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${escapeHtml(a.hub)}</span>
+          <a href="${site}/blog/${a.slug}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${escapeHtml(a.title)}</a>
+        </li>`
+    )
+    .join("");
+
+  const html = layout(
+    `<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">Your morning briefing</h1>
+    <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Sports · Finance · Jobs picks for today</p>
+    <ul style="margin:0;padding:0;list-style:none;">${list}</ul>
+    ${btn(site + "/blogs", "Open ContentVerse")}`,
+    `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`
+  );
+  return { subject: "ContentVerse morning briefing", html };
+}
+
 export function ottWeeklyEmail(opts: {
   movies: { title: string; href: string; releaseDate?: string }[];
   unsubscribeUrl: string;

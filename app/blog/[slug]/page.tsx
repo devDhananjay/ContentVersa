@@ -36,6 +36,7 @@ import { CATEGORIES } from "@/lib/data/categories";
 import { resolveBlogCoverImage } from "@/lib/upload";
 import { SeriesNav } from "@/components/blog/series-nav";
 import { GoogleAdSense } from "@/components/ads/google-adsense";
+import { StickyWhatsAppShare } from "@/components/blog/sticky-whatsapp-share";
 import { getBlogSeriesMeta } from "@/lib/data/series";
 
 export const dynamic = "force-dynamic";
@@ -268,10 +269,44 @@ export default async function BlogPage({
           </div>
         )}
 
+        {isPublic ? (
+          <GoogleAdSense
+            slotKey="inArticle"
+            format="horizontal"
+            className="mb-8"
+          />
+        ) : null}
+
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12 items-start">
           <div>
             <h2 className="font-display text-2xl font-bold mb-6">Full story</h2>
-            {renderMarkdown(blog.content)}
+            {(() => {
+              const parts = blog.content.split(/\n\n+/);
+              const mid = Math.max(2, Math.floor(parts.length / 2));
+              const first = parts.slice(0, mid).join("\n\n");
+              const second = parts.slice(mid).join("\n\n");
+              return (
+                <>
+                  {renderMarkdown(first || blog.content)}
+                  {isPublic && second ? (
+                    <GoogleAdSense
+                      slotKey="inArticle"
+                      format="horizontal"
+                      className="my-8"
+                    />
+                  ) : null}
+                  {second ? renderMarkdown(second) : null}
+                </>
+              );
+            })()}
+
+            {isPublic ? (
+              <GoogleAdSense
+                slotKey="horizontal"
+                format="horizontal"
+                className="mt-10"
+              />
+            ) : null}
 
             <div className="mt-10 flex flex-wrap gap-2">
               {blog.tags.map((tag) => (
@@ -359,10 +394,18 @@ export default async function BlogPage({
           <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto overscroll-y-contain scrollbar-hide space-y-6">
             <TableOfContents items={toc} />
             {isPublic ? (
-              <GoogleAdSense format="rectangle" className="rounded-xl overflow-hidden" />
+              <GoogleAdSense
+                slotKey="sidebar"
+                format="rectangle"
+                className="rounded-xl overflow-hidden"
+              />
             ) : null}
           </aside>
         </div>
+
+        {isPublic ? (
+          <StickyWhatsAppShare url={url} title={blog.title} />
+        ) : null}
 
         <Suspense fallback={null}>
           <RecommendedBlogs slug={slug} />

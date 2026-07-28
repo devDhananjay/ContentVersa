@@ -54,6 +54,13 @@ export const SITE = {
     return siteUrl();
   },
   twitter: "@contentverse",
+  /** Public social profiles for Organization sameAs (Knowledge Graph). */
+  sameAs: [
+    "https://twitter.com/contentverse",
+    "https://www.instagram.com/contentverse",
+    "https://www.youtube.com/@contentverse",
+    "https://github.com/devDhananjay/ContentVersa",
+  ] as string[],
   ogImage: "/og-default.png",
   logo: SITE_LOGO_URL,
   logoIcon: "/logo-mark.svg",
@@ -141,7 +148,12 @@ export function organizationJsonLd() {
     },
     image: `${SITE.url}${SITE.ogImage}`,
     description: SITE.description,
-    sameAs: [] as string[],
+    sameAs: [
+      ...SITE.sameAs,
+      ...(process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL?.trim()
+        ? [process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL.trim()]
+        : []),
+    ],
   };
 }
 

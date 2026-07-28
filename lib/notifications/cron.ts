@@ -9,6 +9,7 @@ import {
   weeklyDigestEmail,
   notificationEmail,
   creatorWeeklyDigestEmail,
+  morningBriefingEmail,
 } from "@/lib/email/templates";
 import { newsletterUnsubscribeUrl } from "@/lib/newsletter/subscribe";
 import { buildPersonalizedDigestArticles } from "@/lib/notifications/weekly-digest-personal";
@@ -359,4 +360,75 @@ export async function sendCreatorWeeklyDigest() {
   );
 
   return { sent, emails };
+}
+
+/** Short daily briefing — sports / finance / careers toppers for newsletter subscribers. */
+export async function sendMorningBriefing() {
+  if (!isDatabaseConfigured()) return { sent: 0, emails: 0 };
+
+  const since = new Date(Date.now() - 20 * 3600000);
+  const hubs: { slug: string; label: string }[] = [
+    { slug: "sports", label: "Sports" },
+    { slug: "finance", label: "Finance" },
+    { slug: "careers", label: "Jobs" },
+  ];
+
+  const items: { title: string; slug: string; hub: string }[] = [];
+  for (const hub of hubs) {
+    const cat = await prisma.category.findUnique({
+      where: { slug: hub.slug },
+      select: { id: true },
+    });
+    if (!cat) continue;
+    const blog = await prisma.blog.findFirst({
+      where: {
+        status: "PUBLISHED",
+        categoryId: cat.id,
+        publishedAt: { gte: since },
+      },
+      orderBy: [{ views: "desc" }, { publishedAt: "desc" }],
+      select: { title: true, slug: true },
+    });
+    if (blog) items.push({ ...blog, hub: hub.label });
+  }
+
+  if (items.length < 2) {
+    const fallback = await prisma.blog.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: { publishedAt: "desc" },
+      take: 3,
+      select: { title: true, slug: true, category: { select: { name: true } } },
+    });
+    for (const b of fallback) {
+      if (items.length >= 3) break;
+      if (items.some((i) => i.slug === b.slug)) continue;
+      items.push({
+        title: b.title,
+        slug: b.slug,
+        hub: b.category?.name ?? "Today",
+      });
+    }
+  }
+
+  if (!items.length) return { sent: 0, emails: 0 };
+
+  const subscribers = await prisma.newsletterSubscriber.findMany({
+    where: { weeklyDigest: true },
+    select: { email: true, id: true },
+    take: 500,
+  });
+
+  const emails = await sendEmailBulk(
+    subscribers.map((s) => s.email),
+    (email) => {
+      const sub = subscribers.find((s) => s.email === email)!;
+      const { subject, html } = morningBriefingEmail({
+        items,
+        unsubscribeUrl: newsletterUnsubscribeUrl(sub.id),
+      });
+      return { to: email, subject, html };
+    }
+  );
+
+  return { sent: 0, emails };
 }

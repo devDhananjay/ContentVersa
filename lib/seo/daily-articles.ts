@@ -16,17 +16,39 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-function dailySlug(category: string, slot: number, day = istDayKey()) {
-  return `${category}-daily-${day}-${slot}`;
+async function uniqueTitleSlug(title: string): Promise<string> {
+  const base =
+    slugify(title).slice(0, 72) || `article-${Date.now().toString(36)}`;
+  let slug = base;
+  let n = 0;
+  while (
+    await prisma.blog.findUnique({ where: { slug }, select: { id: true } })
+  ) {
+    n++;
+    slug = `${base}-${n}`;
+  }
+  return slug;
 }
 
-/** Count today's daily-cron posts (draft or published) so we don't regenerate. */
+/** Count today's AI drafts for a category (by createdAt IST day, not slug pattern). */
 async function countTodayPosts(categorySlug: string, day = istDayKey()) {
-  const prefix = `${categorySlug}-daily-${day}-`;
+  const start = new Date(`${day}T00:00:00+05:30`);
+  const end = new Date(start.getTime() + 86_400_000);
+  const category = await prisma.category.findUnique({
+    where: { slug: categorySlug },
+    select: { id: true },
+  });
+  if (!category) return 0;
   return prisma.blog.count({
     where: {
-      slug: { startsWith: prefix },
+      categoryId: category.id,
+      createdAt: { gte: start, lt: end },
       status: { in: [BlogStatus.DRAFT, BlogStatus.PUBLISHED] },
+      // Legacy daily-* drafts + new title-slug AI drafts from platform owner
+      OR: [
+        { slug: { contains: `-daily-${day}-` } },
+        { metaKeywords: { contains: "ai-daily" } },
+      ],
     },
   });
 }
@@ -227,19 +249,6 @@ export async function runDailyArticleGeneration(options?: {
         continue;
       }
 
-      const slug = dailySlug(cat.slug, slot, day);
-      const exists = await prisma.blog.findUnique({
-        where: { slug },
-        select: { id: true, status: true },
-      });
-      if (
-        exists &&
-        (exists.status === BlogStatus.PUBLISHED ||
-          exists.status === BlogStatus.DRAFT)
-      ) {
-        skipped++;
-        continue;
-      }
       if (created >= maxTotal) break;
 
       const category = await ensureCategory(cat.slug);
@@ -263,49 +272,37 @@ export async function runDailyArticleGeneration(options?: {
         continue;
       }
 
+      // Human-style slug so quality posts can be indexed after publish (not *-daily-YYYY-*).
+      const slug = await uniqueTitleSlug(article.title);
       const tagIds = await upsertTags(article.tags);
-      // Content-only: operator adds cover image before publishing.
       const coverImage = null;
+      const metaKeywords = [
+        ...(article.metaKeywords
+          ? article.metaKeywords.split(",").map((s) => s.trim())
+          : article.tags),
+        "ai-daily",
+        day,
+      ]
+        .filter(Boolean)
+        .join(", ");
 
-      if (exists) {
-        await prisma.blogTag.deleteMany({ where: { blogId: exists.id } });
-        await prisma.blog.update({
-          where: { id: exists.id },
-          data: {
-            title: article.title,
-            excerpt: article.excerpt,
-            content: article.content.trim(),
-            coverImage,
-            readingTime: readingTime(article.content),
-            status: BlogStatus.DRAFT,
-            metaTitle: article.title,
-            metaDescription: article.metaDescription,
-            metaKeywords: article.metaKeywords ?? article.tags.join(", "),
-            publishedAt: null,
-            authorId: owner.id,
-            categoryId: category.id,
-            tags: { create: tagIds.map((tagId) => ({ tagId })) },
-          },
-        });
-      } else {
-        await prisma.blog.create({
-          data: {
-            title: article.title,
-            slug,
-            excerpt: article.excerpt,
-            content: article.content.trim(),
-            coverImage,
-            readingTime: readingTime(article.content),
-            status: BlogStatus.DRAFT,
-            metaTitle: article.title,
-            metaDescription: article.metaDescription,
-            metaKeywords: article.metaKeywords ?? article.tags.join(", "),
-            authorId: owner.id,
-            categoryId: category.id,
-            tags: { create: tagIds.map((tagId) => ({ tagId })) },
-          },
-        });
-      }
+      await prisma.blog.create({
+        data: {
+          title: article.title,
+          slug,
+          excerpt: article.excerpt,
+          content: article.content.trim(),
+          coverImage,
+          readingTime: readingTime(article.content),
+          status: BlogStatus.DRAFT,
+          metaTitle: article.title,
+          metaDescription: article.metaDescription,
+          metaKeywords,
+          authorId: owner.id,
+          categoryId: category.id,
+          tags: { create: tagIds.map((tagId) => ({ tagId })) },
+        },
+      });
 
       created++;
       console.log(

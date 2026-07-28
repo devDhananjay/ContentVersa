@@ -160,12 +160,18 @@ export async function getUserReadingStats(userId: string) {
 }
 
 /** Unfinished articles for the home “Continue reading” strip. */
-export async function getContinueReading(userId: string, limit = 8) {
+export async function getContinueReading(
+  reader: { userId?: string | null; visitorKey?: string | null },
+  limit = 8
+) {
   if (!isDatabaseConfigured()) return [];
+  if (!reader.userId && !reader.visitorKey) return [];
 
   const rows = await prisma.readingHistory.findMany({
     where: {
-      userId,
+      ...(reader.userId
+        ? { userId: reader.userId }
+        : { visitorKey: reader.visitorKey! }),
       progress: { gte: 5, lt: 85 },
     },
     orderBy: { updatedAt: "desc" },

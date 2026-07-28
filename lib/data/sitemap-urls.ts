@@ -10,6 +10,7 @@ import {
 } from "@/lib/seo/crawl-policy";
 import { TOOL_REGISTRY, TOOLS_HUB_PATH } from "@/lib/tools/registry";
 import { locationPagePaths } from "@/lib/tools/tools-seo";
+import { getCineverseHubDataCached } from "@/lib/cineverse/data";
 
 type SitemapFreq = MetadataRoute.Sitemap[0]["changeFrequency"];
 
@@ -99,7 +100,60 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
       })
     );
 
-  return blogEntries;
+  const profileGroups = await prisma.blog.groupBy({
+    by: ["authorId"],
+    where: { status: BlogStatus.PUBLISHED },
+    _count: { _all: true },
+  });
+  const eligibleAuthorIds = profileGroups
+    .filter((g) => g._count._all >= 2)
+    .map((g) => g.authorId)
+    .slice(0, 200);
+
+  let profileEntries: MetadataRoute.Sitemap = [];
+  if (eligibleAuthorIds.length) {
+    const authors = await prisma.user.findMany({
+      where: { id: { in: eligibleAuthorIds } },
+      select: { username: true, updatedAt: true },
+    });
+    profileEntries = authors
+      .filter((a) => a.username)
+      .map((a) =>
+        entry(`/profile/${a.username}`, {
+          lastModified: a.updatedAt ?? now,
+          changeFrequency: "weekly",
+          priority: 0.45,
+        })
+      );
+  }
+
+  return [...blogEntries, ...profileEntries];
+}
+
+async function cineverseMovieEntries(
+  now: Date
+): Promise<MetadataRoute.Sitemap> {
+  try {
+    const hub = await getCineverseHubDataCached();
+    const movies = [...hub.trending, ...hub.nowPlaying, ...hub.upcoming];
+    const seen = new Set<string>();
+    const out: MetadataRoute.Sitemap = [];
+    for (const m of movies) {
+      if (!m.id || seen.has(m.id)) continue;
+      seen.add(m.id);
+      out.push(
+        entry(`/cineverse/movie/${m.id}`, {
+          lastModified: now,
+          changeFrequency: "weekly",
+          priority: 0.55,
+        })
+      );
+      if (out.length >= 40) break;
+    }
+    return out;
+  } catch {
+    return [];
+  }
 }
 
 function dedupeSitemap(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
@@ -136,14 +190,25 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   );
 
   let dbEntries: MetadataRoute.Sitemap = [];
+  let movieEntries: MetadataRoute.Sitemap = [];
   try {
     dbEntries = await dynamicDbEntries(now);
   } catch {
     // Sitemap must not 500 when DB is briefly unavailable.
   }
+  try {
+    movieEntries = await cineverseMovieEntries(now);
+  } catch {
+    /* TMDB optional */
+  }
 
-  if (dbEntries.length > 0) {
-    return dedupeSitemap([...staticEntries, ...categoryEntries, ...dbEntries]);
+  if (dbEntries.length > 0 || movieEntries.length > 0) {
+    return dedupeSitemap([
+      ...staticEntries,
+      ...categoryEntries,
+      ...dbEntries,
+      ...movieEntries,
+    ]);
   }
 
   const fallbackBlogs: MetadataRoute.Sitemap = BLOGS.filter((b) =>

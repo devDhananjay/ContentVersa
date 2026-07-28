@@ -6,6 +6,8 @@ import { SeriesCarousel } from "@/components/sports/series-carousel";
 import { ScheduleBlock } from "@/components/sports/schedule-block";
 import { SportsSectionHeader } from "@/components/sports/sports-section-header";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { HubPushCta } from "@/components/engagement/hub-push-cta";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getSportsHubDataCached } from "@/lib/sports/data";
 import { buildMetadata } from "@/lib/seo";
@@ -41,6 +43,12 @@ export default async function SportsHubPage() {
           opinion, and tutorials under the Sports category after signing up.
         </p>
       </HubEditorialIntro>
+
+      <HubAdSense />
+      <HubPushCta
+        title="Cricket match alerts"
+        description="Get a push 30 minutes before big matches — never miss toss or first ball."
+      />
 
       <section>
         <SportsSectionHeader

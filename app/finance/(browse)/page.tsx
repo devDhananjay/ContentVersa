@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { FinanceBlogSection } from "@/components/finance/finance-blog-section";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { HubPushCta } from "@/components/engagement/hub-push-cta";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { buildMetadata } from "@/lib/seo";
 
@@ -33,6 +35,11 @@ export default async function FinanceHubPage() {
           finance blogs below or explore all articles in the Finance category.
         </p>
       </HubEditorialIntro>
+      <HubAdSense />
+      <HubPushCta
+        title="Market open & close alerts"
+        description="Push when your watchlist stocks move at open and close (IST)."
+      />
       <FinanceBlogSection blogs={blogs} />
     </>
   );

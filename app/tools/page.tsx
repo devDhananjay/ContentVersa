@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ToolsHubGrid, ToolsHubIntro } from "@/components/tools/tools-hub-grid";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { buildMetadata } from "@/lib/seo";
 import { TOOLS_HUB_PATH } from "@/lib/tools/registry";
 import { toolsHubJsonLd } from "@/lib/tools/tools-seo";
@@ -31,6 +32,7 @@ export default function ToolsHubPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ToolsHubIntro />
+      <HubAdSense className="my-2" />
       <ToolsHubGrid />
       <section className="max-w-3xl rounded-xl border border-border/60 bg-muted/20 p-5 text-sm text-muted-foreground">
         <p className="font-medium text-foreground">Official government portals</p>

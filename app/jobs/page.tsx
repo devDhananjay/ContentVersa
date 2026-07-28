@@ -5,6 +5,7 @@ import { GovtJobCard } from "@/components/jobs/govt-job-card";
 import { JobsHubCards } from "@/components/jobs/jobs-browse-shell";
 import { JobsSectionHeader } from "@/components/jobs/jobs-section-header";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PrivateJobCard } from "@/components/jobs/private-job-card";
 import { Button } from "@/components/ui/button";
 import { getGovtJobsCached } from "@/lib/jobs/data";
@@ -39,6 +40,8 @@ export default async function JobsHubPage() {
           and apply for the Creator Program after two quality articles.
         </p>
       </HubEditorialIntro>
+
+      <HubAdSense />
 
       {showWarning && (
         <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
