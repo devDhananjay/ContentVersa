@@ -29,6 +29,7 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
       { label: "Bank Statement Analyzer", href: "/moneyverse/bank-statement-analyzer" },
       { label: "HUID Verification", href: "/huid-verification" },
       { label: "India Tools", href: "/tools" },
+      { label: "Merge PDF", href: "/tools/merge-pdf" },
       { label: "Weather", href: "/tools/weather" },
       { label: "Nearby Places", href: "/tools/nearby-places" },
       { label: "RTO Finder", href: "/tools/rto-finder" },

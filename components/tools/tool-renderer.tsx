@@ -18,6 +18,10 @@ import { IndianHolidaysTool } from "./indian-holidays-tool";
 import { ElectionInfoTool } from "./election-info-tool";
 import { GeoLocationTool } from "./geo-location-tool";
 import { NearbyPlacesTool } from "./nearby-places-tool";
+import { MergePdfTool } from "./merge-pdf-tool";
+import { SplitPdfTool } from "./split-pdf-tool";
+import { CompressPdfTool } from "./compress-pdf-tool";
+import { ImagesToPdfTool } from "./images-to-pdf-tool";
 
 const TOOL_COMPONENTS: Record<ToolSlug, React.ComponentType> = {
   "ifsc-finder": IfscFinderTool,
@@ -44,6 +48,10 @@ const TOOL_COMPONENTS: Record<ToolSlug, React.ComponentType> = {
   "nearby-hospitals": () => <NearbyPlacesTool defaultCategory="hospitals" />,
   "nearby-schools": () => <NearbyPlacesTool defaultCategory="schools" />,
   "nearby-atms": () => <NearbyPlacesTool defaultCategory="atms" />,
+  "merge-pdf": MergePdfTool,
+  "split-pdf": SplitPdfTool,
+  "compress-pdf": CompressPdfTool,
+  "images-to-pdf": ImagesToPdfTool,
 };
 
 export function ToolRenderer({ slug }: { slug: ToolSlug }) {

@@ -43,6 +43,29 @@ export function toolFaq(tool: ToolDef) {
     });
   }
 
+  if (
+    tool.slug === "merge-pdf" ||
+    tool.slug === "split-pdf" ||
+    tool.slug === "compress-pdf" ||
+    tool.slug === "images-to-pdf"
+  ) {
+    base.push({
+      q: "Are my PDF files uploaded to ContentVerse?",
+      a: "No. PDF tools run entirely in your browser. Files stay on your device and are not sent to our servers.",
+    });
+    base.push({
+      q: "What is the maximum file size?",
+      a: "Each file can be up to 25 MB. Very large or encrypted PDFs may fail — unlock or compress offline first if needed.",
+    });
+  }
+
+  if (tool.slug === "compress-pdf") {
+    base.push({
+      q: "Will compress always make my PDF much smaller?",
+      a: "Not always. Already-optimized or scanned image PDFs may shrink only a little. We show before/after size honestly.",
+    });
+  }
+
   return base;
 }
 
@@ -96,7 +119,7 @@ export function toolsHubJsonLd() {
     "@type": "CollectionPage",
     name: "Free India Utility Tools",
     description:
-      "IFSC, pincode, weather, currency, QR/barcode, FSSAI format, holidays, nearby places, RTO, fuel, EMI, SIP, and more.",
+      "IFSC, pincode, weather, currency, QR/barcode, PDF merge/split/compress, FSSAI format, holidays, nearby places, RTO, fuel, EMI, SIP, and more.",
     url: toolsHubUrl(),
     isPartOf: { "@type": "WebSite", name: SITE.name, url: SITE.url },
     mainEntity: {

@@ -21,6 +21,10 @@ import {
   Wallet,
   Hotel,
   Search,
+  FilePlus2,
+  Scissors,
+  FileArchive,
+  Images,
   type LucideIcon,
 } from "lucide-react";
 import type { ToolSlug } from "@/lib/tools/registry";
@@ -50,6 +54,10 @@ const ICONS: Record<ToolSlug, LucideIcon> = {
   "nearby-hospitals": Stethoscope,
   "nearby-schools": School,
   "nearby-atms": Banknote,
+  "merge-pdf": FilePlus2,
+  "split-pdf": Scissors,
+  "compress-pdf": FileArchive,
+  "images-to-pdf": Images,
 };
 
 export function ToolIcon({ slug, className }: { slug: ToolSlug; className?: string }) {

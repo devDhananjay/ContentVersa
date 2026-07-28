@@ -22,7 +22,11 @@ export type ToolSlug =
   | "nearby-restaurants"
   | "nearby-hospitals"
   | "nearby-schools"
-  | "nearby-atms";
+  | "nearby-atms"
+  | "merge-pdf"
+  | "split-pdf"
+  | "compress-pdf"
+  | "images-to-pdf";
 
 export type ToolDef = {
   slug: ToolSlug;
@@ -256,6 +260,42 @@ export const TOOL_REGISTRY: ToolDef[] = [
       "petrol rate today",
     ],
     badge: "Daily",
+  },
+  {
+    slug: "merge-pdf",
+    title: "Merge PDF Online Free — Combine PDF Files India",
+    shortTitle: "Merge PDF",
+    description:
+      "Combine multiple PDF files into one document in your browser. Free, no sign-up — files stay on your device.",
+    keywords: ["merge pdf", "combine pdf online", "join pdf free", "merge pdf india"],
+    badge: "PDF",
+  },
+  {
+    slug: "split-pdf",
+    title: "Split PDF Online Free — Extract Pages India",
+    shortTitle: "Split PDF",
+    description:
+      "Extract a page range from any PDF into a new file. Runs in your browser — nothing uploaded to our servers.",
+    keywords: ["split pdf", "extract pdf pages", "pdf page splitter free"],
+    badge: "PDF",
+  },
+  {
+    slug: "compress-pdf",
+    title: "Compress PDF Online Free — Reduce Size India",
+    shortTitle: "Compress PDF",
+    description:
+      "Reduce PDF file size in your browser for email and uploads. Results vary by document; files never leave your device.",
+    keywords: ["compress pdf", "reduce pdf size", "pdf compressor free india"],
+    badge: "PDF",
+  },
+  {
+    slug: "images-to-pdf",
+    title: "Images to PDF Converter Free — JPG PNG India",
+    shortTitle: "Images to PDF",
+    description:
+      "Convert JPG or PNG images into a single PDF. Free browser tool — no upload required.",
+    keywords: ["jpg to pdf", "png to pdf", "images to pdf converter free"],
+    badge: "PDF",
   },
 ];
 
