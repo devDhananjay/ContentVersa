@@ -22,7 +22,11 @@ import { LatestSection } from "@/components/home/latest-section";
 import { ContinueReadingStrip } from "@/components/home/continue-reading-strip";
 import { TrendingStrip } from "@/components/home/trending-strip";
 import { CricketStrip } from "@/components/home/cricket-strip";
-import { InfoStrips } from "@/components/home/info-strips";
+import {
+  GoldPriceStrip,
+  FuelPriceStrip,
+  MoviesPriceStrip,
+} from "@/components/home/info-strips";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { getFinanceTickerDataCached } from "@/lib/finance/data";
@@ -149,10 +153,8 @@ export default async function HomePage() {
       <ContinueReadingStrip />
 
       <PlatformModulesStrip previews={modulePreviews} />
-
       <TrendingStrip />
       <CricketStrip />
-      <InfoStrips />
 
       <Reveal>
         <SportsTeaser data={sportsTeaser} />
@@ -200,6 +202,7 @@ export default async function HomePage() {
         />
       </Reveal>
 
+      <GoldPriceStrip />
       <Reveal>
         <HomeModuleSpotlight
           id="home-gold"
@@ -218,6 +221,7 @@ export default async function HomePage() {
         />
       </Reveal>
 
+      <FuelPriceStrip />
       <Reveal>
         <HomeModuleSpotlight
           id="home-tools"
@@ -276,6 +280,7 @@ export default async function HomePage() {
         />
       </Reveal>
 
+      <MoviesPriceStrip />
       <Reveal>
         <HomeModuleSpotlight
           id="home-cine"
