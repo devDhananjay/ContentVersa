@@ -38,6 +38,17 @@ export const SITE_NAV_HUBS = [
     path: "/tools/salary-tax-calculator",
     description: "Income tax and in-hand salary calculator India new vs old regime",
   },
+  {
+    name: "India Guides",
+    path: "/guides",
+    description:
+      "Trending explainers, govt schemes, job notifications, cricket, AI tools and OTT guides India",
+  },
+  {
+    name: "Govt Schemes Guides",
+    path: "/guides/schemes",
+    description: "Government scheme eligibility and how to apply India",
+  },
   { name: "Reels", path: "/reels", description: "Short-form videos from Indian creators" },
   { name: "Blogs", path: "/blogs", description: "Read articles and stories from creators" },
 ] as const;

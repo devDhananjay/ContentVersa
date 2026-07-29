@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {
+  BookOpen,
   Briefcase,
   Clapperboard,
   Gem,
@@ -26,6 +27,7 @@ import { getHomeModulePreviews } from "@/lib/home/module-previews";
 import { getGovtJobsCached } from "@/lib/jobs/data";
 import { getGoldPriceSnapshot } from "@/lib/goldverse/gold-price";
 import { TOOL_REGISTRY, toolPath } from "@/lib/tools/registry";
+import { GUIDE_SECTIONS, guideSectionPath } from "@/lib/guides/registry";
 import { SiteJsonLd } from "@/components/seo/site-json-ld";
 import { Reveal } from "@/components/home/motion";
 import { buildMetadata } from "@/lib/seo";
@@ -58,6 +60,7 @@ const HOME_SIDEBAR_SECTIONS = [
   { id: "home-gold", label: "Gold" },
   { id: "home-tools", label: "Tools" },
   { id: "home-jobs", label: "Jobs" },
+  { id: "home-guides", label: "Guides" },
   { id: "home-cine", label: "Cine" },
   { id: "home-articles", label: "Articles" },
   { id: "home-latest", label: "Latest" },
@@ -240,6 +243,28 @@ export default async function HomePage() {
           icon={Briefcase}
           accentClassName="text-amber-400"
           items={jobItems}
+        />
+      </Reveal>
+
+      <Reveal>
+        <HomeModuleSpotlight
+          id="home-guides"
+          eyebrow="India Guides"
+          title={
+            <>
+              Trends, schemes & <span className="text-gradient">how-tos</span>
+            </>
+          }
+          description="Search-ready formats: why it’s trending, scheme eligibility, job notifications, cricket, AI tools, and OTT."
+          href="/guides"
+          cta="Open Guides"
+          icon={BookOpen}
+          accentClassName="text-violet-300"
+          items={GUIDE_SECTIONS.slice(0, 4).map((s) => ({
+            title: s.shortTitle,
+            href: guideSectionPath(s.slug),
+            meta: s.template,
+          }))}
         />
       </Reveal>
 

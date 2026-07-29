@@ -9,6 +9,7 @@ import {
   MIN_INDEXABLE_READING_MINUTES,
 } from "@/lib/seo/crawl-policy";
 import { TOOL_REGISTRY, TOOLS_HUB_PATH } from "@/lib/tools/registry";
+import { guideSitemapEntries } from "@/lib/guides/registry";
 import { getCineverseHubDataCached } from "@/lib/cineverse/data";
 
 type SitemapFreq = MetadataRoute.Sitemap[0]["changeFrequency"];
@@ -50,6 +51,7 @@ const STATIC_PAGES: Array<{
   { path: "/moneyverse/bank-statement-analyzer", changeFrequency: "weekly", priority: 0.9 },
   { path: "/huid-verification", changeFrequency: "daily", priority: 0.9 },
   { path: "/tools", changeFrequency: "daily", priority: 0.92 },
+  ...guideSitemapEntries(),
   ...TOOL_REGISTRY.map((t) => ({
     path: `${TOOLS_HUB_PATH}/${t.slug}`,
     changeFrequency: "weekly" as SitemapFreq,

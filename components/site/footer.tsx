@@ -23,6 +23,8 @@ const EXPLORE = [
   { label: "GoldVerse", href: "/goldverse" },
   { label: "MoneyVerse", href: "/moneyverse" },
   { label: "Jobs", href: "/jobs" },
+  { label: "India Guides", href: "/guides" },
+  { label: "Govt Schemes", href: "/guides/schemes" },
   { label: "Reels", href: "/reels" },
   { label: "Blogs", href: "/blogs" },
   { label: "Categories", href: "/categories" },

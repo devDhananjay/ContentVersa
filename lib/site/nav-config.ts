@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Bookmark,
+  BookOpen,
   Briefcase,
   Clapperboard,
   Compass,
@@ -45,6 +46,12 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
     icon: Compass,
     items: [
       { href: "/blogs", label: "Articles", description: "Discover stories & ideas", icon: Compass },
+      {
+        href: "/guides",
+        label: "India Guides",
+        description: "Schemes, jobs, trends, OTT",
+        icon: BookOpen,
+      },
       { href: "/categories", label: "Categories", description: "21+ topics to follow", icon: LayoutDashboard },
       { href: "/bookmarks", label: "Bookmarks", description: "Your saved reads", icon: Bookmark },
       { href: "/site-map", label: "Site map", description: "Every page at a glance", icon: Map },

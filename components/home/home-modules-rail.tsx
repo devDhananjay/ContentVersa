@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  BookOpen,
   Briefcase,
   Clapperboard,
   Compass,
@@ -31,6 +32,7 @@ const RAIL: RailItem[] = [
   { href: "/sports", label: "Sports", icon: Medal, color: "#22d3ee", main: true },
   { href: "/finance", label: "Finance", icon: TrendingUp, color: "#3b82f6", main: true },
   { href: "/jobs", label: "Jobs", icon: Briefcase, color: "#f59e0b", main: true },
+  { href: "/guides", label: "Guides", icon: BookOpen, color: "#a78bfa", main: true },
   { href: "/moneyverse", label: "MoneyVerse", icon: Wallet, color: "#34d399", main: true },
   { href: "/tools", label: "India Tools", icon: Wrench, color: "#2dd4bf", main: true },
   { href: "/blogs", label: "Articles", icon: Compass, color: "#8b5cf6", main: true },

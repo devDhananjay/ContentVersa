@@ -468,6 +468,23 @@
       "namedRegex": "^/finance/stock/(?<nxtPsymbol>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/guides/[section]",
+      "regex": "^/guides/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsection": "nxtPsection"
+      },
+      "namedRegex": "^/guides/(?<nxtPsection>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/guides/[section]/[slug]",
+      "regex": "^/guides/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsection": "nxtPsection",
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/guides/(?<nxtPsection>[^/]+?)/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/profile/[username]",
       "regex": "^/profile/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -807,6 +824,12 @@
       "regex": "^/goldverse(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/goldverse(?:/)?$"
+    },
+    {
+      "page": "/guides",
+      "regex": "^/guides(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/guides(?:/)?$"
     },
     {
       "page": "/huid-verification",
