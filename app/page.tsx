@@ -150,11 +150,11 @@ export default async function HomePage() {
         </HomeHeroShell>
       </div>
 
+      <TrendingStrip />
+      <CricketStrip />
       <ContinueReadingStrip />
 
       <PlatformModulesStrip previews={modulePreviews} />
-      <TrendingStrip />
-      <CricketStrip />
 
       <Reveal>
         <SportsTeaser data={sportsTeaser} />
