@@ -22,6 +22,7 @@ import { LatestSection } from "@/components/home/latest-section";
 import { ContinueReadingStrip } from "@/components/home/continue-reading-strip";
 import { TrendingStrip } from "@/components/home/trending-strip";
 import { CricketStrip } from "@/components/home/cricket-strip";
+import { InfoStrips } from "@/components/home/info-strips";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { getFinanceTickerDataCached } from "@/lib/finance/data";
@@ -145,11 +146,13 @@ export default async function HomePage() {
         </HomeHeroShell>
       </div>
 
-      <TrendingStrip />
       <ContinueReadingStrip />
-      <CricketStrip />
 
       <PlatformModulesStrip previews={modulePreviews} />
+
+      <TrendingStrip />
+      <CricketStrip />
+      <InfoStrips />
 
       <Reveal>
         <SportsTeaser data={sportsTeaser} />

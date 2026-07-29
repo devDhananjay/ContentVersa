@@ -32,7 +32,10 @@ async function fetchTrends(): Promise<TrendItem[]> {
       ?? block.match(/<title>(.*?)<\/title>/)?.[1]
       ?? "";
     const traffic = block.match(/<ht:approx_traffic>(.*?)<\/ht:approx_traffic>/)?.[1] ?? "";
-    const link = block.match(/<link>(.*?)<\/link>/)?.[1] ?? "";
+    const rawLink = block.match(/<link>(.*?)<\/link>/)?.[1] ?? "";
+    const link = rawLink.includes("/trending/rss")
+      ? `https://www.google.com/search?q=${encodeURIComponent(title)}`
+      : rawLink;
     const picture = block.match(/<ht:picture>(.*?)<\/ht:picture>/)?.[1];
 
     const newsArr: TrendItem["newsItems"] = [];
