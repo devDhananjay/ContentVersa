@@ -36,6 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description: `Find ${label.toLowerCase()} near ${cityDef.name}, India. Free nearby search with ratings and map links.`,
     path: `${TOOLS_HUB_PATH}/locations/${city}/${category}`,
+    noIndex: true,
     keywords: [
       `${label.toLowerCase()} near ${cityDef.name}`,
       `nearby ${label.toLowerCase()} ${cityDef.name}`,

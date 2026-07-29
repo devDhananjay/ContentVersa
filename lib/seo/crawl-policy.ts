@@ -2,9 +2,9 @@
  * Google indexing rules — keep the public index focused on original editorial content.
  *
  * Thin public widgets (live scores, stock tickers, reels, discover, leaderboard)
- * stay crawlable but use page-level `noIndex` so Google can see canonicals without
- * indexing them. Private surfaces (/dashboard, /admin, /api, /auth) are Disallow'd
- * in app/robots.ts.
+ * stay crawlable but use page-level `noIndex` with `follow: true` so Google can
+ * still pass link equity to hub pages without indexing the thin URL.
+ * Private surfaces (/dashboard, /admin, /api, /auth) are Disallow'd in app/robots.ts.
  */
 
 /** Minimum reading minutes for blog posts in sitemap / Google index */

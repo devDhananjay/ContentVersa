@@ -9,7 +9,6 @@ import {
   MIN_INDEXABLE_READING_MINUTES,
 } from "@/lib/seo/crawl-policy";
 import { TOOL_REGISTRY, TOOLS_HUB_PATH } from "@/lib/tools/registry";
-import { locationPagePaths } from "@/lib/tools/tools-seo";
 import { getCineverseHubDataCached } from "@/lib/cineverse/data";
 
 type SitemapFreq = MetadataRoute.Sitemap[0]["changeFrequency"];
@@ -61,7 +60,7 @@ const STATIC_PAGES: Array<{
           ? 0.84
           : 0.87,
   })),
-  ...locationPagePaths(),
+  // Location matrix pages are noindex (thin templates) — keep out of sitemap.
   { path: "/jobs/govt", changeFrequency: "hourly", priority: 0.78 },
   { path: "/jobs/private", changeFrequency: "daily", priority: 0.72 },
 ];

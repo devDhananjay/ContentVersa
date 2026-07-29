@@ -131,7 +131,9 @@ export function buildMetadata(input: {
       ],
     authors: input.authors?.map((name) => ({ name })),
     alternates: { canonical: url },
-    robots: input.noIndex ? { index: false, follow: false } : { index: true, follow: true },
+    robots: input.noIndex
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
     icons: SITE.icons,
     ...(verification ? { verification: { google: verification } } : {}),
     openGraph: {

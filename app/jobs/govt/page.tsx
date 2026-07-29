@@ -23,7 +23,8 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     description:
       meta?.description ??
       "Latest government job notifications, results and exam updates from Sarkari Result.",
-    path: `/jobs/govt${cat ? `?cat=${cat}` : ""}`,
+    // Always canonicalize to the hub — ?cat= variants must not compete as separate URLs.
+    path: "/jobs/govt",
     image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600",
   });
 }

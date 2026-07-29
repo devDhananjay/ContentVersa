@@ -161,6 +161,8 @@ export function getToolBySlugOrThrow(slug: string): ToolDef {
 }
 
 export function locationPagePaths() {
+  // Kept for internal linking / static params. These URLs are noindex and
+  // intentionally omitted from sitemap.xml (thin city×category templates).
   return LOCATION_CITIES.flatMap((city) =>
     LOCATION_CATEGORIES.map((category) => ({
       path: `${TOOLS_HUB_PATH}/locations/${city.slug}/${category}`,
