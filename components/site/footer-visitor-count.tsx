@@ -28,7 +28,7 @@ export function FooterVisitorCount() {
   if (count === null) return null;
 
   return (
-    <div className="mt-12 flex justify-center">
+    <div className="mt-8 flex justify-center">
       <p className="inline-flex items-center gap-2 rounded-full border border-neon-cyan/30 bg-neon-cyan/5 px-4 py-2 text-sm text-muted-foreground">
         <Users className="h-4 w-4 text-neon-cyan shrink-0" />
         <span>

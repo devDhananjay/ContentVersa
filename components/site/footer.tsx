@@ -16,77 +16,102 @@ const SOCIAL_LINKS: { label: string; href: string; Icon: ElementType }[] = [
 
 const WHATSAPP_CHANNEL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL?.trim();
 
-const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[] = [
-  {
-    title: "Platform",
-    links: [
-      { label: "Sports", href: "/sports" },
-      { label: "Finance", href: "/finance" },
-      { label: "CineVerse", href: "/cineverse" },
-      { label: "GoldVerse", href: "/goldverse" },
-      { label: "MoneyVerse", href: "/moneyverse" },
-      { label: "Screenshot Scan (OCR)", href: "/moneyverse/screenshot-scan" },
-      { label: "Bank Statement Analyzer", href: "/moneyverse/bank-statement-analyzer" },
-      { label: "HUID Verification", href: "/huid-verification" },
-      { label: "India Tools", href: "/tools" },
-      { label: "Merge PDF", href: "/tools/merge-pdf" },
-      { label: "Salary Tax Calculator", href: "/tools/salary-tax-calculator" },
-      { label: "Weather", href: "/tools/weather" },
-      { label: "Nearby Places", href: "/tools/nearby-places" },
-      { label: "RTO Finder", href: "/tools/rto-finder" },
-      { label: "Fuel Price", href: "/tools/fuel-price" },
-      { label: "IFSC Finder", href: "/tools/ifsc-finder" },
-      { label: "Jobs", href: "/jobs" },
-      { label: "Reels", href: "/reels" },
-      { label: "Explore Blogs", href: "/blogs" },
-      { label: "Categories", href: "/categories" },
-      { label: "Leaderboard", href: "/leaderboard" },
-    ],
-  },
-  {
-    title: "Creators",
-    links: [
-      { label: "Write", href: "/dashboard/create" },
-      { label: "Dashboard", href: "/dashboard" },
-      { label: "Monetization", href: "/dashboard/earnings" },
-      { label: "Creator Program", href: "/creator-program" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "/about" },
-      { label: "Careers", href: "/careers" },
-      { label: "Press", href: "/press" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Terms", href: "/terms" },
-      { label: "Privacy", href: "/privacy" },
-      { label: "Cookies", href: "/cookies" },
-      { label: "Content Policy", href: "/policy" },
-      { label: "Site Map", href: "/site-map" },
-    ],
-  },
-];
+const EXPLORE = [
+  { label: "Sports", href: "/sports" },
+  { label: "Finance", href: "/finance" },
+  { label: "CineVerse", href: "/cineverse" },
+  { label: "GoldVerse", href: "/goldverse" },
+  { label: "MoneyVerse", href: "/moneyverse" },
+  { label: "Jobs", href: "/jobs" },
+  { label: "Reels", href: "/reels" },
+  { label: "Blogs", href: "/blogs" },
+  { label: "Categories", href: "/categories" },
+] as const;
+
+const TOOLS = [
+  { label: "All India Tools", href: "/tools" },
+  { label: "Salary Tax Calculator", href: "/tools/salary-tax-calculator" },
+  { label: "Merge PDF", href: "/tools/merge-pdf" },
+  { label: "Weather", href: "/tools/weather" },
+  { label: "IFSC Finder", href: "/tools/ifsc-finder" },
+  { label: "HUID Verify", href: "/huid-verification" },
+] as const;
+
+const CREATORS = [
+  { label: "Write", href: "/dashboard/create" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Monetization", href: "/dashboard/earnings" },
+  { label: "Creator Program", href: "/creator-program" },
+  { label: "Leaderboard", href: "/leaderboard" },
+] as const;
+
+const COMPANY = [
+  { label: "About", href: "/about" },
+  { label: "Careers", href: "/careers" },
+  { label: "Press", href: "/press" },
+  { label: "Contact", href: "/contact" },
+] as const;
+
+const LEGAL = [
+  { label: "Terms", href: "/terms" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Cookies", href: "/cookies" },
+  { label: "Content Policy", href: "/policy" },
+  { label: "Site Map", href: "/site-map" },
+] as const;
+
+function FooterLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+    >
+      {label}
+    </Link>
+  );
+}
+
+function FooterNavColumn({
+  title,
+  links,
+  className,
+}: {
+  title: string;
+  links: readonly { label: string; href: string }[];
+  className?: string;
+}) {
+  return (
+    <nav aria-label={title} className={className}>
+      <h4 className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground/80">
+        {title}
+      </h4>
+      <ul className="space-y-2.5">
+        {links.map((l) => (
+          <li key={l.href}>
+            <FooterLink href={l.href} label={l.label} />
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
 
 export async function Footer() {
   const logoSrc = await getSiteLogoUrl();
 
   return (
-    <footer className="relative mt-32 border-t border-border/50 bg-background">
-      <div className="absolute inset-x-0 top-0 -translate-y-1/2 mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-neon-purple/40 to-transparent" />
-      <div className="container py-16">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-10">
-          <div className="col-span-2">
+    <footer className="relative mt-24 border-t border-border/50 bg-background">
+      <div className="absolute inset-x-0 top-0 mx-auto h-px max-w-7xl -translate-y-1/2 bg-gradient-to-r from-transparent via-neon-purple/40 to-transparent" />
+
+      <div className="container py-12 md:py-14">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)] lg:gap-14">
+          <div>
             <Logo src={logoSrc} size="lg" />
-            <p className="mt-4 text-sm text-muted-foreground max-w-sm">
-              A next-generation creator platform built for the 2026 internet. Read deeply, create boldly, grow with a community of bold writers.
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              {SITE.searchName}. India&apos;s creator platform for blogs, sports,
+              finance, jobs, and free tools.
             </p>
-            <div className="mt-6 flex items-center gap-2">
+            <div className="mt-5 flex flex-wrap items-center gap-2">
               {SOCIAL_LINKS.map(({ label, href, Icon }) => (
                 <a
                   key={label}
@@ -94,7 +119,7 @@ export async function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="h-9 w-9 rounded-xl border border-border/60 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-neon-purple/60 transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 text-muted-foreground transition-colors hover:border-neon-purple/60 hover:text-foreground"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -105,7 +130,7 @@ export async function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="WhatsApp Channel"
-                  className="h-9 w-9 rounded-xl border border-[#25D366]/40 flex items-center justify-center text-[#25D366] hover:border-[#25D366] transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#25D366]/40 text-[#25D366] transition-colors hover:border-[#25D366]"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
                 </a>
@@ -113,34 +138,34 @@ export async function Footer() {
             </div>
           </div>
 
-          {FOOTER_COLS.map((col) => (
-            <div key={col.title}>
-              <h4 className="text-sm font-semibold mb-4">{col.title}</h4>
-              <ul className="space-y-3">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    <Link
-                      href={l.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4">
+            <FooterNavColumn title="Explore" links={EXPLORE} />
+            <FooterNavColumn title="Tools" links={TOOLS} />
+            <FooterNavColumn title="Creators" links={CREATORS} />
+            <FooterNavColumn title="Company" links={COMPANY} />
+          </div>
         </div>
 
         <FooterVisitorCount />
 
-        <div className="mt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pt-8 border-t border-border/50">
+        <div className="mt-8 flex flex-col gap-4 border-t border-border/50 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} ContentVerse. Built for creators. All rights reserved.
+            © {new Date().getFullYear()} ContentVerse. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Made with intent · v1.0
-          </p>
+          <nav
+            aria-label="Legal"
+            className="flex flex-wrap items-center gap-x-4 gap-y-2"
+          >
+            {LEGAL.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>
