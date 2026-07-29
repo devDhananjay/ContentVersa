@@ -55,6 +55,12 @@ export const SITE = {
   name: "ContentVerse",
   legalName: "ContentVerse India",
   tagline: "Read. Create. Grow.",
+  /**
+   * Preferred Google Search site name (line above the URL).
+   * Plain "ContentVerse" clashes with other brands, so Google often
+   * falls back to the domain — keep this unique and consistent on-page.
+   */
+  searchName: "ContentVerse — Read. Create. Grow.",
   description:
     "ContentVerse India — read blogs, watch reels, follow live sports scores, track Nifty & Sensex, and find government & private jobs. India's creator platform for bold writers.",
   get url() {
@@ -84,6 +90,11 @@ export const SITE = {
   },
 };
 
+/** Fallbacks if Google won't use SITE.searchName (ordered by preference). */
+export function siteNameAlternates(): string[] {
+  return [SITE.legalName, SITE.name, "contentverse.co.in"];
+}
+
 export function buildMetadata(input: {
   title?: string;
   description?: string;
@@ -95,7 +106,11 @@ export function buildMetadata(input: {
   publishedTime?: string;
   authors?: string[];
 }): Metadata {
-  const title = input.title ? `${input.title} · ${SITE.name}` : `${SITE.name} — ${SITE.tagline}`;
+  const title = input.title
+    ? input.title.includes(SITE.name)
+      ? input.title
+      : `${input.title} · ${SITE.name}`
+    : SITE.searchName;
   const url = input.path ? `${SITE.url}${input.path}` : SITE.url;
   const image = input.image || SITE.ogImage;
   const verification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
@@ -123,10 +138,10 @@ export function buildMetadata(input: {
       title,
       description: input.description || SITE.description,
       url,
-      siteName: SITE.name,
+      siteName: SITE.searchName,
       type: input.type || "website",
       publishedTime: input.publishedTime,
-      images: [{ url: image, width: 1200, height: 1200, alt: SITE.name }],
+      images: [{ url: image, width: 1200, height: 1200, alt: SITE.searchName }],
     },
     twitter: {
       card: "summary_large_image",
@@ -143,9 +158,10 @@ export function organizationJsonLd() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": `${SITE.url}/#organization`,
-    name: SITE.name,
+    name: SITE.searchName,
     legalName: SITE.legalName,
-    alternateName: ["ContentVerse India", "contentverse.co.in"],
+    alternateName: siteNameAlternates(),
+    slogan: SITE.tagline,
     url: SITE.url,
     logo: {
       "@type": "ImageObject",
@@ -169,8 +185,8 @@ export function websiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": `${SITE.url}/#website`,
-    name: SITE.name,
-    alternateName: ["ContentVerse India", "contentverse.co.in"],
+    name: SITE.searchName,
+    alternateName: siteNameAlternates(),
     url: SITE.url,
     description: SITE.description,
     publisher: { "@id": `${SITE.url}/#organization` },

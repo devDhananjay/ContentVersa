@@ -1,16 +1,16 @@
 {
   "version": 1,
   "functions": {
-    "/api/auth/google/login": {},
     "/api/auth/google/callback": {},
-    "/api/auth/firebase": {},
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
+    "/api/auth/google/login": {},
     "/api/moneyverse/bank-statement/quota": {},
+    "/api/auth/firebase": {},
     "/api/moneyverse/bank-statement/analyze": {},
-    "/api/reels/upload": {},
     "/api/upload": {},
+    "/api/reels/upload": {},
     "/uploads/[filename]": {}
   }
 }

@@ -29,5 +29,5 @@ export function SiteJsonLd() {
 }
 
 export function siteJsonLdForLayout() {
-  return { org: organizationJsonLd(), site: websiteJsonLd(), siteName: SITE.name };
+  return { org: organizationJsonLd(), site: websiteJsonLd(), siteName: SITE.searchName };
 }
