@@ -233,15 +233,6 @@ export function HelpChatWidget() {
   }, [pathname]);
 
   React.useEffect(() => {
-    const onOpen = () => {
-      setOpen(true);
-      if (messages.length === 0 && !welcomeDone) void loadWelcome();
-    };
-    window.addEventListener(HELP_CHAT_OPEN_EVENT, onOpen);
-    return () => window.removeEventListener(HELP_CHAT_OPEN_EVENT, onOpen);
-  }, [loadWelcome, messages.length, welcomeDone]);
-
-  React.useEffect(() => {
     if (hidden) return;
     if (sessionStorage.getItem(WELCOME_SESSION_KEY)) return;
 
@@ -340,6 +331,24 @@ export function HelpChatWidget() {
     },
     [loading, messages, pathname]
   );
+
+  React.useEffect(() => {
+    const onOpen = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ prompt?: string }>).detail;
+      setOpen(true);
+      const prompt = detail?.prompt?.trim();
+      if (prompt) {
+        setWelcomeDone(true);
+        window.setTimeout(() => {
+          void sendMessage(prompt);
+        }, 120);
+        return;
+      }
+      if (messages.length === 0 && !welcomeDone) void loadWelcome();
+    };
+    window.addEventListener(HELP_CHAT_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(HELP_CHAT_OPEN_EVENT, onOpen);
+  }, [loadWelcome, messages.length, welcomeDone, sendMessage]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -524,6 +533,10 @@ export function HelpChatWidget() {
   );
 }
 
-export function openHelpChat() {
-  window.dispatchEvent(new CustomEvent(HELP_CHAT_OPEN_EVENT));
+export function openHelpChat(opts?: { prompt?: string }) {
+  window.dispatchEvent(
+    new CustomEvent(HELP_CHAT_OPEN_EVENT, {
+      detail: opts?.prompt ? { prompt: opts.prompt } : undefined,
+    })
+  );
 }

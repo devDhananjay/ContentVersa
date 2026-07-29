@@ -45,6 +45,11 @@ export const SITE_NAV_HUBS = [
       "Trending explainers, govt schemes, job notifications, cricket, AI tools and OTT guides India",
   },
   {
+    name: "Trending India",
+    path: "/trending",
+    description: "Google Trends India topics with on-site briefings and chat",
+  },
+  {
     name: "Govt Schemes Guides",
     path: "/guides/schemes",
     description: "Government scheme eligibility and how to apply India",

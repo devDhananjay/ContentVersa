@@ -558,6 +558,14 @@
       "namedRegex": "^/tools/(?<nxtPslug>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/trending/[slug]",
+      "regex": "^/trending/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/trending/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/uploads/[filename]",
       "regex": "^/uploads/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -968,6 +976,12 @@
       "regex": "^/tools(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/tools(?:/)?$"
+    },
+    {
+      "page": "/trending",
+      "regex": "^/trending(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/trending(?:/)?$"
     }
   ],
   "dataRoutes": [],

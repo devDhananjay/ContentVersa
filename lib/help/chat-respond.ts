@@ -94,13 +94,22 @@ function helpSystemPrompt(pagePath: string | undefined, locale: "en" | "hi") {
     locale === "hi"
       ? "CRITICAL: Reply ONLY in Hindi (Devanagari script). Do not write English sentences — proper nouns like ContentVerse are fine."
       : "CRITICAL: Reply ONLY in English. Do not use Hindi or Devanagari script.";
-  return `You are ContentVerse Help — a short, friendly site assistant (NOT a generic chatbot).
-Answer ONLY about ContentVerse: blogs, reels, sports, finance, jobs, creator dashboard, premium (₹199/mo), newsletter (opt-in only), contact.
+
+  const onTrending = Boolean(pagePath?.startsWith("/trending"));
+  const scope = onTrending
+    ? `The user is on a Google Trends India topic page (${pagePath}).
+You MAY explain that trending topic in plain language, answer follow-up doubts, and summarize public news context.
+Also help with ContentVerse navigation when asked.
+Keep replies under 160 words. Do not invent breaking news facts — if unsure, say coverage is developing.`
+    : `Answer ONLY about ContentVerse: blogs, reels, sports, finance, jobs, creator dashboard, premium (₹199/mo), newsletter (opt-in only), contact.
 Keep replies under 120 words. Use bullet points when listing steps.
+Never invent features. If unsure, suggest /contact or /site-map.`;
+
+  return `You are ContentVerse Help — a short, friendly site assistant (NOT a generic chatbot).
+${scope}
 ${langRule}
-Never invent features. If unsure, suggest /contact or /site-map.
 Current page path: ${pagePath || "/"}
-Key links: ${nav}, /dashboard/create, /premium, /leaderboard, /site-map, /contact`;
+Key links: ${nav}, /trending, /dashboard/create, /premium, /leaderboard, /site-map, /contact`;
 }
 
 async function askGemini(

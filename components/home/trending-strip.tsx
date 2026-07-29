@@ -1,12 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { TrendingUp, Flame } from "lucide-react";
 
 interface Trend {
   title: string;
   traffic: string;
-  url: string;
+  href: string;
+  slug?: string;
 }
 
 export function TrendingStrip() {
@@ -32,10 +34,13 @@ export function TrendingStrip() {
     >
       <div className="container py-3 md:py-4">
         <div className="flex items-center gap-3">
-          <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white">
+          <Link
+            href="/trending"
+            className="flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white"
+          >
             <Flame className="h-3.5 w-3.5" />
             Trending
-          </span>
+          </Link>
 
           <div className="relative min-w-0 flex-1 overflow-hidden">
             <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-8 bg-gradient-to-r from-background to-transparent" />
@@ -43,21 +48,19 @@ export function TrendingStrip() {
 
             <div className="flex w-max items-center gap-4 animate-marquee-trending hover:[animation-play-state:paused]">
               {loop.map((t, i) => (
-                <a
-                  key={`${t.title}-${i}`}
-                  href={t.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  key={`${t.href}-${i}`}
+                  href={t.href || `/trending/${t.slug || ""}`}
                   className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border/50 bg-card/80 px-3 py-1.5 text-xs font-semibold transition hover:border-orange-400/50 hover:bg-orange-500/10 hover:text-orange-300"
                 >
                   <TrendingUp className="h-3 w-3 text-orange-400" />
                   <span className="max-w-[200px] truncate">{t.title}</span>
-                  {t.traffic && (
+                  {t.traffic ? (
                     <span className="text-[10px] font-normal text-muted-foreground">
                       {t.traffic}
                     </span>
-                  )}
-                </a>
+                  ) : null}
+                </Link>
               ))}
             </div>
           </div>

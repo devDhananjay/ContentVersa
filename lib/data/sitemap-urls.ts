@@ -51,6 +51,7 @@ const STATIC_PAGES: Array<{
   { path: "/moneyverse/bank-statement-analyzer", changeFrequency: "weekly", priority: 0.9 },
   { path: "/huid-verification", changeFrequency: "daily", priority: 0.9 },
   { path: "/tools", changeFrequency: "daily", priority: 0.92 },
+  { path: "/trending", changeFrequency: "hourly", priority: 0.86 },
   ...guideSitemapEntries(),
   ...TOOL_REGISTRY.map((t) => ({
     path: `${TOOLS_HUB_PATH}/${t.slug}`,
@@ -197,6 +198,7 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
 
   let dbEntries: MetadataRoute.Sitemap = [];
   let movieEntries: MetadataRoute.Sitemap = [];
+  let trendEntries: MetadataRoute.Sitemap = [];
   try {
     dbEntries = await dynamicDbEntries(now);
   } catch {
@@ -207,13 +209,27 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   } catch {
     /* TMDB optional */
   }
+  try {
+    const { fetchIndiaTrends } = await import("@/lib/trending/google-trends");
+    const trends = await fetchIndiaTrends();
+    trendEntries = trends.slice(0, 20).map((t) =>
+      entry(t.href, {
+        lastModified: now,
+        changeFrequency: "hourly",
+        priority: 0.72,
+      })
+    );
+  } catch {
+    /* Trends RSS optional */
+  }
 
-  if (dbEntries.length > 0 || movieEntries.length > 0) {
+  if (dbEntries.length > 0 || movieEntries.length > 0 || trendEntries.length > 0) {
     return dedupeSitemap([
       ...staticEntries,
       ...categoryEntries,
       ...dbEntries,
       ...movieEntries,
+      ...trendEntries,
     ]);
   }
 
@@ -227,5 +243,10 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  return dedupeSitemap([...staticEntries, ...categoryEntries, ...fallbackBlogs]);
+  return dedupeSitemap([
+    ...staticEntries,
+    ...categoryEntries,
+    ...fallbackBlogs,
+    ...trendEntries,
+  ]);
 }
