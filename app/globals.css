@@ -343,6 +343,34 @@ html.sr-reduce-motion .sitemap-tree-item::before {
   animation: marquee 40s linear infinite;
 }
 
+@keyframes marquee-trending {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-trending {
+  width: max-content;
+  animation: marquee-trending 30s linear infinite;
+}
+
+@keyframes marquee-cricket {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-cricket {
+  width: max-content;
+  animation: marquee-cricket 35s linear infinite;
+}
+
 /* Color vision accessibility — apply to page content only so fixed a11y UI stays put */
 html.cv-protanopia #site-content {
   filter: url("#cv-protanopia");
