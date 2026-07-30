@@ -51,6 +51,7 @@ export function TrendingStrip() {
                 <Link
                   key={`${t.href}-${i}`}
                   href={t.href || `/trending/${t.slug || ""}`}
+                  prefetch
                   className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border/50 bg-card/80 px-3 py-1.5 text-xs font-semibold transition hover:border-orange-400/50 hover:bg-orange-500/10 hover:text-orange-300"
                 >
                   <TrendingUp className="h-3 w-3 text-orange-400" />

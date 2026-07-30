@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { callGeminiText, isGeminiConfigured } from "@/lib/ai/gemini";
 
 export type TrendNewsItem = {
@@ -19,6 +20,12 @@ export type TrendItem = {
 
 let memoryCache: { data: TrendItem[]; ts: number } | null = null;
 const TTL_MS = 30 * 60 * 1000;
+
+type SummaryResult = { summary: string; source: "gemini" | "local" };
+const summaryCache = new Map<string, { data: SummaryResult; ts: number }>();
+const SUMMARY_TTL_MS = 30 * 60 * 1000;
+/** Don't block the UI longer than this waiting on Gemini. */
+const GEMINI_BUDGET_MS = 2500;
 
 function decodeXml(s: string): string {
   return s
@@ -140,7 +147,10 @@ export async function fetchIndiaTrends(): Promise<TrendItem[]> {
   try {
     const res = await fetch(
       "https://trends.google.com/trending/rss?geo=IN",
-      { next: { revalidate: 1800 } }
+      {
+        next: { revalidate: 1800 },
+        signal: AbortSignal.timeout(8000),
+      }
     );
     if (!res.ok) return memoryCache?.data ?? [];
     const xml = await res.text();
@@ -152,7 +162,7 @@ export async function fetchIndiaTrends(): Promise<TrendItem[]> {
   }
 }
 
-export async function getTrendBySlug(
+export const getTrendBySlug = cache(async function getTrendBySlug(
   slug: string
 ): Promise<TrendItem | null> {
   const trends = await fetchIndiaTrends();
@@ -173,20 +183,14 @@ export async function getTrendBySlug(
       (t) => lettersOnly(t.slug) === key || lettersOnly(t.title) === key
     ) ?? null
   );
-}
+});
 
-export async function summarizeTrend(trend: {
+export function localTrendSummary(trend: {
   title: string;
   traffic?: string;
   newsItems?: TrendNewsItem[];
-}): Promise<{ summary: string; source: "gemini" | "local" }> {
-  const headlines =
-    trend.newsItems
-      ?.slice(0, 5)
-      .map((n, i) => `${i + 1}. ${n.title} (${n.source || "news"})`)
-      .join("\n") || "No headlines available.";
-
-  const local = [
+}): string {
+  return [
     `"${trend.title}" is currently among India's Google Trends searches${
       trend.traffic ? ` (~${trend.traffic} searches)` : ""
     }.`,
@@ -198,6 +202,48 @@ export async function summarizeTrend(trend: {
       : "News coverage is still developing — check back soon or ask our chat for a plain-language explainer.",
     "This page keeps you on ContentVerse so you can read a short briefing and ask follow-up questions without leaving the site.",
   ].join("\n\n");
+}
+
+function summaryCacheKey(trend: {
+  title: string;
+  traffic?: string;
+  newsItems?: TrendNewsItem[];
+}): string {
+  const heads = (trend.newsItems ?? [])
+    .slice(0, 3)
+    .map((n) => n.url || n.title)
+    .join("|");
+  return `${trend.title}::${trend.traffic || ""}::${heads}`;
+}
+
+async function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number
+): Promise<T | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => resolve(null), ms);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+export async function summarizeTrend(trend: {
+  title: string;
+  traffic?: string;
+  newsItems?: TrendNewsItem[];
+}): Promise<SummaryResult> {
+  const local = localTrendSummary(trend);
+  const key = summaryCacheKey(trend);
+  const hit = summaryCache.get(key);
+  if (hit && Date.now() - hit.ts < SUMMARY_TTL_MS) {
+    return hit.data;
+  }
 
   if (!isGeminiConfigured()) {
     return { summary: local, source: "local" };
@@ -210,14 +256,33 @@ Mention that figures come from Google Trends (India) and headlines are from publ
 Write mostly in simple English; if the topic is clearly Hindi/regional India news, add one Hindi sentence at the end.
 No markdown headings. You may use **bold** sparingly.`;
 
+  const headlines =
+    trend.newsItems
+      ?.slice(0, 5)
+      .map((n, i) => `${i + 1}. ${n.title} (${n.source || "news"})`)
+      .join("\n") || "No headlines available.";
+
   const user = `Topic: ${trend.title}
 Traffic estimate: ${trend.traffic || "n/a"}
 Headlines:
 ${headlines}`;
 
-  const ai = await callGeminiText(system, user, 450);
+  const pending = callGeminiText(system, user, 450);
+  // Cache late Gemini wins so the next visitor gets AI instantly.
+  void pending.then((text) => {
+    if (text && text.length > 80) {
+      summaryCache.set(key, {
+        data: { summary: text, source: "gemini" },
+        ts: Date.now(),
+      });
+    }
+  });
+
+  const ai = await withTimeout(pending, GEMINI_BUDGET_MS);
   if (ai && ai.length > 80) {
-    return { summary: ai, source: "gemini" };
+    const data: SummaryResult = { summary: ai, source: "gemini" };
+    summaryCache.set(key, { data, ts: Date.now() });
+    return data;
   }
   return { summary: local, source: "local" };
 }

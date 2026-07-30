@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Flame, ExternalLink, ArrowRight } from "lucide-react";
 import { buildMetadata, SITE } from "@/lib/seo";
 import {
   fetchIndiaTrends,
   getTrendBySlug,
-  summarizeTrend,
+  localTrendSummary,
   titleFromSlug,
   trendPath,
 } from "@/lib/trending/google-trends";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { Badge } from "@/components/ui/badge";
 import { AskAboutTrend } from "@/components/trending/ask-about-trend";
+import {
+  TrendBriefing,
+  TrendBriefingFallback,
+} from "@/components/trending/trend-briefing";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export const dynamic = "force-dynamic";
 export const revalidate = 1800;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -38,26 +42,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TrendingTopicPage({ params }: Props) {
   const { slug } = await params;
-  const trend = await getTrendBySlug(slug);
+  const [trend, allTrends] = await Promise.all([
+    getTrendBySlug(slug),
+    fetchIndiaTrends(),
+  ]);
   const title = trend?.title || titleFromSlug(slug);
   const traffic = trend?.traffic || "";
   const newsItems = trend?.newsItems || [];
-
-  const { summary, source } = await summarizeTrend({
-    title,
-    traffic,
-    newsItems,
-  });
-
-  const others = (await fetchIndiaTrends())
-    .filter((t) => t.slug !== slug)
-    .slice(0, 8);
+  const briefingInput = { title, traffic, newsItems };
+  const others = allTrends.filter((t) => t.slug !== (trend?.slug || slug)).slice(0, 8);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     headline: `${title} — Trending in India`,
-    description: summary.slice(0, 160),
+    description: localTrendSummary(briefingInput).slice(0, 160),
     datePublished: trend?.publishedAt
       ? new Date(trend.publishedAt).toISOString()
       : new Date().toISOString(),
@@ -105,7 +104,7 @@ export default async function TrendingTopicPage({ params }: Props) {
             <Badge variant="outline">May have cooled off</Badge>
           ) : null}
         </div>
-        <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
+        <h1 className="font-display text-3xl font-semibold tracking-[-0.01em] leading-[1.2] md:text-4xl">
           {title}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -133,19 +132,9 @@ export default async function TrendingTopicPage({ params }: Props) {
 
       <HubAdSense className="my-2" />
 
-      <section className="space-y-3">
-        <div className="flex items-end justify-between gap-3">
-          <h2 className="font-display text-xl font-bold tracking-tight">
-            Why it&apos;s trending
-          </h2>
-          <span className="text-[11px] text-muted-foreground">
-            {source === "gemini" ? "AI briefing" : "Quick briefing"}
-          </span>
-        </div>
-        <div className="space-y-3 text-muted-foreground leading-relaxed whitespace-pre-line">
-          {summary}
-        </div>
-      </section>
+      <Suspense fallback={<TrendBriefingFallback trend={briefingInput} />}>
+        <TrendBriefing trend={briefingInput} />
+      </Suspense>
 
       {newsItems.length ? (
         <section className="space-y-4">
@@ -204,6 +193,7 @@ export default async function TrendingTopicPage({ params }: Props) {
               <Link
                 key={t.slug}
                 href={t.href}
+                prefetch
                 className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-card px-3 py-1.5 text-xs font-semibold transition hover:border-orange-400/50"
               >
                 {t.title}
