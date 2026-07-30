@@ -31,12 +31,18 @@ function decodeXml(s: string): string {
     .trim();
 }
 
+/**
+ * Keep letters, numbers, AND marks (Indic matras/virama/anusvara).
+ * Previous `[^\p{L}\p{N}]+` turned "बांकीपुर" → "ब-क-प-र" and
+ * titleFromSlug then showed "ब क प र" / "एकन थ श द"-style garbage.
+ */
 export function trendSlug(title: string): string {
   const slug = title
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .normalize("NFC")
+    .trim()
     .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/[^\p{L}\p{N}\p{M}]+/gu, "-")
+    .replace(/-{2,}/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 96);
   return slug || "topic";
@@ -46,8 +52,21 @@ export function trendPath(slug: string): string {
   return `/trending/${slug}`;
 }
 
+function safeDecodeSlug(slug: string): string {
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
+/** Letters+digits only — recovers lookups for legacy broken Indic slugs. */
+function lettersOnly(s: string): string {
+  return s.normalize("NFC").replace(/[^\p{L}\p{N}]/gu, "").toLowerCase();
+}
+
 export function titleFromSlug(slug: string): string {
-  return decodeURIComponent(slug).replace(/-/g, " ").trim();
+  return safeDecodeSlug(slug).replace(/-/g, " ").trim();
 }
 
 function parseRss(xml: string): TrendItem[] {
@@ -137,14 +156,23 @@ export async function getTrendBySlug(
   slug: string
 ): Promise<TrendItem | null> {
   const trends = await fetchIndiaTrends();
-  const exact = trends.find((t) => t.slug === slug);
+  const decoded = safeDecodeSlug(slug).normalize("NFC");
+
+  const exact = trends.find(
+    (t) => t.slug === decoded || t.slug === slug
+  );
   if (exact) return exact;
 
-  // Soft match: slug may differ slightly after normalize
-  const soft = trends.find(
-    (t) => t.slug.replace(/-/g, "") === slug.replace(/-/g, "")
+  // Soft match: ignore hyphens (legacy) and Indic marks so old
+  // broken URLs like /trending/ब-क-प-र still resolve to बांकीपुर.
+  const key = lettersOnly(decoded);
+  if (!key) return null;
+
+  return (
+    trends.find(
+      (t) => lettersOnly(t.slug) === key || lettersOnly(t.title) === key
+    ) ?? null
   );
-  return soft ?? null;
 }
 
 export async function summarizeTrend(trend: {
