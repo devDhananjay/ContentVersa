@@ -1,8 +1,11 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Gem } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { GoldPriceHub } from "./gold-price-hub";
+import { SilverRateTool } from "@/components/tools/silver-rate-tool";
 import { getGoldPriceSnapshot } from "@/lib/goldverse/gold-price";
+import { getSilverPriceSnapshot } from "@/lib/goldverse/silver-price";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600";
@@ -12,7 +15,10 @@ export async function GoldVerseBrowseShell({
 }: {
   children: React.ReactNode;
 }) {
-  const gold = await getGoldPriceSnapshot();
+  const [gold, silver] = await Promise.all([
+    getGoldPriceSnapshot(),
+    getSilverPriceSnapshot(),
+  ]);
 
   return (
     <div>
@@ -38,14 +44,28 @@ export async function GoldVerseBrowseShell({
             Gold<span className="text-amber-400">Verse</span>
           </h1>
           <p className="mt-1 max-w-xl text-xs text-muted-foreground md:text-sm">
-            HUID verify, gold rates, hallmark guide & BIS tools — for buyers and
-            jewellers across India
+            HUID verify, gold & silver rates, hallmark guide & BIS tools — for buyers
+            and jewellers across India
           </p>
         </div>
       </section>
 
       <div className="container space-y-8 py-6">
         <GoldPriceHub initial={gold} />
+        <div className="space-y-3">
+          <div className="flex items-end justify-between gap-3">
+            <h2 className="font-display text-xl font-bold tracking-tight">
+              Silver rate today
+            </h2>
+            <Link
+              href="/tools/silver-rate"
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Full tool →
+            </Link>
+          </div>
+          <SilverRateTool initial={silver} />
+        </div>
         <div className="border-t border-amber-500/10 pt-2">{children}</div>
       </div>
     </div>

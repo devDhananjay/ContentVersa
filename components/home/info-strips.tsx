@@ -119,6 +119,51 @@ export function GoldPriceStrip() {
   );
 }
 
+export function SilverPriceStrip() {
+  const [items, setItems] = useState<Array<{ label: string; value: number }>>([]);
+
+  useEffect(() => {
+    fetch("/api/strips/silver")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.items?.length) setItems(d.items);
+      })
+      .catch(() => {});
+  }, []);
+
+  if (!items.length) return null;
+  const loop = [...items, ...items];
+
+  return (
+    <StripShell
+      id="silver-price-strip"
+      className="bg-gradient-to-r from-slate-500/5 via-zinc-500/5 to-stone-500/5"
+    >
+      <div className="flex items-center gap-3">
+        <Link
+          href="/tools/silver-rate"
+          className="flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-slate-400 to-zinc-500 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-black"
+        >
+          <Gem className="h-3.5 w-3.5" />
+          Silver
+        </Link>
+        <MarqueeRow speed={26}>
+          {loop.map((s, i) => (
+            <Link
+              key={`${s.label}-${i}`}
+              href="/tools/silver-rate"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border/50 bg-card/80 px-3 py-1.5 text-xs transition hover:border-slate-400/50 hover:bg-slate-500/10"
+            >
+              <span className="font-bold capitalize">{s.label}</span>
+              <span className="text-slate-300">{fmt(s.value)}</span>
+            </Link>
+          ))}
+        </MarqueeRow>
+      </div>
+    </StripShell>
+  );
+}
+
 export function FuelPriceStrip() {
   const [items, setItems] = useState<FuelItem[]>([]);
 

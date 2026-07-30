@@ -7,7 +7,12 @@ import { PanGstinCheckerTool } from "./pan-gstin-checker-tool";
 import { FssaiCheckerTool } from "./fssai-checker-tool";
 import { EmiCalculatorTool } from "./emi-calculator-tool";
 import { SipCalculatorTool } from "./sip-calculator-tool";
+import { FdCalculatorTool } from "./fd-calculator-tool";
+import { RdCalculatorTool } from "./rd-calculator-tool";
+import { PpfCalculatorTool } from "./ppf-calculator-tool";
+import { GstCalculatorTool } from "./gst-calculator-tool";
 import { FuelPriceTool } from "./fuel-price-tool";
+import { SilverRateTool } from "./silver-rate-tool";
 import { WeatherTool } from "./weather-tool";
 import { CurrencyConverterTool } from "./currency-converter-tool";
 import { AgeCalculatorTool } from "./age-calculator-tool";
@@ -16,6 +21,9 @@ import { BarcodeGeneratorTool } from "./barcode-generator-tool";
 import { UuidGeneratorTool } from "./uuid-generator-tool";
 import { IndianHolidaysTool } from "./indian-holidays-tool";
 import { ElectionInfoTool } from "./election-info-tool";
+import { PnrStatusTool } from "./pnr-status-tool";
+import { TrainRunningStatusTool } from "./train-running-status-tool";
+import { TranslatorTool } from "./translator-tool";
 import { GeoLocationTool } from "./geo-location-tool";
 import { NearbyPlacesTool } from "./nearby-places-tool";
 import { MergePdfTool } from "./merge-pdf-tool";
@@ -33,7 +41,12 @@ const TOOL_COMPONENTS: Record<ToolSlug, React.ComponentType> = {
   "fssai-checker": FssaiCheckerTool,
   "emi-calculator": EmiCalculatorTool,
   "sip-calculator": SipCalculatorTool,
+  "fd-calculator": FdCalculatorTool,
+  "rd-calculator": RdCalculatorTool,
+  "ppf-calculator": PpfCalculatorTool,
+  "gst-calculator": GstCalculatorTool,
   "fuel-price": FuelPriceTool,
+  "silver-rate": SilverRateTool,
   weather: WeatherTool,
   "currency-converter": CurrencyConverterTool,
   "age-calculator": AgeCalculatorTool,
@@ -42,6 +55,9 @@ const TOOL_COMPONENTS: Record<ToolSlug, React.ComponentType> = {
   "uuid-generator": UuidGeneratorTool,
   "indian-holidays": IndianHolidaysTool,
   "election-info": ElectionInfoTool,
+  "pnr-status": PnrStatusTool,
+  "train-running-status": TrainRunningStatusTool,
+  "english-hindi-translator": TranslatorTool,
   "geo-location": GeoLocationTool,
   "nearby-places": NearbyPlacesTool,
   "nearby-hotels": () => <NearbyPlacesTool defaultCategory="hotels" />,

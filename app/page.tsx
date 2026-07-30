@@ -24,6 +24,7 @@ import { TrendingStrip } from "@/components/home/trending-strip";
 import { CricketStrip } from "@/components/home/cricket-strip";
 import {
   GoldPriceStrip,
+  SilverPriceStrip,
   FuelPriceStrip,
   MoviesPriceStrip,
 } from "@/components/home/info-strips";
@@ -203,6 +204,7 @@ export default async function HomePage() {
       </Reveal>
 
       <GoldPriceStrip />
+      <SilverPriceStrip />
       <Reveal>
         <HomeModuleSpotlight
           id="home-gold"

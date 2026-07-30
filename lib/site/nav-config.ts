@@ -36,6 +36,7 @@ export const NAV_TOP_LINKS: NavLinkItem[] = [
   { href: "/sports", label: "Sports", icon: Medal },
   { href: "/finance", label: "Finance", icon: TrendingUp },
   { href: "/jobs", label: "Jobs", icon: Briefcase },
+  { href: "/results", label: "Results", icon: FileSearch },
   { href: "/reels", label: "Reels", icon: Film },
 ];
 
@@ -63,7 +64,10 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
     icon: Gem,
     items: [
       { href: "/cineverse", label: "CineVerse", description: "Movies, OTT & watchlist", icon: Clapperboard },
-      { href: "/goldverse", label: "GoldVerse", description: "Gold rates & hallmark", icon: Gem },
+      { href: "/goldverse", label: "GoldVerse", description: "Gold & silver rates, hallmark", icon: Gem },
+      { href: "/tools/silver-rate", label: "Silver Rate", description: "Today's silver price India", icon: Gem },
+      { href: "/tools/pnr-status", label: "PNR Status", description: "Indian Railways PNR check", icon: Wrench },
+      { href: "/tools/english-hindi-translator", label: "EN ↔ HI", description: "English Hindi translator", icon: BookOpen },
       { href: "/moneyverse", label: "MoneyVerse", description: "Expense tracker India", icon: Wallet },
       {
         href: "/moneyverse/screenshot-scan",

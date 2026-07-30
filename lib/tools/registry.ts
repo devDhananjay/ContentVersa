@@ -7,7 +7,12 @@ export type ToolSlug =
   | "fssai-checker"
   | "emi-calculator"
   | "sip-calculator"
+  | "fd-calculator"
+  | "rd-calculator"
+  | "ppf-calculator"
+  | "gst-calculator"
   | "fuel-price"
+  | "silver-rate"
   | "weather"
   | "currency-converter"
   | "age-calculator"
@@ -16,6 +21,9 @@ export type ToolSlug =
   | "uuid-generator"
   | "indian-holidays"
   | "election-info"
+  | "pnr-status"
+  | "train-running-status"
+  | "english-hindi-translator"
   | "geo-location"
   | "nearby-places"
   | "nearby-hotels"
@@ -249,6 +257,42 @@ export const TOOL_REGISTRY: ToolDef[] = [
     badge: "Finance",
   },
   {
+    slug: "fd-calculator",
+    title: "FD Calculator — Fixed Deposit Maturity India",
+    shortTitle: "FD Calculator",
+    description:
+      "Calculate fixed deposit maturity value and interest with quarterly compounding — free India FD calculator.",
+    keywords: ["fd calculator", "fixed deposit calculator", "fd maturity india", "bank fd interest"],
+    badge: "Finance",
+  },
+  {
+    slug: "rd-calculator",
+    title: "RD Calculator — Recurring Deposit India",
+    shortTitle: "RD Calculator",
+    description:
+      "Estimate recurring deposit maturity for monthly savings plans. Free RD calculator for Indian banks.",
+    keywords: ["rd calculator", "recurring deposit calculator", "rd maturity india"],
+    badge: "Finance",
+  },
+  {
+    slug: "ppf-calculator",
+    title: "PPF Calculator — Public Provident Fund India",
+    shortTitle: "PPF Calculator",
+    description:
+      "Plan PPF corpus with yearly deposits and compound interest. Free Public Provident Fund calculator India.",
+    keywords: ["ppf calculator", "ppf maturity calculator", "public provident fund india"],
+    badge: "Finance",
+  },
+  {
+    slug: "gst-calculator",
+    title: "GST Calculator India — Add or Remove Tax",
+    shortTitle: "GST Calculator",
+    description:
+      "Add or remove GST at 5%, 12%, 18% or 28%. See CGST/SGST split instantly — free India GST calculator.",
+    keywords: ["gst calculator", "gst calculator india", "cgst sgst calculator", "remove gst"],
+    badge: "Finance",
+  },
+  {
     slug: "salary-tax-calculator",
     title: "Salary & Income Tax Calculator India FY 2026-27",
     shortTitle: "Salary Tax Calculator",
@@ -276,6 +320,52 @@ export const TOOL_REGISTRY: ToolDef[] = [
       "petrol rate today",
     ],
     badge: "Daily",
+  },
+  {
+    slug: "silver-rate",
+    title: "Silver Rate Today India — Price per Gram & Kg",
+    shortTitle: "Silver Rate",
+    description:
+      "Check today's silver rate in India per gram, 10g and kg. Spot-based estimate with weight calculator.",
+    keywords: ["silver rate today", "silver price india", "silver rate per gram", "silver price per kg"],
+    badge: "Daily",
+  },
+  {
+    slug: "pnr-status",
+    title: "PNR Status Check — Indian Railways",
+    shortTitle: "PNR Status",
+    description:
+      "Check Indian Railways PNR status with 10-digit PNR. Quick lookup plus official ConfirmTkt, RailYatri and IRCTC links.",
+    keywords: ["pnr status", "pnr status check", "irctc pnr status", "railway pnr"],
+    badge: "Travel",
+  },
+  {
+    slug: "train-running-status",
+    title: "Train Running Status — Live Indian Railways",
+    shortTitle: "Train Status",
+    description:
+      "Get live train running status by train number. Links to RailYatri, ConfirmTkt and official NTES enquiry.",
+    keywords: [
+      "train running status",
+      "live train status",
+      "train status india",
+      "ntes train status",
+    ],
+    badge: "Travel",
+  },
+  {
+    slug: "english-hindi-translator",
+    title: "English to Hindi Translator — Free Online",
+    shortTitle: "EN ↔ HI Translator",
+    description:
+      "Translate English to Hindi and Hindi to English free online. Fast machine translation for everyday use in India.",
+    keywords: [
+      "english to hindi",
+      "hindi to english",
+      "en to hindi translator",
+      "english hindi translation",
+    ],
+    badge: "Language",
   },
   {
     slug: "merge-pdf",

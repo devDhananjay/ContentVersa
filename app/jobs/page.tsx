@@ -32,8 +32,11 @@ export default async function JobsHubPage() {
         <p>
           The Jobs Hub aggregates government (sarkari) notifications and curated private-sector
           openings for Indian readers. Listings link to official sources — ContentVerse does not
-          charge applicants. Alongside listings, we publish career guides, exam prep tips, and
-          workplace essays from writers in our Careers category.
+          charge applicants. For exam and board results, use our{" "}
+          <Link href="/results" className="text-primary hover:underline">
+            Sarkari Result hub
+          </Link>
+          .
         </p>
         <p>
           If you write about jobs, freelancing, or professional growth, publish on ContentVerse

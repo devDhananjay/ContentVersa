@@ -77,6 +77,27 @@ export function toolFaq(tool: ToolDef) {
     });
   }
 
+  if (tool.slug === "pnr-status" || tool.slug === "train-running-status") {
+    base.push({
+      q: "Is this an official IRCTC tool?",
+      a: "No. ContentVerse helps you validate input and open trusted enquiry sites (ConfirmTkt, RailYatri, NTES). Always reconfirm on IRCTC before travel.",
+    });
+  }
+
+  if (tool.slug === "english-hindi-translator") {
+    base.push({
+      q: "Is the translation 100% accurate?",
+      a: "It is machine translation for everyday use. For legal, medical, or official documents, use a certified human translator.",
+    });
+  }
+
+  if (tool.slug === "silver-rate") {
+    base.push({
+      q: "Is this the jeweller retail silver rate?",
+      a: "We show a spot-based India estimate (international silver × USD/INR). Local jewellers add making charges and GST — confirm before buying.",
+    });
+  }
+
   return base;
 }
 
