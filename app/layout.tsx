@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "@/components/auth/use-session";
@@ -26,13 +26,13 @@ const satoshi = localFont({
   display: "swap",
 });
 
-/** Headings — Fontshare Clash Display (self-hosted). */
-const clashDisplay = localFont({
-  src: [
-    { path: "./fonts/clash-display-500.woff2", weight: "500", style: "normal" },
-    { path: "./fonts/clash-display-600.woff2", weight: "600", style: "normal" },
-    { path: "./fonts/clash-display-700.woff2", weight: "700", style: "normal" },
-  ],
+/**
+ * Headings — Source Serif 4 (Medium-style editorial serif).
+ * Lighter than Clash Display at large sizes; pairs with Satoshi body.
+ */
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-display",
   display: "swap",
 });
@@ -68,7 +68,7 @@ export default function RootLayout({
         <AdSenseSiteScript />
       </head>
       <body
-        className={`${satoshi.variable} ${clashDisplay.variable} ${mono.variable} font-sans antialiased min-h-screen flex flex-col`}
+        className={`${satoshi.variable} ${sourceSerif.variable} ${mono.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
         <ThemeProvider
           attribute="class"

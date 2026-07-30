@@ -188,7 +188,7 @@ export default async function BlogPage({
             {blog.trending && <Badge variant="pink">🔥 Trending</Badge>}
             {blog.editorPick && <Badge variant="neon">Editor&apos;s Pick</Badge>}
           </div>
-          <h1 className="font-display text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
+          <h1 className="font-display text-3xl md:text-5xl font-semibold tracking-[-0.01em] leading-[1.2]">
             {blog.title}
           </h1>
           {blog.excerpt && (

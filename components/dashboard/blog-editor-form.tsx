@@ -647,7 +647,7 @@ export function BlogEditorForm({
                 placeholder="Untitled blog…"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-transparent text-5xl font-display font-extrabold tracking-tight placeholder:text-muted-foreground/50 outline-none border-0"
+                className="w-full bg-transparent text-4xl md:text-5xl font-display font-semibold tracking-[-0.01em] leading-[1.2] placeholder:text-muted-foreground/50 outline-none border-0"
               />
 
               {showGenerateCta ? (
@@ -716,7 +716,7 @@ export function BlogEditorForm({
                     {CATEGORIES.find((c) => c.slug === category)?.name || category}
                   </Badge>
                 ) : null}
-                <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight">
+                <h1 className="font-display text-3xl md:text-5xl font-semibold tracking-[-0.01em] leading-[1.2]">
                   {title || "Untitled blog"}
                 </h1>
                 {excerpt && <p className="mt-4 text-xl text-muted-foreground">{excerpt}</p>}

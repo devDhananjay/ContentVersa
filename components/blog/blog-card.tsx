@@ -62,7 +62,7 @@ export function BlogCard({
               )}
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
-              <h2 className="font-display text-2xl md:text-4xl font-extrabold leading-tight tracking-tight mb-3 group-hover:text-gradient transition-all duration-300">
+              <h2 className="font-display text-2xl md:text-4xl font-semibold leading-[1.2] tracking-[-0.01em] mb-3 group-hover:text-gradient transition-all duration-300">
                 {blog.title}
               </h2>
               <p className="text-sm md:text-base text-white/80 line-clamp-2 max-w-2xl mb-5">

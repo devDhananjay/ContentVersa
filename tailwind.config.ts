@@ -22,7 +22,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)", "Satoshi", "system-ui", "sans-serif"],
-        display: ["var(--font-display)", "Clash Display", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Source Serif 4", "Georgia", "serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       colors: {
