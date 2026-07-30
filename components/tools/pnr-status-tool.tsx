@@ -17,21 +17,26 @@ export function PnrStatusTool() {
   const [loading, setLoading] = React.useState(false);
   const [result, setResult] = React.useState<PnrLookupResult | null>(null);
 
-  const links = isValidPnr(pnr) ? pnrCheckLinks(pnr) : [];
+  const valid = isValidPnr(pnr);
+  const links = valid ? pnrCheckLinks(pnr) : [];
 
   async function check() {
-    if (!isValidPnr(pnr)) return;
+    if (!valid) return;
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch(`/api/tools/pnr?pnr=${encodeURIComponent(pnr.trim())}`);
+      const res = await fetch(
+        `/api/tools/pnr?pnr=${encodeURIComponent(pnr.trim())}`,
+        { signal: AbortSignal.timeout(10000) }
+      );
       const data = (await res.json()) as PnrLookupResult;
       setResult(data);
     } catch {
       setResult({
         ok: false,
         pnr: pnr.trim(),
-        message: "Could not reach PNR service. Use the check links below.",
+        message:
+          "Could not load a live feed right now. Use ConfirmTkt / RailYatri below — they open with your PNR.",
       });
     } finally {
       setLoading(false);
@@ -55,15 +60,39 @@ export function PnrStatusTool() {
               inputMode="numeric"
               maxLength={10}
               value={pnr}
-              onChange={(e) => setPnr(e.target.value.replace(/\D/g, "").slice(0, 10))}
+              onChange={(e) =>
+                setPnr(e.target.value.replace(/\D/g, "").slice(0, 10))
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && valid) void check();
+              }}
               placeholder="1234567890"
               className="font-mono text-lg tracking-widest"
             />
           </div>
-          <Button onClick={check} disabled={!isValidPnr(pnr) || loading} className="gap-2">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            Check status
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              onClick={() => void check()}
+              disabled={!valid || loading}
+              className="gap-2"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              Try live check
+            </Button>
+            {valid ? (
+              <Button type="button" variant="cta" asChild>
+                <a
+                  href={links[0]?.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open ConfirmTkt
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </Button>
+            ) : null}
+          </div>
           {result ? (
             <div
               className={`rounded-lg border p-4 text-sm space-y-2 ${
@@ -108,7 +137,7 @@ export function PnrStatusTool() {
       {links.length ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Open on trusted sites</CardTitle>
+            <CardTitle className="text-lg">Trusted PNR sites</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             {links.map((l) => (
@@ -117,15 +146,15 @@ export function PnrStatusTool() {
                 href={l.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-primary hover:underline"
+                className="flex items-center gap-2 rounded-lg border border-border/50 bg-card px-3 py-2 font-medium text-primary hover:border-primary/40"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 {l.label}
               </a>
             ))}
             <p className="text-xs text-muted-foreground pt-2">
-              Indian Railways does not offer a stable public PNR API. Always
-              reconfirm on IRCTC before travel.
+              Indian Railways has no stable free public PNR API. ConfirmTkt /
+              RailYatri / IRCTC are the reliable way to see berth status.
             </p>
           </CardContent>
         </Card>
