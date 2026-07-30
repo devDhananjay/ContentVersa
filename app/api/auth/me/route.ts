@@ -32,6 +32,8 @@ export async function GET() {
     totalLikes: number;
   } | null = null;
 
+  let wallet: { payoutEmail: string | null; currency: string } | null = null;
+
   const role = isDatabaseConfigured()
     ? await resolveSessionRole(user)
     : user.role;
@@ -51,6 +53,10 @@ export async function GET() {
         totalLikes: true,
       },
     });
+    wallet = await prisma.wallet.findUnique({
+      where: { userId },
+      select: { payoutEmail: true, currency: true },
+    });
   }
 
   let reading: {
@@ -69,7 +75,16 @@ export async function GET() {
   }
 
   return NextResponse.json(
-    { user: { ...user, role, profile, reading } },
+    {
+      user: {
+        ...user,
+        role,
+        profile,
+        reading,
+        payoutEmail: wallet?.payoutEmail ?? null,
+        currency: wallet?.currency ?? "INR",
+      },
+    },
     { headers: NO_STORE }
   );
 }

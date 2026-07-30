@@ -11,22 +11,28 @@ export function useSession() {
 
   React.useEffect(() => {
     let cancelled = false;
-    setLoading(true);
 
-    fetch("/api/auth/me", { credentials: "include", cache: "no-store" })
-      .then((r) => r.json())
-      .then((data: { user: SessionUser | null }) => {
-        if (!cancelled) setUser(data.user ?? null);
-      })
-      .catch(() => {
-        if (!cancelled) setUser(null);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+    const load = () => {
+      setLoading(true);
+      fetch("/api/auth/me", { credentials: "include", cache: "no-store" })
+        .then((r) => r.json())
+        .then((data: { user: SessionUser | null }) => {
+          if (!cancelled) setUser(data.user ?? null);
+        })
+        .catch(() => {
+          if (!cancelled) setUser(null);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    };
 
+    load();
+    const onRefresh = () => load();
+    window.addEventListener("cv:session-refresh", onRefresh);
     return () => {
       cancelled = true;
+      window.removeEventListener("cv:session-refresh", onRefresh);
     };
   }, [pathname]);
 
