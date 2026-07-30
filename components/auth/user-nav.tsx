@@ -39,6 +39,7 @@ export function UserNav() {
   }
 
   const displayName = user.name || user.username || "Account";
+  const displayUsername = user.username ? `@${user.username}` : "";
   const displayEmail = user.email;
   const isAdmin = isAdminRole(user.role);
 
@@ -75,6 +76,9 @@ export function UserNav() {
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuLabel className="font-normal">
           <p className="text-sm font-medium">{displayName}</p>
+          {displayUsername ? (
+            <p className="text-xs text-muted-foreground truncate">{displayUsername}</p>
+          ) : null}
           <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

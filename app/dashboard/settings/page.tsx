@@ -55,10 +55,7 @@ function loadNotifPrefs(): Record<NotifKey, boolean> {
 }
 
 export default function SettingsPage() {
-  const { user, loading: sessionLoading } = useSession() as {
-    user: MeUser | null;
-    loading: boolean;
-  };
+  const { user, loading: sessionLoading, applyUser, refresh } = useSession();
 
   const [name, setName] = React.useState("");
   const [username, setUsername] = React.useState("");
@@ -83,7 +80,11 @@ export default function SettingsPage() {
     setUsername(user.username || "");
     setBio(user.profile?.bio || "");
     setWebsite(user.profile?.website || "");
-    setTwitter(user.profile?.twitter ? `@${user.profile.twitter.replace(/^@/, "")}` : "");
+    setTwitter(
+      user.profile?.twitter
+        ? `@${user.profile.twitter.replace(/^@/, "")}`
+        : ""
+    );
     setImage(user.image || null);
     setPayoutEmail(user.payoutEmail || user.email || "");
     setCurrency(user.currency || "INR");
@@ -156,12 +157,48 @@ export default function SettingsPage() {
           currency: currency === "USD" ? "USD" : "INR",
         }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
+      const data = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        user?: MeUser & {
+          id?: string;
+          role?: string;
+          profile?: MeUser["profile"];
+          payoutEmail?: string | null;
+          currency?: string | null;
+        };
+      };
       if (!res.ok) {
         throw new Error(data.error || "Could not save");
       }
+
+      // Instant UI update across header/sidebar — no hard refresh needed
+      if (data.user) {
+        applyUser({
+          name: data.user.name,
+          username: data.user.username,
+          image: data.user.image,
+          profile: data.user.profile,
+          payoutEmail: data.user.payoutEmail,
+          currency: data.user.currency,
+        });
+        setName(data.user.name || "");
+        setUsername(data.user.username || "");
+        setBio(data.user.profile?.bio || "");
+        setWebsite(data.user.profile?.website || "");
+        setTwitter(
+          data.user.profile?.twitter
+            ? `@${data.user.profile.twitter.replace(/^@/, "")}`
+            : ""
+        );
+        setImage(data.user.image || null);
+        setPayoutEmail(data.user.payoutEmail || "");
+        setCurrency(data.user.currency || "INR");
+        setHydrated(true);
+      }
+
       setMessage("Profile saved.");
-      setHydrated(false);
+      void refresh();
       window.dispatchEvent(new Event("cv:session-refresh"));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save");

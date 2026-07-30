@@ -62,6 +62,7 @@ export function DashboardSidebar({
   const { user } = useSession();
   const { signOut, loading: signingOut } = useSignOut();
   const displayName = user?.name || user?.username || "Account";
+  const displayUsername = user?.username ? `@${user.username}` : "";
   const displayEmail = user?.email || "";
   const displayImage = user?.image;
 
@@ -121,7 +122,9 @@ export function DashboardSidebar({
           </Avatar>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium truncate">{displayName}</p>
-            <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
+            <p className="text-xs text-muted-foreground truncate">
+              {displayUsername || displayEmail}
+            </p>
           </div>
         </Link>
         <button

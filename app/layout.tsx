@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SessionProvider } from "@/components/auth/use-session";
 import { SiteHeader } from "@/components/site/site-header";
 import { Footer } from "@/components/site/footer";
 import { MobileNav } from "@/components/site/mobile-nav";
@@ -50,6 +51,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <SessionProvider>
           <SkipToMainLink />
           <div id="site-content" className="flex flex-1 flex-col min-h-0">
             <SiteHeader />
@@ -65,6 +67,7 @@ export default function RootLayout({
           </div>
           <AppEffects />
           <Toaster richColors position="top-center" closeButton />
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>
