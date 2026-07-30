@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "@/components/auth/use-session";
@@ -14,9 +15,33 @@ import { BrandingHead } from "@/components/site/branding-head";
 import { AdSenseSiteScript } from "@/components/ads/adsense-site-script";
 import { GoogleAdsTag } from "@/components/ads/google-ads-tag";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display", display: "swap" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
+/** Body / UI — Fontshare Satoshi (self-hosted). */
+const satoshi = localFont({
+  src: [
+    { path: "./fonts/satoshi-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/satoshi-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/satoshi-700.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+/** Headings — Fontshare Clash Display (self-hosted). */
+const clashDisplay = localFont({
+  src: [
+    { path: "./fonts/clash-display-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/clash-display-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/clash-display-700.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({});
@@ -43,7 +68,7 @@ export default function RootLayout({
         <AdSenseSiteScript />
       </head>
       <body
-        className={`${inter.variable} ${grotesk.variable} ${mono.variable} font-sans antialiased min-h-screen flex flex-col`}
+        className={`${satoshi.variable} ${clashDisplay.variable} ${mono.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
         <ThemeProvider
           attribute="class"
