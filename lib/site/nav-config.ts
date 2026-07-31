@@ -36,8 +36,6 @@ export const NAV_TOP_LINKS: NavLinkItem[] = [
   { href: "/sports", label: "Sports", icon: Medal },
   { href: "/finance", label: "Finance", icon: TrendingUp },
   { href: "/jobs", label: "Jobs", icon: Briefcase },
-  { href: "/results", label: "Results", icon: FileSearch },
-  { href: "/reels", label: "Reels", icon: Film },
 ];
 
 export const NAV_DROPDOWNS: NavDropdown[] = [
@@ -53,8 +51,11 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
         description: "Schemes, jobs, trends, OTT",
         icon: BookOpen,
       },
+      { href: "/results", label: "Sarkari Result", description: "Official exam & board results", icon: FileSearch },
+      { href: "/reels", label: "Reels", description: "Short videos", icon: Film },
       { href: "/categories", label: "Categories", description: "21+ topics to follow", icon: LayoutDashboard },
       { href: "/bookmarks", label: "Bookmarks", description: "Your saved reads", icon: Bookmark },
+      { href: "/trending", label: "Trending", description: "Google Trends India", icon: TrendingUp },
       { href: "/site-map", label: "Site map", description: "Every page at a glance", icon: Map },
     ],
   },
@@ -65,9 +66,6 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
     items: [
       { href: "/cineverse", label: "CineVerse", description: "Movies, OTT & watchlist", icon: Clapperboard },
       { href: "/goldverse", label: "GoldVerse", description: "Gold & silver rates, hallmark", icon: Gem },
-      { href: "/tools/silver-rate", label: "Silver Rate", description: "Today's silver price India", icon: Gem },
-      { href: "/tools/pnr-status", label: "PNR Status", description: "Indian Railways PNR check", icon: Wrench },
-      { href: "/tools/english-hindi-translator", label: "EN ↔ HI", description: "English Hindi translator", icon: BookOpen },
       { href: "/moneyverse", label: "MoneyVerse", description: "Expense tracker India", icon: Wallet },
       {
         href: "/moneyverse/screenshot-scan",
@@ -82,7 +80,10 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
         icon: FileSearch,
       },
       { href: "/huid-verification", label: "HUID Check", description: "Verify BIS hallmark", icon: ShieldCheck },
-      { href: "/tools", label: "India Tools", description: "IFSC, pincode, RTO & more", icon: Wrench },
+      { href: "/tools", label: "India Tools", description: "IFSC, PNR, translator & more", icon: Wrench },
+      { href: "/tools/pnr-status", label: "PNR Status", description: "Indian Railways PNR check", icon: Wrench },
+      { href: "/tools/english-hindi-translator", label: "EN ↔ HI", description: "English Hindi translator", icon: BookOpen },
+      { href: "/tools/silver-rate", label: "Silver Rate", description: "Today's silver price India", icon: Gem },
     ],
   },
 ];

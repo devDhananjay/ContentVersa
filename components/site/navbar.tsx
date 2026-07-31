@@ -46,7 +46,7 @@ export function Navbar({
 
   const linkClass = (active: boolean) =>
     cn(
-      "relative rounded-full px-3 py-2 text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
+      "relative rounded-full px-2.5 xl:px-3 py-1.5 xl:py-2 text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
       immersive
         ? active
           ? "text-white"
@@ -57,14 +57,19 @@ export function Navbar({
     );
 
   return (
-    <header className={cn(!embedded && "border-b border-border/50 bg-background/95 backdrop-blur-xl")}>
-      <div className="container flex h-[3.75rem] items-center gap-2 lg:gap-3 flex-nowrap min-w-0">
+    <header
+      className={cn(
+        "overflow-x-clip",
+        !embedded && "border-b border-border/50 bg-background/95 backdrop-blur-xl"
+      )}
+    >
+      <div className="container flex h-[3.75rem] items-center gap-2 lg:gap-2.5 flex-nowrap min-w-0">
         <Logo src={logoSrc} size="sm" immersive={immersive} className="shrink-0" />
 
         {/* Desktop nav — pill cluster */}
         <nav
           className={cn(
-            "hidden lg:flex items-center gap-0.5 shrink-0 ml-2 rounded-full border px-1 py-1",
+            "hidden lg:flex items-center gap-0.5 min-w-0 shrink ml-1 rounded-full border px-0.5 py-0.5",
             immersive
               ? "border-white/10 bg-white/5 backdrop-blur-md"
               : "border-border/50 bg-muted/30 backdrop-blur-sm"
@@ -100,9 +105,9 @@ export function Navbar({
 
         <div className="flex-1 min-w-2" />
 
-        <div className="hidden md:flex items-center gap-1.5 shrink-0">
+        <div className="hidden md:flex items-center gap-1 shrink-0 min-w-0">
           {!isBlogsPage && (
-            <div className="hidden xl:flex items-center relative w-36 shrink-0">
+            <div className="hidden 2xl:flex items-center relative w-32 shrink-0">
               <Search
                 className={cn(
                   "absolute left-2.5 h-3.5 w-3.5 pointer-events-none",
@@ -128,7 +133,7 @@ export function Navbar({
             size="icon"
             variant="ghost"
             className={cn(
-              "xl:hidden rounded-full",
+              "2xl:hidden rounded-full",
               immersive && "text-white hover:bg-white/10 hover:text-white"
             )}
             onClick={() => setSearchOpen((v) => !v)}
@@ -143,7 +148,7 @@ export function Navbar({
               className="gap-1.5 shrink-0 rounded-full shadow-lg shadow-neon-purple/20"
             >
               <PenSquare className="h-4 w-4" />
-              <span className="hidden sm:inline">Write</span>
+              <span className="hidden lg:inline">Write</span>
             </Button>
           </Link>
           <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
@@ -179,7 +184,7 @@ export function Navbar({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden border-t border-border/40 xl:hidden"
+            className="overflow-hidden border-t border-border/40 2xl:hidden"
           >
             <div className="container py-3">
               <form action="/blogs" className="relative">

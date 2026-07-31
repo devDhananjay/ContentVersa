@@ -44,22 +44,15 @@ export function UserNav() {
   const isAdmin = isAdminRole(user.role);
 
   return (
-    <div className="flex items-center gap-1.5 shrink-0">
-      {isAdmin && (
-        <Link href="/admin">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5 shrink-0 border-orange-500/40 text-orange-600 dark:text-orange-400 hover:bg-orange-500/10"
-          >
-            <Shield className="h-4 w-4 shrink-0" />
-            Admin View
-          </Button>
-        </Link>
-      )}
+    <div className="flex items-center gap-1 shrink-0 min-w-0">
       <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2 pl-1.5 pr-2.5 max-w-[11rem] shrink-0">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 pl-1.5 pr-2.5 max-w-[9.5rem] 2xl:max-w-[12rem] shrink-0"
+          aria-label={displayName}
+        >
           <Avatar className="h-7 w-7 shrink-0">
             {user.image ? (
               <AvatarImage src={user.image} alt={displayName} />
@@ -68,14 +61,14 @@ export function UserNav() {
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden xl:inline truncate min-w-0">
+          <span className="hidden 2xl:inline truncate min-w-0">
             {displayName}
           </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuLabel className="font-normal">
-          <p className="text-sm font-medium">{displayName}</p>
+          <p className="text-sm font-medium truncate">{displayName}</p>
           {displayUsername ? (
             <p className="text-xs text-muted-foreground truncate">{displayUsername}</p>
           ) : null}
