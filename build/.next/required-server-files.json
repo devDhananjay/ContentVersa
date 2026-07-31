@@ -407,6 +407,11 @@
         "source": "/goldverse/huid",
         "destination": "/huid-verification",
         "permanent": true
+      },
+      {
+        "source": "/discover",
+        "destination": "/blogs",
+        "permanent": true
       }
     ]
   },

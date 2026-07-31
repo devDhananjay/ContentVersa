@@ -46,6 +46,12 @@
       "destination": "/huid-verification",
       "statusCode": 308,
       "regex": "^(?!/_next)/goldverse/huid(?:/)?$"
+    },
+    {
+      "source": "/discover",
+      "destination": "/blogs",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/discover(?:/)?$"
     }
   ],
   "headers": [

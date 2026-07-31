@@ -28,7 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = trend?.title || titleFromSlug(slug);
   return buildMetadata({
     title: `${title} — Trending in India`,
-    description: `Why "${title}" is trending in India today. Short briefing, related headlines, and ask ContentVerse chat — stay on site.`,
+    description: trend
+      ? `Why "${title}" is trending in India today. Short briefing, related headlines, and ask ContentVerse chat — stay on site.`
+      : `"${title}" is no longer in India's active Google Trends list. Browse live trends on ContentVerse.`,
     path: trendPath(slug),
     keywords: [
       title,
@@ -37,6 +39,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "why trending",
     ],
     type: "article",
+    // Cooled / unknown slugs must not create soft-404 index entries.
+    noIndex: !trend,
   });
 }
 
@@ -52,33 +56,36 @@ export default async function TrendingTopicPage({ params }: Props) {
   const briefingInput = { title, traffic, newsItems };
   const others = allTrends.filter((t) => t.slug !== (trend?.slug || slug)).slice(0, 8);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    headline: `${title} — Trending in India`,
-    description: localTrendSummary(briefingInput).slice(0, 160),
-    datePublished: trend?.publishedAt
-      ? new Date(trend.publishedAt).toISOString()
-      : new Date().toISOString(),
-    dateModified: new Date().toISOString(),
-    author: { "@type": "Organization", name: SITE.name, url: SITE.url },
-    publisher: {
-      "@type": "Organization",
-      name: SITE.name,
-      url: SITE.url,
-      logo: { "@type": "ImageObject", url: `${SITE.url}/icon-192.png` },
-    },
-    mainEntityOfPage: `${SITE.url}${trendPath(slug)}`,
-    image: trend?.picture ? [trend.picture] : undefined,
-  };
+  const jsonLd = trend
+    ? {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        headline: `${title} — Trending in India`,
+        description: localTrendSummary(briefingInput).slice(0, 160),
+        datePublished: trend.publishedAt
+          ? new Date(trend.publishedAt).toISOString()
+          : new Date().toISOString(),
+        dateModified: new Date().toISOString(),
+        author: { "@type": "Organization", name: SITE.name, url: SITE.url },
+        publisher: {
+          "@type": "Organization",
+          name: SITE.name,
+          url: SITE.url,
+          logo: { "@type": "ImageObject", url: `${SITE.url}/icon-192.png` },
+        },
+        mainEntityOfPage: `${SITE.url}${trendPath(slug)}`,
+        image: trend.picture ? [trend.picture] : undefined,
+      }
+    : null;
 
   return (
     <article className="container max-w-3xl space-y-8 py-8 md:py-10">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
+      {jsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      ) : null}
       <nav className="text-sm text-muted-foreground">
         <Link href="/" className="hover:text-foreground">
           Home

@@ -64,6 +64,12 @@ const nextConfig: NextConfig = {
         destination: "/huid-verification",
         permanent: true,
       },
+      // Old/orphan discover hub — detail pages live at /discover/[category]/[id]
+      {
+        source: "/discover",
+        destination: "/blogs",
+        permanent: true,
+      },
     ];
   },
   async headers() {

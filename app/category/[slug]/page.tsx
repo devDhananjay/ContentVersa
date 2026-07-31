@@ -27,12 +27,22 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const cat = getCategoryBySlug(slug);
-  if (!cat) return buildMetadata({ title: "Category" });
+  if (!cat) return buildMetadata({ title: "Category", noIndex: true });
+
+  const [blogs, feed] = await Promise.all([
+    getBlogsByCategoryHybrid(slug),
+    getCategoryFeed(slug),
+  ]);
+  const feedCount = feed?.items?.length ?? 0;
+  const thin = blogs.length === 0 && feedCount === 0;
+
   return buildMetadata({
     title: cat.name,
     description: cat.description,
     path: `/category/${cat.slug}`,
     image: cat.banner,
+    // Empty category hubs look like soft 404s to Google.
+    noIndex: thin,
   });
 }
 

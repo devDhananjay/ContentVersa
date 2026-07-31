@@ -88,35 +88,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/manifest.webmanifest": {
-      "initialHeaders": {
-        "cache-control": "public, max-age=0, must-revalidate",
-        "content-type": "application/manifest+json",
-        "x-next-cache-tags": "_N_T_/layout,_N_T_/manifest.webmanifest/layout,_N_T_/manifest.webmanifest/route,_N_T_/manifest.webmanifest"
-      },
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/manifest.webmanifest",
-      "dataRoute": null,
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/robots.txt": {
       "initialHeaders": {
         "cache-control": "public, max-age=0, must-revalidate",
@@ -146,7 +117,12 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/guides": {
+    "/manifest.webmanifest": {
+      "initialHeaders": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/manifest+json",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/manifest.webmanifest/layout,_N_T_/manifest.webmanifest/route,_N_T_/manifest.webmanifest"
+      },
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -159,8 +135,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/guides",
-      "dataRoute": "/guides.rsc",
+      "srcRoute": "/manifest.webmanifest",
+      "dataRoute": null,
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -170,7 +146,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/huid-verification": {
+    "/contact": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -183,248 +159,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/huid-verification",
-      "dataRoute": "/huid-verification.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/ai-tools/chatgpt-how-to-use-for-students-india": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/ai-tools/chatgpt-how-to-use-for-students-india.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/ai-tools/free-ai-tools-starter-pack-india": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/ai-tools/free-ai-tools-starter-pack-india.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/cricket/how-to-read-a-cricket-scorecard": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/cricket/how-to-read-a-cricket-scorecard.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/cricket/live-cricket-match-day-guide": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/cricket/live-cricket-match-day-guide.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/jobs/how-to-read-sarkari-job-notification": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/jobs/how-to-read-sarkari-job-notification.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/movies/movie-release-cast-watch-checklist": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/movies/movie-release-cast-watch-checklist.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/movies/where-to-watch-ott-india": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/movies/where-to-watch-ott-india.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/schemes/how-to-verify-govt-scheme-before-you-apply": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/schemes/how-to-verify-govt-scheme-before-you-apply.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/trending/how-to-read-google-trends-india": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/trending/how-to-read-google-trends-india.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/trending/why-topics-trend-in-india": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/trending/why-topics-trend-in-india.rsc",
+      "srcRoute": "/contact",
+      "dataRoute": "/contact.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -554,6 +290,294 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/guides": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides",
+      "dataRoute": "/guides.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/guides/ai-tools/chatgpt-how-to-use-for-students-india": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/ai-tools/chatgpt-how-to-use-for-students-india.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/guides/cricket/live-cricket-match-day-guide": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/cricket/live-cricket-match-day-guide.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/guides/jobs/how-to-read-sarkari-job-notification": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/jobs/how-to-read-sarkari-job-notification.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/guides/jobs/ssc-style-exam-notification-checklist": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/jobs/ssc-style-exam-notification-checklist.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/guides/movies/movie-release-cast-watch-checklist": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/movies/movie-release-cast-watch-checklist.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/guides/schemes/how-to-verify-govt-scheme-before-you-apply": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/schemes/how-to-verify-govt-scheme-before-you-apply.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/guides/schemes/pm-kisan-eligibility-how-to-apply": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/schemes/pm-kisan-eligibility-how-to-apply.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/guides/trending/how-to-read-google-trends-india": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/trending/how-to-read-google-trends-india.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/guides/trending/why-topics-trend-in-india": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/trending/why-topics-trend-in-india.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/huid-verification": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/huid-verification",
+      "dataRoute": "/huid-verification.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/site-map": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/site-map",
+      "dataRoute": "/site-map.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/results": {
       "experimentalBypassFor": [
         {
@@ -593,6 +617,30 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/[slug]",
       "dataRoute": "/tools/age-calculator.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/tools/barcode-generator": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/[slug]",
+      "dataRoute": "/tools/barcode-generator.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -698,6 +746,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/tools/english-hindi-translator": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/[slug]",
+      "dataRoute": "/tools/english-hindi-translator.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/tools/fd-calculator": {
       "experimentalBypassFor": [
         {
@@ -746,7 +818,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/tools/fuel-price": {
+    "/tools/gst-calculator": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -760,31 +832,7 @@
       ],
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/[slug]",
-      "dataRoute": "/tools/fuel-price.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/tools/geo-location": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/[slug]",
-      "dataRoute": "/tools/geo-location.rsc",
+      "dataRoute": "/tools/gst-calculator.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -938,30 +986,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/tools/nearby-hotels": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/[slug]",
-      "dataRoute": "/tools/nearby-hotels.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/tools/nearby-places": {
       "experimentalBypassFor": [
         {
@@ -977,6 +1001,30 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/[slug]",
       "dataRoute": "/tools/nearby-places.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/tools/nearby-restaurants": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/[slug]",
+      "dataRoute": "/tools/nearby-restaurants.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -1202,30 +1250,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/tools/silver-rate": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/[slug]",
-      "dataRoute": "/tools/silver-rate.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/tools/sip-calculator": {
       "experimentalBypassFor": [
         {
@@ -1394,30 +1418,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/tools/locations/ahmedabad/atms": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/ahmedabad/atms.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/tools/locations/ahmedabad/hospitals": {
       "experimentalBypassFor": [
         {
@@ -1433,30 +1433,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/locations/[city]/[category]",
       "dataRoute": "/tools/locations/ahmedabad/hospitals.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/tools/locations/ahmedabad/hotels": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/ahmedabad/hotels.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -1538,30 +1514,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/tools/locations/bareilly/hospitals": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/bareilly/hospitals.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/tools/locations/bareilly/hotels": {
       "experimentalBypassFor": [
         {
@@ -1601,6 +1553,30 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/locations/[city]/[category]",
       "dataRoute": "/tools/locations/bareilly/restaurants.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/tools/locations/bareilly/schools": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/bareilly/schools.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -1730,30 +1706,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/tools/locations/bhopal/hospitals": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/bhopal/hospitals.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/tools/locations/bhopal/hotels": {
       "experimentalBypassFor": [
         {
@@ -1850,30 +1802,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/tools/locations/chandigarh/hospitals": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/chandigarh/hospitals.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/tools/locations/chandigarh/hotels": {
       "experimentalBypassFor": [
         {
@@ -1922,30 +1850,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/tools/locations/chandigarh/schools": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/chandigarh/schools.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/tools/locations/chennai/atms": {
       "experimentalBypassFor": [
         {
@@ -1970,7 +1874,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/tools/locations/chennai/hospitals": {
+    "/tools/locations/chennai/restaurants": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -1984,55 +1888,7 @@
       ],
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/chennai/hospitals.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/tools/locations/chennai/hotels": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/chennai/hotels.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/tools/locations/chennai/schools": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/chennai/schools.rsc",
+      "dataRoute": "/tools/locations/chennai/restaurants.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -2258,6 +2114,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/tools/locations/hyderabad/schools": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/hyderabad/schools.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/tools/locations/indore/atms": {
       "experimentalBypassFor": [
         {
@@ -2273,6 +2153,30 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/locations/[city]/[category]",
       "dataRoute": "/tools/locations/indore/atms.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/tools/locations/indore/hotels": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/indore/hotels.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -2321,30 +2225,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/locations/[city]/[category]",
       "dataRoute": "/tools/locations/indore/schools.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/tools/locations/jaipur/atms": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/jaipur/atms.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -2498,6 +2378,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/tools/locations/kochi/hotels": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/kochi/hotels.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/tools/locations/kochi/restaurants": {
       "experimentalBypassFor": [
         {
@@ -2513,6 +2417,30 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/locations/[city]/[category]",
       "dataRoute": "/tools/locations/kochi/restaurants.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/tools/locations/kochi/schools": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/kochi/schools.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -2690,6 +2618,54 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/tools/locations/lucknow/hotels": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/lucknow/hotels.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/tools/locations/lucknow/restaurants": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/lucknow/restaurants.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/tools/locations/lucknow/schools": {
       "experimentalBypassFor": [
         {
@@ -2705,30 +2681,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/locations/[city]/[category]",
       "dataRoute": "/tools/locations/lucknow/schools.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/tools/locations/mumbai/atms": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/mumbai/atms.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -2786,6 +2738,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/tools/locations/mumbai/restaurants": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/mumbai/restaurants.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/tools/locations/mumbai/schools": {
       "experimentalBypassFor": [
         {
@@ -2825,30 +2801,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/locations/[city]/[category]",
       "dataRoute": "/tools/locations/patna/atms.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/tools/locations/patna/hospitals": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/patna/hospitals.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -3002,7 +2954,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/auth/sign-up": {
+    "/tools/locations/pune/schools": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -3015,8 +2967,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/auth/sign-up",
-      "dataRoute": "/auth/sign-up.rsc",
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/pune/schools.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -3041,6 +2993,54 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/jobs/private",
       "dataRoute": "/jobs/private.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/auth/sign-in": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/auth/sign-in",
+      "dataRoute": "/auth/sign-in.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/auth/sign-up": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/auth/sign-up",
+      "dataRoute": "/auth/sign-up.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
