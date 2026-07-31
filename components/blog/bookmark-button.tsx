@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Bookmark, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useBookmarkStatus } from "@/components/blog/bookmark-status-provider";
 
 type BookmarkButtonProps = {
   /** Blog slug (preferred) or Prisma id — must match `/api/blogs/[slug]/bookmark` */
@@ -22,23 +23,33 @@ export function BookmarkButton({
   showLabel,
 }: BookmarkButtonProps) {
   const router = useRouter();
+  const status = useBookmarkStatus();
   const [saved, setSaved] = React.useState(initialBookmarked);
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    let cancelled = false;
-    fetch(`/api/blogs/${encodeURIComponent(blogRef)}/bookmark`, { credentials: "include" })
-      .then((r) => r.json())
-      .then((data: { bookmarked?: boolean }) => {
-        if (!cancelled && typeof data.bookmarked === "boolean") {
-          setSaved(data.bookmarked);
-        }
+    if (status?.ready) {
+      setSaved(status.isBookmarked(blogRef));
+      return;
+    }
+    // Provider missing (tests / isolated trees): single fallback GET
+    if (status === null) {
+      let cancelled = false;
+      fetch(`/api/blogs/${encodeURIComponent(blogRef)}/bookmark`, {
+        credentials: "include",
       })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [blogRef]);
+        .then((r) => r.json())
+        .then((data: { bookmarked?: boolean }) => {
+          if (!cancelled && typeof data.bookmarked === "boolean") {
+            setSaved(data.bookmarked);
+          }
+        })
+        .catch(() => {});
+      return () => {
+        cancelled = true;
+      };
+    }
+  }, [blogRef, status]);
 
   const toggle = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,7 +67,9 @@ export function BookmarkButton({
         }
         throw new Error(data.error || "Could not bookmark");
       }
-      setSaved(!!data.bookmarked);
+      const next = !!data.bookmarked;
+      setSaved(next);
+      status?.setBookmarked(blogRef, next);
       router.refresh();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Bookmark failed");

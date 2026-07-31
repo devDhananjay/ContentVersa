@@ -133,3 +133,24 @@ export async function toggleBookmark(
   });
   return { bookmarked: true };
 }
+
+/** All bookmarked blog slugs (+ ids) for one user — used to avoid N bookmark GETs per page. */
+export async function getUserBookmarkedRefs(userId: string): Promise<{
+  slugs: string[];
+  ids: string[];
+}> {
+  if (!isDatabaseConfigured()) return { slugs: [], ids: [] };
+
+  const rows = await prisma.bookmark.findMany({
+    where: { userId },
+    select: {
+      blogId: true,
+      blog: { select: { slug: true } },
+    },
+  });
+
+  return {
+    slugs: rows.map((r) => r.blog.slug),
+    ids: rows.map((r) => r.blogId),
+  };
+}

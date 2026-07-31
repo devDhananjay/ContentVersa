@@ -2,12 +2,15 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
+import { BlogPagination } from "@/components/blog/blog-pagination";
 import { CategoryLiveFeedGrid } from "@/components/feeds/category-live-feed-grid";
 import type { Blog } from "@/lib/data/blogs";
 import { getPublishedBlogsHybrid } from "@/lib/data/blog-db";
 import { getCategoryFeed } from "@/lib/feeds/data";
 import { hasCategoryFeed } from "@/lib/feeds/constants";
 import { buildMetadata } from "@/lib/seo";
+
+const PAGE_SIZE = 18;
 
 export const metadata: Metadata = buildMetadata({
   title: "Explore",
@@ -91,6 +94,13 @@ export default async function BlogsPage({
   const sp = await searchParams;
   const all = await getPublishedBlogsHybrid();
   const list = applyFilters(all, sp);
+  const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  const page = Math.min(
+    totalPages,
+    Math.max(1, Number.parseInt(sp.page || "1", 10) || 1)
+  );
+  const start = (page - 1) * PAGE_SIZE;
+  const pageItems = list.slice(start, start + PAGE_SIZE);
   const category = sp.category;
   const feed =
     category && hasCategoryFeed(category) ? await getCategoryFeed(category) : null;
@@ -113,11 +123,18 @@ export default async function BlogsPage({
           <p className="text-muted-foreground">Try a different keyword or remove filters.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mt-8">
-          {list.map((b, i) => (
-            <BlogCard key={b.id} blog={b} index={i} eager />
-          ))}
-        </div>
+        <>
+          <p className="mt-6 text-sm text-muted-foreground">
+            Showing {start + 1}–{Math.min(start + PAGE_SIZE, list.length)} of {list.length}{" "}
+            articles
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mt-4">
+            {pageItems.map((b, i) => (
+              <BlogCard key={b.id} blog={b} index={i} eager={i < 6} />
+            ))}
+          </div>
+          <BlogPagination page={page} totalPages={totalPages} searchParams={sp} />
+        </>
       )}
     </div>
   );
