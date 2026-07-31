@@ -204,6 +204,24 @@ export function localTrendSummary(trend: {
   ].join("\n\n");
 }
 
+/** One-line blurb for trending hub cards (fast, no AI). */
+export function shortTrendBlurb(trend: {
+  title: string;
+  traffic?: string;
+  newsItems?: TrendNewsItem[];
+}): string {
+  const lead = trend.newsItems?.[0]?.title?.trim();
+  if (lead) {
+    const clipped = lead.length > 140 ? `${lead.slice(0, 137).trim()}…` : lead;
+    const source = trend.newsItems?.[0]?.source?.trim();
+    return source ? `${clipped} (${source})` : clipped;
+  }
+  if (trend.traffic) {
+    return `Spiking on Google Trends India with ~${trend.traffic} relative searches — open for a short briefing.`;
+  }
+  return `Trending on Google search in India right now — open for context and related headlines.`;
+}
+
 function summaryCacheKey(trend: {
   title: string;
   traffic?: string;

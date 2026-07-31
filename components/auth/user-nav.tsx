@@ -50,7 +50,7 @@ export function UserNav() {
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 pl-1.5 pr-2.5 max-w-[9.5rem] 2xl:max-w-[12rem] shrink-0"
+          className="gap-2 pl-1.5 pr-2.5 max-w-[11rem] shrink-0"
           aria-label={displayName}
         >
           <Avatar className="h-7 w-7 shrink-0">
@@ -61,7 +61,7 @@ export function UserNav() {
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden 2xl:inline truncate min-w-0">
+          <span className="hidden xl:inline truncate min-w-0">
             {displayName}
           </span>
         </Button>

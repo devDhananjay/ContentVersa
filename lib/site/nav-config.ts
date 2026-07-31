@@ -7,6 +7,7 @@ import {
   Compass,
   FileSearch,
   Film,
+  Flame,
   Gem,
   LayoutDashboard,
   Map,
@@ -33,6 +34,7 @@ export type NavDropdown = {
 };
 
 export const NAV_TOP_LINKS: NavLinkItem[] = [
+  { href: "/trending", label: "Trending", icon: Flame },
   { href: "/sports", label: "Sports", icon: Medal },
   { href: "/finance", label: "Finance", icon: TrendingUp },
   { href: "/jobs", label: "Jobs", icon: Briefcase },
@@ -55,7 +57,6 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
       { href: "/reels", label: "Reels", description: "Short videos", icon: Film },
       { href: "/categories", label: "Categories", description: "21+ topics to follow", icon: LayoutDashboard },
       { href: "/bookmarks", label: "Bookmarks", description: "Your saved reads", icon: Bookmark },
-      { href: "/trending", label: "Trending", description: "Google Trends India", icon: TrendingUp },
       { href: "/site-map", label: "Site map", description: "Every page at a glance", icon: Map },
     ],
   },
