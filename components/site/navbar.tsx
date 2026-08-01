@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Logo } from "./logo";
 import { NavDropdown } from "./nav-dropdown";
+import { NavWeatherChip } from "./nav-weather-chip";
 import { UserNav, MobileUserNav } from "@/components/auth/user-nav";
 import { AdminViewButton } from "@/components/auth/admin-view-button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -106,6 +107,7 @@ export function Navbar({
         <div className="flex-1 min-w-2" />
 
         <div className="hidden md:flex items-center gap-1.5 shrink-0 min-w-0">
+          <NavWeatherChip immersive={immersive} className="hidden lg:inline-flex" />
           {!isBlogsPage && (
             <div className="hidden xl:flex items-center relative w-36 shrink-0">
               <Search
@@ -164,6 +166,7 @@ export function Navbar({
         </div>
 
         <div className="flex items-center gap-1 md:hidden shrink-0">
+          <NavWeatherChip immersive={immersive} className="max-w-[7.5rem]" />
           <StreakBadge />
         </div>
 
