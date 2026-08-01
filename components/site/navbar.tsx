@@ -47,7 +47,7 @@ export function Navbar({
 
   const linkClass = (active: boolean) =>
     cn(
-      "relative rounded-full px-2.5 xl:px-3 py-1.5 xl:py-2 text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
+      "relative rounded-full px-2 lg:px-2 xl:px-3 py-1.5 xl:py-2 text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
       immersive
         ? active
           ? "text-white"
@@ -64,13 +64,13 @@ export function Navbar({
         !embedded && "border-b border-border/50 bg-background/95 backdrop-blur-xl"
       )}
     >
-      <div className="container flex h-[3.75rem] items-center gap-2 lg:gap-2.5 flex-nowrap min-w-0">
+      <div className="container flex h-[3.75rem] items-center gap-2 lg:gap-3 flex-nowrap min-w-0">
         <Logo src={logoSrc} size="sm" immersive={immersive} className="shrink-0" />
 
-        {/* Desktop nav — pill cluster */}
+        {/* Desktop nav — pill cluster (can shrink; never paint over actions) */}
         <nav
           className={cn(
-            "hidden lg:flex items-center gap-0.5 min-w-0 shrink ml-1 rounded-full border px-0.5 py-0.5",
+            "hidden lg:flex items-center gap-0.5 min-w-0 flex-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ml-1 rounded-full border px-0.5 py-0.5",
             immersive
               ? "border-white/10 bg-white/5 backdrop-blur-md"
               : "border-border/50 bg-muted/30 backdrop-blur-sm"
@@ -104,12 +104,10 @@ export function Navbar({
           })}
         </nav>
 
-        <div className="flex-1 min-w-2" />
-
-        <div className="hidden md:flex items-center gap-1.5 shrink-0 min-w-0">
-          <NavWeatherChip immersive={immersive} className="hidden lg:inline-flex" />
+        <div className="hidden md:flex items-center gap-1.5 shrink-0 pl-1">
+          <NavWeatherChip immersive={immersive} className="hidden xl:inline-flex" />
           {!isBlogsPage && (
-            <div className="hidden xl:flex items-center relative w-36 shrink-0">
+            <div className="hidden xl:flex items-center relative w-32 2xl:w-36 shrink-0">
               <Search
                 className={cn(
                   "absolute left-2.5 h-3.5 w-3.5 pointer-events-none",

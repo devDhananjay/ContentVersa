@@ -35,7 +35,7 @@ function weatherIcon(code: number) {
 
 function shortPlace(name: string) {
   const cleaned = name.split(",")[0]?.trim() || name;
-  return cleaned.length > 12 ? `${cleaned.slice(0, 11)}…` : cleaned;
+  return cleaned.length > 10 ? `${cleaned.slice(0, 9)}…` : cleaned;
 }
 
 function readCache(): WeatherCache | null {
@@ -62,9 +62,12 @@ function writeCache(data: WeatherCache) {
 export function NavWeatherChip({
   immersive = false,
   className,
+  compact = false,
 }: {
   immersive?: boolean;
   className?: string;
+  /** Icon + temp only (city in tooltip) — saves navbar space */
+  compact?: boolean;
 }) {
   const [data, setData] = React.useState<WeatherCache | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -127,7 +130,7 @@ export function NavWeatherChip({
     return (
       <span
         className={cn(
-          "inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px]",
+          "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[11px]",
           immersive
             ? "border-white/15 bg-white/10 text-white/70"
             : "border-border/50 bg-muted/40 text-muted-foreground",
@@ -143,13 +146,15 @@ export function NavWeatherChip({
   if (!data) return null;
 
   const Icon = weatherIcon(data.code);
+  const label = `${data.place} · ${data.temp}°C`;
 
   return (
     <Link
       href="/tools/weather"
-      title={`${data.place} · ${data.temp}°C — Weather`}
+      title={label}
+      aria-label={label}
       className={cn(
-        "inline-flex max-w-[9.5rem] items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+        "inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium transition-colors",
         immersive
           ? "border-white/15 bg-white/10 text-white/90 hover:bg-white/15"
           : "border-border/50 bg-muted/40 text-muted-foreground hover:border-sky-500/35 hover:bg-sky-500/10 hover:text-foreground",
@@ -168,7 +173,9 @@ export function NavWeatherChip({
                 : "text-sky-500/90"
         )}
       />
-      <span className="truncate">{shortPlace(data.place)}</span>
+      {!compact ? (
+        <span className="hidden max-w-[4.5rem] truncate 2xl:inline">{shortPlace(data.place)}</span>
+      ) : null}
       <span className={cn("shrink-0 tabular-nums", immersive ? "text-white" : "text-foreground")}>
         {data.temp}°
       </span>
