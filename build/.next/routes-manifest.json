@@ -474,6 +474,14 @@
       "namedRegex": "^/finance/stock/(?<nxtPsymbol>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/finance/[topic]",
+      "regex": "^/finance/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtopic": "nxtPtopic"
+      },
+      "namedRegex": "^/finance/(?<nxtPtopic>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/guides/[section]",
       "regex": "^/guides/([^/]+?)(?:/)?$",
       "routeKeys": {

@@ -34,7 +34,7 @@ export async function FinanceBrowseShell({
             Finance Hub
           </h1>
           <p className="mt-1 text-xs md:text-sm text-muted-foreground max-w-md">
-            Live indices, movers, watchlist & stock charts
+            Live markets · MoneyVerse guides · SIP, gold, loans & tax
           </p>
         </div>
       </section>

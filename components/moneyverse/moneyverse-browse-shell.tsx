@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileSearch, ScanLine, Wallet } from "lucide-react";
+import { BookOpen, FileSearch, ScanLine, Wallet } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const HERO_IMAGE =
@@ -14,6 +14,7 @@ const TABS = [
     label: "Bank Statement Analyzer",
     icon: FileSearch,
   },
+  { href: "/finance#money-guides", label: "Money Guides", icon: BookOpen },
 ] as const;
 
 export function MoneyVerseBrowseShell({ children }: { children: React.ReactNode }) {

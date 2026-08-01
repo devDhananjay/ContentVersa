@@ -17,10 +17,13 @@ export const SITE_LOGO_URL = "/icon-192.png";
 /** Main hub modules — prioritized for sitelinks & internal linking. */
 export const SITE_NAV_HUBS = [
   { name: "Sports", path: "/sports", description: "Live cricket scores, fixtures and sports news" },
-  { name: "Finance", path: "/finance", description: "Nifty, Sensex, stocks and market updates" },
-  { name: "CineVerse", path: "/cineverse", description: "Movies, OTT and watchlist India" },
+  { name: "Finance", path: "/finance", description: "Nifty, Sensex, MoneyVerse guides — gold, SIP, FD, loans & tax" },
+  { name: "CineVerse", path: "/cineverse", description: "Movies — OTT release, cast, where to watch & watchlist India" },
   { name: "GoldVerse", path: "/goldverse", description: "HUID verify, gold & silver rates and BIS hallmark tools" },
   { name: "MoneyVerse", path: "/moneyverse", description: "Expense tracker, budget planner, UPI spending & screenshot OCR scan India" },
+  { name: "Gold Price Today", path: "/finance/gold-price-today", description: "Gold price today India 22K 24K rates and HUID tips" },
+  { name: "SIP India", path: "/finance/sip", description: "SIP mutual fund investing explained with free calculator" },
+  { name: "Silver Rate", path: "/tools/silver-rate", description: "Silver rate today India per gram and kg" },
   { name: "Screenshot Scan (OCR)", path: "/moneyverse/screenshot-scan", description: "UPI payment screenshot OCR — auto-fill expenses from PhonePe, GPay, Paytm" },
   { name: "Bank Statement Analyzer", path: "/moneyverse/bank-statement-analyzer", description: "AI bank statement PDF analysis — credits, debits, expenses and CSV India" },
   { name: "HUID Verification", path: "/huid-verification", description: "Verify BIS gold hallmark HUID online India" },
@@ -28,7 +31,6 @@ export const SITE_NAV_HUBS = [
   { name: "India Tools", path: "/tools", description: "Free PNR, translator, weather, salary tax, PDF, IFSC, EMI, FD, GST tools India" },
   { name: "PNR Status", path: "/tools/pnr-status", description: "Indian Railways PNR status check" },
   { name: "EN ↔ HI Translator", path: "/tools/english-hindi-translator", description: "English to Hindi and Hindi to English translator free" },
-  { name: "Silver Rate", path: "/tools/silver-rate", description: "Silver rate today India per gram and kg" },
   { name: "Merge PDF", path: "/tools/merge-pdf", description: "Combine PDF files free in browser India" },
   { name: "Compress PDF", path: "/tools/compress-pdf", description: "Reduce PDF size free online India" },
   { name: "Weather India", path: "/tools/weather", description: "Free weather forecast by city India" },

@@ -15,10 +15,17 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "CineVerse — Movies, OTT & Watchlist India",
+  title: "CineVerse — Movies, OTT Release Dates, Cast & Where to Watch India",
   description:
-    "Trending movies, India release dates, personal watchlist and movie news on ContentVerse — your AI movie & OTT companion.",
+    "Search movies for India: OTT release date, cast, trailer, story, ratings, where to watch and reviews. Trending films and personal watchlist on ContentVerse CineVerse.",
   path: "/cineverse",
+  keywords: [
+    "OTT release date India",
+    "where to watch movie India",
+    "movie cast",
+    "movie trailer",
+    "CineVerse",
+  ],
   image:
     "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1600",
 });
@@ -33,15 +40,14 @@ export default async function CineverseHubPage() {
     <div className="space-y-10">
       <HubEditorialIntro title="CineVerse on ContentVerse">
         <p>
-          CineVerse is ContentVerse&apos;s movie and OTT companion — trending films,
-          theatrical release windows for India, and a personal watchlist you can build
-          while signed in. Movie metadata is powered by TMDB; our editorial value is
-          original reviews, lists, and explainers from Indian creators in the Movies
-          category.
+          CineVerse is ContentVerse&apos;s movie search companion for India — every film page
+          covers release date, cast, trailer, story, ratings, OTT release date, where to watch,
+          and reviews. Metadata is powered by TMDB; editorial reviews and lists live in the
+          Movies category.
         </p>
         <p>
-          Save titles to your watchlist, get trailer alerts, see where to stream in India
-          (Netflix, Prime, Hotstar & more), and read the latest movie blogs below.
+          Search a title for intents like &quot;Movie Name OTT Release Date&quot;, cast, or
+          where to watch. Save to your watchlist and turn on trailer alerts while signed in.
         </p>
       </HubEditorialIntro>
 

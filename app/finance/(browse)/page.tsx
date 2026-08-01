@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FinanceBlogSection } from "@/components/finance/finance-blog-section";
+import { MoneyTopicsGrid } from "@/components/finance/money-topics-grid";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { HubPushCta } from "@/components/engagement/hub-push-cta";
@@ -9,10 +10,18 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Finance — Nifty, Sensex & Indian Markets",
+  title: "Finance — Nifty, Sensex, Gold, SIP & MoneyVerse India",
   description:
-    "Live Nifty 50, Sensex, top gainers, losers and stock charts on ContentVerse India.",
+    "Live Nifty 50 & Sensex plus MoneyVerse guides: gold price today, silver, SIP, mutual funds, stocks, IPO, FD, RD, loans, credit cards, credit score and tax India.",
   path: "/finance",
+  keywords: [
+    "finance India",
+    "Nifty Sensex",
+    "gold price today",
+    "SIP calculator",
+    "mutual funds India",
+    "MoneyVerse",
+  ],
   image:
     "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1600",
 });
@@ -31,11 +40,12 @@ export default async function FinanceHubPage() {
           against our content policy.
         </p>
         <p>
-          Stock quote pages display third-party market data. For in-depth analysis, read the
-          finance blogs below or explore all articles in the Finance category.
+          MoneyVerse guides below cover gold, silver, SIP, mutual funds, stocks, IPO, FD, RD,
+          loans, credit cards, credit score, and tax — with free calculators and tracker tools.
         </p>
       </HubEditorialIntro>
       <HubAdSense />
+      <MoneyTopicsGrid />
       <HubPushCta
         title="Market open & close alerts"
         description="Push when your watchlist stocks move at open and close (IST)."

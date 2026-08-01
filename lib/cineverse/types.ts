@@ -27,11 +27,37 @@ export type CineTrailer = {
   youtubeUrl?: string;
 };
 
+export type CineCastMember = {
+  id: number;
+  name: string;
+  character?: string;
+  profileUrl?: string;
+  order: number;
+};
+
+export type CineReview = {
+  id: string;
+  author: string;
+  content: string;
+  rating?: number;
+  createdAt?: string;
+  url?: string;
+};
+
 export type CineMovieDetail = CineMovie & {
   runtime?: number;
   genres: string[];
   providers: StreamingProvider[];
   trailers: CineTrailer[];
+  cast: CineCastMember[];
+  reviews: CineReview[];
+  /** Digital / OTT release date for India when available */
+  ottReleaseDate?: string;
+  theatricalReleaseDate?: string;
+  imdbId?: string;
+  voteCount?: number;
+  tagline?: string;
+  originalLanguage?: string;
 };
 
 export type CineverseHubData = {

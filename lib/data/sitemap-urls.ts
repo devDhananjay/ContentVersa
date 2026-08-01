@@ -11,6 +11,7 @@ import {
 import { TOOL_REGISTRY, TOOLS_HUB_PATH } from "@/lib/tools/registry";
 import { guideSitemapEntries } from "@/lib/guides/registry";
 import { getCineverseHubDataCached } from "@/lib/cineverse/data";
+import { MONEY_TOPIC_SLUGS } from "@/lib/finance/money-topics";
 
 type SitemapFreq = MetadataRoute.Sitemap[0]["changeFrequency"];
 
@@ -42,6 +43,11 @@ const STATIC_PAGES: Array<{
   { path: "/sports/teams", changeFrequency: "daily", priority: 0.75 },
   { path: "/sports/players", changeFrequency: "daily", priority: 0.75 },
   { path: "/finance", changeFrequency: "hourly", priority: 0.85 },
+  ...MONEY_TOPIC_SLUGS.map((slug) => ({
+    path: `/finance/${slug}`,
+    changeFrequency: "weekly" as SitemapFreq,
+    priority: 0.8,
+  })),
   { path: "/jobs", changeFrequency: "daily", priority: 0.8 },
   { path: "/results", changeFrequency: "daily", priority: 0.88 },
   { path: "/reels", changeFrequency: "daily", priority: 0.75 },
@@ -156,7 +162,7 @@ async function cineverseMovieEntries(
           priority: 0.55,
         })
       );
-      if (out.length >= 40) break;
+      if (out.length >= 120) break;
     }
     return out;
   } catch {

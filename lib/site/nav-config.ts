@@ -69,6 +69,12 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
       { href: "/goldverse", label: "GoldVerse", description: "Gold & silver rates, hallmark", icon: Gem },
       { href: "/moneyverse", label: "MoneyVerse", description: "Expense tracker India", icon: Wallet },
       {
+        href: "/finance#money-guides",
+        label: "Money Guides",
+        description: "Gold, SIP, FD, loans & tax",
+        icon: TrendingUp,
+      },
+      {
         href: "/moneyverse/screenshot-scan",
         label: "Screenshot OCR",
         description: "UPI payment scan",

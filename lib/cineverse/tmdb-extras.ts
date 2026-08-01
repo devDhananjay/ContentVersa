@@ -1,5 +1,10 @@
 import { parseTmdbWatchProviders } from "./ott-affiliates";
-import type { CineMovieDetail, CineTrailer } from "./types";
+import type {
+  CineCastMember,
+  CineMovieDetail,
+  CineReview,
+  CineTrailer,
+} from "./types";
 
 function tmdbHeaders(): Record<string, string> | null {
   const token = process.env.TMDB_READ_ACCESS_TOKEN?.trim();
@@ -56,31 +61,112 @@ function parseTrailers(
   }));
 }
 
+function parseCast(
+  data: {
+    cast?: {
+      id: number;
+      name: string;
+      character?: string;
+      profile_path?: string | null;
+      order?: number;
+    }[];
+  } | null
+): CineCastMember[] {
+  const rows = data?.cast ?? [];
+  return rows
+    .slice()
+    .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+    .slice(0, 16)
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      character: c.character?.trim() || undefined,
+      profileUrl: c.profile_path
+        ? `https://image.tmdb.org/t/p/w185${c.profile_path}`
+        : undefined,
+      order: c.order ?? 0,
+    }));
+}
+
+function parseReviews(
+  data: {
+    results?: {
+      id: string;
+      author: string;
+      content: string;
+      url?: string;
+      created_at?: string;
+      author_details?: { rating?: number | null };
+    }[];
+  } | null
+): CineReview[] {
+  const rows = data?.results ?? [];
+  return rows.slice(0, 6).map((r) => ({
+    id: r.id,
+    author: r.author,
+    content: r.content.trim(),
+    rating: r.author_details?.rating ?? undefined,
+    createdAt: r.created_at,
+    url: r.url,
+  }));
+}
+
+/** TMDB release type: 1 Premiere, 2 Theatrical (limited), 3 Theatrical, 4 Digital, 5 Physical, 6 TV */
+function parseIndiaReleaseDates(
+  data: {
+    results?: {
+      iso_3166_1: string;
+      release_dates?: { type: number; release_date: string }[];
+    }[];
+  } | null
+): { theatrical?: string; ott?: string } {
+  const india = data?.results?.find((r) => r.iso_3166_1 === "IN");
+  const dates = india?.release_dates ?? [];
+  const theatrical = dates.find((d) => d.type === 3 || d.type === 2)?.release_date;
+  const ott = dates.find((d) => d.type === 4)?.release_date;
+  return {
+    theatrical: theatrical?.slice(0, 10),
+    ott: ott?.slice(0, 10),
+  };
+}
+
 export function trailerFingerprint(trailers: CineTrailer[]): string | null {
   const first = trailers[0];
   return first ? `${first.key}:${first.name}` : null;
 }
 
 export async function fetchMovieDetail(tmdbId: string): Promise<CineMovieDetail | null> {
-  const [movie, providersData, videosData] = await Promise.all([
-    tmdbFetch<{
-      id: number;
-      title: string;
-      overview: string;
-      vote_average?: number;
-      poster_path?: string | null;
-      backdrop_path?: string | null;
-      release_date?: string;
-      runtime?: number;
-      genres?: { name: string }[];
-    }>(`/movie/${tmdbId}`, { language: "en-US" }),
-    tmdbFetch<Parameters<typeof parseTmdbWatchProviders>[0]>(
-      `/movie/${tmdbId}/watch/providers`
-    ),
-    tmdbFetch<Parameters<typeof parseTrailers>[0]>(`/movie/${tmdbId}/videos`, {
-      language: "en-US",
-    }),
-  ]);
+  const [movie, providersData, videosData, creditsData, reviewsData, releaseDates, externalIds] =
+    await Promise.all([
+      tmdbFetch<{
+        id: number;
+        title: string;
+        overview: string;
+        vote_average?: number;
+        vote_count?: number;
+        poster_path?: string | null;
+        backdrop_path?: string | null;
+        release_date?: string;
+        runtime?: number;
+        tagline?: string;
+        original_language?: string;
+        genres?: { name: string }[];
+      }>(`/movie/${tmdbId}`, { language: "en-US" }),
+      tmdbFetch<Parameters<typeof parseTmdbWatchProviders>[0]>(
+        `/movie/${tmdbId}/watch/providers`
+      ),
+      tmdbFetch<Parameters<typeof parseTrailers>[0]>(`/movie/${tmdbId}/videos`, {
+        language: "en-US",
+      }),
+      tmdbFetch<Parameters<typeof parseCast>[0]>(`/movie/${tmdbId}/credits`),
+      tmdbFetch<Parameters<typeof parseReviews>[0]>(`/movie/${tmdbId}/reviews`, {
+        language: "en-US",
+      }),
+      tmdbFetch<Parameters<typeof parseIndiaReleaseDates>[0]>(
+        `/movie/${tmdbId}/release_dates`
+      ),
+      tmdbFetch<{ imdb_id?: string | null }>(`/movie/${tmdbId}/external_ids`),
+    ]);
 
   if (!movie) return null;
 
@@ -88,14 +174,20 @@ export async function fetchMovieDetail(tmdbId: string): Promise<CineMovieDetail 
   const providers = providersData
     ? parseTmdbWatchProviders(providersData, movie.title, "IN")
     : [];
+  const indiaDates = parseIndiaReleaseDates(releaseDates);
 
   return {
     id: String(movie.id),
     title: movie.title,
     overview: movie.overview?.trim() ?? "",
     rating: movie.vote_average ? Number(movie.vote_average.toFixed(1)) : undefined,
+    voteCount: movie.vote_count,
     releaseDate: movie.release_date,
+    theatricalReleaseDate: indiaDates.theatrical ?? movie.release_date,
+    ottReleaseDate: indiaDates.ott,
     runtime: movie.runtime,
+    tagline: movie.tagline?.trim() || undefined,
+    originalLanguage: movie.original_language,
     posterUrl: movie.poster_path
       ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
       : undefined,
@@ -106,6 +198,9 @@ export async function fetchMovieDetail(tmdbId: string): Promise<CineMovieDetail 
     genres: movie.genres?.map((g) => g.name) ?? [],
     providers,
     trailers,
+    cast: parseCast(creditsData),
+    reviews: parseReviews(reviewsData),
+    imdbId: externalIds?.imdb_id?.trim() || undefined,
   };
 }
 

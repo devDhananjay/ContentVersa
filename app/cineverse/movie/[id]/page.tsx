@@ -15,11 +15,27 @@ export async function generateMetadata({
   const movie = await fetchMovieDetail(id);
   if (!movie) return buildMetadata({ title: "Movie not found", noIndex: true });
 
+  const castHint = movie.cast
+    .slice(0, 3)
+    .map((c) => c.name)
+    .join(", ");
+
   return buildMetadata({
-    title: `${movie.title} — Watch & Trailers India`,
-    description: movie.overview.slice(0, 160) || `Stream ${movie.title} in India on ContentVerse CineVerse.`,
+    title: `${movie.title} OTT Release Date, Cast & Where to Watch India`,
+    description:
+      movie.overview.slice(0, 140) ||
+      `${movie.title} cast, trailer, story, rating, OTT release date and where to watch in India on ContentVerse CineVerse.`,
     path: `/cineverse/movie/${id}`,
     image: movie.backdropUrl ?? movie.posterUrl,
+    keywords: [
+      `${movie.title} OTT release date`,
+      `${movie.title} cast`,
+      `${movie.title} where to watch`,
+      `${movie.title} trailer`,
+      `${movie.title} review`,
+      ...(castHint ? [`${movie.title} ${castHint}`] : []),
+      "CineVerse India",
+    ],
   });
 }
 

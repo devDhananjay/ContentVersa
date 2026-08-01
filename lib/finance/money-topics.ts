@@ -1,0 +1,559 @@
+/**
+ * MoneyVerse / Finance SEO topic landings.
+ * Each slug becomes /finance/[slug] with metadata, FAQ JSON-LD, and sitemap entry.
+ */
+
+import { SITE } from "@/lib/seo";
+
+export type MoneyTopicFaq = { question: string; answer: string };
+
+export type MoneyTopicLink = { href: string; label: string };
+
+export type MoneyTopic = {
+  slug: string;
+  title: string;
+  shortTitle: string;
+  description: string;
+  keywords: string[];
+  h1: string;
+  eyebrow: string;
+  paragraphs: string[];
+  bullets: string[];
+  faqs: MoneyTopicFaq[];
+  toolLinks: MoneyTopicLink[];
+  relatedSlugs: string[];
+};
+
+export const MONEY_TOPICS: MoneyTopic[] = [
+  {
+    slug: "gold-price-today",
+    title: "Gold Price Today India — 22K & 24K Rates",
+    shortTitle: "Gold Price Today",
+    description:
+      "Check today's gold price in India for 22K and 24K, understand making charges, and verify BIS HUID before you buy jewellery.",
+    keywords: [
+      "gold price today",
+      "gold rate India",
+      "22k gold price today",
+      "24k gold rate",
+      "gold price per gram",
+    ],
+    h1: "Gold Price Today in India",
+    eyebrow: "Gold · Rates · Hallmark",
+    paragraphs: [
+      "Indians search gold price today before weddings, festivals, and investments. Spot rates move with international markets, while jewellers add making charges and GST — so the final bill is rarely the headline gram rate alone.",
+      "Use GoldVerse for live-oriented gold context, city-wise awareness, and BIS HUID verification so you buy hallmarked jewellery with confidence.",
+    ],
+    bullets: [
+      "Compare 22K vs 24K rates before buying jewellery or coins",
+      "Ask for making charges and GST breakup in writing",
+      "Verify HUID on hallmarked gold jewellery online",
+      "Prefer trusted jewellers and keep invoices safe",
+    ],
+    faqs: [
+      {
+        question: "Where can I check gold price today in India?",
+        answer:
+          "ContentVerse GoldVerse and finance guides summarise gold rate context for India. Always confirm the final invoice rate with your jeweller, including making charges and GST.",
+      },
+      {
+        question: "Is 22K or 24K better for jewellery?",
+        answer:
+          "22K (916) is common for wearable jewellery in India. 24K (999) is purer and often used for coins and bars; it is softer for daily wear.",
+      },
+    ],
+    toolLinks: [
+      { href: "/goldverse", label: "Open GoldVerse" },
+      { href: "/huid-verification", label: "Verify HUID" },
+      { href: "/tools/silver-rate", label: "Silver rate today" },
+    ],
+    relatedSlugs: ["silver-price-today", "sip", "tax"],
+  },
+  {
+    slug: "silver-price-today",
+    title: "Silver Price Today India — Rate per Gram & Kg",
+    shortTitle: "Silver Price Today",
+    description:
+      "Check today's silver price in India per gram, 10g and kg. Estimate weight-based cost with ContentVerse silver tools.",
+    keywords: [
+      "silver price today",
+      "silver rate India",
+      "silver rate per gram",
+      "silver price per kg",
+      "chandi rate today",
+    ],
+    h1: "Silver Price Today in India",
+    eyebrow: "Silver · Spot · India",
+    paragraphs: [
+      "Silver (chandi) rates matter for jewellery, utensils, and small investments. Prices are usually quoted per gram or per kg and can differ by purity and city.",
+      "Use the free silver rate tool to estimate cost by weight, then confirm with your local dealer before purchase.",
+    ],
+    bullets: [
+      "Check per-gram and per-kg estimates",
+      "Confirm purity and making charges locally",
+      "Compare with gold if diversifying metals",
+    ],
+    faqs: [
+      {
+        question: "How is silver price calculated in India?",
+        answer:
+          "Dealers typically start from a spot-linked rate, then adjust for purity, making charges, and taxes. Online tools give an estimate — the invoice rate can differ.",
+      },
+    ],
+    toolLinks: [
+      { href: "/tools/silver-rate", label: "Silver rate calculator" },
+      { href: "/goldverse", label: "GoldVerse" },
+      { href: "/finance/gold-price-today", label: "Gold price today" },
+    ],
+    relatedSlugs: ["gold-price-today", "sip", "mutual-funds"],
+  },
+  {
+    slug: "sip",
+    title: "SIP in India — Systematic Investment Plans Explained",
+    shortTitle: "SIP",
+    description:
+      "Learn how SIP mutual fund investing works in India, estimate returns with a free SIP calculator, and plan long-term wealth.",
+    keywords: [
+      "SIP India",
+      "SIP calculator",
+      "systematic investment plan",
+      "mutual fund SIP",
+      "SIP returns",
+    ],
+    h1: "SIP — Systematic Investment Plan India",
+    eyebrow: "Investing · Mutual Funds",
+    paragraphs: [
+      "A SIP lets you invest a fixed amount regularly in mutual funds. It encourages discipline, rupee-cost averaging, and long-term compounding — popular among Indian salaried investors.",
+      "Use our SIP calculator to model monthly investment, tenure, and expected return assumptions. Past returns are not guarantees.",
+    ],
+    bullets: [
+      "Start small and stay consistent",
+      "Align SIP tenure with goals (house, retirement, education)",
+      "Review fund category risk before investing",
+      "Increase SIP amount as income grows",
+    ],
+    faqs: [
+      {
+        question: "What is a good SIP amount for beginners?",
+        answer:
+          "Start with an amount you can continue every month without stress — even ₹500–₹1,000 builds the habit. Increase when cash flow allows.",
+      },
+      {
+        question: "Are SIP returns guaranteed?",
+        answer:
+          "No. Mutual fund SIPs are market-linked. Calculators show illustrative returns based on assumed rates, not promises.",
+      },
+    ],
+    toolLinks: [
+      { href: "/tools/sip-calculator", label: "SIP calculator" },
+      { href: "/finance/mutual-funds", label: "Mutual funds guide" },
+      { href: "/moneyverse", label: "Track expenses in MoneyVerse" },
+    ],
+    relatedSlugs: ["mutual-funds", "stocks", "fd"],
+  },
+  {
+    slug: "mutual-funds",
+    title: "Mutual Funds India — Types, SIP & Basics",
+    shortTitle: "Mutual Funds",
+    description:
+      "Understand mutual funds in India — equity, debt, hybrid, SIP vs lumpsum, and how to plan investments responsibly.",
+    keywords: [
+      "mutual funds India",
+      "equity mutual fund",
+      "debt mutual fund",
+      "mutual fund SIP",
+      "best mutual funds beginners",
+    ],
+    h1: "Mutual Funds in India",
+    eyebrow: "Investing · SEBI Regulated",
+    paragraphs: [
+      "Mutual funds pool money from many investors into stocks, bonds, or mixed assets, managed by professionals under SEBI rules.",
+      "Choose funds based on goal, risk, and horizon — not tips. Pair fund research with SIP planning and emergency savings.",
+    ],
+    bullets: [
+      "Equity funds for long-term growth goals",
+      "Debt funds for relatively lower volatility needs",
+      "Hybrid funds for balanced exposure",
+      "Always read scheme documents and expense ratios",
+    ],
+    faqs: [
+      {
+        question: "SIP or lumpsum — which is better?",
+        answer:
+          "SIP suits regular income and reduces timing risk. Lumpsum can work when you have surplus and a long horizon. Many investors use both.",
+      },
+    ],
+    toolLinks: [
+      { href: "/tools/sip-calculator", label: "SIP calculator" },
+      { href: "/finance/sip", label: "SIP explained" },
+      { href: "/finance/stocks", label: "Stocks basics" },
+    ],
+    relatedSlugs: ["sip", "stocks", "ipo"],
+  },
+  {
+    slug: "stocks",
+    title: "Stocks India — Nifty, Sensex & Share Basics",
+    shortTitle: "Stocks",
+    description:
+      "Learn stock market basics in India, follow Nifty and Sensex on the Finance Hub, and understand risk before you invest.",
+    keywords: [
+      "stocks India",
+      "share market India",
+      "Nifty 50",
+      "Sensex",
+      "how to buy stocks India",
+    ],
+    h1: "Stocks & Share Market India",
+    eyebrow: "Markets · Equities",
+    paragraphs: [
+      "Buying stocks means owning a slice of a company. Indian retail investors typically trade via demat accounts on NSE/BSE, watching indices like Nifty 50 and Sensex.",
+      "ContentVerse Finance Hub shows live-oriented market widgets. Stock pages are for reference — not buy/sell recommendations.",
+    ],
+    bullets: [
+      "Learn indices before chasing tips",
+      "Diversify; avoid putting all savings in one stock",
+      "Use watchlists to track names you research",
+      "Prefer long-term learning over day-trading hype",
+    ],
+    faqs: [
+      {
+        question: "Is the Finance Hub investment advice?",
+        answer:
+          "No. Market data and charts are informational. Decisions should follow your own research or a SEBI-registered advisor.",
+      },
+    ],
+    toolLinks: [
+      { href: "/finance", label: "Finance Hub (live markets)" },
+      { href: "/finance/ipo", label: "IPO basics" },
+      { href: "/finance/mutual-funds", label: "Mutual funds" },
+    ],
+    relatedSlugs: ["ipo", "mutual-funds", "sip"],
+  },
+  {
+    slug: "ipo",
+    title: "IPO India — How IPOs Work for Retail Investors",
+    shortTitle: "IPO",
+    description:
+      "Understand IPOs in India — application basics, listing day risk, and how retail investors participate via ASBA.",
+    keywords: [
+      "IPO India",
+      "IPO apply online",
+      "upcoming IPO",
+      "IPO allotment",
+      "what is IPO",
+    ],
+    h1: "IPO Guide for Indian Investors",
+    eyebrow: "Markets · Offerings",
+    paragraphs: [
+      "An IPO is when a company offers shares to the public for the first time. Retail investors often apply through UPI/ASBA via their broker or bank app.",
+      "IPOs can list above or below issue price. Treat every IPO as a research decision — grey-market premiums are not guarantees.",
+    ],
+    bullets: [
+      "Read RHP highlights: business, risks, use of proceeds",
+      "Apply only with money you can lock during the issue window",
+      "Allotment is not guaranteed in oversubscribed issues",
+      "Have an exit plan after listing",
+    ],
+    faqs: [
+      {
+        question: "How do I apply for an IPO in India?",
+        answer:
+          "Most investors apply via broker apps or net banking ASBA/UPI mandates during the issue window. Keep sufficient balance for the bid amount blocked.",
+      },
+    ],
+    toolLinks: [
+      { href: "/finance", label: "Finance Hub" },
+      { href: "/finance/stocks", label: "Stocks basics" },
+      { href: "/finance/mutual-funds", label: "Mutual funds" },
+    ],
+    relatedSlugs: ["stocks", "mutual-funds", "sip"],
+  },
+  {
+    slug: "fd",
+    title: "Fixed Deposit (FD) India — Rates, Tenure & Calculator",
+    shortTitle: "FD",
+    description:
+      "Understand bank fixed deposits in India, compare tenure thinking, and estimate maturity with a free FD calculator.",
+    keywords: [
+      "FD India",
+      "fixed deposit calculator",
+      "FD interest rates",
+      "bank FD maturity",
+      "best FD tenure",
+    ],
+    h1: "Fixed Deposit (FD) in India",
+    eyebrow: "Savings · Bank Deposits",
+    paragraphs: [
+      "Fixed deposits offer relatively predictable interest for a chosen tenure. They suit emergency buffers and conservative goals, though returns may lag long-term equity SIPs after inflation.",
+      "Use the FD calculator to estimate maturity value, then compare bank rates and premature withdrawal rules.",
+    ],
+    bullets: [
+      "Ladder FDs across tenures for liquidity",
+      "Check senior citizen rates if eligible",
+      "Note TDS rules on interest income",
+      "Compare with RD and debt funds for goals",
+    ],
+    faqs: [
+      {
+        question: "How is FD interest compounded in India?",
+        answer:
+          "Many banks compound quarterly for retail FDs, but terms vary. Always read the deposit sheet for compounding frequency and premature penalty.",
+      },
+    ],
+    toolLinks: [
+      { href: "/tools/fd-calculator", label: "FD calculator" },
+      { href: "/finance/rd", label: "RD guide" },
+      { href: "/tools/ppf-calculator", label: "PPF calculator" },
+    ],
+    relatedSlugs: ["rd", "sip", "tax"],
+  },
+  {
+    slug: "rd",
+    title: "Recurring Deposit (RD) India — Monthly Savings Plan",
+    shortTitle: "RD",
+    description:
+      "Learn how recurring deposits work in India and estimate RD maturity with a free calculator for monthly savings.",
+    keywords: [
+      "RD India",
+      "recurring deposit calculator",
+      "RD interest rates",
+      "monthly RD plan",
+      "RD vs SIP",
+    ],
+    h1: "Recurring Deposit (RD) in India",
+    eyebrow: "Savings · Monthly Plans",
+    paragraphs: [
+      "An RD lets you save a fixed amount every month and earn deposit interest — useful for short-to-medium goals like gadgets, travel, or festival budgets.",
+      "Compare RD with SIP: RDs are more predictable; SIPs can grow faster but with market risk.",
+    ],
+    bullets: [
+      "Pick tenure matching your goal date",
+      "Automate monthly debit to stay consistent",
+      "Check premature closure penalties",
+    ],
+    faqs: [
+      {
+        question: "RD or SIP — which should I choose?",
+        answer:
+          "Use RD for near-term goals needing stability. Use equity SIPs for long-term goals where you can tolerate market ups and downs.",
+      },
+    ],
+    toolLinks: [
+      { href: "/tools/rd-calculator", label: "RD calculator" },
+      { href: "/tools/fd-calculator", label: "FD calculator" },
+      { href: "/tools/sip-calculator", label: "SIP calculator" },
+    ],
+    relatedSlugs: ["fd", "sip", "loans"],
+  },
+  {
+    slug: "loans",
+    title: "Loans India — EMI, Home & Personal Loan Basics",
+    shortTitle: "Loans",
+    description:
+      "Understand loan EMIs in India for home, car and personal loans. Plan repayments with a free EMI calculator.",
+    keywords: [
+      "loan EMI India",
+      "home loan EMI",
+      "personal loan calculator",
+      "EMI calculator",
+      "loan interest India",
+    ],
+    h1: "Loans & EMI Planning India",
+    eyebrow: "Credit · Borrowing",
+    paragraphs: [
+      "Loans help fund homes, education, and emergencies — but EMI burden can strain monthly cash flow. Always compare interest rate, tenure, processing fees, and prepayment rules.",
+      "Use the EMI calculator before you sign, and track EMIs in MoneyVerse reminders so due dates never surprise you.",
+    ],
+    bullets: [
+      "Keep EMI-to-income ratio comfortable",
+      "Prefer shorter tenure if cash flow allows",
+      "Read floating vs fixed rate terms",
+      "Avoid stacking multiple high-interest personal loans",
+    ],
+    faqs: [
+      {
+        question: "How is EMI calculated?",
+        answer:
+          "EMI depends on principal, annual interest rate, and tenure in months. Our EMI calculator shows monthly payment, total interest, and total amount payable.",
+      },
+    ],
+    toolLinks: [
+      { href: "/tools/emi-calculator", label: "EMI calculator" },
+      { href: "/finance/credit-score", label: "Credit score basics" },
+      { href: "/moneyverse", label: "MoneyVerse budgets" },
+    ],
+    relatedSlugs: ["credit-cards", "credit-score", "fd"],
+  },
+  {
+    slug: "credit-cards",
+    title: "Credit Cards India — Usage, Bills & Smart Habits",
+    shortTitle: "Credit Cards",
+    description:
+      "Learn responsible credit card use in India — billing cycles, interest, rewards, and how to avoid debt traps.",
+    keywords: [
+      "credit cards India",
+      "credit card bill",
+      "credit card interest",
+      "how to use credit card",
+      "credit card tips India",
+    ],
+    h1: "Credit Cards in India",
+    eyebrow: "Credit · Cards",
+    paragraphs: [
+      "Credit cards offer convenience and rewards when you pay the full bill on time. Revolving balances attract high interest and can hurt your credit score.",
+      "Set payment reminders in MoneyVerse, track spends by category, and treat credit limits as a tool — not extra income.",
+    ],
+    bullets: [
+      "Pay full statement by due date",
+      "Enable alerts for every transaction",
+      "Avoid cash withdrawals on cards",
+      "Compare annual fees vs reward value",
+    ],
+    faqs: [
+      {
+        question: "Does paying minimum due hurt credit?",
+        answer:
+          "Paying only the minimum keeps the account current but accrues interest on the remaining balance. Pay in full when possible to avoid costly revolving debt.",
+      },
+    ],
+    toolLinks: [
+      { href: "/moneyverse", label: "Set card bill reminders" },
+      { href: "/finance/credit-score", label: "Credit score guide" },
+      { href: "/finance/loans", label: "Loans & EMI" },
+    ],
+    relatedSlugs: ["credit-score", "loans", "tax"],
+  },
+  {
+    slug: "credit-score",
+    title: "Credit Score India — CIBIL Basics & Improvement Tips",
+    shortTitle: "Credit Score",
+    description:
+      "Understand credit scores in India, why lenders check them, and practical habits to build a healthier score over time.",
+    keywords: [
+      "credit score India",
+      "CIBIL score",
+      "improve credit score",
+      "credit report India",
+      "what is credit score",
+    ],
+    h1: "Credit Score in India",
+    eyebrow: "Credit · Bureau",
+    paragraphs: [
+      "Lenders use credit scores (often via bureaus like CIBIL and others) to judge repayment risk for loans and credit cards.",
+      "On-time payments, low credit utilisation, and fewer unnecessary hard enquiries generally support a healthier profile over time.",
+    ],
+    bullets: [
+      "Never miss EMI or card due dates",
+      "Keep utilisation well below your limit",
+      "Review your credit report for errors",
+      "Don’t close oldest cards impulsively",
+    ],
+    faqs: [
+      {
+        question: "What is a good credit score in India?",
+        answer:
+          "Many lenders prefer scores roughly 750+ as stronger, but cut-offs vary by product and bank. Focus on payment behaviour more than chasing a single number overnight.",
+      },
+    ],
+    toolLinks: [
+      { href: "/finance/credit-cards", label: "Credit cards guide" },
+      { href: "/finance/loans", label: "Loans & EMI" },
+      { href: "/moneyverse", label: "Payment reminders" },
+    ],
+    relatedSlugs: ["credit-cards", "loans", "tax"],
+  },
+  {
+    slug: "tax",
+    title: "Income Tax India — Salary, Regime & Calculators",
+    shortTitle: "Tax",
+    description:
+      "Plan Indian income tax for salaried earners — new vs old regime basics, GST tools, and free salary tax calculator.",
+    keywords: [
+      "income tax India",
+      "salary tax calculator",
+      "new vs old tax regime",
+      "ITR India",
+      "GST calculator",
+    ],
+    h1: "Income Tax & Salary Planning India",
+    eyebrow: "Tax · Compliance",
+    paragraphs: [
+      "Salaried Indians compare the new and old tax regimes, track TDS, and file ITR on time. Rules change with Union Budgets — always verify against official sources for the current FY.",
+      "Use our salary tax calculator for estimates, GST calculator for invoices, and MoneyVerse to keep spending organised before tax season.",
+    ],
+    bullets: [
+      "Estimate tax before changing regimes mid-year casually",
+      "Keep Form 16, investment proofs, and rent receipts ready",
+      "File ITR before the deadline to avoid late fees",
+      "Use GST tools only for quick math — not legal advice",
+    ],
+    faqs: [
+      {
+        question: "Is the salary tax calculator official?",
+        answer:
+          "No. It is an educational estimate for planning. Final tax depends on your full income, deductions, and current Finance Act rules.",
+      },
+    ],
+    toolLinks: [
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
+      { href: "/tools/gst-calculator", label: "GST calculator" },
+      { href: "/moneyverse/bank-statement-analyzer", label: "Bank statement analyzer" },
+    ],
+    relatedSlugs: ["sip", "fd", "loans"],
+  },
+];
+
+export const MONEY_TOPIC_SLUGS = MONEY_TOPICS.map((t) => t.slug);
+
+export function getMoneyTopic(slug: string): MoneyTopic | undefined {
+  return MONEY_TOPICS.find((t) => t.slug === slug);
+}
+
+export function moneyTopicPath(slug: string) {
+  return `/finance/${slug}`;
+}
+
+export function moneyTopicFaqJsonLd(topic: MoneyTopic) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: topic.faqs.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+}
+
+export function moneyTopicBreadcrumbJsonLd(topic: MoneyTopic) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE.url },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Finance",
+        item: `${SITE.url}/finance`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: topic.shortTitle,
+        item: `${SITE.url}${moneyTopicPath(topic.slug)}`,
+      },
+    ],
+  };
+}
+
+export function moneyTopicWebPageJsonLd(topic: MoneyTopic) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: topic.title,
+    description: topic.description,
+    url: `${SITE.url}${moneyTopicPath(topic.slug)}`,
+    isPartOf: { "@type": "WebSite", name: SITE.name, url: SITE.url },
+  };
+}

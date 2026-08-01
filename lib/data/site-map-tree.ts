@@ -333,7 +333,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
     label: "Finance",
     color: "amber",
     href: "/finance",
-    summary: "Indian stock market — Nifty 50, watchlist & alerts",
+    summary: "Indian markets + MoneyVerse guides — gold, SIP, loans & tax",
     groups: [
       {
         heading: "Markets",
@@ -351,6 +351,23 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
               { label: "Day high / low / volume", detail: "Live quote fields" },
             ],
           },
+        ],
+      },
+      {
+        heading: "MoneyVerse guides",
+        items: [
+          { label: "Gold Price Today", href: "/finance/gold-price-today", detail: "22K & 24K rates + HUID" },
+          { label: "Silver Price Today", href: "/finance/silver-price-today", detail: "Chandi rate India" },
+          { label: "SIP", href: "/finance/sip", detail: "Systematic investment plans" },
+          { label: "Mutual Funds", href: "/finance/mutual-funds", detail: "Equity, debt & hybrid basics" },
+          { label: "Stocks", href: "/finance/stocks", detail: "Share market basics" },
+          { label: "IPO", href: "/finance/ipo", detail: "IPO apply & allotment basics" },
+          { label: "FD", href: "/finance/fd", detail: "Fixed deposit + calculator" },
+          { label: "RD", href: "/finance/rd", detail: "Recurring deposit + calculator" },
+          { label: "Loans", href: "/finance/loans", detail: "EMI & borrowing basics" },
+          { label: "Credit Cards", href: "/finance/credit-cards", detail: "Bills & smart habits" },
+          { label: "Credit Score", href: "/finance/credit-score", detail: "CIBIL basics" },
+          { label: "Tax", href: "/finance/tax", detail: "Salary tax & GST tools" },
         ],
       },
       {
@@ -377,7 +394,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
     label: "CineVerse",
     color: "violet",
     href: "/cineverse",
-    summary: "Movies, OTT releases and AI-powered watchlist for India",
+    summary: "Movie search engine — OTT date, cast, trailer, where to watch India",
     groups: [
       {
         heading: "Discover",
@@ -389,11 +406,28 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             detail: "TMDB-powered lookup",
             children: [
               { label: "Search by title", detail: "Find any film instantly" },
-              { label: "Movie detail page", href: "/cineverse", detail: "Cast, plot & ratings" },
+              {
+                label: "Movie detail page",
+                href: "/cineverse",
+                detail: "Release, cast, trailer, story, rating, OTT, where to watch, reviews",
+              },
             ],
           },
           { label: "Watchlist", href: "/cineverse", detail: "Save films — sign in to sync" },
           { label: "AI picks", href: "/cineverse", detail: "Personalized recommendations" },
+        ],
+      },
+      {
+        heading: "On every movie page",
+        items: [
+          { label: "Release Date", href: "/cineverse", detail: "Theatrical window India" },
+          { label: "Cast", href: "/cineverse", detail: "Actors & characters" },
+          { label: "Trailer", href: "/cineverse", detail: "YouTube official trailers" },
+          { label: "Story", href: "/cineverse", detail: "Plot synopsis" },
+          { label: "Rating", href: "/cineverse", detail: "TMDB score + IMDb link" },
+          { label: "OTT Release", href: "/cineverse", detail: "Digital release date India" },
+          { label: "Where to Watch", href: "/cineverse", detail: "Streaming / rent / buy India" },
+          { label: "Reviews", href: "/cineverse", detail: "Public reviews when available" },
         ],
       },
     ],
