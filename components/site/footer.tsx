@@ -111,8 +111,8 @@ export async function Footer() {
           <div>
             <Logo src={logoSrc} size="lg" />
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              {SITE.searchName}. India&apos;s creator platform for blogs, sports,
-              finance, jobs, and free tools.
+              {SITE.searchName} — blogs, sports, finance, MoneyVerse, CineVerse,
+              jobs, and free India tools. {SITE.tagline}
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-2">
               {SOCIAL_LINKS.map(({ label, href, Icon }) => (

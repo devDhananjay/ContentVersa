@@ -3,9 +3,10 @@ import { DEFAULT_FAVICON_ICONS } from "@/lib/branding/favicon";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "ContentVerse",
+    name: "ContentVerse India",
     short_name: "ContentVerse",
-    description: "Read. Create. Grow. India's creator platform for blogs and content.",
+    description:
+      "ContentVerse India — blogs, sports, finance, MoneyVerse, CineVerse and free India tools. Read. Create. Grow.",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0f",

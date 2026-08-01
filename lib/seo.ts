@@ -76,17 +76,17 @@ export const SITE_NAV_SECTIONS = [
 ] as const;
 
 export const SITE = {
-  name: "ContentVerse",
+  name: "ContentVerse India",
   legalName: "ContentVerse India",
   tagline: "Read. Create. Grow.",
   /**
-   * Preferred Google Search site name (line above the URL).
-   * Plain "ContentVerse" clashes with other brands, so Google often
-   * falls back to the domain — keep this unique and consistent on-page.
+   * Preferred Google Search site name + homepage title.
+   * Keep unique ("India") so Google doesn't confuse us with other ContentVerse brands
+   * or fall back to only the domain.
    */
-  searchName: "ContentVerse — Read. Create. Grow.",
+  searchName: "ContentVerse India",
   description:
-    "ContentVerse India — read blogs, watch reels, follow live sports scores, track Nifty & Sensex, and find government & private jobs. India's creator platform for bold writers.",
+    "ContentVerse India — blogs, reels, live cricket, Nifty & Sensex, MoneyVerse, CineVerse, GoldVerse, sarkari jobs and free India tools. Read. Create. Grow.",
   get url() {
     return siteUrl();
   },
@@ -116,7 +116,11 @@ export const SITE = {
 
 /** Fallbacks if Google won't use SITE.searchName (ordered by preference). */
 export function siteNameAlternates(): string[] {
-  return [SITE.legalName, SITE.name, "contentverse.co.in"];
+  return [
+    "ContentVerse",
+    "ContentVerse — Read. Create. Grow.",
+    "contentverse.co.in",
+  ];
 }
 
 export function buildMetadata(input: {
@@ -131,7 +135,7 @@ export function buildMetadata(input: {
   authors?: string[];
 }): Metadata {
   const title = input.title
-    ? input.title.includes(SITE.name)
+    ? input.title.includes(SITE.name) || input.title.includes("ContentVerse")
       ? input.title
       : `${input.title} · ${SITE.name}`
     : SITE.searchName;

@@ -64,13 +64,13 @@ export function Logo({
   return (
     <Link
       href="/"
-      aria-label="ContentVerse — Read. Create. Grow."
-      title="ContentVerse — Read. Create. Grow."
+      aria-label="ContentVerse India"
+      title="ContentVerse India"
       className={cn("group inline-flex items-center gap-2 shrink-0 min-w-0", className)}
     >
       <Image
         src={src}
-        alt="ContentVerse — Read. Create. Grow."
+        alt="ContentVerse India"
         width={s.icon}
         height={s.icon}
         className="shrink-0 rounded-[22%] object-contain"

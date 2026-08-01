@@ -43,14 +43,17 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "ContentVerse — Read. Create. Grow.",
+  title: "ContentVerse India",
   description:
-    "India's creator platform. Read blogs, watch reels, follow live cricket scores, track Nifty & Sensex, and find government & private jobs — all at contentverse.co.in.",
+    "ContentVerse India — blogs, reels, live cricket, Nifty & Sensex, MoneyVerse expense tools, CineVerse movies & OTT, GoldVerse, sarkari jobs and free India calculators. Read. Create. Grow.",
   path: "/",
   keywords: [
     "ContentVerse India",
     "contentverse.co.in",
     "Indian blogs",
+    "MoneyVerse",
+    "CineVerse",
+    "GoldVerse",
     "sports scores India",
     "Nifty Sensex live",
     "sarkari jobs",
