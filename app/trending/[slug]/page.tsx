@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Flame, ExternalLink, ArrowRight } from "lucide-react";
+import { Flame, ExternalLink, ArrowRight, Newspaper } from "lucide-react";
 import { buildMetadata, SITE } from "@/lib/seo";
 import {
-  fetchIndiaTrends,
-  getTrendBySlug,
   localTrendSummary,
   titleFromSlug,
   trendPath,
 } from "@/lib/trending/google-trends";
+import { getTrendingHub, resolveTrendingTopic } from "@/lib/trending/hub";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { Badge } from "@/components/ui/badge";
 import { AskAboutTrend } from "@/components/trending/ask-about-trend";
@@ -24,13 +23,20 @@ export const revalidate = 1800;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const trend = await getTrendBySlug(slug);
-  const title = trend?.title || titleFromSlug(slug);
+  const resolved = await resolveTrendingTopic(slug);
+  const title =
+    resolved?.kind === "spike"
+      ? resolved.trend.title
+      : resolved?.kind === "news"
+        ? resolved.title
+        : titleFromSlug(slug);
+
+  const live = !!resolved;
   return buildMetadata({
     title: `${title} — Trending in India`,
-    description: trend
+    description: live
       ? `Why "${title}" is trending in India today. Short briefing, related headlines, and ask ContentVerse chat — stay on site.`
-      : `"${title}" is no longer in India's active Google Trends list. Browse live trends on ContentVerse.`,
+      : `"${title}" is no longer in India's active trends list. Browse live trends on ContentVerse.`,
     path: trendPath(slug),
     keywords: [
       title,
@@ -39,32 +45,42 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "why trending",
     ],
     type: "article",
-    // Cooled / unknown slugs must not create soft-404 index entries.
-    noIndex: !trend,
+    noIndex: !live,
   });
 }
 
 export default async function TrendingTopicPage({ params }: Props) {
   const { slug } = await params;
-  const [trend, allTrends] = await Promise.all([
-    getTrendBySlug(slug),
-    fetchIndiaTrends(),
+  const [resolved, hub] = await Promise.all([
+    resolveTrendingTopic(slug),
+    getTrendingHub(),
   ]);
-  const title = trend?.title || titleFromSlug(slug);
-  const traffic = trend?.traffic || "";
-  const newsItems = trend?.newsItems || [];
-  const briefingInput = { title, traffic, newsItems };
-  const others = allTrends.filter((t) => t.slug !== (trend?.slug || slug)).slice(0, 8);
 
-  const jsonLd = trend
+  const isSpike = resolved?.kind === "spike";
+  const isNews = resolved?.kind === "news";
+  const trend = isSpike ? resolved.trend : null;
+
+  const title = trend?.title || (isNews ? resolved.title : titleFromSlug(slug));
+  const traffic = trend?.traffic || "";
+  const newsItems = trend?.newsItems || (isNews ? resolved.newsItems : []);
+  const briefingInput = { title, traffic, newsItems };
+  const others = hub.spikes
+    .filter((t) => t.slug !== (trend?.slug || slug))
+    .slice(0, 8);
+
+  const jsonLd = resolved
     ? {
         "@context": "https://schema.org",
         "@type": "NewsArticle",
         headline: `${title} — Trending in India`,
         description: localTrendSummary(briefingInput).slice(0, 160),
-        datePublished: trend.publishedAt
-          ? new Date(trend.publishedAt).toISOString()
-          : new Date().toISOString(),
+        datePublished:
+          (trend?.publishedAt || (isNews ? resolved.publishedAt : undefined))
+            ? new Date(
+                (trend?.publishedAt ||
+                  (isNews ? resolved.publishedAt : undefined))!
+              ).toISOString()
+            : new Date().toISOString(),
         dateModified: new Date().toISOString(),
         author: { "@type": "Organization", name: SITE.name, url: SITE.url },
         publisher: {
@@ -74,7 +90,7 @@ export default async function TrendingTopicPage({ params }: Props) {
           logo: { "@type": "ImageObject", url: `${SITE.url}/icon-192.png` },
         },
         mainEntityOfPage: `${SITE.url}${trendPath(slug)}`,
-        image: trend.picture ? [trend.picture] : undefined,
+        image: trend?.picture ? [trend.picture] : undefined,
       }
     : null;
 
@@ -101,13 +117,19 @@ export default async function TrendingTopicPage({ params }: Props) {
       <header className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="neon" className="gap-1">
-            <Flame className="h-3 w-3" />
-            Google Trends · India
+            {isNews && !isSpike ? (
+              <Newspaper className="h-3 w-3" />
+            ) : (
+              <Flame className="h-3 w-3" />
+            )}
+            {isNews && !isSpike
+              ? "News · India"
+              : "Google Trends · India"}
           </Badge>
           {traffic ? (
             <Badge variant="secondary">{traffic} searches</Badge>
           ) : null}
-          {!trend ? (
+          {!resolved ? (
             <Badge variant="outline">May have cooled off</Badge>
           ) : null}
         </div>

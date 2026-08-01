@@ -36,6 +36,7 @@ const CATEGORY_NEWS_QUERIES: Record<string, string> = {
 
 const FETCH_TIMEOUT_MS = 12_000;
 const MAX_HEADLINES = 8;
+const INDIA_TOP_NEWS_QUERY = "India OR भारत when:1d";
 
 function decodeXmlEntities(text: string): string {
   return text
@@ -68,7 +69,7 @@ function extractTag(block: string, tag: string): string | undefined {
   return decodeXmlEntities(m[1].replace(/<[^>]+>/g, "")).trim() || undefined;
 }
 
-function parseRssItems(xml: string): GoogleNewsHeadline[] {
+function parseRssItems(xml: string, max = MAX_HEADLINES): GoogleNewsHeadline[] {
   const items: GoogleNewsHeadline[] = [];
   const itemRe = /<item>([\s\S]*?)<\/item>/gi;
   let match: RegExpExecArray | null;
@@ -84,7 +85,7 @@ function parseRssItems(xml: string): GoogleNewsHeadline[] {
       publishedAt: extractTag(block, "pubDate"),
       link: extractTag(block, "link"),
     });
-    if (items.length >= MAX_HEADLINES) break;
+    if (items.length >= max) break;
   }
   return items;
 }
@@ -111,6 +112,24 @@ export async function fetchGoogleNewsHeadlines(
   categorySlug: string
 ): Promise<GoogleNewsHeadline[]> {
   const query = newsQueryForCategory(categorySlug);
+  return fetchGoogleNewsByQuery(query, MAX_HEADLINES, categorySlug);
+}
+
+/**
+ * Broad India headlines for the Trending hub “News now” lane.
+ * Free Google News RSS — no API key.
+ */
+export async function fetchIndiaTopNews(
+  limit = 16
+): Promise<GoogleNewsHeadline[]> {
+  return fetchGoogleNewsByQuery(INDIA_TOP_NEWS_QUERY, limit, "india-top");
+}
+
+async function fetchGoogleNewsByQuery(
+  query: string,
+  max: number,
+  label: string
+): Promise<GoogleNewsHeadline[]> {
   const url = googleNewsRssUrl(query);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -126,20 +145,18 @@ export async function fetchGoogleNewsHeadlines(
       cache: "no-store",
     });
     if (!res.ok) {
-      console.warn(
-        `[google-news] ${categorySlug}: HTTP ${res.status} for query="${query}"`
-      );
+      console.warn(`[google-news] ${label}: HTTP ${res.status} for query="${query}"`);
       return [];
     }
     const xml = await res.text();
-    const headlines = parseRssItems(xml);
+    const headlines = parseRssItems(xml, max);
     if (!headlines.length) {
-      console.warn(`[google-news] ${categorySlug}: no items parsed`);
+      console.warn(`[google-news] ${label}: no items parsed`);
     }
     return headlines;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.warn(`[google-news] ${categorySlug}: ${msg}`);
+    console.warn(`[google-news] ${label}: ${msg}`);
     return [];
   } finally {
     clearTimeout(timer);
