@@ -43,7 +43,7 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "ContentVerse India",
+  title: "ContentVerse India — Read. Create. Grow.",
   description:
     "ContentVerse India — blogs, reels, live cricket, Nifty & Sensex, MoneyVerse expense tools, CineVerse movies & OTT, GoldVerse, sarkari jobs and free India calculators. Read. Create. Grow.",
   path: "/",

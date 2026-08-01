@@ -76,15 +76,20 @@ export const SITE_NAV_SECTIONS = [
 ] as const;
 
 export const SITE = {
+  /** Short brand — used in page title suffixes (`· ContentVerse India`). */
   name: "ContentVerse India",
   legalName: "ContentVerse India",
   tagline: "Read. Create. Grow.",
   /**
-   * Preferred Google Search site name + homepage title.
-   * Keep unique ("India") so Google doesn't confuse us with other ContentVerse brands
-   * or fall back to only the domain.
+   * Google site name (favicon line above the URL).
+   * Keep short & unique — slogans here make Google fall back to the domain.
    */
   searchName: "ContentVerse India",
+  /**
+   * Homepage `<title>` / SERP purple link.
+   * Brand + tagline for the clickable result title.
+   */
+  homeTitle: "ContentVerse India — Read. Create. Grow.",
   description:
     "ContentVerse India — blogs, reels, live cricket, Nifty & Sensex, MoneyVerse, CineVerse, GoldVerse, sarkari jobs and free India tools. Read. Create. Grow.",
   get url() {
@@ -117,6 +122,7 @@ export const SITE = {
 /** Fallbacks if Google won't use SITE.searchName (ordered by preference). */
 export function siteNameAlternates(): string[] {
   return [
+    SITE.homeTitle,
     "ContentVerse",
     "ContentVerse — Read. Create. Grow.",
     "contentverse.co.in",
@@ -138,7 +144,7 @@ export function buildMetadata(input: {
     ? input.title.includes(SITE.name) || input.title.includes("ContentVerse")
       ? input.title
       : `${input.title} · ${SITE.name}`
-    : SITE.searchName;
+    : SITE.homeTitle;
   const url = input.path ? `${SITE.url}${input.path}` : SITE.url;
   const image = input.image || SITE.ogImage;
   const verification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
@@ -146,6 +152,7 @@ export function buildMetadata(input: {
   return {
     metadataBase: new URL(SITE.url),
     title,
+    applicationName: SITE.searchName,
     description: input.description || SITE.description,
     keywords:
       input.keywords ??

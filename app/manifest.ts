@@ -5,8 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "ContentVerse India",
     short_name: "ContentVerse",
-    description:
-      "ContentVerse India — blogs, sports, finance, MoneyVerse, CineVerse and free India tools. Read. Create. Grow.",
+    description: "ContentVerse India — Read. Create. Grow. Blogs, sports, finance, MoneyVerse, CineVerse and free India tools.",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0f",
