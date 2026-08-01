@@ -131,7 +131,11 @@ export function Hero({ categories, stats }: Props) {
               >
                 <Sparkles className="h-3 w-3" />
               </motion.span>
-              India&apos;s home for long-form creators · AI Assist live
+              India&apos;s home for long-form creators ·{" "}
+              <Link href="/ai" className="underline underline-offset-2 hover:text-inherit">
+                ContentVerse AI
+              </Link>{" "}
+              live
             </Badge>
           </motion.div>
 
@@ -247,19 +251,19 @@ export function Hero({ categories, stats }: Props) {
             transition={{ delay: 0.7, duration: 0.55 }}
           >
             <motion.div whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.98 }}>
-              <Link href="/dashboard/create">
+              <Link href="/ai">
                 <Button
                   variant="gradient"
                   size="xl"
                   className="gap-2 shadow-xl shadow-neon-purple/25"
                 >
                   <Sparkles className="h-5 w-5" />
-                  Start Writing
+                  Try ContentVerse AI
                 </Button>
               </Link>
             </motion.div>
             <motion.div whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.98 }}>
-              <Link href="#explore-modules">
+              <Link href="/dashboard/create">
                 <Button
                   variant="outline"
                   size="xl"
@@ -268,7 +272,7 @@ export function Hero({ categories, stats }: Props) {
                     cinematic ? "border-white/25 bg-white/10 text-white hover:bg-white/15" : "bg-card/40"
                   )}
                 >
-                  Explore modules
+                  Start Writing
                   <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>

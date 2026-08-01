@@ -27,6 +27,7 @@ export const SITE_MAP_NAV = {
   href: "/",
   summary: "Global header — logo, search, categories, finance ticker, notifications & profile",
   links: [
+    { label: "ContentVerse AI", href: "/ai" },
     { label: "Home", href: "/" },
     { label: "Blogs", href: "/blogs" },
     { label: "Reels", href: "/reels" },
@@ -385,6 +386,43 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             ],
           },
           { label: "Stock search", href: "/finance", detail: "Find symbols by name" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "contentverse-ai",
+    label: "ContentVerse AI",
+    color: "violet",
+    href: "/ai",
+    tag: "New",
+    summary: "AI product — ask, summarise, resume, finance, bank PDF & screenshot OCR",
+    groups: [
+      {
+        heading: "Chat modes",
+        items: [
+          { label: "Ask Anything", href: "/ai?mode=ask", detail: "General India-first Q&A" },
+          { label: "Summarize Article", href: "/ai?mode=summarize", detail: "Paste text → short summary" },
+          { label: "Explain Simply", href: "/ai?mode=explain", detail: "Plain language explanations" },
+          { label: "Compare Two Things", href: "/ai?mode=compare", detail: "SIP vs FD style comparisons" },
+          { label: "Generate Job Resume", href: "/ai?mode=resume", detail: "India-ready resume draft" },
+          { label: "Calculate Finance", href: "/ai?mode=finance", detail: "EMI/SIP/tax guidance + calculators" },
+          { label: "Analyze PDF", href: "/ai?mode=pdf", detail: "Paste PDF text for insights" },
+        ],
+      },
+      {
+        heading: "Upload tools",
+        items: [
+          {
+            label: "Analyze Bank Statement",
+            href: "/moneyverse/bank-statement-analyzer",
+            detail: "Income, expense, top category, subscriptions",
+          },
+          {
+            label: "Read Screenshot",
+            href: "/moneyverse/screenshot-scan",
+            detail: "UPI OCR → MoneyVerse expense",
+          },
         ],
       },
     ],

@@ -52,6 +52,7 @@ const STATIC_PAGES: Array<{
   { path: "/results", changeFrequency: "daily", priority: 0.88 },
   { path: "/reels", changeFrequency: "daily", priority: 0.75 },
   { path: "/cineverse", changeFrequency: "hourly", priority: 0.82 },
+  { path: "/ai", changeFrequency: "weekly", priority: 0.9 },
   { path: "/goldverse", changeFrequency: "hourly", priority: 0.84 },
   { path: "/moneyverse", changeFrequency: "daily", priority: 0.86 },
   { path: "/moneyverse/screenshot-scan", changeFrequency: "weekly", priority: 0.88 },

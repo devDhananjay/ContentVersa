@@ -3,13 +3,13 @@
   "functions": {
     "/api/auth/google/login": {},
     "/api/auth/google/callback": {},
-    "/api/auth/firebase": {},
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
     "/api/moneyverse/bank-statement/quota": {},
     "/api/moneyverse/bank-statement/analyze": {},
     "/api/reels/upload": {},
+    "/api/auth/firebase": {},
     "/api/upload": {},
     "/uploads/[filename]": {}
   }

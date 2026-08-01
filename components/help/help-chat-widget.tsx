@@ -34,16 +34,16 @@ type Locale = "en" | "hi";
 
 const COPY = {
   en: {
-    title: "ContentVerse Help",
-    subtitle: "Powered by Gemini AI · site guide",
-    placeholder: "Ask anything about the site…",
+    title: "ContentVerse AI",
+    subtitle: "Ask · summarise · resume · bank PDF",
+    placeholder: "Ask ContentVerse AI…",
     send: "Send",
-    thinking: "Finding the best answer…",
+    thinking: "ContentVerse AI is thinking…",
     poweredFaq: "Instant answer",
     poweredSearch: "From site search",
     poweredAi: "Gemini AI",
     close: "Close help",
-    open: "Open help chat",
+    open: "Open ContentVerse AI",
     newsletterTitle: "Weekly newsletter",
     newsletterHint: "Trending reads — opt in only",
     newsletterPlaceholder: "your@email.com",
@@ -51,16 +51,16 @@ const COPY = {
     newsletterSuccess: "Subscribed! Check your inbox.",
   },
   hi: {
-    title: "ContentVerse सहायक",
-    subtitle: "Gemini AI · site guide",
-    placeholder: "साइट के बारे में पूछें…",
+    title: "ContentVerse AI",
+    subtitle: "पूछें · सार · resume · bank PDF",
+    placeholder: "ContentVerse AI से पूछें…",
     send: "भेजें",
-    thinking: "सही जवाब ढूँढ रहे हैं…",
+    thinking: "ContentVerse AI सोच रहा है…",
     poweredFaq: "तुरंत जवाब",
     poweredSearch: "साइट खोज से",
     poweredAi: "Gemini AI",
     close: "बंद करें",
-    open: "सहायक खोलें",
+    open: "ContentVerse AI खोलें",
     newsletterTitle: "Weekly newsletter",
     newsletterHint: "Trending reads — सिर्फ opt-in",
     newsletterPlaceholder: "your@email.com",
@@ -376,6 +376,12 @@ export function HelpChatWidget() {
                 <p className="font-semibold text-sm truncate">{t.title}</p>
               </div>
               <p className="text-[11px] text-muted-foreground mt-0.5">{t.subtitle}</p>
+              <Link
+                href="/ai"
+                className="mt-1 inline-flex text-[11px] font-medium text-neon-purple hover:underline"
+              >
+                Open full ContentVerse AI →
+              </Link>
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <div className="flex rounded-lg border border-border/60 overflow-hidden text-[10px] font-semibold">

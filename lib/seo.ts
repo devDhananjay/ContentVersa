@@ -16,6 +16,7 @@ export const SITE_LOGO_URL = "/icon-192.png";
 
 /** Main hub modules — prioritized for sitelinks & internal linking. */
 export const SITE_NAV_HUBS = [
+  { name: "ContentVerse AI", path: "/ai", description: "Ask, summarise, resume, bank PDF & screenshot OCR India" },
   { name: "Sports", path: "/sports", description: "Live cricket scores, fixtures and sports news" },
   { name: "Finance", path: "/finance", description: "Nifty, Sensex, MoneyVerse guides — gold, SIP, FD, loans & tax" },
   { name: "CineVerse", path: "/cineverse", description: "Movies — OTT release, cast, where to watch & watchlist India" },

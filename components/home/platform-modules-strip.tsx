@@ -12,6 +12,7 @@ import {
   BookOpen,
   Medal,
   PenLine,
+  Sparkles,
   TrendingUp,
   Wallet,
   Wrench,
@@ -44,6 +45,23 @@ type ModuleCard = {
 const TOOLS_COUNT = TOOL_REGISTRY.length;
 
 const MODULES: ModuleCard[] = [
+  {
+    name: "ContentVerse AI",
+    href: "/ai",
+    tagline: "AI product",
+    description:
+      "Ask, summarise, explain, compare, resume, finance, bank PDF & screenshot OCR.",
+    group: "tools",
+    icon: Sparkles,
+    color: "#a78bfa",
+    glow: "rgba(167,139,250,0.35)",
+    badge: "New product",
+    links: [
+      { label: "Bank PDF", href: "/ai?mode=bank-statement" },
+      { label: "Resume", href: "/ai?mode=resume" },
+      { label: "Screenshot", href: "/ai?mode=screenshot" },
+    ],
+  },
   {
     name: "Sports",
     href: "/sports",
