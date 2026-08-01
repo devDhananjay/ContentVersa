@@ -150,7 +150,7 @@ function NewsCard({ item }: { item: HubNewsItem }) {
 }
 
 function YouTubeCard({ item }: { item: HubYouTubeItem }) {
-  const isWatch = item.source === "youtube-api";
+  const isApi = item.source === "youtube-api";
   return (
     <a
       href={item.href}
@@ -178,7 +178,7 @@ function YouTubeCard({ item }: { item: HubYouTubeItem }) {
           {item.channel ? <span className="truncate">{item.channel}</span> : null}
           {item.views ? <span>· {item.views}</span> : null}
           <span className="inline-flex items-center gap-0.5 text-red-300/90">
-            {isWatch ? "Watch" : "Open"}
+            {isApi ? "Popular" : "Watch"}
             <ExternalLink className="h-3 w-3" />
           </span>
         </div>
@@ -249,8 +249,8 @@ export function TrendingHub({
             </h2>
           </div>
           <p className="text-sm text-muted-foreground">
-            What&apos;s popular on YouTube in India — watch on YouTube, keep
-            exploring trends here.
+            Fresh uploads from top India channels on YouTube — thumbnails and
+            watch links, without leaving the trending hub flow.
           </p>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {youtube.map((item) => (
