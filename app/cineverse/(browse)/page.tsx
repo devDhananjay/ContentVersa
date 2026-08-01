@@ -7,9 +7,13 @@ import { MovieWatchlistSection } from "@/components/cineverse/movie-watchlist-se
 import { MovieGrid } from "@/components/cineverse/movie-grid";
 import { OttReleasesStrip } from "@/components/cineverse/ott-releases-strip";
 import { SponsoredOttBanner } from "@/components/cineverse/sponsored-ott-banner";
+import Link from "next/link";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { HubJsonLd } from "@/components/seo/hub-json-ld";
+import { RelatedHubs } from "@/components/seo/related-hubs";
 import { getCineverseHubDataCached } from "@/lib/cineverse/data";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
+import { CINEVERSE_HUB_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +34,8 @@ export const metadata: Metadata = buildMetadata({
     "movie trailer India",
     "movie watchlist India",
     "web series where to watch",
+    "Hollywood movies OTT India",
+    "movie reviews India",
     "CineVerse",
   ],
   image:
@@ -44,7 +50,8 @@ export default async function CineverseHubPage() {
 
   return (
     <div className="space-y-10">
-      <HubEditorialIntro title="CineVerse on ContentVerse India">
+      <HubJsonLd blocks={hubSeoJsonLdBlocks(CINEVERSE_HUB_SEO)} />
+      <HubEditorialIntro title="Movies, OTT dates & where to watch in India">
         <p>
           CineVerse is ContentVerse India&apos;s movie search companion for India — every film page
           covers release date, cast, trailer, story, ratings, OTT release date, where to watch,
@@ -52,8 +59,19 @@ export default async function CineverseHubPage() {
           Movies category.
         </p>
         <p>
-          Search a title for intents like &quot;Movie Name OTT Release Date&quot;, cast, or
-          where to watch. Save to your watchlist and turn on trailer alerts while signed in.
+          Search intents like &quot;Movie Name OTT Release Date&quot; or where to watch. Also see{" "}
+          <Link href="/guides/movies" className="text-primary hover:underline">
+            movie guides
+          </Link>
+          ,{" "}
+          <Link href="/trending" className="text-primary hover:underline">
+            Trending Now
+          </Link>
+          , and{" "}
+          <Link href="/reels" className="text-primary hover:underline">
+            Reels
+          </Link>
+          .
         </p>
       </HubEditorialIntro>
 
@@ -81,6 +99,8 @@ export default async function CineverseHubPage() {
       <GoogleAdSense slotKey="hub" format="horizontal" />
 
       <CineverseBlogSection blogs={blogs} />
+
+      <RelatedHubs current="cineverse" contained />
 
       <p className="text-center text-[10px] text-muted-foreground">
         Movie data provided by{" "}

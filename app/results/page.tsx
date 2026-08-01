@@ -2,30 +2,38 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SarkariResultsHub } from "@/components/results/sarkari-results-hub";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { HubJsonLd } from "@/components/seo/hub-json-ld";
+import { RelatedHubs } from "@/components/seo/related-hubs";
 import { HubAdSense } from "@/components/ads/hub-adsense";
+import { hubSeoJsonLdBlocks, RESULTS_HUB_SEO } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Sarkari Result — Official Exam & Board Results India",
-  description:
-    "Find official Sarkari Result links for SSC, UPSC, CBSE, IBPS, RRB, NTA, NEET, JEE and more. ContentVerse India links only to government portals — no fake results.",
+  description: RESULTS_HUB_SEO.description,
   path: "/results",
   keywords: [
     "sarkari result",
+    "sarkari result 2026",
     "ssc result",
     "cbse result",
     "upsc result",
     "ibps result",
+    "rrb result",
+    "nta result",
     "neet result",
     "jee main result",
     "railway result",
+    "board result India",
+    "admit card result portal",
   ],
 });
 
 export default function ResultsPage() {
   return (
     <div className="container max-w-5xl space-y-8 py-8 md:py-10">
-      <HubEditorialIntro title="Sarkari Result hub">
+      <HubJsonLd blocks={hubSeoJsonLdBlocks(RESULTS_HUB_SEO)} />
+      <HubEditorialIntro title="Official Sarkari Result portals only">
         <p>
           India searches for exam and board results every day. This hub collects{" "}
           <strong>official</strong> portals for central exams, boards, banking,
@@ -52,6 +60,8 @@ export default function ResultsPage() {
       <HubAdSense />
 
       <SarkariResultsHub />
+
+      <RelatedHubs current="results" />
     </div>
   );
 }

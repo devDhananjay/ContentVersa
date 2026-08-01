@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react";
 import { HuidVerificationGuide } from "@/components/goldverse/huid-verification-guide";
 import { HuidVerifyPanel } from "@/components/goldverse/huid-verify-panel";
 import { HuidVerificationJsonLd } from "@/components/seo/huid-verification-json-ld";
+import { RelatedHubs } from "@/components/seo/related-hubs";
 import { HUID_SEO_KEYWORDS, HUID_VERIFICATION_PATH } from "@/lib/goldverse/huid-seo";
 import { buildMetadata } from "@/lib/seo";
 
@@ -44,13 +45,19 @@ export default function HuidVerificationPage() {
           <Link href="/goldverse" className="text-amber-400 hover:underline">
             ContentVerse India GoldVerse
           </Link>
-          — gold rates, hallmark guide and buyer tools.
+          — gold rates, hallmark guide and buyer tools. Also see{" "}
+          <Link href="/finance/gold-price-today" className="text-amber-400 hover:underline">
+            gold price today
+          </Link>
+          .
         </p>
       </header>
 
       <HuidVerifyPanel signInNext={`${HUID_VERIFICATION_PATH}#huid-verify`} />
 
       <HuidVerificationGuide />
+
+      <RelatedHubs current="goldverse" />
     </div>
   );
 }

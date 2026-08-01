@@ -5,11 +5,15 @@ import { SportsBlogSection } from "@/components/sports/sports-blog-section";
 import { SeriesCarousel } from "@/components/sports/series-carousel";
 import { ScheduleBlock } from "@/components/sports/schedule-block";
 import { SportsSectionHeader } from "@/components/sports/sports-section-header";
+import Link from "next/link";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { HubJsonLd } from "@/components/seo/hub-json-ld";
+import { RelatedHubs } from "@/components/seo/related-hubs";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { HubPushCta } from "@/components/engagement/hub-push-cta";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getSportsHubDataCached } from "@/lib/sports/data";
+import { hubSeoJsonLdBlocks, SPORTS_HUB_SEO } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +21,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata({
   title: "Sports — Live Cricket Scores, Fixtures & News India",
   description:
-    "Live cricket scores India, upcoming fixtures, match results, IPL updates and sports news on ContentVerse India.",
+    "Live cricket score India today, IPL fixtures, match results, Team India updates, T20 scorecards and original sports blogs on ContentVerse India.",
   path: "/sports",
   keywords: [
     "live cricket score India",
@@ -28,6 +32,9 @@ export const metadata: Metadata = buildMetadata({
     "live scorecard",
     "Team India cricket",
     "T20 cricket score",
+    "World Cup cricket score",
+    "cricket match preview",
+    "sports blogs India",
     "ContentVerse India sports",
   ],
   image:
@@ -42,7 +49,8 @@ export default async function SportsHubPage() {
 
   return (
     <div className="space-y-8">
-      <HubEditorialIntro title="Sports on ContentVerse India" className="container">
+      <HubJsonLd blocks={hubSeoJsonLdBlocks(SPORTS_HUB_SEO)} />
+      <HubEditorialIntro title="Live cricket scores & sports writing for India" className="container">
         <p>
           ContentVerse India Sports Hub combines live cricket scores, fixtures, and headlines with
           original sports writing from our community. Match pages and player stats are real-time
@@ -50,8 +58,19 @@ export default async function SportsHubPage() {
           match previews, analysis, and long-form stories published by verified creators.
         </p>
         <p>
-          Explore sports blogs below or browse live matches. Writers can publish match reports,
-          opinion, and tutorials under the Sports category after signing up.
+          Browse live matches below, read{" "}
+          <Link href="/category/sports" className="text-primary hover:underline">
+            sports blogs
+          </Link>
+          , or open{" "}
+          <Link href="/guides/cricket" className="text-primary hover:underline">
+            cricket guides
+          </Link>{" "}
+          and{" "}
+          <Link href="/trending" className="text-primary hover:underline">
+            Trending Now
+          </Link>{" "}
+          for what fans are searching today.
         </p>
       </HubEditorialIntro>
 
@@ -90,6 +109,7 @@ export default async function SportsHubPage() {
       )}
 
       <SportsBlogSection blogs={blogs.slice(0, 6)} />
+      <RelatedHubs current="sports" contained />
     </div>
   );
 }

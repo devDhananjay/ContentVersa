@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { Sparkles } from "lucide-react";
 import { ContentVerseAiHub } from "@/components/ai/contentverse-ai-hub";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { RelatedHubs } from "@/components/seo/related-hubs";
 import {
   CV_AI_KEYWORDS,
   CV_AI_PATH,
@@ -53,12 +55,31 @@ export default function ContentVerseAiPage() {
         </p>
       </header>
 
-      <HubEditorialIntro title="ContentVerse India AI on ContentVerse India">
+      <HubEditorialIntro title="AI modes wired into MoneyVerse & Tools">
         <p>
           ContentVerse India AI is the product layer on top of our live tools. Chat modes help you
           think and draft; upload tools like Bank Statement Analyzer return structured money
           insights — total income, expense, top category, monthly average and subscription
           detection.
+        </p>
+        <p>
+          Jump to{" "}
+          <Link href="/moneyverse/bank-statement-analyzer" className="text-primary hover:underline">
+            bank statement analyzer
+          </Link>
+          ,{" "}
+          <Link href="/moneyverse/screenshot-scan" className="text-primary hover:underline">
+            screenshot OCR
+          </Link>
+          ,{" "}
+          <Link href="/tools" className="text-primary hover:underline">
+            India Tools
+          </Link>
+          , or{" "}
+          <Link href="/ai?mode=resume" className="text-primary hover:underline">
+            resume mode
+          </Link>{" "}
+          for jobs.
         </p>
       </HubEditorialIntro>
 
@@ -71,6 +92,8 @@ export default function ContentVerseAiPage() {
       >
         <ContentVerseAiHub />
       </Suspense>
+
+      <RelatedHubs current="ai" />
     </div>
   );
 }

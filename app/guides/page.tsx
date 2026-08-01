@@ -6,8 +6,15 @@ import { GUIDES_HUB_PATH } from "@/lib/guides/registry";
 import { guidesHubJsonLd } from "@/lib/guides/guides-seo";
 import { GuidesSectionGrid } from "@/components/guides/guides-ui";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { HubJsonLd } from "@/components/seo/hub-json-ld";
+import { RelatedHubs } from "@/components/seo/related-hubs";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { Badge } from "@/components/ui/badge";
+import {
+  GUIDES_HUB_FAQS,
+  hubBreadcrumbJsonLd,
+  hubFaqJsonLd,
+} from "@/lib/seo/hub-seo";
 
 export const dynamic = "force-static";
 
@@ -22,17 +29,26 @@ export const metadata: Metadata = buildMetadata({
     "why is it trending",
     "sarkari job notification",
     "ott where to watch india",
+    "cricket match guide",
+    "PM Kisan eligibility",
+    "AI tools India how to",
+    "Google Trends India explainer",
+    "SSC job notification checklist",
+    "movie release watch checklist",
+    "ContentVerse India guides",
   ],
 });
 
 export default function GuidesHubPage() {
-  const jsonLd = guidesHubJsonLd();
+  const blocks = [
+    guidesHubJsonLd(),
+    hubFaqJsonLd(GUIDES_HUB_FAQS),
+    hubBreadcrumbJsonLd("India Guides", GUIDES_HUB_PATH),
+  ];
+
   return (
     <div className="container space-y-10 py-8 md:py-10">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <HubJsonLd blocks={blocks} />
 
       <header className="max-w-3xl space-y-3">
         <Badge variant="neon" className="gap-1">
@@ -82,6 +98,8 @@ export default function GuidesHubPage() {
           apply or pay anyone.
         </p>
       </HubEditorialIntro>
+
+      <RelatedHubs current="guides" />
     </div>
   );
 }

@@ -938,6 +938,12 @@
       "namedRegex": "^/press(?:/)?$"
     },
     {
+      "page": "/press-kit",
+      "regex": "^/press\\-kit(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/press\\-kit(?:/)?$"
+    },
+    {
       "page": "/privacy",
       "regex": "^/privacy(?:/)?$",
       "routeKeys": {},

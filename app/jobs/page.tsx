@@ -5,11 +5,14 @@ import { GovtJobCard } from "@/components/jobs/govt-job-card";
 import { JobsHubCards } from "@/components/jobs/jobs-browse-shell";
 import { JobsSectionHeader } from "@/components/jobs/jobs-section-header";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { HubJsonLd } from "@/components/seo/hub-json-ld";
+import { RelatedHubs } from "@/components/seo/related-hubs";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PrivateJobCard } from "@/components/jobs/private-job-card";
 import { Button } from "@/components/ui/button";
 import { getGovtJobsCached } from "@/lib/jobs/data";
 import { PRIVATE_JOBS } from "@/lib/jobs/private-jobs";
+import { hubSeoJsonLdBlocks, JOBS_HUB_SEO } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +20,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata({
   title: "Jobs — Sarkari Naukri & Private Careers India",
   description:
-    "Latest sarkari naukri, government job notifications, admit cards, results and private-sector openings on ContentVerse India.",
+    "Latest sarkari naukri, government job notifications, admit card updates, vacancy alerts and private-sector openings for India — plus resume help via ContentVerse India AI.",
   path: "/jobs",
   keywords: [
     "sarkari naukri",
@@ -27,8 +30,10 @@ export const metadata: Metadata = buildMetadata({
     "railway jobs",
     "bank jobs India",
     "admit card download",
+    "sarkari vacancy",
     "private jobs India",
     "fresher jobs India",
+    "UPSC jobs notification",
     "ContentVerse India jobs",
   ],
   image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1600",
@@ -40,7 +45,8 @@ export default async function JobsHubPage() {
 
   return (
     <div className="space-y-10">
-      <HubEditorialIntro title="Careers on ContentVerse India">
+      <HubJsonLd blocks={hubSeoJsonLdBlocks(JOBS_HUB_SEO)} />
+      <HubEditorialIntro title="Sarkari naukri, admit cards & private careers">
         <p>
           The Jobs Hub aggregates government (sarkari) notifications and curated private-sector
           openings for Indian readers. Listings link to official sources — ContentVerse India does not
@@ -51,8 +57,15 @@ export default async function JobsHubPage() {
           .
         </p>
         <p>
-          If you write about jobs, freelancing, or professional growth, publish on ContentVerse India
-          and apply for the Creator Program after two quality articles.
+          Draft a resume with{" "}
+          <Link href="/ai?mode=resume" className="text-primary hover:underline">
+            ContentVerse India AI
+          </Link>
+          , or read{" "}
+          <Link href="/guides/jobs" className="text-primary hover:underline">
+            job guides
+          </Link>
+          .
         </p>
       </HubEditorialIntro>
 
@@ -140,6 +153,8 @@ export default async function JobsHubPage() {
           ))}
         </div>
       </section>
+
+      <RelatedHubs current="jobs" contained />
     </div>
   );
 }

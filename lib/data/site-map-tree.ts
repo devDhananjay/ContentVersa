@@ -37,6 +37,7 @@ export const SITE_MAP_NAV = {
     { label: "GoldVerse", href: "/goldverse" },
     { label: "MoneyVerse", href: "/moneyverse" },
     { label: "Jobs", href: "/jobs" },
+    { label: "Sarkari Result", href: "/results" },
   ],
   actions: [
     { label: "Sign In", href: "/auth/sign-in" },
@@ -971,6 +972,7 @@ export const SITE_MAP_FOOTER = {
         { label: "About", href: "/about" },
         { label: "Careers", href: "/careers" },
         { label: "Press", href: "/press" },
+        { label: "Press Kit", href: "/press-kit" },
         { label: "Contact", href: "/contact" },
       ],
     },

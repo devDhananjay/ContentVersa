@@ -266,6 +266,13 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
+        heading: "Downloadable press kit",
+        paragraphs: [
+          "Journalists and partners can use our dedicated Press Kit for logo downloads, short/long boilerplate, and preferred citation URLs (homepage, AI, MoneyVerse, Tools, Jobs, and more). Linking those URLs from reputable sites is the healthy way to earn backlinks.",
+        ],
+        callout: "Open https://contentverse.co.in/press-kit for assets and citation links.",
+      },
+      {
         heading: "Facts at a glance",
         bullets: [
           "Primary market: India (English & Hindi creators and readers)",

@@ -503,6 +503,266 @@ export const MONEY_TOPICS: MoneyTopic[] = [
   },
 ];
 
+/** Extra India-intent keywords + FAQs merged onto each topic for stronger SERP coverage. */
+const MONEY_TOPIC_SEO_EXTRAS: Record<
+  string,
+  { keywords?: string[]; faqs?: MoneyTopicFaq[] }
+> = {
+  "gold-price-today": {
+    keywords: [
+      "today gold rate India",
+      "gold price 10 gram",
+      "hallmark gold rate",
+      "city gold rate India",
+      "jewellery gold price",
+    ],
+    faqs: [
+      {
+        question: "Why does jeweller gold price differ from online rates?",
+        answer:
+          "Online rates are often spot-linked references. Retail bills add making charges, wastage and GST, so the invoice per-gram rate is usually higher.",
+      },
+    ],
+  },
+  "silver-price-today": {
+    keywords: [
+      "chandi bhav aaj",
+      "silver rate 10 gram",
+      "silver jewellery rate India",
+      "today silver price",
+      "silver investment India",
+    ],
+    faqs: [
+      {
+        question: "Is online silver rate the same as local market?",
+        answer:
+          "Online tools give an estimate. Local dealers set final rates with purity, making charges and taxes — always confirm before buying.",
+      },
+      {
+        question: "Should I buy silver jewellery or bars?",
+        answer:
+          "Jewellery includes making charges; bars/coins are closer to metal value. Choose based on use (wear vs store-of-value) and liquidity needs.",
+      },
+    ],
+  },
+  sip: {
+    keywords: [
+      "SIP meaning India",
+      "monthly SIP plan",
+      "SIP vs lumpsum",
+      "best SIP for beginners",
+      "SIP mutual fund calculator",
+    ],
+    faqs: [
+      {
+        question: "Can I stop a SIP anytime?",
+        answer:
+          "Most SIPs can be paused or cancelled via your AMC/broker app. Stopping contributions does not force you to redeem existing units.",
+      },
+    ],
+  },
+  "mutual-funds": {
+    keywords: [
+      "SEBI mutual funds",
+      "direct vs regular mutual fund",
+      "ELSS tax saving",
+      "index fund India",
+      "mutual fund risk",
+    ],
+    faqs: [
+      {
+        question: "What is NAV in mutual funds?",
+        answer:
+          "Net Asset Value is the per-unit price of a fund. You buy and sell units at applicable NAV based on cut-off rules.",
+      },
+      {
+        question: "Are mutual funds safe?",
+        answer:
+          "They are market-linked and regulated by SEBI, but capital is not guaranteed. Match fund type to your goal and risk tolerance.",
+      },
+    ],
+  },
+  stocks: {
+    keywords: [
+      "NSE BSE basics",
+      "demat account India",
+      "stock market for beginners",
+      "equity investing India",
+      "share price today",
+    ],
+    faqs: [
+      {
+        question: "Do I need a demat account to buy stocks?",
+        answer:
+          "Yes. Retail investors in India typically need a demat and trading account with a registered broker to hold and trade shares.",
+      },
+      {
+        question: "What are Nifty and Sensex?",
+        answer:
+          "They are major Indian stock indices tracking baskets of large companies — useful market mood indicators, not individual stock advice.",
+      },
+    ],
+  },
+  ipo: {
+    keywords: [
+      "IPO grey market",
+      "IPO listing gains",
+      "ASBA IPO",
+      "SME IPO India",
+      "IPO GMP meaning",
+    ],
+    faqs: [
+      {
+        question: "What is IPO allotment?",
+        answer:
+          "Allotment is how shares are distributed when demand exceeds supply. Oversubscribed issues may allot via lottery for retail categories.",
+      },
+      {
+        question: "Should I apply for every IPO?",
+        answer:
+          "No. Read the RHP risks, business model and valuation. Grey-market premiums are unofficial and can be wrong.",
+      },
+    ],
+  },
+  fd: {
+    keywords: [
+      "FD interest rate comparison",
+      "tax on FD interest",
+      "senior citizen FD",
+      "FD vs RD",
+      "premature FD withdrawal",
+    ],
+    faqs: [
+      {
+        question: "Is FD interest taxable in India?",
+        answer:
+          "Interest is generally taxable as per your slab. Banks may deduct TDS above thresholds — check Form 16A and your ITR.",
+      },
+      {
+        question: "FD or SIP for long-term goals?",
+        answer:
+          "FDs suit capital stability and near-term needs. Equity SIPs historically aim for higher long-term growth with market risk.",
+      },
+    ],
+  },
+  rd: {
+    keywords: [
+      "RD monthly deposit",
+      "RD maturity calculator",
+      "post office RD",
+      "RD interest taxable",
+      "RD for short term goals",
+    ],
+    faqs: [
+      {
+        question: "Can I miss an RD installment?",
+        answer:
+          "Policies vary by bank. Some allow delayed deposits with penalties; repeated misses can close the RD. Read your deposit terms.",
+      },
+      {
+        question: "Is post office RD different from bank RD?",
+        answer:
+          "Both are recurring deposits with different rate schedules and rules. Compare tenure, interest and premature closure terms before choosing.",
+      },
+    ],
+  },
+  loans: {
+    keywords: [
+      "personal loan interest rate",
+      "home loan eligibility",
+      "car loan EMI",
+      "loan prepayment",
+      "floating vs fixed rate loan",
+    ],
+    faqs: [
+      {
+        question: "What documents do banks ask for loans?",
+        answer:
+          "Typically KYC, income proofs (salary slips/ITR), bank statements and property papers for home loans. Exact lists vary by lender and product.",
+      },
+      {
+        question: "Should I prepay my loan?",
+        answer:
+          "Prepaying can cut interest if fees are low and you keep an emergency fund. Run EMI maths before deciding.",
+      },
+    ],
+  },
+  "credit-cards": {
+    keywords: [
+      "credit card due date",
+      "credit card rewards India",
+      "credit utilisation",
+      "credit card late fee",
+      "secured credit card",
+    ],
+    faqs: [
+      {
+        question: "What is a credit card billing cycle?",
+        answer:
+          "It is the period for which spends are billed. Paying the full statement by the due date avoids revolving interest.",
+      },
+      {
+        question: "Do rewards justify annual fees?",
+        answer:
+          "Only if your real redemption value exceeds fees and you never revolving high-interest balances. Otherwise a fee-free card may be better.",
+      },
+    ],
+  },
+  "credit-score": {
+    keywords: [
+      "CIBIL score check",
+      "Experian score India",
+      "credit utilisation ratio",
+      "hard enquiry credit score",
+      "fix credit report error",
+    ],
+    faqs: [
+      {
+        question: "How long does it take to improve a credit score?",
+        answer:
+          "Healthy habits (on-time pays, lower utilisation) help over months, not overnight. Avoid stacking new hard enquiries while recovering.",
+      },
+      {
+        question: "Does checking my own score hurt it?",
+        answer:
+          "Soft checks of your own report usually do not hurt. Lender hard enquiries for new credit can temporarily affect scores.",
+      },
+    ],
+  },
+  tax: {
+    keywords: [
+      "income tax slabs India",
+      "Form 16",
+      "TDS salary",
+      "ITR filing deadline",
+      "Section 87A rebate",
+    ],
+    faqs: [
+      {
+        question: "New vs old tax regime — which should I choose?",
+        answer:
+          "It depends on your deductions and income mix. Use a calculator for estimates, then confirm with current Finance Act rules or a tax professional.",
+      },
+      {
+        question: "When should salaried people file ITR?",
+        answer:
+          "File before the official deadline for the assessment year even if tax is fully TDS-paid — it helps refunds, loans and record-keeping.",
+      },
+    ],
+  },
+};
+
+for (const topic of MONEY_TOPICS) {
+  const extra = MONEY_TOPIC_SEO_EXTRAS[topic.slug];
+  if (!extra) continue;
+  if (extra.keywords?.length) {
+    topic.keywords = [...new Set([...topic.keywords, ...extra.keywords])];
+  }
+  if (extra.faqs?.length) {
+    topic.faqs = [...topic.faqs, ...extra.faqs];
+  }
+}
+
 export const MONEY_TOPIC_SLUGS = MONEY_TOPICS.map((t) => t.slug);
 
 export function getMoneyTopic(slug: string): MoneyTopic | undefined {

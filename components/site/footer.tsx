@@ -25,6 +25,7 @@ const EXPLORE = [
   { label: "GoldVerse", href: "/goldverse" },
   { label: "MoneyVerse", href: "/moneyverse" },
   { label: "Jobs", href: "/jobs" },
+  { label: "Sarkari Result", href: "/results" },
   { label: "India Guides", href: "/guides" },
   { label: "Govt Schemes", href: "/guides/schemes" },
   { label: "Reels", href: "/reels" },
@@ -53,6 +54,7 @@ const COMPANY = [
   { label: "About", href: "/about" },
   { label: "Careers", href: "/careers" },
   { label: "Press", href: "/press" },
+  { label: "Press Kit", href: "/press-kit" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
