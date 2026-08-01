@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata({
   title: "CineVerse — Movies, OTT Release Dates, Cast & Where to Watch India",
   description:
-    "Search movies for India: OTT release date, cast, trailer, story, ratings, where to watch and reviews. Trending films and personal watchlist on ContentVerse CineVerse.",
+    "Search movies for India: OTT release date, cast, trailer, story, ratings, where to watch and reviews. Trending films and personal watchlist on ContentVerse India CineVerse.",
   path: "/cineverse",
   keywords: [
     "OTT release date India",
@@ -38,9 +38,9 @@ export default async function CineverseHubPage() {
 
   return (
     <div className="space-y-10">
-      <HubEditorialIntro title="CineVerse on ContentVerse">
+      <HubEditorialIntro title="CineVerse on ContentVerse India">
         <p>
-          CineVerse is ContentVerse&apos;s movie search companion for India — every film page
+          CineVerse is ContentVerse India&apos;s movie search companion for India — every film page
           covers release date, cast, trailer, story, ratings, OTT release date, where to watch,
           and reviews. Metadata is powered by TMDB; editorial reviews and lists live in the
           Movies category.
@@ -86,7 +86,7 @@ export default async function CineverseHubPage() {
         >
           TMDB
         </a>
-        . ContentVerse is not endorsed or certified by TMDB.
+        . ContentVerse India is not endorsed or certified by TMDB.
       </p>
     </div>
   );

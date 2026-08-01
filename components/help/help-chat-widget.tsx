@@ -34,16 +34,16 @@ type Locale = "en" | "hi";
 
 const COPY = {
   en: {
-    title: "ContentVerse AI",
+    title: "ContentVerse India AI",
     subtitle: "Ask · summarise · resume · bank PDF",
-    placeholder: "Ask ContentVerse AI…",
+    placeholder: "Ask ContentVerse India AI…",
     send: "Send",
-    thinking: "ContentVerse AI is thinking…",
+    thinking: "ContentVerse India AI is thinking…",
     poweredFaq: "Instant answer",
     poweredSearch: "From site search",
     poweredAi: "Gemini AI",
     close: "Close help",
-    open: "Open ContentVerse AI",
+    open: "Open ContentVerse India AI",
     newsletterTitle: "Weekly newsletter",
     newsletterHint: "Trending reads — opt in only",
     newsletterPlaceholder: "your@email.com",
@@ -51,16 +51,16 @@ const COPY = {
     newsletterSuccess: "Subscribed! Check your inbox.",
   },
   hi: {
-    title: "ContentVerse AI",
+    title: "ContentVerse India AI",
     subtitle: "पूछें · सार · resume · bank PDF",
-    placeholder: "ContentVerse AI से पूछें…",
+    placeholder: "ContentVerse India AI से पूछें…",
     send: "भेजें",
-    thinking: "ContentVerse AI सोच रहा है…",
+    thinking: "ContentVerse India AI सोच रहा है…",
     poweredFaq: "तुरंत जवाब",
     poweredSearch: "साइट खोज से",
     poweredAi: "Gemini AI",
     close: "बंद करें",
-    open: "ContentVerse AI खोलें",
+    open: "ContentVerse India AI खोलें",
     newsletterTitle: "Weekly newsletter",
     newsletterHint: "Trending reads — सिर्फ opt-in",
     newsletterPlaceholder: "your@email.com",
@@ -208,7 +208,7 @@ export function HelpChatWidget() {
         {
           id: "welcome",
           role: "assistant",
-          content: data.reply || "Hello! Namaste! Welcome to ContentVerse.",
+          content: data.reply || "Hello! Namaste! Welcome to ContentVerse India.",
           source: data.source ?? "gemini",
           links: data.links,
         },
@@ -220,7 +220,7 @@ export function HelpChatWidget() {
           id: "welcome",
           role: "assistant",
           content:
-            "Hello! **Namaste!** 🙏 Welcome to ContentVerse. Ask me anything — or subscribe to our weekly newsletter below.",
+            "Hello! **Namaste!** 🙏 Welcome to ContentVerse India. Ask me anything — or subscribe to our weekly newsletter below.",
           source: "local",
           links: [{ label: "Newsletter", href: "/#newsletter" }],
         },
@@ -380,7 +380,7 @@ export function HelpChatWidget() {
                 href="/ai"
                 className="mt-1 inline-flex text-[11px] font-medium text-neon-purple hover:underline"
               >
-                Open full ContentVerse AI →
+                Open full ContentVerse India AI →
               </Link>
             </div>
             <div className="flex items-center gap-1 shrink-0">

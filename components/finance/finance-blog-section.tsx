@@ -19,7 +19,7 @@ export function FinanceBlogSection({ blogs }: FinanceBlogSectionProps) {
             Finance <span className="text-gradient">Insights</span>
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Investing, markets and money stories from ContentVerse
+            Investing, markets and money stories from ContentVerse India
           </p>
         </div>
         <Link href="/blogs?category=finance" className="hidden md:block">

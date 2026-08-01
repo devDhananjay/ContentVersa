@@ -1,6 +1,6 @@
 // Lightweight country list for the phone-OTP country picker. ISO 3166-1
 // alpha-2 + E.164 dial code + flag emoji. Ordered with the most likely
-// ContentVerse audiences first; the rest is alphabetical.
+// ContentVerse India audiences first; the rest is alphabetical.
 
 export interface Country {
   /** ISO 3166-1 alpha-2 code, e.g. "IN". */

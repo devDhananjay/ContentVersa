@@ -21,7 +21,7 @@ function localRecommend(
         ? `Matches your “${input.mood}” mood — strong ratings this week.`
         : i === 1
           ? `Great for ${input.language ?? "Hindi/English"} audiences on Indian OTT.`
-          : "Trending with ContentVerse readers right now.",
+          : "Trending with ContentVerse India readers right now.",
   }));
 
   return {
@@ -57,7 +57,7 @@ export async function recommendMovies(input: RecommendInput): Promise<CineRecomm
     )
     .join("\n");
 
-  const prompt = `You are CineVerse, an Indian movie & OTT companion on ContentVerse.
+  const prompt = `You are CineVerse, an Indian movie & OTT companion on ContentVerse India.
 User mood: ${input.mood}
 Preferred language: ${input.language ?? "any"}
 Preferred OTT: ${input.ott ?? "any"}

@@ -42,7 +42,7 @@ export default function HuidVerificationPage() {
         <p className="text-xs text-muted-foreground">
           Part of{" "}
           <Link href="/goldverse" className="text-amber-400 hover:underline">
-            ContentVerse GoldVerse
+            ContentVerse India GoldVerse
           </Link>
           — gold rates, hallmark guide and buyer tools.
         </p>

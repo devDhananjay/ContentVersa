@@ -91,7 +91,7 @@ export const MANUAL_ARTICLES: ManualArticle[] = [
       [
         {
           h: "When Gemini shines",
-          p: "Google integration, long context windows, and strong performance on structured tasks (outlines, JSON, summaries). ContentVerse uses Gemini for article summaries — it handles mixed-language prompts well.",
+          p: "Google integration, long context windows, and strong performance on structured tasks (outlines, JSON, summaries). ContentVerse India uses Gemini for article summaries — it handles mixed-language prompts well.",
         },
         {
           h: "When ChatGPT shines",

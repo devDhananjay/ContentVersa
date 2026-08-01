@@ -12,7 +12,7 @@ export const revalidate = 900;
 export const metadata: Metadata = buildMetadata({
   title: "🔥 Trending Now — India",
   description:
-    "Trending Now in India: Google Trends, trending news, cricket, entertainment, AI & tech, jobs, and finance — auto-updated on ContentVerse.",
+    "Trending Now in India: Google Trends, trending news, cricket, entertainment, AI & tech, jobs, and finance — auto-updated on ContentVerse India.",
   path: "/trending",
   keywords: [
     "Trending Now India",
@@ -35,7 +35,7 @@ export default async function TrendingHubPage() {
     name: "🔥 Trending Now — India",
     url: `${SITE.url}/trending`,
     description:
-      "Google Trends, trending news, cricket, entertainment, AI & tech, jobs, and finance — live on ContentVerse.",
+      "Google Trends, trending news, cricket, entertainment, AI & tech, jobs, and finance — live on ContentVerse India.",
     numberOfItems: spikes.length + news.length + laneCount + youtube.length,
   };
 
@@ -57,7 +57,7 @@ export default async function TrendingHubPage() {
         <p className="max-w-2xl text-muted-foreground leading-relaxed">
           Automatically updated: Google Trends, Trending News, Cricket,
           Entertainment, AI &amp; Tech, Jobs, and Finance — each with a short
-          description so you can skim fast on ContentVerse.
+          description so you can skim fast on ContentVerse India.
         </p>
         <p className="text-xs text-muted-foreground">
           {spikes.length} Google Trends

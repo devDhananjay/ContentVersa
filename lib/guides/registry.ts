@@ -61,7 +61,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     shortTitle: "Cricket",
     template: "[Cricket Match] — Live Updates & Key Moments",
     description:
-      "How to follow India cricket match days: key moments, scorecard reading, and where to get live updates on ContentVerse Sports.",
+      "How to follow India cricket match days: key moments, scorecard reading, and where to get live updates on ContentVerse India Sports.",
     keywords: [
       "cricket live updates india",
       "match key moments",
@@ -165,7 +165,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
-        heading: "How ContentVerse covers trends",
+        heading: "How ContentVerse India covers trends",
         paragraphs: [
           "Our Trending guides focus on context: what happened, why searches rose, and what is still unconfirmed. For evergreen reading, open Trending articles on the blogs hub. For live sports or market spikes, jump to Sports or Finance instead of rumour threads.",
         ],
@@ -228,7 +228,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
-        heading: "Where to follow on ContentVerse",
+        heading: "Where to follow on ContentVerse India",
         paragraphs: [
           "Use the Sports hub for live and recent fixtures, then return here for explainers on how we structure match coverage. Avoid unofficial streaming links — prefer official broadcasters and licensed apps in India.",
         ],
@@ -297,7 +297,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       {
         heading: "How to apply / check status",
         paragraphs: [
-          "New registrations and e-KYC are handled through the official website or authorised Common Service Centres (CSC), depending on your state’s process. After submission, track payment status and e-KYC flags on the same portal. ContentVerse does not collect scheme applications — we only explain the process.",
+          "New registrations and e-KYC are handled through the official website or authorised Common Service Centres (CSC), depending on your state’s process. After submission, track payment status and e-KYC flags on the same portal. ContentVerse India does not collect scheme applications — we only explain the process.",
         ],
       },
     ],
@@ -371,7 +371,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       {
         heading: "Apply on the official link only",
         paragraphs: [
-          "Use the URL printed in the notification. ContentVerse Jobs lists government updates and deep-links to official sources where available — always complete payment and final submit on the commission’s site.",
+          "Use the URL printed in the notification. ContentVerse India Jobs lists government updates and deep-links to official sources where available — always complete payment and final submit on the commission’s site.",
         ],
       },
     ],
@@ -451,7 +451,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     readingMinutes: 5,
     updatedLabel: "Jul 2026",
     relatedHref: "/tools",
-    relatedLabel: "ContentVerse tools",
+    relatedLabel: "ContentVerse India tools",
     blocks: [
       {
         heading: "Pick tools by job-to-be-done",
@@ -460,7 +460,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
-        heading: "Pair AI with ContentVerse utilities",
+        heading: "Pair AI with ContentVerse India utilities",
         paragraphs: [
           "After drafting, use ContentVerse India Tools for calculators, PDF merge/split, and salary tax estimates — tasks that need deterministic answers, not generative guesses.",
         ],
@@ -523,7 +523,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
-        heading: "Template we use on ContentVerse",
+        heading: "Template we use on ContentVerse India",
         paragraphs: [
           "Our Movies / OTT guides follow “[Title] — Release Date, Cast & Where to Watch”. That matches how people search and keeps pages useful even after the premiere week.",
         ],

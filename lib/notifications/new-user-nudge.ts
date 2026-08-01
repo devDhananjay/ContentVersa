@@ -6,9 +6,9 @@ import { newUserNudgeEmail } from "@/lib/email/templates";
 import { newsletterUnsubscribeUrl } from "@/lib/newsletter/subscribe";
 import { WELCOME_NOTIF_TITLE } from "@/lib/notifications/welcome-user";
 
-const NUDGE_TITLE_WRITE = "Publish your first ContentVerse post";
-const NUDGE_TITLE_NOTIFY = "Enable notifications on ContentVerse";
-const NUDGE_TITLE_EXPLORE = "Pick up where you left off on ContentVerse";
+const NUDGE_TITLE_WRITE = "Publish your first ContentVerse India post";
+const NUDGE_TITLE_NOTIFY = "Enable notifications on ContentVerse India";
+const NUDGE_TITLE_EXPLORE = "Pick up where you left off on ContentVerse India";
 
 /**
  * Day 1–3 onboarding nudges for brand-new accounts that haven’t engaged yet.

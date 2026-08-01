@@ -68,7 +68,7 @@ export const INDIA_EVERGREEN_GUIDES: EvergreenGuide[] = [
     relatedToolHref: "/huid-verification",
     outline: [
       "What HUID means on jewellery",
-      "How to verify online on ContentVerse",
+      "How to verify online on ContentVerse India",
       "Red flags when buying gold",
     ],
   },
@@ -128,7 +128,7 @@ export const INDIA_EVERGREEN_GUIDES: EvergreenGuide[] = [
     relatedToolHref: "/jobs",
     outline: [
       "Where official notifications appear",
-      "Using ContentVerse Jobs hub",
+      "Using ContentVerse India Jobs hub",
       "Admit card and result checklist",
     ],
   },

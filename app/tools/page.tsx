@@ -67,7 +67,7 @@ export default function ToolsHubPage() {
           >
             Parivahan Sewa
           </a>
-          . ContentVerse tools use free public data and format checks only.
+          . ContentVerse India tools use free public data and format checks only.
         </p>
       </section>
     </div>

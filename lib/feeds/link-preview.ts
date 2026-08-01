@@ -106,7 +106,7 @@ export async function fetchLinkPreview(url: string): Promise<LinkPreview | null>
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; ContentVerse/1.0; +https://contentverse.co.in)",
+          "Mozilla/5.0 (compatible; ContentVerse India/1.0; +https://contentverse.co.in)",
         Accept: "text/html,application/xhtml+xml",
       },
       redirect: "follow",

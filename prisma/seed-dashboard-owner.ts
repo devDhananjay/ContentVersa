@@ -13,7 +13,7 @@ const ACHIEVEMENTS = [
   {
     code: "first-post",
     title: "First Post",
-    description: "Published your first article on ContentVerse.",
+    description: "Published your first article on ContentVerse India.",
     icon: "📝",
   },
   {
@@ -131,7 +131,7 @@ async function main() {
           userId: owner.id,
           type: NotificationType.APPROVAL,
           title: "Your blog was approved",
-          message: `“${topBlog.title}” is now live on ContentVerse.`,
+          message: `“${topBlog.title}” is now live on ContentVerse India.`,
           read: false,
         },
         {

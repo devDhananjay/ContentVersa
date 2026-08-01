@@ -2,7 +2,7 @@ import type { GeneratedArticle } from "@/lib/seo/article-generator";
 import { publishGeneratedArticle } from "@/lib/seo/publish-article";
 import type { PipelineArticle, ResearchTopic } from "@/lib/seo/pipeline/types";
 
-/** Publisher agent: persist draft or live post on ContentVerse. */
+/** Publisher agent: persist draft or live post on ContentVerse India. */
 export async function runPublisherAgent(input: {
   authorId: string;
   categorySlug: string;

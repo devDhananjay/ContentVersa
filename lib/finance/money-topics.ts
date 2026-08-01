@@ -54,7 +54,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
       {
         question: "Where can I check gold price today in India?",
         answer:
-          "ContentVerse GoldVerse and finance guides summarise gold rate context for India. Always confirm the final invoice rate with your jeweller, including making charges and GST.",
+          "ContentVerse India GoldVerse and finance guides summarise gold rate context for India. Always confirm the final invoice rate with your jeweller, including making charges and GST.",
       },
       {
         question: "Is 22K or 24K better for jewellery?",
@@ -74,7 +74,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     title: "Silver Price Today India — Rate per Gram & Kg",
     shortTitle: "Silver Price Today",
     description:
-      "Check today's silver price in India per gram, 10g and kg. Estimate weight-based cost with ContentVerse silver tools.",
+      "Check today's silver price in India per gram, 10g and kg. Estimate weight-based cost with ContentVerse India silver tools.",
     keywords: [
       "silver price today",
       "silver rate India",
@@ -207,7 +207,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     eyebrow: "Markets · Equities",
     paragraphs: [
       "Buying stocks means owning a slice of a company. Indian retail investors typically trade via demat accounts on NSE/BSE, watching indices like Nifty 50 and Sensex.",
-      "ContentVerse Finance Hub shows live-oriented market widgets. Stock pages are for reference — not buy/sell recommendations.",
+      "ContentVerse India Finance Hub shows live-oriented market widgets. Stock pages are for reference — not buy/sell recommendations.",
     ],
     bullets: [
       "Learn indices before chasing tips",

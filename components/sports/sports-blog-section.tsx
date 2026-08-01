@@ -20,7 +20,7 @@ export function SportsBlogSection({ blogs }: SportsBlogSectionProps) {
             Sports <span className="text-gradient">Editorial</span>
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Analysis, opinion and culture from the ContentVerse community
+            Analysis, opinion and culture from the ContentVerse India community
           </p>
         </div>
         <Link href="/category/sports" className="hidden md:block">

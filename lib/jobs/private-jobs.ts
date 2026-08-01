@@ -41,7 +41,7 @@ export const PRIVATE_JOBS: PrivateJob[] = [
   {
     id: "pj-4",
     title: "Content Writer — Tech",
-    company: "ContentVerse Partner Network",
+    company: "ContentVerse India Partner Network",
     location: "Remote · India",
     type: "Remote",
     experience: "1–4 years",

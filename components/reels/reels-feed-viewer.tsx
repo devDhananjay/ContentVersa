@@ -365,7 +365,7 @@ export function ReelsFeedViewer({
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `${activeReel.author.name} on ContentVerse`,
+          title: `${activeReel.author.name} on ContentVerse India`,
           text: activeReel.caption.slice(0, 120),
           url,
         });

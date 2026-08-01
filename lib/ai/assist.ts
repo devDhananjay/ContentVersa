@@ -211,7 +211,7 @@ export async function runAiAssist(
   if (input.action === "generate-image") {
     const prompt =
       input.imagePrompt?.trim() ||
-      `Blog cover: ${input.title || "ContentVerse article"}, ${input.category || "technology"} theme`;
+      `Blog cover: ${input.title || "ContentVerse India article"}, ${input.category || "technology"} theme`;
     if (!isGeminiConfigured()) {
       return {
         result: buildPlaceholderImageUrl(prompt),

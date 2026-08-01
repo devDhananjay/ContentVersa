@@ -20,7 +20,7 @@ export default async function AdminOverview() {
       <div className="mb-8">
         <p className="text-sm text-muted-foreground">Platform overview</p>
         <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight mt-1">
-          ContentVerse <span className="text-gradient">Admin</span>
+          ContentVerse India <span className="text-gradient">Admin</span>
         </h1>
         <p className="text-muted-foreground mt-2 text-sm">
           Use the sidebar or <strong>Admin View</strong> anytime from the navbar or your profile menu.

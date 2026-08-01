@@ -100,7 +100,7 @@ export function SignInForm() {
         Welcome back.
       </h1>
       <p className="text-muted-foreground mt-1.5">
-        Sign in to continue building on ContentVerse.
+        Sign in to continue building on ContentVerse India.
       </p>
 
       <div className="mt-6">

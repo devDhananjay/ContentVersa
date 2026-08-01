@@ -14,7 +14,7 @@ export const DAILY_POLL_CATALOG: DailyPollDef[] = [
   {
     slug: "best-creator-tool-2026",
     question: "Best tool for creators in 2026?",
-    options: ["ChatGPT", "Canva", "Notion", "ContentVerse"],
+    options: ["ChatGPT", "Canva", "Notion", "ContentVerse India"],
   },
   {
     slug: "india-startup-bet",

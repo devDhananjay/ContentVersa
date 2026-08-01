@@ -22,11 +22,11 @@ export const HUID_VERIFICATION_FAQ = [
   },
   {
     q: "How do I verify HUID online?",
-    a: "Enter the 6-character HUID from your jewellery into the verification tool on this page, sign in with a free ContentVerse account, and submit. The system checks the official BIS HUID database and returns hallmark details if the record exists.",
+    a: "Enter the 6-character HUID from your jewellery into the verification tool on this page, sign in with a free ContentVerse India account, and submit. The system checks the official BIS HUID database and returns hallmark details if the record exists.",
   },
   {
     q: "Is HUID verification free?",
-    a: "Yes. Every registered user gets 3 free HUID verification checks. Jewellery shops and businesses needing higher volume can contact ContentVerse for API access.",
+    a: "Yes. Every registered user gets 3 free HUID verification checks. Jewellery shops and businesses needing higher volume can contact ContentVerse India for API access.",
   },
   {
     q: "Where is the HUID marked on gold jewellery?",
@@ -38,7 +38,7 @@ export const HUID_VERIFICATION_FAQ = [
   },
   {
     q: "Can I verify HUID without signing in?",
-    a: "Sign-in is required to prevent abuse and track your free verification quota. Creating a ContentVerse account is free and takes under a minute.",
+    a: "Sign-in is required to prevent abuse and track your free verification quota. Creating a ContentVerse India account is free and takes under a minute.",
   },
 ] as const;
 
@@ -50,7 +50,7 @@ export const HUID_VERIFICATION_STEPS = [
   },
   {
     step: 2,
-    title: "Sign in to ContentVerse",
+    title: "Sign in to ContentVerse India",
     body: "Create a free account or sign in. Each user receives 5 complimentary BIS HUID verification checks.",
   },
   {

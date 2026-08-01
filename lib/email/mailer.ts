@@ -56,7 +56,7 @@ export async function sendEmail(input: SendEmailInput): Promise<boolean> {
 
   const from = process.env.EMAIL_FROM?.trim() || process.env.SMTP_USER!.trim();
   const mail = {
-    from: `ContentVerse <${from}>`,
+    from: `ContentVerse India <${from}>`,
     to: input.to,
     subject: input.subject,
     html: input.html,

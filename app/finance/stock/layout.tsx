@@ -3,7 +3,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Stock quote",
-  description: "Live stock price and chart on ContentVerse Finance Hub.",
+  description: "Live stock price and chart on ContentVerse India Finance Hub.",
   noIndex: true,
 });
 

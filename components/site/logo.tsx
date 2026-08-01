@@ -17,20 +17,35 @@ function LogoText({
   return (
     <span
       className={cn(
-        "font-display font-extrabold tracking-tight whitespace-nowrap leading-none",
+        "font-display font-extrabold tracking-tight whitespace-nowrap leading-none inline-flex items-baseline gap-1",
         immersive ? "text-white" : undefined,
         className
       )}
     >
-      Content
+      <span>
+        Content
+        <span
+          className={cn(
+            immersive
+              ? "bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent"
+              : "text-gradient"
+          )}
+        >
+          Verse
+        </span>
+      </span>
       <span
         className={cn(
-          immersive
-            ? "bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent"
-            : "text-gradient"
+          "font-semibold tracking-tight",
+          immersive ? "text-white/85" : "text-muted-foreground",
+          className.includes("text-lg")
+            ? "text-[0.65em]"
+            : className.includes("text-3xl")
+              ? "text-[0.55em]"
+              : "text-[0.6em]"
         )}
       >
-        Verse
+        India
       </span>
     </span>
   );

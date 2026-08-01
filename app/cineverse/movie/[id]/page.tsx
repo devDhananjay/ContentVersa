@@ -24,7 +24,7 @@ export async function generateMetadata({
     title: `${movie.title} OTT Release Date, Cast & Where to Watch India`,
     description:
       movie.overview.slice(0, 140) ||
-      `${movie.title} cast, trailer, story, rating, OTT release date and where to watch in India on ContentVerse CineVerse.`,
+      `${movie.title} cast, trailer, story, rating, OTT release date and where to watch in India on ContentVerse India CineVerse.`,
     path: `/cineverse/movie/${id}`,
     image: movie.backdropUrl ?? movie.posterUrl,
     keywords: [

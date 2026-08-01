@@ -14,9 +14,9 @@ function buildShareText(
   url: string
 ): string {
   if (locale === "hi") {
-    return `📖 ${title}\n\nContentVerse pe padho 👇\n${url}\n\n#ContentVerse`;
+    return `📖 ${title}\n\nContentVerse India pe padho 👇\n${url}\n\n#ContentVerse India`;
   }
-  return `📖 ${title}\n\nRead this on ContentVerse 👇\n${url}\n\n#ContentVerse`;
+  return `📖 ${title}\n\nRead this on ContentVerse India 👇\n${url}\n\n#ContentVerse India`;
 }
 
 export function ShareBar({
@@ -38,7 +38,7 @@ export function ShareBar({
   const encodedUrl = encodeURIComponent(url);
   const encodedText = encodeURIComponent(shareText);
   const tweetText = encodeURIComponent(
-    locale === "hi" ? `${title} — ContentVerse pe padho` : `${title} — on ContentVerse`
+    locale === "hi" ? `${title} — ContentVerse India pe padho` : `${title} — on ContentVerse India`
   );
 
   const onCopy = async () => {

@@ -38,11 +38,11 @@ export function guideSectionFaq(section: GuideSection) {
     },
     {
       q: "Is this an official government website?",
-      a: "No. ContentVerse is independent. For schemes and jobs, always verify on official .gov.in portals before applying.",
+      a: "No. ContentVerse India is independent. For schemes and jobs, always verify on official .gov.in portals before applying.",
     },
     {
       q: "Are these guides free?",
-      a: "Yes. India Guides on ContentVerse are free to read with no sign-up required.",
+      a: "Yes. India Guides on ContentVerse India are free to read with no sign-up required.",
     },
   ];
 }

@@ -10,7 +10,7 @@ import { PDF_MAX_BYTES, formatBytes } from "@/lib/tools/pdf-client";
 export function PdfPrivacyNote() {
   return (
     <p className="text-xs text-muted-foreground leading-relaxed">
-      Processing happens in your browser. Files are not uploaded to ContentVerse
+      Processing happens in your browser. Files are not uploaded to ContentVerse India
       servers. Max {formatBytes(PDF_MAX_BYTES)} per file.
     </p>
   );

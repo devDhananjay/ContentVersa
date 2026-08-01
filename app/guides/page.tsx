@@ -73,7 +73,7 @@ export default function GuidesHubPage() {
         <p>
           Indian search traffic clusters around a few repeating templates: “Why
           is X trending?”, scheme eligibility, job last dates, match updates, AI
-          how-tos, and “where to watch”. ContentVerse Guides mirrors those
+          how-tos, and “where to watch”. ContentVerse India Guides mirrors those
           templates so pages stay useful and easy to crawl.
         </p>
         <p>

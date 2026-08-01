@@ -8,7 +8,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Sarkari Result — Official Exam & Board Results India",
   description:
-    "Find official Sarkari Result links for SSC, UPSC, CBSE, IBPS, RRB, NTA, NEET, JEE and more. ContentVerse links only to government portals — no fake results.",
+    "Find official Sarkari Result links for SSC, UPSC, CBSE, IBPS, RRB, NTA, NEET, JEE and more. ContentVerse India links only to government portals — no fake results.",
   path: "/results",
   keywords: [
     "sarkari result",

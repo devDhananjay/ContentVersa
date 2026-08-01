@@ -780,7 +780,7 @@ export function BlogEditorForm({
                     Google preview
                   </p>
                   <p className="text-blue-600 dark:text-blue-400 text-base font-medium">
-                    {seoTitle || title || "Your blog title"} · ContentVerse
+                    {seoTitle || title || "Your blog title"} · ContentVerse India
                   </p>
                   <p className="text-xs text-green-700 dark:text-green-500">
                     {getSiteHostname()} › blog › your-slug

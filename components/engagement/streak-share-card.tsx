@@ -25,7 +25,7 @@ export function StreakShareCard({ streakDays, className }: Props) {
 
   if (!milestone || dismissed) return null;
 
-  const shareText = `${milestone}-day reading streak on ContentVerse 🔥`;
+  const shareText = `${milestone}-day reading streak on ContentVerse India 🔥`;
   const shareUrl = getAppUrl();
   const waUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`;
   const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
@@ -54,7 +54,7 @@ export function StreakShareCard({ streakDays, className }: Props) {
         {milestone}-day streak
       </p>
       <p className="text-sm text-muted-foreground mt-1">
-        Share your reading habit — inspire others on ContentVerse.
+        Share your reading habit — inspire others on ContentVerse India.
       </p>
       <div className="flex flex-wrap gap-2 mt-4">
         <a href={waUrl} target="_blank" rel="noopener noreferrer">

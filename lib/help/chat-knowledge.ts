@@ -115,9 +115,9 @@ export const HELP_FAQ: HelpFaqEntry[] = [
     id: "unsubscribe",
     keywords: ["unsubscribe", "stop emails", "opt out", "अनसब्सक्राइब", "मेल बंद"],
     answerEn:
-      "Use the **Unsubscribe** link in any ContentVerse email. If you need help, contact us at /contact with your email address.",
+      "Use the **Unsubscribe** link in any ContentVerse India email. If you need help, contact us at /contact with your email address.",
     answerHi:
-      "किसी भी ContentVerse email में **Unsubscribe** link use करें। मदद चाहिए तो /contact पर अपना email भेजें।",
+      "किसी भी ContentVerse India email में **Unsubscribe** link use करें। मदद चाहिए तो /contact पर अपना email भेजें।",
     links: [{ label: "Contact support", href: "/contact" }],
   },
   {
@@ -252,13 +252,13 @@ export function defaultFallback(locale: "en" | "hi") {
   if (locale === "hi") {
     return {
       reply:
-        "मैं ContentVerse सहायक हूँ। ऊपर quick buttons try करें या Finance, Reels, लेख लिखना, Premium जैसा सवाल पूछें।",
+        "मैं ContentVerse India सहायक हूँ। ऊपर quick buttons try करें या Finance, Reels, लेख लिखना, Premium जैसा सवाल पूछें।",
       links: SITE_LINKS.slice(0, 5),
     };
   }
   return {
     reply:
-      "I'm the ContentVerse helper. Try the quick buttons above or ask about Finance, Reels, writing, Premium, or newsletter.",
+      "I'm the ContentVerse India helper. Try the quick buttons above or ask about Finance, Reels, writing, Premium, or newsletter.",
     links: SITE_LINKS.slice(0, 5),
   };
 }
@@ -267,7 +267,7 @@ export function staticWelcome(locale: "en" | "hi") {
   if (locale === "hi") {
     return {
       reply:
-        "Hello! **नमस्ते!** 🙏 ContentVerse में आपका स्वागत है।\n\nमैं आपका site guide हूँ — blogs, reels, finance, jobs या लेख लिखने में मदद करूँगा।\n\n📬 **Newsletter:** हर हफ़्ते trending reads पाने के लिए नीचे email दें (सिर्फ opt-in, कभी भी unsubscribe)।",
+        "Hello! **नमस्ते!** 🙏 ContentVerse India में आपका स्वागत है।\n\nमैं आपका site guide हूँ — blogs, reels, finance, jobs या लेख लिखने में मदद करूँगा।\n\n📬 **Newsletter:** हर हफ़्ते trending reads पाने के लिए नीचे email दें (सिर्फ opt-in, कभी भी unsubscribe)।",
       links: [
         { label: "Newsletter subscribe", href: "/#newsletter" },
         { label: "Explore blogs", href: "/blogs" },
@@ -277,7 +277,7 @@ export function staticWelcome(locale: "en" | "hi") {
   }
   return {
     reply:
-      "Hello! **Namaste!** 🙏 Welcome to ContentVerse.\n\nI'm your site guide — ask me about blogs, reels, finance, jobs, or how to start writing.\n\n📬 **Newsletter:** Get weekly trending reads & creator picks — opt in below (unsubscribe anytime).",
+      "Hello! **Namaste!** 🙏 Welcome to ContentVerse India.\n\nI'm your site guide — ask me about blogs, reels, finance, jobs, or how to start writing.\n\n📬 **Newsletter:** Get weekly trending reads & creator picks — opt in below (unsubscribe anytime).",
     links: [
       { label: "Newsletter section", href: "/#newsletter" },
       { label: "Explore blogs", href: "/blogs" },

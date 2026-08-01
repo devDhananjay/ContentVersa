@@ -28,10 +28,10 @@ export default async function JobsHubPage() {
 
   return (
     <div className="space-y-10">
-      <HubEditorialIntro title="Careers on ContentVerse">
+      <HubEditorialIntro title="Careers on ContentVerse India">
         <p>
           The Jobs Hub aggregates government (sarkari) notifications and curated private-sector
-          openings for Indian readers. Listings link to official sources — ContentVerse does not
+          openings for Indian readers. Listings link to official sources — ContentVerse India does not
           charge applicants. For exam and board results, use our{" "}
           <Link href="/results" className="text-primary hover:underline">
             Sarkari Result hub
@@ -39,7 +39,7 @@ export default async function JobsHubPage() {
           .
         </p>
         <p>
-          If you write about jobs, freelancing, or professional growth, publish on ContentVerse
+          If you write about jobs, freelancing, or professional growth, publish on ContentVerse India
           and apply for the Creator Program after two quality articles.
         </p>
       </HubEditorialIntro>

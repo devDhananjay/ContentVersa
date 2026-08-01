@@ -6,7 +6,7 @@ const FIVEPAISA_GOLD_HOME =
 
 const FETCH_HEADERS = {
   "User-Agent":
-    "Mozilla/5.0 (compatible; ContentVerse/1.0; +https://contentverse.co.in/goldverse)",
+    "Mozilla/5.0 (compatible; ContentVerse India/1.0; +https://contentverse.co.in/goldverse)",
   Accept: "text/html,application/json",
 };
 

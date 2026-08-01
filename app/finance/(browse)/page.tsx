@@ -31,11 +31,11 @@ export default async function FinanceHubPage() {
 
   return (
     <>
-      <HubEditorialIntro title="Finance on ContentVerse">
+      <HubEditorialIntro title="Finance on ContentVerse India">
         <p>
           The Finance Hub shows live Indian market indices, top movers, and stock charts for
           quick reference. These data widgets are not standalone articles — they support readers
-          who follow our finance writers. ContentVerse publishes original explainers on investing,
+          who follow our finance writers. ContentVerse India publishes original explainers on investing,
           personal finance, markets, and the Indian economy, written by creators and reviewed
           against our content policy.
         </p>

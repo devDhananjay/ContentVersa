@@ -63,7 +63,7 @@ export async function generateFullBlogFromTitle(
     );
   }
 
-  const system = `You are an expert ContentVerse blog writer. Given a title, produce a complete publish-ready blog package as JSON.
+  const system = `You are an expert ContentVerse India blog writer. Given a title, produce a complete publish-ready blog package as JSON.
 Rules:
 - content: markdown body only (## section headings, NO # H1, NO article title repeated). Write 1200-1600 words across 6-8 sections with rich paragraphs and bullet lists.
 - excerpt: compelling 2-3 sentence card hook (max 220 chars).

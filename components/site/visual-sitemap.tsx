@@ -396,7 +396,7 @@ export function VisualSitemap() {
           ))}
         </div>
         <div className="px-5 py-3 border-t border-dashed border-border/50 text-xs text-muted-foreground text-center">
-          Visitor count · Social links · © ContentVerse
+          Visitor count · Social links · © ContentVerse India
         </div>
       </div>
 

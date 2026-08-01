@@ -220,7 +220,7 @@ export default function SettingsPage() {
       <div className="container py-16 max-w-3xl text-center">
         <h1 className="font-display text-2xl font-bold">Sign in required</h1>
         <p className="text-muted-foreground mt-2">
-          Log in to manage your ContentVerse profile.
+          Log in to manage your ContentVerse India profile.
         </p>
         <Button asChild className="mt-6" variant="gradient">
           <a href="/auth/sign-in?next=/dashboard/settings">Sign in</a>
@@ -379,7 +379,7 @@ export default function SettingsPage() {
         <section className="rounded-2xl border border-destructive/20 bg-card p-6">
           <h2 className="font-display text-xl font-bold mb-2">Account</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Sign out of ContentVerse on this device.
+            Sign out of ContentVerse India on this device.
           </p>
           <SignOutButton
             variant="outline"

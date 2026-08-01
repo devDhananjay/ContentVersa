@@ -42,7 +42,7 @@ const prisma = new PrismaClient();
 
 const GENERIC_MARKERS = [
   "export async function publishBlog",
-  "ContentVerse optimizes for the creator",
+  "ContentVerse India optimizes for the creator",
   "creator-first ecosystem that's actually addictive",
 ];
 

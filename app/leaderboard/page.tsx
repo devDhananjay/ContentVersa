@@ -6,7 +6,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Leaderboard",
-  description: "Top ContentVerse creators ranked by reach, engagement and growth.",
+  description: "Top ContentVerse India creators ranked by reach, engagement and growth.",
   path: "/leaderboard",
   noIndex: true,
 });

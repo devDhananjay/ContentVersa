@@ -183,7 +183,7 @@ async function publishReel(
   const link = `${getAppUrl()}/reels/${reel.id}`;
   const message =
     input.customMessage?.trim() ||
-    `${reel.caption.trim()}\n\nWatch on ContentVerse: ${link}`;
+    `${reel.caption.trim()}\n\nWatch on ContentVerse India: ${link}`;
   const videoUrl = toPublicUrl(reel.mediaUrl);
   const imageUrl = toPublicUrl(reel.thumbnailUrl || reel.mediaUrl);
 

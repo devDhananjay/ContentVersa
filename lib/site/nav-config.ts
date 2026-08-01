@@ -66,7 +66,7 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
     label: "Verse",
     icon: Gem,
     items: [
-      { href: "/ai", label: "ContentVerse AI", description: "Ask, summarise, resume, bank PDF", icon: Sparkles },
+      { href: "/ai", label: "ContentVerse India AI", description: "Ask, summarise, resume, bank PDF", icon: Sparkles },
       { href: "/cineverse", label: "CineVerse", description: "Movies, OTT & watchlist", icon: Clapperboard },
       { href: "/goldverse", label: "GoldVerse", description: "Gold & silver rates, hallmark", icon: Gem },
       { href: "/moneyverse", label: "MoneyVerse", description: "Expense tracker India", icon: Wallet },

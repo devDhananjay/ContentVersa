@@ -22,7 +22,7 @@ export function getCineverseSponsor(): CineverseSponsor | null {
     title,
     subtitle:
       process.env.CINEVERSE_SPONSOR_SUBTITLE?.trim() ??
-      "Limited-time OTT promotion for ContentVerse readers.",
+      "Limited-time OTT promotion for ContentVerse India readers.",
     cta: process.env.CINEVERSE_SPONSOR_CTA?.trim() ?? "Learn more",
     href,
     partner: process.env.CINEVERSE_SPONSOR_PARTNER?.trim() ?? "Sponsored",

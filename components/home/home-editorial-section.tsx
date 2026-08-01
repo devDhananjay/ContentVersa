@@ -43,7 +43,7 @@ const POLICY_LINKS = [
   {
     href: "/about",
     label: "About us",
-    detail: "Mission and how ContentVerse works",
+    detail: "Mission and how ContentVerse India works",
     icon: BookOpen,
   },
 ] as const;
@@ -68,14 +68,14 @@ export function HomeEditorialSection() {
               id="about-contentverse-heading"
               className="font-display text-2xl md:text-3xl font-extrabold tracking-tight"
             >
-              What is ContentVerse?
+              What is ContentVerse India?
             </h2>
           </div>
         </div>
 
         <div className="rounded-2xl border bg-card p-6 md:p-8 space-y-4 text-muted-foreground leading-relaxed">
           <p>
-            ContentVerse is an India-first publishing platform where writers, journalists, and
+            ContentVerse India is an India-first publishing platform where writers, journalists, and
             creators publish long-form articles, tutorials, and opinion pieces in English and Hindi.
             Unlike short-form feeds built only for scrolling, we focus on depth: thoughtful essays,
             explainers, and reporting that readers bookmark and share.

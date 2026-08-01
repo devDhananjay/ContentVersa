@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata({
   title: "GoldVerse — HUID Verification, Gold Price & BIS Hallmark India",
   description:
-    "Verify BIS HUID on gold jewellery online, check today's gold rates by city, spot fake gold and access hallmark tools — ContentVerse GoldVerse India.",
+    "Verify BIS HUID on gold jewellery online, check today's gold rates by city, spot fake gold and access hallmark tools — ContentVerse India GoldVerse India.",
   path: "/goldverse",
   keywords: [...HUID_SEO_KEYWORDS, "gold price today India", "BIS hallmark guide", "GoldVerse"],
   image:
@@ -23,9 +23,9 @@ export const metadata: Metadata = buildMetadata({
 export default function GoldVersePage() {
   return (
     <div className="space-y-10">
-      <HubEditorialIntro title="GoldVerse on ContentVerse">
+      <HubEditorialIntro title="GoldVerse on ContentVerse India">
         <p>
-          ContentVerse GoldVerse helps buyers and jewellers verify gold hallmark
+          ContentVerse India GoldVerse helps buyers and jewellers verify gold hallmark
           authenticity using the official BIS HUID database, track gold prices across
           Indian cities, and access hallmark education and complaint tools.
         </p>

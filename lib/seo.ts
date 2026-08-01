@@ -16,7 +16,7 @@ export const SITE_LOGO_URL = "/icon-192.png";
 
 /** Main hub modules — prioritized for sitelinks & internal linking. */
 export const SITE_NAV_HUBS = [
-  { name: "ContentVerse AI", path: "/ai", description: "Ask, summarise, resume, bank PDF & screenshot OCR India" },
+  { name: "ContentVerse India AI", path: "/ai", description: "Ask, summarise, resume, bank PDF & screenshot OCR India" },
   { name: "Sports", path: "/sports", description: "Live cricket scores, fixtures and sports news" },
   { name: "Finance", path: "/finance", description: "Nifty, Sensex, MoneyVerse guides — gold, SIP, FD, loans & tax" },
   { name: "CineVerse", path: "/cineverse", description: "Movies — OTT release, cast, where to watch & watchlist India" },
@@ -125,7 +125,6 @@ export function siteNameAlternates(): string[] {
   return [
     SITE.homeTitle,
     "ContentVerse",
-    "ContentVerse — Read. Create. Grow.",
     "contentverse.co.in",
   ];
 }
@@ -142,7 +141,7 @@ export function buildMetadata(input: {
   authors?: string[];
 }): Metadata {
   const title = input.title
-    ? input.title.includes(SITE.name) || input.title.includes("ContentVerse")
+    ? input.title.includes(SITE.name) || input.title.includes("ContentVerse India")
       ? input.title
       : `${input.title} · ${SITE.name}`
     : SITE.homeTitle;
@@ -158,7 +157,7 @@ export function buildMetadata(input: {
     keywords:
       input.keywords ??
       [
-        "ContentVerse",
+        "ContentVerse India",
         "ContentVerse India",
         "blog platform India",
         "creator platform",
@@ -269,7 +268,7 @@ export function platformModulesJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "ContentVerse platform modules",
+    name: "ContentVerse India platform modules",
     itemListElement: SITE_NAV_HUBS.map((hub, index) => ({
       "@type": "ListItem",
       position: index + 1,

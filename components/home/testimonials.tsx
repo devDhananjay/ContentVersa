@@ -15,7 +15,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "ContentVerse feels like the platform we always wanted as creators. Premium aesthetic, serious tools, no algorithmic guesswork.",
+      "ContentVerse India feels like the platform we always wanted as creators. Premium aesthetic, serious tools, no algorithmic guesswork.",
     name: "Zara Khan",
     role: "Engineer + Writer",
     avatar: "https://api.dicebear.com/8.x/notionists/svg?seed=Zara",

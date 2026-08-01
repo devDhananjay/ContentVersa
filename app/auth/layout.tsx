@@ -7,7 +7,7 @@ import { getPlatformStats, platformStatItems } from "@/lib/data/platform-stats";
 
 export const metadata: Metadata = buildMetadata({
   title: "Sign in",
-  description: "Sign in to your ContentVerse account.",
+  description: "Sign in to your ContentVerse India account.",
   noIndex: true,
 });
 
@@ -27,7 +27,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
             Join the next generation of <span className="text-gradient">creators.</span>
           </h2>
           <p className="text-muted-foreground mt-4">
-            ContentVerse pays creators in rupees. Real audience, real ownership — no algorithm cult required.
+            ContentVerse India pays creators in rupees. Real audience, real ownership — no algorithm cult required.
           </p>
           {statRows.length > 0 && (
             <div className="mt-8 grid grid-cols-3 gap-6">

@@ -46,7 +46,7 @@ const TOOLS_COUNT = TOOL_REGISTRY.length;
 
 const MODULES: ModuleCard[] = [
   {
-    name: "ContentVerse AI",
+    name: "ContentVerse India AI",
     href: "/ai",
     tagline: "AI product",
     description:
@@ -363,7 +363,7 @@ export function PlatformModulesStrip({
               id="platform-modules-heading"
               className="font-display text-3xl font-extrabold tracking-tight md:text-4xl lg:text-5xl"
             >
-              Everything on <span className="text-gradient">ContentVerse</span>
+              Everything on <span className="text-gradient">ContentVerse India</span>
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
               Sports, finance, jobs, verses and free India tools — pick a module and go.
@@ -423,7 +423,7 @@ export function PlatformModulesStrip({
                 <PenLine className="h-5 w-5" />
               </span>
               <div>
-                <p className="font-display font-bold">Want to publish on ContentVerse?</p>
+                <p className="font-display font-bold">Want to publish on ContentVerse India?</p>
                 <p className="text-sm text-muted-foreground">
                   Write long-form blogs, schedule posts and grow with the community.
                 </p>

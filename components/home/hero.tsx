@@ -133,7 +133,7 @@ export function Hero({ categories, stats }: Props) {
               </motion.span>
               India&apos;s home for long-form creators ·{" "}
               <Link href="/ai" className="underline underline-offset-2 hover:text-inherit">
-                ContentVerse AI
+                ContentVerse India AI
               </Link>{" "}
               live
             </Badge>
@@ -258,7 +258,7 @@ export function Hero({ categories, stats }: Props) {
                   className="gap-2 shadow-xl shadow-neon-purple/25"
                 >
                   <Sparkles className="h-5 w-5" />
-                  Try ContentVerse AI
+                  Try ContentVerse India AI
                 </Button>
               </Link>
             </motion.div>

@@ -141,7 +141,7 @@ async function fetchChannelFeed(
       signal: AbortSignal.timeout(8_000),
       headers: {
         Accept: "application/atom+xml, application/xml, text/xml, */*",
-        "User-Agent": "ContentVerseTrends/1.0 (+https://contentverse.co.in)",
+        "User-Agent": "ContentVerse IndiaTrends/1.0 (+https://contentverse.co.in)",
       },
       cache: "no-store",
     });

@@ -51,7 +51,7 @@ export default function SignUpPage() {
         Create your space.
       </h1>
       <p className="text-muted-foreground mt-1.5">
-        Publish on ContentVerse and earn in rupees.
+        Publish on ContentVerse India and earn in rupees.
       </p>
 
       <div className="mt-6">

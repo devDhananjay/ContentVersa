@@ -17,7 +17,7 @@ const SOCIAL_LINKS: { label: string; href: string; Icon: ElementType }[] = [
 const WHATSAPP_CHANNEL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL?.trim();
 
 const EXPLORE = [
-  { label: "ContentVerse AI", href: "/ai" },
+  { label: "ContentVerse India AI", href: "/ai" },
   { label: "Trending Now", href: "/trending" },
   { label: "Sports", href: "/sports" },
   { label: "Finance", href: "/finance" },
@@ -154,7 +154,7 @@ export async function Footer() {
 
         <div className="mt-8 flex flex-col gap-4 border-t border-border/50 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} ContentVerse. All rights reserved.
+            © {new Date().getFullYear()} ContentVerse India. All rights reserved.
           </p>
           <nav
             aria-label="Legal"

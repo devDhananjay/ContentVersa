@@ -31,7 +31,7 @@ export const metadata: Metadata = buildMetadata({
 export default function MoneyVersePage() {
   return (
     <div className="space-y-8">
-      <HubEditorialIntro title="MoneyVerse on ContentVerse">
+      <HubEditorialIntro title="MoneyVerse on ContentVerse India">
         <p>
           MoneyVerse is your personal finance hub for everyday Indian spending — log UPI,
           cash and card expenses, set category budgets, and see where your money goes each

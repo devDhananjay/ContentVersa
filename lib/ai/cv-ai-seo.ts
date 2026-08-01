@@ -5,12 +5,12 @@ export function cvAiWebPageJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "ContentVerse AI",
+    name: "ContentVerse India AI",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     url: `${SITE.url}${CV_AI_PATH}`,
     description:
-      "ContentVerse AI — ask anything, summarise articles, explain simply, compare options, generate resumes, calculate finance, analyse PDFs, bank statements and screenshots.",
+      "ContentVerse India AI — ask anything, summarise articles, explain simply, compare options, generate resumes, calculate finance, analyse PDFs, bank statements and screenshots.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
     provider: { "@type": "Organization", name: SITE.name, url: SITE.url },
     featureList: CV_AI_MODES.map((m) => m.title),
@@ -38,7 +38,7 @@ export function cvAiBreadcrumbJsonLd() {
       {
         "@type": "ListItem",
         position: 2,
-        name: "ContentVerse AI",
+        name: "ContentVerse India AI",
         item: `${SITE.url}${CV_AI_PATH}`,
       },
     ],

@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return buildMetadata({
     title: `${name} Stock Price`,
-    description: `Live ${name} stock price, chart and market data on ContentVerse Finance Hub.`,
+    description: `Live ${name} stock price, chart and market data on ContentVerse India Finance Hub.`,
     path: `/finance/stock/${symbol}`,
     noIndex: true,
   });

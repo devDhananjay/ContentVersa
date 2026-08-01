@@ -107,7 +107,7 @@ function googleNewsRssUrl(query: string): string {
   return `https://news.google.com/rss/search?${params.toString()}`;
 }
 
-/** Fetch top Google News headlines for a ContentVerse category (India). */
+/** Fetch top Google News headlines for a ContentVerse India category (India). */
 export async function fetchGoogleNewsHeadlines(
   categorySlug: string
 ): Promise<GoogleNewsHeadline[]> {
@@ -139,7 +139,7 @@ export async function fetchGoogleNewsByQuery(
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "ContentVerseDailyBot/1.0 (+https://contentverse.co.in; editorial)",
+          "ContentVerse IndiaDailyBot/1.0 (+https://contentverse.co.in; editorial)",
         Accept: "application/rss+xml, application/xml, text/xml, */*",
       },
       cache: "no-store",

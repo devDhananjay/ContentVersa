@@ -8,7 +8,7 @@ import { readingTime, slugify } from "../lib/utils";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Seeding ContentVerse…");
+  console.log("Seeding ContentVerse India…");
 
   // Wipe existing data (only safe in dev!)
   await prisma.bookmark.deleteMany();
@@ -54,7 +54,7 @@ async function main() {
     data: {
       email: "admin@contentverse.app",
       username: "admin",
-      name: "ContentVerse Admin",
+      name: "ContentVerse India Admin",
       password,
       role: UserRole.SUPER_ADMIN,
       profile: { create: { bio: "Platform admin." } },

@@ -21,14 +21,14 @@ export async function dispatchBlogPublishedNotifications(blogId: string) {
   if (!blog || blog.status !== "PUBLISHED") return;
 
   const link = `/blog/${blog.slug}`;
-  const categoryName = blog.category?.name ?? "ContentVerse";
+  const categoryName = blog.category?.name ?? "ContentVerse India";
   const categorySlug = blog.category?.slug ?? "";
 
   await createUserNotification({
     userId: blog.authorId,
     type: NotificationType.APPROVAL,
     title: "New article is live!",
-    message: `“${blog.title}” is now published on ContentVerse.`,
+    message: `“${blog.title}” is now published on ContentVerse India.`,
     link,
   });
 

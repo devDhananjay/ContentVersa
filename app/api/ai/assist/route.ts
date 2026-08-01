@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     if (parsed.action === "generate-image") {
       const prompt =
         parsed.imagePrompt?.trim() ||
-        `Blog cover: ${parsed.title || "ContentVerse article"}`;
+        `Blog cover: ${parsed.title || "ContentVerse India article"}`;
       const { result, source, failure } = await runAiAssist({
         action: "generate-image",
         title: parsed.title,

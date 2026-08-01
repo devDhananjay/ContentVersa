@@ -220,7 +220,7 @@ export function BankStatementAnalyzer() {
           <div className="flex gap-2 text-xs text-muted-foreground">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
             <p>
-              ContentVerse does not save your uploaded statement or analysis. The file is sent
+              ContentVerse India does not save your uploaded statement or analysis. The file is sent
               securely to Google Gemini for processing. Password-protected PDFs are not supported.
             </p>
           </div>

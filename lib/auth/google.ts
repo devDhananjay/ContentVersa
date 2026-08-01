@@ -1,7 +1,7 @@
 import { getAppUrl } from "@/lib/app-url";
 
 // Minimal Google OAuth2 helpers using `fetch`. No third-party OAuth lib needed.
-// We deliberately avoid NextAuth/Auth.js to keep ContentVerse's existing
+// We deliberately avoid NextAuth/Auth.js to keep ContentVerse India's existing
 // JWT-cookie session model (see `lib/auth.ts`).
 
 const GOOGLE_AUTH = "https://accounts.google.com/o/oauth2/v2/auth";

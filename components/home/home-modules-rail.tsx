@@ -91,7 +91,7 @@ export function HomeModulesRail() {
   return (
     <nav
       id="home-modules-rail"
-      aria-label="ContentVerse modules"
+      aria-label="ContentVerse India modules"
       className="border-b border-border/40 bg-background/70 backdrop-blur-md"
       data-modules-rail
     >

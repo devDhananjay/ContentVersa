@@ -23,11 +23,11 @@ export type SiteMapModule = {
 };
 
 export const SITE_MAP_NAV = {
-  label: "ContentVerse NAV",
+  label: "ContentVerse India NAV",
   href: "/",
   summary: "Global header — logo, search, categories, finance ticker, notifications & profile",
   links: [
-    { label: "ContentVerse AI", href: "/ai" },
+    { label: "ContentVerse India AI", href: "/ai" },
     { label: "Home", href: "/" },
     { label: "Blogs", href: "/blogs" },
     { label: "Reels", href: "/reels" },
@@ -392,7 +392,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
   },
   {
     id: "contentverse-ai",
-    label: "ContentVerse AI",
+    label: "ContentVerse India AI",
     color: "violet",
     href: "/ai",
     tag: "New",
@@ -494,7 +494,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             href: "/huid-verification",
             detail: "Verify BIS Hallmark Unique ID online",
             children: [
-              { label: "3 free checks", detail: "Per ContentVerse account" },
+              { label: "3 free checks", detail: "Per ContentVerse India account" },
               { label: "Official BIS database", detail: "Purity & jeweller details" },
             ],
           },

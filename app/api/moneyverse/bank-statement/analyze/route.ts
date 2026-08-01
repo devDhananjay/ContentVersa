@@ -82,7 +82,7 @@ export async function POST(req: Request) {
       ok: true,
       analysis: result,
       quota,
-      privacy: "Uploaded file and analysis are not stored by ContentVerse.",
+      privacy: "Uploaded file and analysis are not stored by ContentVerse India.",
     });
   } catch (err) {
     if (err instanceof BankStatementQuotaExceededError) {

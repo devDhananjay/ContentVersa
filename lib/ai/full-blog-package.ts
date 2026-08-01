@@ -100,7 +100,7 @@ export function buildRichLocalFullBlog(title: string, categoryHint?: string): Fu
   const content = [
     section("Introduction", [
       `${topic} is no longer a niche conversation—it is shaping how audiences discover, share, and pay for digital stories in 2026. Creators who understand this shift are building loyal communities faster than traditional media channels can adapt.`,
-      `This article breaks down why the trend matters, what data and culture tell us, and how you can publish thoughtful work on ContentVerse that stands out in feeds without chasing empty hype.`,
+      `This article breaks down why the trend matters, what data and culture tell us, and how you can publish thoughtful work on ContentVerse India that stands out in feeds without chasing empty hype.`,
     ]),
     section("Why this shift is happening now", [
       `Short-form platforms trained audiences to expect visual, emotional storytelling. Cartoon and stylized content lowers the barrier to entry: you do not need a studio budget to express a complex idea through character, color, and motion.`,
@@ -112,13 +112,13 @@ export function buildRichLocalFullBlog(title: string, categoryHint?: string): Fu
       "Merch, community, and premium tiers scale with character IP",
     ]),
     section("What creators are doing differently", [
-      `The best channels treat each post as one chapter in a larger world. They publish essays, behind-the-scenes notes, and polls that invite the audience into the creative process. Readers on ContentVerse respond to that transparency—it turns passive viewers into collaborators.`,
+      `The best channels treat each post as one chapter in a larger world. They publish essays, behind-the-scenes notes, and polls that invite the audience into the creative process. Readers on ContentVerse India respond to that transparency—it turns passive viewers into collaborators.`,
       `Successful teams also batch production: one writing day, one illustration pass, one export day. That rhythm prevents burnout and keeps quality consistent. If you are solo, start with a repeatable template—intro hook, three beats, one actionable takeaway.`,
       `Monetization is diversifying beyond ads. Paid newsletters, early-access episodes, and licensed assets (stickers, wallpapers, templates) let cartoon-first creators earn without diluting their voice.`,
     ]),
     section("Challenges worth planning for", [
       `Copyright and style mimicry remain real risks. Build original character sheets and document your influences. If you reference trending shows, add commentary and transformation—do not republish clips without rights.`,
-      `Platform dependency is the other trap. Use ContentVerse as your owned home base: canonical posts, SEO-friendly excerpts, and tags that help new readers find you through search—not only algorithms.`,
+      `Platform dependency is the other trap. Use ContentVerse India as your owned home base: canonical posts, SEO-friendly excerpts, and tags that help new readers find you through search—not only algorithms.`,
     ], [
       "Protect original IP with clear visual bibles",
       "Publish long-form context posts alongside clips",
@@ -127,7 +127,7 @@ export function buildRichLocalFullBlog(title: string, categoryHint?: string): Fu
     ]),
     section("A practical playbook for your next post", [
       `Start with one sharp thesis tied to "${topic}". Open with a scene your reader recognizes—a late-night scroll, a group chat reaction, a childhood cartoon memory—then bridge to your argument in two sentences.`,
-      `Support the thesis with one data point (even informal: a poll you ran, a comment pattern you noticed) and one quote from a creator or expert. End with a single action: draft an outline, sketch one frame, or publish a teaser paragraph on ContentVerse today.`,
+      `Support the thesis with one data point (even informal: a poll you ran, a comment pattern you noticed) and one quote from a creator or expert. End with a single action: draft an outline, sketch one frame, or publish a teaser paragraph on ContentVerse India today.`,
     ]),
     section("Conclusion", [
       `${topic} is not a passing aesthetic—it is a durable format for digital entertainment because it combines emotion, identity, and replay value. The creators who win will pair bold visuals with honest writing and host their best work where they control the relationship with their audience.`,
@@ -143,7 +143,7 @@ export function buildRichLocalFullBlog(title: string, categoryHint?: string): Fu
     category
   );
 
-  const metaTitle = `${topic.slice(0, 55)} | ContentVerse`.slice(0, 70);
+  const metaTitle = `${topic.slice(0, 55)} | ContentVerse India`.slice(0, 70);
   const metaDescription = excerpt.slice(0, 160);
 
   return { excerpt, category, tags, metaTitle, metaDescription, content };
@@ -195,7 +195,7 @@ function buildMoviesListicleFallback(
     topic,
     category
   );
-  const metaTitle = `${topic.slice(0, 55)} | ContentVerse`.slice(0, 70);
+  const metaTitle = `${topic.slice(0, 55)} | ContentVerse India`.slice(0, 70);
   const metaDescription = excerpt.slice(0, 160);
 
   return { excerpt, category, tags, metaTitle, metaDescription, content };

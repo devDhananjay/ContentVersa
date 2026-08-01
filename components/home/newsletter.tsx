@@ -70,7 +70,7 @@ export function Newsletter() {
             <span className="text-foreground/80">The Verse · Weekly</span>
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-extrabold tracking-tight">
-            The best of <span className="text-gradient">ContentVerse</span>,
+            The best of <span className="text-gradient">ContentVerse India</span>,
             <br /> straight to your inbox.
           </h2>
           <p className="mt-4 text-muted-foreground">

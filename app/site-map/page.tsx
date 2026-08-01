@@ -5,7 +5,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Site Map",
   description:
-    "Explore every module and feature on ContentVerse — blogs, reels, sports, finance, jobs, creator tools and more.",
+    "Explore every module and feature on ContentVerse India — blogs, reels, sports, finance, jobs, creator tools and more.",
   path: "/site-map",
 });
 
@@ -20,7 +20,7 @@ export default function SiteMapPage() {
           Site Map
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Everything on ContentVerse — modules, pages, and functionality at a glance.
+          Everything on ContentVerse India — modules, pages, and functionality at a glance.
         </p>
       </header>
       <VisualSitemap />

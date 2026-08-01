@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata({
   title: "Categories",
   description:
-    "Browse 21 ContentVerse categories — from AI and startups to lifestyle and gaming. Find your corner of the internet.",
+    "Browse 21 ContentVerse India categories — from AI and startups to lifestyle and gaming. Find your corner of the internet.",
   path: "/categories",
 });
 

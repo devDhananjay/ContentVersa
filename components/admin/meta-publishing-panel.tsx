@@ -258,7 +258,7 @@ export function MetaPublishingPanel() {
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
               Connect your Facebook Page and linked Instagram Business account to publish
-              directly from ContentVerse.
+              directly from ContentVerse India.
             </p>
           </div>
           {integration?.connected ? (
@@ -341,7 +341,7 @@ export function MetaPublishingPanel() {
                     id="meta-page-name"
                     value={pageName}
                     onChange={(e) => setPageName(e.target.value)}
-                    placeholder="ContentVerse"
+                    placeholder="ContentVerse India"
                   />
                 </div>
               </div>

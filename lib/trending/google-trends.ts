@@ -200,7 +200,7 @@ export function localTrendSummary(trend: {
           .map((n) => n.title)
           .join("; ")}.`
       : "News coverage is still developing — check back soon or ask our chat for a plain-language explainer.",
-    "This page keeps you on ContentVerse so you can read a short briefing and ask follow-up questions without leaving the site.",
+    "This page keeps you on ContentVerse India so you can read a short briefing and ask follow-up questions without leaving the site.",
   ].join("\n\n");
 }
 
@@ -267,7 +267,7 @@ export async function summarizeTrend(trend: {
     return { summary: local, source: "local" };
   }
 
-  const system = `You are ContentVerse Trends editor for India.
+  const system = `You are ContentVerse India Trends editor for India.
 Write a clear, neutral briefing (3 short paragraphs, max 180 words) about why a topic is trending.
 Use ONLY the topic title, traffic estimate, and headlines provided — do not invent facts, scores, or quotes.
 Mention that figures come from Google Trends (India) and headlines are from public news sources.

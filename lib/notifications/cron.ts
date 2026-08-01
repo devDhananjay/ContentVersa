@@ -63,7 +63,7 @@ export async function sendInactiveReaderReminders() {
       userId: u.id,
       type: NotificationType.INACTIVE_REMINDER,
       title: "We've published new content you may like",
-      message: `Catch up with “${latest.title}” and more on ContentVerse.`,
+      message: `Catch up with “${latest.title}” and more on ContentVerse India.`,
       link,
     });
     if (u.email) emailRecipients.push(u.email);
@@ -73,7 +73,7 @@ export async function sendInactiveReaderReminders() {
 
   const emails = await sendEmailBulk(emailRecipients, (to) => {
     const { subject, html } = notificationEmail({
-      title: "We miss you on ContentVerse",
+      title: "We miss you on ContentVerse India",
       message: `New article: “${latest.title}” — come back and catch up.`,
       link,
     });

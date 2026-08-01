@@ -8,7 +8,7 @@ function layout(content: string, footerExtra?: string) {
 <body style="margin:0;padding:0;background:#0a0a0f;font-family:system-ui,-apple-system,sans-serif;color:#e4e4e7;">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;padding:32px 20px;">
     <tr><td style="padding-bottom:24px;">
-      <a href="${site}" style="font-size:20px;font-weight:800;color:#fff;text-decoration:none;">ContentVerse</a>
+      <a href="${site}" style="font-size:20px;font-weight:800;color:#fff;text-decoration:none;">ContentVerse India</a>
       <span style="color:#a855f7;font-size:13px;display:block;margin-top:4px;">Read. Create. Grow.</span>
     </td></tr>
     <tr><td style="background:#18181b;border:1px solid #27272a;border-radius:16px;padding:28px 24px;">
@@ -32,13 +32,13 @@ export function newsletterWelcomeEmail(unsubscribeUrl: string) {
   const site = getAppUrl();
   const html = layout(
     `<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Welcome to The Verse</h1>
-    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">You're subscribed to the ContentVerse newsletter. Every Friday we'll send top reads, creator spotlights, and what's trending.</p>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">You're subscribed to the ContentVerse India newsletter. Every Friday we'll send top reads, creator spotlights, and what's trending.</p>
     <p style="margin:0;line-height:1.65;color:#a1a1aa;font-size:14px;">Meanwhile, explore the latest stories on the site.</p>
     ${btn(site + "/blogs", "Browse articles")}`,
     `<p><a href="${unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`
   );
   return {
-    subject: "Welcome to ContentVerse — you're subscribed",
+    subject: "Welcome to ContentVerse India — you're subscribed",
     html,
   };
 }
@@ -76,7 +76,7 @@ export function weeklyDigestEmail(opts: {
     ${btn(site + "/blogs", "See all articles")}`,
     `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`
   );
-  return { subject: "Your weekly ContentVerse digest", html };
+  return { subject: "Your weekly ContentVerse India digest", html };
 }
 
 export function creatorWeeklyDigestEmail(opts: {
@@ -113,7 +113,7 @@ export function creatorWeeklyDigestEmail(opts: {
     ${commentBlock}
     ${btn(site + "/dashboard", "Open dashboard")}`,
   );
-  return { subject: "Your ContentVerse creator report", html };
+  return { subject: "Your ContentVerse India creator report", html };
 }
 
 export function morningBriefingEmail(opts: {
@@ -135,10 +135,10 @@ export function morningBriefingEmail(opts: {
     `<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">Your morning briefing</h1>
     <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Sports · Finance · Jobs picks for today</p>
     <ul style="margin:0;padding:0;list-style:none;">${list}</ul>
-    ${btn(site + "/blogs", "Open ContentVerse")}`,
+    ${btn(site + "/blogs", "Open ContentVerse India")}`,
     `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`
   );
-  return { subject: "ContentVerse morning briefing", html };
+  return { subject: "ContentVerse India morning briefing", html };
 }
 
 export function ottWeeklyEmail(opts: {
@@ -291,8 +291,8 @@ export function welcomeUserEmail(opts: {
   const site = getAppUrl();
   const first = (opts.name || "").trim().split(/\s+/)[0] || "there";
   const html = layout(
-    `<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Welcome to ContentVerse, ${escapeHtml(first)} 👋</h1>
-    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">You’re in. ContentVerse is where Indian creators read, publish, and grow — blogs, movies, money tools, and more in one place.</p>
+    `<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Welcome to ContentVerse India, ${escapeHtml(first)} 👋</h1>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">You’re in. ContentVerse India is where Indian creators read, publish, and grow — blogs, movies, money tools, and more in one place.</p>
     <p style="margin:0 0 8px;font-weight:600;color:#fff;">Start in 60 seconds</p>
     <ul style="margin:0 0 20px;padding-left:18px;color:#a1a1aa;line-height:1.7;font-size:14px;">
       <li><a href="${site}/blogs" style="color:#c4b5fd;">Read what’s trending</a> — fresh stories every day</li>
@@ -307,7 +307,7 @@ export function welcomeUserEmail(opts: {
       : ""
   );
   return {
-    subject: "Welcome to ContentVerse — you’re in ✨",
+    subject: "Welcome to ContentVerse India — you’re in ✨",
     html,
   };
 }
@@ -337,7 +337,7 @@ export function newUserNudgeEmail(opts: {
         : {
             title: "Come back — here’s what’s live",
             body: "Fresh blogs, CineVerse picks, and MoneyVerse tools are waiting. Pick one hub and explore for 5 minutes.",
-            cta: "Explore ContentVerse",
+            cta: "Explore ContentVerse India",
             href: `${site}/blogs`,
           };
 
@@ -372,7 +372,7 @@ export function blogPendingReviewAdminEmail(opts: {
     : escapeHtml(opts.authorName);
   const html = layout(
     `<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">New blog awaiting approval</h1>
-    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">A creator submitted a post for review on ContentVerse.</p>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">A creator submitted a post for review on ContentVerse India.</p>
     <p style="margin:0 0 8px;font-size:18px;font-weight:600;color:#fff;">${escapeHtml(opts.title)}</p>
     <p style="margin:0 0 6px;color:#a1a1aa;font-size:14px;">By ${authorLine}</p>
     ${opts.categoryName ? `<p style="margin:0 0 12px;color:#a855f7;font-size:13px;">Category: ${escapeHtml(opts.categoryName)}</p>` : ""}
@@ -399,7 +399,7 @@ export function notificationEmail(opts: {
   const html = layout(
     `<h1 style="margin:0 0 12px;font-size:20px;color:#fff;">${escapeHtml(opts.title)}</h1>
     <p style="margin:0;line-height:1.65;color:#d4d4d8;">${escapeHtml(opts.message)}</p>
-    ${opts.link ? btn(href, "Open in ContentVerse") : ""}`,
+    ${opts.link ? btn(href, "Open in ContentVerse India") : ""}`,
     opts.unsubscribeUrl
       ? `<p><a href="${opts.unsubscribeUrl}" style="color:#71717a;">Unsubscribe from emails</a></p>`
       : ""

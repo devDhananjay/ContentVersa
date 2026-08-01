@@ -18,7 +18,7 @@ export function HuidVerificationGuide() {
         </h2>
         <p className="mt-3 max-w-3xl text-sm text-muted-foreground leading-relaxed">
           BIS-mandated HUID verification helps buyers confirm that gold jewellery is
-          genuinely hallmarked. Use ContentVerse to check any 6-character Hallmark Unique
+          genuinely hallmarked. Use ContentVerse India to check any 6-character Hallmark Unique
           ID against the official BIS records — see jeweller, purity, weight and marking
           date before you buy or sell.
         </p>

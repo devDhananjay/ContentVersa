@@ -31,9 +31,9 @@ export default async function SportsHubPage() {
 
   return (
     <div className="space-y-8">
-      <HubEditorialIntro title="Sports on ContentVerse" className="container">
+      <HubEditorialIntro title="Sports on ContentVerse India" className="container">
         <p>
-          ContentVerse Sports Hub combines live cricket scores, fixtures, and headlines with
+          ContentVerse India Sports Hub combines live cricket scores, fixtures, and headlines with
           original sports writing from our community. Match pages and player stats are real-time
           utilities for fans — our primary value for readers and search engines is editorial:
           match previews, analysis, and long-form stories published by verified creators.

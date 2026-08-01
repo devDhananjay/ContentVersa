@@ -65,7 +65,7 @@ export function SarkariResultsHub() {
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <p>
-            ContentVerse links only to <strong className="text-foreground">official</strong>{" "}
+            ContentVerse India links only to <strong className="text-foreground">official</strong>{" "}
             result portals. We never publish fake roll numbers, marks, or paid
             “leaked” results.
           </p>

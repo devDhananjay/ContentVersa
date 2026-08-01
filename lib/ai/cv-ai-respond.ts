@@ -43,11 +43,11 @@ const MODE_LINKS: Partial<Record<CvAiModeId, { label: string; href: string }[]>>
 
 function systemForMode(modeId: CvAiModeId): string {
   const mode = getCvAiMode(modeId);
-  const base = `You are ContentVerse AI on ${SITE.name} (${SITE.url}).
-Product: ContentVerse AI — helpful India-first assistant (not financial/legal advice).
+  const base = `You are ContentVerse India AI on ${SITE.name} (${SITE.url}).
+Product: ContentVerse India AI — helpful India-first assistant (not financial/legal advice).
 Be clear, practical, and concise. Use short paragraphs or bullets.
 You may reply in English or Hindi to match the user.
-Never invent ContentVerse features that do not exist.
+Never invent ContentVerse India features that do not exist.
 Available modes: ${CV_AI_MODES.map((m) => m.id).join(", ")}.
 Current mode: ${mode.id} — ${mode.title}.`;
 
@@ -77,7 +77,7 @@ End with 2 short tips to improve the draft.`;
 Task: Help with personal-finance calculations and planning in India.
 Show formulas and step-by-step maths when useful. Round to ₹ sensibly.
 Always say estimates are illustrative — not advice.
-Point users to ContentVerse calculators when exact UI tools help (EMI, SIP, FD, tax).`;
+Point users to ContentVerse India calculators when exact UI tools help (EMI, SIP, FD, tax).`;
     case "pdf":
       return `${base}
 Task: Analyse pasted PDF/document text.
@@ -94,7 +94,7 @@ Explain it extracts amount, merchant/payee and category into MoneyVerse.`;
     case "ask":
     default:
       return `${base}
-Task: Answer helpfully about general questions and ContentVerse products
+Task: Answer helpfully about general questions and ContentVerse India products
 (MoneyVerse, CineVerse, GoldVerse, Finance, Sports, Jobs, Tools).
 Keep answers under ~180 words unless the user asks for depth.`;
   }
@@ -106,15 +106,15 @@ function localFallback(modeId: CvAiModeId, message: string): string {
     return `Open **${mode.title}** here: ${mode.toolHref}\n\n${mode.description}`;
   }
   if (modeId === "resume") {
-    return `Share your name, target role, city, education, skills and experience bullets — ContentVerse AI will draft a resume.\n\nYou wrote:\n${message.slice(0, 400)}`;
+    return `Share your name, target role, city, education, skills and experience bullets — ContentVerse India AI will draft a resume.\n\nYou wrote:\n${message.slice(0, 400)}`;
   }
   if (modeId === "summarize") {
-    return `Paste a longer article for a better summary. Tip: open any ContentVerse blog and use News in 60 for on-page summaries.`;
+    return `Paste a longer article for a better summary. Tip: open any ContentVerse India blog and use News in 60 for on-page summaries.`;
   }
   if (modeId === "finance") {
     return `Try our free calculators while AI is warming up:\n• EMI → /tools/emi-calculator\n• SIP → /tools/sip-calculator\n• FD → /tools/fd-calculator\n• Tax → /tools/salary-tax-calculator`;
   }
-  return `ContentVerse AI is ready for **${mode.title}**. ${mode.description}\n\nTry again in a moment, or browse /ai for all modes.`;
+  return `ContentVerse India AI is ready for **${mode.title}**. ${mode.description}\n\nTry again in a moment, or browse /ai for all modes.`;
 }
 
 export async function respondToCvAiChat(input: {

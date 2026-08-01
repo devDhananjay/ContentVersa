@@ -6,7 +6,7 @@ export const ACHIEVEMENT_CATALOG = [
   {
     code: "first-post",
     title: "First Post",
-    description: "Published your first article on ContentVerse.",
+    description: "Published your first article on ContentVerse India.",
     icon: "📝",
   },
   {
@@ -42,7 +42,7 @@ export const ACHIEVEMENT_CATALOG = [
   {
     code: "referral-bonus",
     title: "Community Builder",
-    description: "Invited a friend who joined ContentVerse.",
+    description: "Invited a friend who joined ContentVerse India.",
     icon: "🎁",
   },
   {

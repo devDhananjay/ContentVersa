@@ -40,14 +40,14 @@ async function main() {
     where: { userId: owner.id },
     create: {
       userId: owner.id,
-      bio: "Creator on ContentVerse. Building, writing, and shipping in public.",
+      bio: "Creator on ContentVerse India. Building, writing, and shipping in public.",
       headline: "Verified creator",
       isVerified: true,
       totalViews,
       totalLikes,
     },
     update: {
-      bio: "Creator on ContentVerse. Building, writing, and shipping in public.",
+      bio: "Creator on ContentVerse India. Building, writing, and shipping in public.",
       headline: "Verified creator",
       isVerified: true,
       totalViews,

@@ -26,7 +26,7 @@ export const SCREENSHOT_SCAN_OCR_FAQ = [
   },
   {
     q: "Is screenshot OCR free?",
-    a: "Yes. Sign in to your free ContentVerse account, upload a payment screenshot, review the extracted fields and save the expense to your MoneyVerse tracker.",
+    a: "Yes. Sign in to your free ContentVerse India account, upload a payment screenshot, review the extracted fields and save the expense to your MoneyVerse tracker.",
   },
   {
     q: "How accurate is OCR on UPI screenshots?",

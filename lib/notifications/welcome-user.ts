@@ -5,7 +5,7 @@ import { welcomeUserEmail } from "@/lib/email/templates";
 import { createUserNotification } from "@/lib/notifications/create";
 import { newsletterUnsubscribeUrl } from "@/lib/newsletter/subscribe";
 
-export const WELCOME_NOTIF_TITLE = "Welcome to ContentVerse";
+export const WELCOME_NOTIF_TITLE = "Welcome to ContentVerse India";
 
 function isRealEmail(email: string | null | undefined): email is string {
   const e = email?.trim().toLowerCase() ?? "";

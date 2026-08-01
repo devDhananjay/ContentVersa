@@ -84,7 +84,7 @@ export function BrandingSplash() {
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-transparent pointer-events-none"
       role="status"
-      aria-label="Loading ContentVerse"
+      aria-label="Loading ContentVerse India"
     >
       {loaderUrl ? (
         <GradientLoaderRing size={84} ringWidth={5}>

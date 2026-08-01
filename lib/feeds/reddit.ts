@@ -43,7 +43,7 @@ export async function fetchRedditRssFeed(
     `https://www.reddit.com/r/${subreddit}/hot.rss?limit=${limit + 4}`,
     {
       headers: {
-        "User-Agent": "ContentVerse/1.0 (+https://contentverse.co.in)",
+        "User-Agent": "ContentVerse India/1.0 (+https://contentverse.co.in)",
         Accept: "application/atom+xml",
       },
       next: { revalidate: 900 },

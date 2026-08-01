@@ -11,7 +11,7 @@ import {
 export const metadata: Metadata = buildMetadata({
   title: "Contact us",
   description:
-    "Get in touch with the ContentVerse team — partnerships, support, and creator enquiries.",
+    "Get in touch with the ContentVerse India team — partnerships, support, and creator enquiries.",
   path: "/contact",
 });
 

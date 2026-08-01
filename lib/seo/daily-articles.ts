@@ -125,7 +125,7 @@ async function topicsForCategory(
       )
       .join("\n");
 
-    const system = `You are an editorial strategist for ContentVerse (contentverse.co.in), an Indian content platform.
+    const system = `You are an editorial strategist for ContentVerse India (contentverse.co.in), an Indian content platform.
 Turn real Google News headlines into specific, SEO-friendly blog article ideas.
 Do not invent unrelated topics — ground each idea in the provided headlines.
 Return JSON only.`;

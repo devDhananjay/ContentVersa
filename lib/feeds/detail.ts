@@ -174,7 +174,7 @@ async function fetchTmdbDetail(id: string): Promise<FeedItem | null> {
 async function fetchGitHubDetail(id: string): Promise<FeedItem | null> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
-    "User-Agent": "ContentVerse",
+    "User-Agent": "ContentVerse India",
   };
   const token = process.env.GITHUB_TOKEN;
   if (token) headers.Authorization = `Bearer ${token}`;

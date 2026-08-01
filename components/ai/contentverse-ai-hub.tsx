@@ -115,7 +115,7 @@ export function ContentVerseAiHub() {
         },
       ]);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ContentVerse AI failed");
+      toast.error(err instanceof Error ? err.message : "ContentVerse India AI failed");
     } finally {
       setBusy(false);
     }
@@ -159,7 +159,7 @@ export function ContentVerseAiHub() {
           <div>
             <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-violet-300">
               <Sparkles className="h-3.5 w-3.5" />
-              ContentVerse AI · {mode.title}
+              ContentVerse India AI · {mode.title}
             </p>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
               {mode.description}
@@ -178,7 +178,7 @@ export function ContentVerseAiHub() {
         {mode.kind === "tool" ? (
           <div className="space-y-4 px-5 py-8">
             <p className="text-sm text-muted-foreground">
-              This mode opens a dedicated ContentVerse tool for uploads and structured
+              This mode opens a dedicated ContentVerse India tool for uploads and structured
               results:
             </p>
             <ul className="space-y-2 text-sm">
@@ -246,7 +246,7 @@ export function ContentVerseAiHub() {
               {busy ? (
                 <p className="inline-flex items-center gap-2 text-xs text-muted-foreground">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ContentVerse AI is thinking…
+                  ContentVerse India AI is thinking…
                 </p>
               ) : null}
             </div>
@@ -281,10 +281,10 @@ export function ContentVerseAiHub() {
 
       <section className="space-y-3">
         <h2 className="font-display text-xl font-semibold tracking-tight">
-          Why ContentVerse AI
+          Why ContentVerse India AI
         </h2>
         <p className="max-w-3xl text-sm text-muted-foreground">
-          Not just a chatbot — modes that connect to real ContentVerse products: MoneyVerse
+          Not just a chatbot — modes that connect to real ContentVerse India products: MoneyVerse
           bank PDFs & screenshot OCR, finance calculators, jobs, and India guides.
         </p>
       </section>

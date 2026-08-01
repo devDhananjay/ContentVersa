@@ -21,7 +21,7 @@ export function EnablePushButton({ onEnabled }: { onEnabled?: () => void }) {
     const result = await registerFirebasePushToken();
     if (result.token) {
       setStatus("ok");
-      setMessage("Browser notifications enabled. ContentVerse will appear in Safari → Websites → Notifications.");
+      setMessage("Browser notifications enabled. ContentVerse India will appear in Safari → Websites → Notifications.");
       onEnabled?.();
     } else {
       setStatus("err");

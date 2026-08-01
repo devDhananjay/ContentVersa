@@ -47,7 +47,7 @@ export function StayEngagedStrip() {
             Keep exploring
           </p>
           <h2 className="font-display text-xl md:text-2xl font-bold mt-1">
-            Stay on ContentVerse — there&apos;s always something next
+            Stay on ContentVerse India — there&apos;s always something next
           </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

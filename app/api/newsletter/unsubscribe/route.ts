@@ -19,8 +19,8 @@ export async function GET(req: Request) {
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Unsubscribed</title></head>
 <body style="font-family:system-ui,sans-serif;max-width:480px;margin:80px auto;text-align:center;padding:0 20px;">
 <h1>Unsubscribed</h1>
-<p>You will no longer receive ContentVerse newsletter emails.</p>
-<p><a href="https://contentverse.co.in">Back to ContentVerse</a></p>
+<p>You will no longer receive ContentVerse India newsletter emails.</p>
+<p><a href="https://contentverse.co.in">Back to ContentVerse India</a></p>
 </body></html>`;
 
   return new NextResponse(html, {

@@ -168,7 +168,7 @@ async function fetchHtml(url: string): Promise<string | null> {
     const res = await fetch(url, {
       headers: {
         "User-Agent":
-          "ContentVerseFuelBot/1.0 (+https://contentverse.co.in; fuel price lookup)",
+          "ContentVerse IndiaFuelBot/1.0 (+https://contentverse.co.in; fuel price lookup)",
         Accept: "text/html,application/xhtml+xml",
       },
       next: { revalidate: 10800 },

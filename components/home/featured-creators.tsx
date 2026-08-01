@@ -69,7 +69,7 @@ export function FeaturedCreators({ creators }: Props) {
                 </div>
                 <p className="text-xs text-muted-foreground truncate">@{c.username}</p>
                 <p className="mt-2 text-xs text-muted-foreground line-clamp-2 leading-snug min-h-[2lh]">
-                  {c.bio || "Creator on ContentVerse"}
+                  {c.bio || "Creator on ContentVerse India"}
                 </p>
                 <div className="mt-3 flex items-center justify-center gap-2">
                   <Badge variant="secondary" className="text-[10px]">

@@ -17,7 +17,7 @@ export async function fetchGitHubTrendingFeed(limit = 8): Promise<FeedItem[]> {
 
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
-    "User-Agent": "ContentVerse",
+    "User-Agent": "ContentVerse India",
   };
   const token = process.env.GITHUB_TOKEN;
   if (token) headers.Authorization = `Bearer ${token}`;

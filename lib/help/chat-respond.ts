@@ -92,20 +92,20 @@ function helpSystemPrompt(pagePath: string | undefined, locale: "en" | "hi") {
   const nav = SITE_MAP_NAV.links.map((l) => `${l.label}: ${l.href}`).join(", ");
   const langRule =
     locale === "hi"
-      ? "CRITICAL: Reply ONLY in Hindi (Devanagari script). Do not write English sentences — proper nouns like ContentVerse are fine."
+      ? "CRITICAL: Reply ONLY in Hindi (Devanagari script). Do not write English sentences — proper nouns like ContentVerse India are fine."
       : "CRITICAL: Reply ONLY in English. Do not use Hindi or Devanagari script.";
 
   const onTrending = Boolean(pagePath?.startsWith("/trending"));
   const scope = onTrending
     ? `The user is on a Google Trends India topic page (${pagePath}).
 You MAY explain that trending topic in plain language, answer follow-up doubts, and summarize public news context.
-Also help with ContentVerse navigation when asked.
+Also help with ContentVerse India navigation when asked.
 Keep replies under 160 words. Do not invent breaking news facts — if unsure, say coverage is developing.`
-    : `Answer ONLY about ContentVerse: blogs, reels, sports, finance, jobs, creator dashboard, premium (₹199/mo), newsletter (opt-in only), contact.
+    : `Answer ONLY about ContentVerse India: blogs, reels, sports, finance, jobs, creator dashboard, premium (₹199/mo), newsletter (opt-in only), contact.
 Keep replies under 120 words. Use bullet points when listing steps.
 Never invent features. If unsure, suggest /contact or /site-map.`;
 
-  return `You are ContentVerse Help — a short, friendly site assistant (NOT a generic chatbot).
+  return `You are ContentVerse India Help — a short, friendly site assistant (NOT a generic chatbot).
 ${scope}
 ${langRule}
 Current page path: ${pagePath || "/"}
@@ -132,9 +132,9 @@ async function askGemini(
   return callGeminiText(helpSystemPrompt(pagePath, locale), user, 320);
 }
 
-const WELCOME_GEMINI_SYSTEM = `You are ContentVerse Help greeting a new website visitor.
+const WELCOME_GEMINI_SYSTEM = `You are ContentVerse India Help greeting a new website visitor.
 Write a warm welcome in 2-3 short paragraphs (max 90 words total).
-Briefly say you help with blogs, reels, finance, sports, jobs, and writing on ContentVerse.
+Briefly say you help with blogs, reels, finance, sports, jobs, and writing on ContentVerse India.
 End by inviting them to subscribe to the free weekly newsletter (opt-in only, unsubscribe anytime).
 No markdown headers. You may use **bold** sparingly. Do not invent features.`;
 
@@ -147,8 +147,8 @@ export async function generateWelcomeMessage(
   if (isGeminiConfigured()) {
     const prompt =
       locale === "hi"
-        ? "नए visitor को ContentVerse पर स्वागत करो। Hello और Namaste दोनों बोलो। पूरा जवाब हिंदी (देवनागरी) में लिखो।"
-        : "Greet a new visitor landing on ContentVerse. Start with Hello! Write the entire reply in English only.";
+        ? "नए visitor को ContentVerse India पर स्वागत करो। Hello और Namaste दोनों बोलो। पूरा जवाब हिंदी (देवनागरी) में लिखो।"
+        : "Greet a new visitor landing on ContentVerse India. Start with Hello! Write the entire reply in English only.";
     const system =
       locale === "hi"
         ? `${WELCOME_GEMINI_SYSTEM}\nCRITICAL: Write ONLY in Hindi (Devanagari). Start with Hello! and Namaste!`

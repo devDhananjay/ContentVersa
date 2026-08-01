@@ -80,7 +80,7 @@ export async function lookupPnr(pnr: string): Promise<PnrLookupResult> {
     const res = await fetch(url, {
       headers: {
         Accept: "application/json",
-        "User-Agent": "ContentVerse/1.0 (+https://contentverse.co.in)",
+        "User-Agent": "ContentVerse India/1.0 (+https://contentverse.co.in)",
       },
       signal: AbortSignal.timeout(6000),
       cache: "no-store",

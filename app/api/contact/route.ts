@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
     const sent = await sendEmail({
       to: CONTACT_EMAIL,
-      subject: `[ContentVerse Contact] ${body.subject}`,
+      subject: `[ContentVerse India Contact] ${body.subject}`,
       html,
       text: `From: ${body.name} <${body.email}>\nSubject: ${body.subject}\n\n${body.message}`,
       replyTo: body.email,

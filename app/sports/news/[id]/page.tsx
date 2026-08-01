@@ -91,7 +91,7 @@ export default async function CricketNewsPage({
         Source: Cricbuzz via RapidAPI. For editorial opinion and community
         discussion,{" "}
         <Link href="/category/sports" className="underline hover:text-foreground">
-          read sports blogs on ContentVerse
+          read sports blogs on ContentVerse India
         </Link>
         .
       </p>

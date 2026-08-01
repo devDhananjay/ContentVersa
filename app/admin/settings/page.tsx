@@ -28,7 +28,7 @@ export default function CMSSettingsPage() {
           <div className="space-y-4">
             <div className="space-y-1.5">
               <Label>Site title</Label>
-              <Input defaultValue="ContentVerse" />
+              <Input defaultValue="ContentVerse India" />
             </div>
             <div className="space-y-1.5">
               <Label>Tagline</Label>
@@ -36,7 +36,7 @@ export default function CMSSettingsPage() {
             </div>
             <div className="space-y-1.5">
               <Label>Default meta description</Label>
-              <Textarea defaultValue="ContentVerse is the next-generation creator platform for blogs and content." />
+              <Textarea defaultValue="ContentVerse India is the next-generation creator platform for blogs and content." />
             </div>
           </div>
         </section>

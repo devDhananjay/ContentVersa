@@ -13,12 +13,12 @@ export function toolPageUrl(slug: string) {
 export function toolFaq(tool: ToolDef) {
   const base = [
     {
-      q: `Is the ${tool.shortTitle} free on ContentVerse?`,
-      a: "Yes. All India utility tools on ContentVerse are free to use with no sign-up required.",
+      q: `Is the ${tool.shortTitle} free on ContentVerse India?`,
+      a: "Yes. All India utility tools on ContentVerse India are free to use with no sign-up required.",
     },
     {
       q: "Is this an official government website?",
-      a: "No. ContentVerse is an independent platform. We use public datasets and open APIs. For official records, use government portals like Parivahan, GST, FoSCoS, or ECI.",
+      a: "No. ContentVerse India is an independent platform. We use public datasets and open APIs. For official records, use government portals like Parivahan, GST, FoSCoS, or ECI.",
     },
   ];
 
@@ -50,7 +50,7 @@ export function toolFaq(tool: ToolDef) {
     tool.slug === "images-to-pdf"
   ) {
     base.push({
-      q: "Are my PDF files uploaded to ContentVerse?",
+      q: "Are my PDF files uploaded to ContentVerse India?",
       a: "No. PDF tools run entirely in your browser. Files stay on your device and are not sent to our servers.",
     });
     base.push({
@@ -80,7 +80,7 @@ export function toolFaq(tool: ToolDef) {
   if (tool.slug === "pnr-status" || tool.slug === "train-running-status") {
     base.push({
       q: "Is this an official IRCTC tool?",
-      a: "No. ContentVerse helps you validate input and open trusted enquiry sites (ConfirmTkt, RailYatri, NTES). Always reconfirm on IRCTC before travel.",
+      a: "No. ContentVerse India helps you validate input and open trusted enquiry sites (ConfirmTkt, RailYatri, NTES). Always reconfirm on IRCTC before travel.",
     });
   }
 

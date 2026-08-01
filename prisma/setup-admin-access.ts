@@ -48,7 +48,7 @@ async function main() {
   const platformAdmin = await upsertAdminUser(
     "admin@contentverse.app",
     "admin",
-    "ContentVerse Admin",
+    "ContentVerse India Admin",
     UserRole.SUPER_ADMIN
   );
   console.log(`✓ admin@contentverse.app → SUPER_ADMIN (password: ${ADMIN_PASSWORD})`);

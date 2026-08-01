@@ -15,7 +15,7 @@ export function CineverseBlogSection({ blogs }: { blogs: Blog[] }) {
             Movie <span className="text-gradient">News & Reviews</span>
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Bollywood, OTT and cinema stories from ContentVerse creators
+            Bollywood, OTT and cinema stories from ContentVerse India creators
           </p>
         </div>
         <Link href="/blogs?category=movies" className="hidden md:block">

@@ -127,7 +127,7 @@ async function fetchGeminiTopics(
   const subs = cat?.subcategories?.join(", ") ?? "";
   const day = istDayKey();
 
-  const system = `You are an editorial strategist for ContentVerse (contentverse.co.in), an Indian content platform.
+  const system = `You are an editorial strategist for ContentVerse India (contentverse.co.in), an Indian content platform.
 Suggest timely, searchable article ideas that Indian readers would search for today.
 Focus on current trends, seasonal events, news angles, and practical guides — not generic listicles.
 Return JSON only.`;

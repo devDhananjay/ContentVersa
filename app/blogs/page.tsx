@@ -15,10 +15,10 @@ const PAGE_SIZE = 18;
 export const metadata: Metadata = buildMetadata({
   title: "Explore articles",
   description:
-    "Browse every article on ContentVerse. Filter by category, search, and sort — stories, guides, and India topics.",
+    "Browse every article on ContentVerse India. Filter by category, search, and sort — stories, guides, and India topics.",
   path: "/blogs",
   keywords: [
-    "ContentVerse articles",
+    "ContentVerse India articles",
     "Explore blogs India",
     "read articles",
     "India content",
@@ -115,10 +115,10 @@ export default async function BlogsPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Explore articles · ContentVerse",
+    name: "Explore articles · ContentVerse India",
     url: `${SITE.url}/blogs`,
     description:
-      "Browse articles on ContentVerse — filter by category, search, and sort.",
+      "Browse articles on ContentVerse India — filter by category, search, and sort.",
     numberOfItems: list.length,
     isPartOf: { "@type": "WebSite", name: SITE.name, url: SITE.url },
   };

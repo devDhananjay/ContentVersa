@@ -46,6 +46,6 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.error("[ai/chat]", err);
-    return NextResponse.json({ error: "ContentVerse AI failed" }, { status: 500 });
+    return NextResponse.json({ error: "ContentVerse India AI failed" }, { status: 500 });
   }
 }

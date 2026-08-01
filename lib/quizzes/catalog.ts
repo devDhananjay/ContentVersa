@@ -41,7 +41,7 @@ export const QUIZ_BANK: DailyQuiz[] = [
   },
   {
     key: "creator-streak",
-    question: "On ContentVerse, reading streaks count when you…",
+    question: "On ContentVerse India, reading streaks count when you…",
     options: [
       { id: "a", label: "Read at least ~60s or 30% progress in a day" },
       { id: "b", label: "Open the homepage once" },
@@ -50,7 +50,7 @@ export const QUIZ_BANK: DailyQuiz[] = [
     ],
     correctOptionId: "a",
     explanation: "Streaks reward genuine reading time or meaningful scroll depth.",
-    category: "ContentVerse",
+    category: "ContentVerse India",
   },
   {
     key: "india-upi",

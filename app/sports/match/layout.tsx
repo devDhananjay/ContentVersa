@@ -3,7 +3,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Match",
-  description: "Live cricket match on ContentVerse Sports Hub.",
+  description: "Live cricket match on ContentVerse India Sports Hub.",
   noIndex: true,
 });
 

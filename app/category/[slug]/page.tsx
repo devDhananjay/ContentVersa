@@ -64,7 +64,7 @@ export default async function CategoryPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `${cat.name} · ContentVerse`,
+    name: `${cat.name} · ContentVerse India`,
     description: cat.description,
     url: `${SITE.url}/category/${cat.slug}`,
     numberOfItems: blogs.length,

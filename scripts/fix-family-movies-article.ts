@@ -173,7 +173,7 @@ async function main() {
       title: TITLE,
       excerpt: EXCERPT,
       content: CONTENT,
-      metaTitle: `${TITLE} | ContentVerse`,
+      metaTitle: `${TITLE} | ContentVerse India`,
       metaDescription: META_DESCRIPTION,
       metaKeywords:
         "family movies OTT 2026, summer movies India, Netflix family films, Disney Hotstar kids, Prime Video family, JioCinema movies",

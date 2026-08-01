@@ -129,12 +129,12 @@ export function matchHeadlineToSpike(
 
 function shortNewsBlurb(h: GoogleNewsHeadline, laneTitle?: string): string {
   if (h.source && laneTitle) {
-    return `${laneTitle} buzz from ${h.source} — open for a short ContentVerse briefing.`;
+    return `${laneTitle} buzz from ${h.source} — open for a short ContentVerse India briefing.`;
   }
   if (h.source) {
-    return `Breaking coverage from ${h.source} — open for a short ContentVerse briefing.`;
+    return `Breaking coverage from ${h.source} — open for a short ContentVerse India briefing.`;
   }
-  return "In the India news cycle right now — open for context without leaving ContentVerse.";
+  return "In the India news cycle right now — open for context without leaving ContentVerse India.";
 }
 
 function toHubNews(

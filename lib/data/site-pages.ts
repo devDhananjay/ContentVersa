@@ -39,20 +39,20 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Company",
     title: "Building the home for bold writers",
     subtitle:
-      "ContentVerse is a creator-first publishing platform — built in India, for readers and writers who care about depth, design, and fair monetization in rupees.",
+      "ContentVerse India is a creator-first publishing platform — built in India, for readers and writers who care about depth, design, and fair monetization in rupees.",
     sections: [
       {
         heading: "Our mission",
         paragraphs: [
-          "We started ContentVerse because great writing deserves more than a noisy feed and a broken payout model. Our goal is simple: help creators publish beautifully, grow an audience that actually reads, and earn in Indian Rupees — transparently.",
+          "We started ContentVerse India because great writing deserves more than a noisy feed and a broken payout model. Our goal is simple: help creators publish beautifully, grow an audience that actually reads, and earn in Indian Rupees — transparently.",
           "From long-form essays and News in 60 shorts to polls, tips, and creator dashboards — every feature is designed around the writer’s studio, not the algorithm’s mood. We believe India’s internet deserves world-class editorial tools that respect both creators and readers.",
-          "ContentVerse (contentverse.co.in) is an India-first platform. We publish and host original work in English and Hindi, with human moderation, clear policies, and compliance with Indian law including the IT Act, 2000, IT Rules, 2021, and the Digital Personal Data Protection Act, 2023.",
+          "ContentVerse India (contentverse.co.in) is an India-first platform. We publish and host original work in English and Hindi, with human moderation, clear policies, and compliance with Indian law including the IT Act, 2000, IT Rules, 2021, and the Digital Personal Data Protection Act, 2023.",
         ],
       },
       {
         heading: "What we offer readers",
         paragraphs: [
-          "Readers come to ContentVerse for long-form articles they can bookmark and share — explainers, tutorials, opinion, and reporting across technology, finance, lifestyle, sports, careers, and more.",
+          "Readers come to ContentVerse India for long-form articles they can bookmark and share — explainers, tutorials, opinion, and reporting across technology, finance, lifestyle, sports, careers, and more.",
           "Live cricket scores, market data, and job listings sit alongside our writing as utilities. They help you stay informed, but our primary value — and what we ask search engines to rank — is original editorial content that meets our quality bar.",
         ],
         bullets: [
@@ -129,12 +129,12 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
   careers: {
     slug: "careers",
     badge: "Careers",
-    title: "Come build ContentVerse with us",
+    title: "Come build ContentVerse India with us",
     subtitle:
       "We’re a small, focused team shipping fast for creators across India. If you love writing, product, community, or engineering — we’d like to meet you.",
     sections: [
       {
-        heading: "Why join ContentVerse",
+        heading: "Why join ContentVerse India",
         paragraphs: [
           "You’ll work on a real product used by readers and writers every day — not a slide deck. We care about editorial quality, fair monetization in rupees, and tools that respect Indian creators.",
           "We are remote-friendly within India, async-first, and serious about ownership. You will ship visible features, talk to creators, and help set the standard for long-form publishing online.",
@@ -164,7 +164,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
           {
             title: "Growth & Partnerships",
             description:
-              "Help creators and partners discover ContentVerse — campaigns, campus programs, and ethical growth experiments.",
+              "Help creators and partners discover ContentVerse India — campaigns, campus programs, and ethical growth experiments.",
             meta: "Contract · India",
           },
         ],
@@ -193,7 +193,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
       {
         heading: "How to apply",
         paragraphs: [
-          `Email ${CONTACT_EMAIL} with the role in the subject line. Include a short note on why ContentVerse, links to your work, and your preferred start timeline. We aim to reply within two weeks.`,
+          `Email ${CONTACT_EMAIL} with the role in the subject line. Include a short note on why ContentVerse India, links to your work, and your preferred start timeline. We aim to reply within two weeks.`,
         ],
       },
       {
@@ -206,12 +206,12 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Press",
     title: "Press & media",
     subtitle:
-      "Resources for journalists, partners, and creators covering ContentVerse — India’s home for long-form publishing.",
+      "Resources for journalists, partners, and creators covering ContentVerse India — India’s home for long-form publishing.",
     sections: [
       {
-        heading: "About ContentVerse",
+        heading: "About ContentVerse India",
         paragraphs: [
-          "ContentVerse (contentverse.co.in) is an India-first creator publishing platform focused on long-form writing, short news formats, monetization in INR, and community features like polls, tips, reactions, and leaderboards.",
+          "ContentVerse India (contentverse.co.in) is an India-first creator publishing platform focused on long-form writing, short news formats, monetization in INR, and community features like polls, tips, reactions, and leaderboards.",
           "We combine a writer’s studio (drafts, scheduling, SEO, AI assist, analytics) with human moderation so the public library stays original and useful. Live sports scores, market data, and job listings complement articles as reader utilities — not as thin pages we ask search engines to rank.",
           "Our policies align with Indian law (IT Act, IT Rules 2021, DPDP Act 2023) and Google AdSense publisher standards for quality content and advertising disclosures.",
         ],
@@ -219,13 +219,13 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
       {
         heading: "Boilerplate (short)",
         paragraphs: [
-          "ContentVerse is a next-generation creator platform for readers and writers — built in India for depth, design, and fair rupee payouts.",
+          "ContentVerse India is a next-generation creator platform for readers and writers — built in India for depth, design, and fair rupee payouts.",
         ],
       },
       {
         heading: "Boilerplate (long)",
         paragraphs: [
-          "ContentVerse is an India-first publishing platform where writers, journalists, and creators publish long-form articles, tutorials, and opinion in English and Hindi. The product includes editorial moderation, a Creator Program with tips and featuring, transparent analytics, and legal pages covering privacy, cookies (including Google advertising), terms, and content standards.",
+          "ContentVerse India is an India-first publishing platform where writers, journalists, and creators publish long-form articles, tutorials, and opinion in English and Hindi. The product includes editorial moderation, a Creator Program with tips and featuring, transparent analytics, and legal pages covering privacy, cookies (including Google advertising), terms, and content standards.",
         ],
       },
       {
@@ -243,7 +243,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
           {
             title: "Logo & name",
             description:
-              "Use “ContentVerse” — one word, capital C and V. Do not alter the logo colours or stretch the mark.",
+              "Use “ContentVerse India” — one word, capital C and V. Do not alter the logo colours or stretch the mark.",
             meta: "Brand",
           },
           {
@@ -282,7 +282,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
   premium: {
     slug: "premium",
     badge: "Premium",
-    title: "ContentVerse Premium",
+    title: "ContentVerse India Premium",
     subtitle:
       "Unlock deeper analytics, priority review, and premium placement for your best work — priced fairly in rupees.",
     sections: [
@@ -327,7 +327,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
   "creator-program": {
     slug: "creator-program",
     badge: "Creators",
-    title: "ContentVerse Creator Program",
+    title: "ContentVerse India Creator Program",
     subtitle:
       "Publish, grow, and earn — with editorial support, verification, and monetization built in. Quality over follower count.",
     sections: [
@@ -412,12 +412,12 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Legal",
     title: "Terms of Service",
     subtitle:
-      "Last updated: July 2026. By using ContentVerse (contentverse.co.in) you agree to these terms under Indian law.",
+      "Last updated: July 2026. By using ContentVerse India (contentverse.co.in) you agree to these terms under Indian law.",
     sections: [
       {
         heading: "Agreement & eligibility",
         paragraphs: [
-          "These Terms govern access to ContentVerse, an India-first publishing platform operated for users in India and worldwide. By creating an account or using the site you accept these Terms, our Content Policy, Privacy Policy, and Cookie Policy.",
+          "These Terms govern access to ContentVerse India, an India-first publishing platform operated for users in India and worldwide. By creating an account or using the site you accept these Terms, our Content Policy, Privacy Policy, and Cookie Policy.",
           "You must be at least 18 years old, or use the service only with a parent or guardian’s consent where Indian law requires it. You must provide accurate registration details and keep your password secure.",
         ],
       },
@@ -433,7 +433,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         heading: "Your content & licence",
         bullets: [
           "You retain ownership of original work you publish.",
-          "You grant ContentVerse a worldwide, non-exclusive licence to host, display, distribute, and promote your content on the platform and in related marketing.",
+          "You grant ContentVerse India a worldwide, non-exclusive licence to host, display, distribute, and promote your content on the platform and in related marketing.",
           "You confirm you have all rights to text, images, and media you upload, and that your content does not infringe copyright, trademark, or privacy rights.",
           "We may remove or restrict content that violates these Terms, our Content Policy, or Indian law, including orders under the IT Act and IT Rules, 2021.",
         ],
@@ -454,14 +454,14 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
       {
         heading: "Intermediary status",
         paragraphs: [
-          "ContentVerse acts as an intermediary under the Information Technology Act, 2000 and the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021. We provide tools for users to publish and interact; we do not pre-author every word, but we moderate reported content and enforce our policies.",
+          "ContentVerse India acts as an intermediary under the Information Technology Act, 2000 and the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021. We provide tools for users to publish and interact; we do not pre-author every word, but we moderate reported content and enforce our policies.",
           "We maintain a grievance redressal contact for complaints about content or accounts. Contact details appear below.",
         ],
       },
       {
         heading: "Limitation of liability",
         paragraphs: [
-          "To the extent permitted by Indian law, ContentVerse is provided on an “as is” and “as available” basis. We are not liable for indirect, incidental, or consequential damages arising from use of the service, third-party ads, or user-generated content.",
+          "To the extent permitted by Indian law, ContentVerse India is provided on an “as is” and “as available” basis. We are not liable for indirect, incidental, or consequential damages arising from use of the service, third-party ads, or user-generated content.",
           "Nothing in these Terms limits liability that cannot be limited under applicable law, including fraud or personal injury caused by negligence where such limits are prohibited.",
         ],
       },
@@ -481,12 +481,12 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Legal",
     title: "Privacy Policy",
     subtitle:
-      "Last updated: July 2026. How ContentVerse collects, uses, and protects personal data under Indian law (including the DPDP Act, 2023).",
+      "Last updated: July 2026. How ContentVerse India collects, uses, and protects personal data under Indian law (including the DPDP Act, 2023).",
     sections: [
       {
         heading: "Who we are",
         paragraphs: [
-          "ContentVerse (contentverse.co.in) is a publishing platform for readers and creators. This Privacy Policy explains how we process personal data when you visit, register, publish, tip, or interact with ads on our site.",
+          "ContentVerse India (contentverse.co.in) is a publishing platform for readers and creators. This Privacy Policy explains how we process personal data when you visit, register, publish, tip, or interact with ads on our site.",
         ],
       },
       {
@@ -542,7 +542,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
       {
         heading: "Children",
         paragraphs: [
-          "ContentVerse is not directed at children under 18. If you believe we have collected data from a minor without appropriate consent, contact us and we will take steps to delete it.",
+          "ContentVerse India is not directed at children under 18. If you believe we have collected data from a minor without appropriate consent, contact us and we will take steps to delete it.",
         ],
       },
       {
@@ -555,7 +555,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Legal",
     title: "Cookie Policy",
     subtitle:
-      "Last updated: July 2026. How ContentVerse uses cookies and similar technologies, including advertising cookies for Google AdSense.",
+      "Last updated: July 2026. How ContentVerse India uses cookies and similar technologies, including advertising cookies for Google AdSense.",
     sections: [
       {
         heading: "What are cookies?",
@@ -583,7 +583,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
       {
         heading: "Managing cookies",
         paragraphs: [
-          "You can block or delete cookies in your browser settings. Essential cookies are required for sign-in and core security; if you block them, parts of ContentVerse may not work.",
+          "You can block or delete cookies in your browser settings. Essential cookies are required for sign-in and core security; if you block them, parts of ContentVerse India may not work.",
           "Where required, we will seek consent for non-essential cookies. You may withdraw consent by clearing cookies and adjusting browser settings.",
         ],
       },
@@ -603,12 +603,12 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Legal",
     title: "Content Policy",
     subtitle:
-      "Last updated: July 2026. Editorial standards for publishing on ContentVerse — aligned with Indian law and Google AdSense publisher policies.",
+      "Last updated: July 2026. Editorial standards for publishing on ContentVerse India — aligned with Indian law and Google AdSense publisher policies.",
     sections: [
       {
         heading: "Purpose",
         paragraphs: [
-          "ContentVerse is built for original, useful long-form writing. This Content Policy protects readers, creators, and the integrity of the platform. It applies to articles, comments, profiles, reels captions, and other user-generated content.",
+          "ContentVerse India is built for original, useful long-form writing. This Content Policy protects readers, creators, and the integrity of the platform. It applies to articles, comments, profiles, reels captions, and other user-generated content.",
         ],
       },
       {

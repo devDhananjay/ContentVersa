@@ -35,8 +35,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildMetadata({
     title: `${title} — Trending in India`,
     description: live
-      ? `Why "${title}" is trending in India today. Short briefing, related headlines, and ask ContentVerse chat — stay on site.`
-      : `"${title}" is no longer in India's active trends list. Browse live trends on ContentVerse.`,
+      ? `Why "${title}" is trending in India today. Short briefing, related headlines, and ask ContentVerse India chat — stay on site.`
+      : `"${title}" is no longer in India's active trends list. Browse live trends on ContentVerse India.`,
     path: trendPath(slug),
     keywords: [
       title,
@@ -142,7 +142,7 @@ export default async function TrendingTopicPage({ params }: Props) {
           {title}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Briefing on ContentVerse — read here, ask follow-ups in chat, no need
+          Briefing on ContentVerse India — read here, ask follow-ups in chat, no need
           to leave for Google Search.
         </p>
         <AskAboutTrend title={title} />
@@ -201,7 +201,7 @@ export default async function TrendingTopicPage({ params }: Props) {
           </ul>
           <p className="text-xs text-muted-foreground">
             Headlines open on publisher sites. The briefing above stays on
-            ContentVerse for reading + chat.
+            ContentVerse India for reading + chat.
           </p>
         </section>
       ) : null}
@@ -211,7 +211,7 @@ export default async function TrendingTopicPage({ params }: Props) {
       <section className="rounded-2xl border border-border/50 bg-gradient-to-br from-orange-500/10 to-pink-500/5 p-5 space-y-3">
         <h2 className="font-display text-lg font-bold">Have a doubt?</h2>
         <p className="text-sm text-muted-foreground">
-          Open ContentVerse chat and ask anything about this topic — in English
+          Open ContentVerse India chat and ask anything about this topic — in English
           or Hindi.
         </p>
         <AskAboutTrend title={title} />

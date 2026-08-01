@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
     const res = await fetch(url.toString(), {
       headers: {
-        "User-Agent": "ContentVerse/1.0 (https://contentverse.co.in; tools@contentverse.co.in)",
+        "User-Agent": "ContentVerse India/1.0 (https://contentverse.co.in; tools@contentverse.co.in)",
         Accept: "application/json",
       },
       next: { revalidate: 3600 },

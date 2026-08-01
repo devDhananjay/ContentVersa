@@ -8,9 +8,9 @@ type ShareLocale = "en" | "hi";
 
 function buildShareText(locale: ShareLocale, title: string, url: string) {
   if (locale === "hi") {
-    return `📖 ${title}\n\nContentVerse pe padho 👇\n${url}\n\n#ContentVerse`;
+    return `📖 ${title}\n\nContentVerse India pe padho 👇\n${url}\n\n#ContentVerse India`;
   }
-  return `📖 ${title}\n\nRead this on ContentVerse 👇\n${url}\n\n#ContentVerse`;
+  return `📖 ${title}\n\nRead this on ContentVerse India 👇\n${url}\n\n#ContentVerse India`;
 }
 
 /** Sticky WhatsApp CTA after ~40% scroll — India forward culture. */

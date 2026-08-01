@@ -285,7 +285,7 @@ export function TrendingHub({
           </h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          Top India headlines right now — short blurbs on ContentVerse.
+          Top India headlines right now — short blurbs on ContentVerse India.
         </p>
         {news.length > 0 ? (
           <ul className="grid gap-4 sm:grid-cols-2">

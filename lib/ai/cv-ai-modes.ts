@@ -45,14 +45,14 @@ export const CV_AI_MODES: CvAiMode[] = [
     id: "ask",
     title: "Ask Anything",
     shortTitle: "Ask",
-    description: "Questions about India life, ContentVerse, careers, money, movies and more.",
+    description: "Questions about India life, ContentVerse India, careers, money, movies and more.",
     placeholder: "Ask anything — e.g. How do SIPs work for beginners?",
     kind: "chat",
     icon: MessageCircleQuestion,
-    keywords: ["ask anything", "AI assistant India", "ContentVerse AI"],
+    keywords: ["ask anything", "AI assistant India", "ContentVerse India AI"],
     examples: [
       "What is HUID on gold jewellery?",
-      "Best free tools on ContentVerse?",
+      "Best free tools on ContentVerse India?",
       "How to track UPI expenses?",
     ],
   },
@@ -182,7 +182,7 @@ export function cvAiModePath(id: CvAiModeId) {
 }
 
 export const CV_AI_KEYWORDS = [
-  "ContentVerse AI",
+  "ContentVerse India AI",
   "AI assistant India",
   "summarize article",
   "bank statement analyzer AI",
@@ -195,17 +195,17 @@ export const CV_AI_KEYWORDS = [
 
 export const CV_AI_FAQS = [
   {
-    question: "What is ContentVerse AI?",
+    question: "What is ContentVerse India AI?",
     answer:
-      "ContentVerse AI is ContentVerse India's AI product — ask anything, summarise articles, explain topics simply, compare options, draft resumes, get finance help, analyse PDF text, and jump into Bank Statement Analyzer or Screenshot OCR.",
+      "ContentVerse India AI is ContentVerse India's AI product — ask anything, summarise articles, explain topics simply, compare options, draft resumes, get finance help, analyse PDF text, and jump into Bank Statement Analyzer or Screenshot OCR.",
   },
   {
-    question: "Can ContentVerse AI analyse my bank statement PDF?",
+    question: "Can ContentVerse India AI analyse my bank statement PDF?",
     answer:
       "Yes. Use Analyze Bank Statement to open MoneyVerse Bank Statement Analyzer. Upload a PDF to see total income, total expense, top spending category, monthly average and subscription-style detections. Sign-in and free quota apply.",
   },
   {
-    question: "Is ContentVerse AI free?",
+    question: "Is ContentVerse India AI free?",
     answer:
       "Ask, summarise, explain, compare, resume and finance chat modes are free to try. Screenshot OCR and bank statement analysis need a signed-in account; bank PDF analysis has a free per-user quota.",
   },
