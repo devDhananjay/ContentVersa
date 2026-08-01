@@ -38,6 +38,7 @@ function LogoText({
         className={cn(
           "font-semibold tracking-tight",
           immersive ? "text-white/85" : "text-muted-foreground",
+          "hidden xl:inline",
           className.includes("text-lg")
             ? "text-[0.65em]"
             : className.includes("text-3xl")

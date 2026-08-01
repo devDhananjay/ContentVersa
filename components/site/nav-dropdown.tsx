@@ -28,7 +28,7 @@ export function NavDropdown({
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          "inline-flex items-center gap-1 rounded-full px-3 py-2 text-xs xl:text-sm font-medium outline-none transition-colors",
+          "inline-flex items-center gap-1 rounded-full px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium outline-none transition-colors",
           "focus-visible:ring-2 focus-visible:ring-neon-purple/40",
           immersive
             ? active

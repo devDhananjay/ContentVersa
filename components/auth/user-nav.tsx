@@ -61,7 +61,7 @@ export function UserNav() {
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden xl:inline truncate min-w-0">
+          <span className="hidden 2xl:inline truncate min-w-0">
             {displayName}
           </span>
         </Button>

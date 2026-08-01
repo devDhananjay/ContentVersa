@@ -64,13 +64,13 @@ export function Navbar({
         !embedded && "border-b border-border/50 bg-background/95 backdrop-blur-xl"
       )}
     >
-      <div className="container flex h-[3.75rem] items-center gap-2 lg:gap-3 flex-nowrap min-w-0">
+      <div className="container flex h-[3.75rem] items-center gap-2 xl:gap-3 flex-nowrap min-w-0">
         <Logo src={logoSrc} size="sm" immersive={immersive} className="shrink-0" />
 
-        {/* Desktop nav — pill cluster (can shrink; never paint over actions) */}
+        {/* Nav links — fixed width cluster so Jobs never gets crushed */}
         <nav
           className={cn(
-            "hidden lg:flex items-center gap-0.5 min-w-0 flex-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ml-1 rounded-full border px-0.5 py-0.5",
+            "hidden lg:flex items-center gap-0.5 shrink-0 ml-1 rounded-full border px-0.5 py-0.5",
             immersive
               ? "border-white/10 bg-white/5 backdrop-blur-md"
               : "border-border/50 bg-muted/30 backdrop-blur-sm"
@@ -104,10 +104,13 @@ export function Navbar({
           })}
         </nav>
 
-        <div className="hidden md:flex items-center gap-1.5 shrink-0 pl-1">
-          <NavWeatherChip immersive={immersive} className="hidden xl:inline-flex" />
+        {/* Breathing room between Jobs and weather */}
+        <div className="flex-1 min-w-4" aria-hidden />
+
+        <div className="hidden md:flex items-center gap-2 shrink-0">
+          <NavWeatherChip immersive={immersive} className="hidden lg:inline-flex" />
           {!isBlogsPage && (
-            <div className="hidden xl:flex items-center relative w-32 2xl:w-36 shrink-0">
+            <div className="hidden 2xl:flex items-center relative w-36 shrink-0">
               <Search
                 className={cn(
                   "absolute left-2.5 h-3.5 w-3.5 pointer-events-none",
@@ -133,7 +136,7 @@ export function Navbar({
             size="icon"
             variant="ghost"
             className={cn(
-              "xl:hidden rounded-full",
+              "2xl:hidden rounded-full",
               immersive && "text-white hover:bg-white/10 hover:text-white"
             )}
             onClick={() => setSearchOpen((v) => !v)}
@@ -148,7 +151,7 @@ export function Navbar({
               className="gap-1.5 shrink-0 rounded-full shadow-lg shadow-neon-purple/20"
             >
               <PenSquare className="h-4 w-4" />
-              <span className="hidden sm:inline">Write</span>
+              <span className="hidden xl:inline">Write</span>
             </Button>
           </Link>
           <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
@@ -163,8 +166,8 @@ export function Navbar({
           <UserNav />
         </div>
 
-        <div className="flex items-center gap-1 md:hidden shrink-0">
-          <NavWeatherChip immersive={immersive} className="max-w-[7.5rem]" />
+        <div className="flex items-center gap-1.5 md:hidden shrink-0">
+          <NavWeatherChip immersive={immersive} />
           <StreakBadge />
         </div>
 
@@ -185,7 +188,7 @@ export function Navbar({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden border-t border-border/40 xl:hidden"
+            className="overflow-hidden border-t border-border/40 2xl:hidden"
           >
             <div className="container py-3">
               <form action="/blogs" className="relative">
