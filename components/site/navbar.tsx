@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -39,11 +39,24 @@ export function Navbar({
   immersive?: boolean;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [searchOpen, setSearchOpen] = React.useState(false);
   const isBlogsPage = pathname === "/blogs" || pathname?.startsWith("/blogs?");
 
   React.useEffect(() => setMobileOpen(false), [pathname]);
+
+  const submitSearch = React.useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const fd = new FormData(e.currentTarget);
+      const q = String(fd.get("q") ?? "").trim();
+      router.push(q ? `/blogs?q=${encodeURIComponent(q)}` : "/blogs");
+      setSearchOpen(false);
+      setMobileOpen(false);
+    },
+    [router]
+  );
 
   const linkClass = (active: boolean) =>
     cn(
@@ -117,7 +130,7 @@ export function Navbar({
                   immersive ? "text-white/50" : "text-muted-foreground"
                 )}
               />
-              <form action="/blogs" className="w-full">
+              <form onSubmit={submitSearch} className="w-full">
                 <Input
                   name="q"
                   placeholder="Search…"
@@ -191,7 +204,7 @@ export function Navbar({
             className="overflow-hidden border-t border-border/40 2xl:hidden"
           >
             <div className="container py-3">
-              <form action="/blogs" className="relative">
+              <form onSubmit={submitSearch} className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input name="q" placeholder="Search articles…" className="pl-9 rounded-full" />
               </form>
@@ -212,7 +225,7 @@ export function Navbar({
             <div className="container py-4 space-y-1 max-h-[min(70vh,520px)] overflow-y-auto">
               <div className="relative mb-3">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <form action="/blogs">
+                <form onSubmit={submitSearch}>
                   <Input name="q" placeholder="Search…" className="pl-9 rounded-full" />
                 </form>
               </div>

@@ -5,7 +5,7 @@ import { CATEGORIES } from "@/lib/data/categories";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q")?.toLowerCase() || "";
+  const q = searchParams.get("q")?.trim().toLowerCase() || "";
   if (!q) return NextResponse.json({ blogs: [], authors: [], categories: [] });
 
   const blogs = searchBlogs(q).slice(0, 5);

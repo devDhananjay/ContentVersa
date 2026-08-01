@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Cloud, CloudRain, CloudSun, Loader2, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const CACHE_KEY = "cv-nav-weather-v2";
+const CACHE_KEY = "cv-nav-weather-v3";
 const CACHE_MS = 45 * 60 * 1000;
 
 type WeatherCache = {

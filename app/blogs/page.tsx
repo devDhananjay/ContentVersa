@@ -36,14 +36,16 @@ function applyFilters(
 ) {
   let list = [...all];
   if (input.q) {
-    const term = input.q.toLowerCase();
-    list = list.filter(
-      (b) =>
-        b.title.toLowerCase().includes(term) ||
-        b.excerpt.toLowerCase().includes(term) ||
-        b.tags.some((t) => t.toLowerCase().includes(term)) ||
-        b.author.name.toLowerCase().includes(term)
-    );
+    const term = input.q.trim().toLowerCase();
+    if (term) {
+      list = list.filter(
+        (b) =>
+          b.title.toLowerCase().includes(term) ||
+          b.excerpt.toLowerCase().includes(term) ||
+          b.tags.some((t) => t.toLowerCase().includes(term)) ||
+          b.author.name.toLowerCase().includes(term)
+      );
+    }
   }
   if (input.category) list = list.filter((b) => b.category === input.category);
   if (input.tag) list = list.filter((b) => b.tags.includes(input.tag!));
@@ -98,7 +100,11 @@ export default async function BlogsPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const sp = await searchParams;
+  const spRaw = await searchParams;
+  const sp: Record<string, string | undefined> = {
+    ...spRaw,
+    q: spRaw.q?.trim() || undefined,
+  };
   const all = await getPublishedBlogsLiteHybrid();
   const list = applyFilters(all, sp);
   const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));

@@ -9,46 +9,82 @@ type GeoPlace = {
 };
 
 async function reversePlace(lat: number, lng: number): Promise<GeoPlace> {
-  const url = new URL("https://nominatim.openstreetmap.org/reverse");
-  url.searchParams.set("lat", String(lat));
-  url.searchParams.set("lon", String(lng));
-  url.searchParams.set("format", "json");
-  url.searchParams.set("addressdetails", "1");
-  url.searchParams.set("zoom", "10");
-
-  const res = await fetch(url.toString(), {
-    headers: {
-      "User-Agent": "ContentVerse India/1.0 (https://contentverse.co.in; tools@contentverse.co.in)",
-      Accept: "application/json",
-    },
-    next: { revalidate: 3600 },
-  });
-
-  if (!res.ok) {
-    return { name: "Near you", latitude: lat, longitude: lng };
+  // BigDataCloud works reliably from servers (no API key for client endpoint).
+  try {
+    const bdc = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
+    bdc.searchParams.set("latitude", String(lat));
+    bdc.searchParams.set("longitude", String(lng));
+    bdc.searchParams.set("localityLanguage", "en");
+    const res = await fetch(bdc.toString(), { next: { revalidate: 3600 } });
+    if (res.ok) {
+      const data = (await res.json()) as {
+        city?: string;
+        locality?: string;
+        principalSubdivision?: string;
+        countryName?: string;
+      };
+      const name =
+        data.city?.trim() ||
+        data.locality?.trim() ||
+        data.principalSubdivision?.trim();
+      if (name) {
+        return {
+          name,
+          latitude: lat,
+          longitude: lng,
+          admin1: data.principalSubdivision,
+          country: data.countryName,
+        };
+      }
+    }
+  } catch {
+    /* fall through */
   }
 
-  const data = (await res.json()) as {
-    address?: Record<string, string>;
-  };
-  const a = data.address ?? {};
-  const name =
-    a.city ||
-    a.town ||
-    a.village ||
-    a.suburb ||
-    a.county ||
-    a.state_district ||
-    a.state ||
-    "Near you";
+  try {
+    const url = new URL("https://nominatim.openstreetmap.org/reverse");
+    url.searchParams.set("lat", String(lat));
+    url.searchParams.set("lon", String(lng));
+    url.searchParams.set("format", "json");
+    url.searchParams.set("addressdetails", "1");
+    url.searchParams.set("zoom", "12");
 
-  return {
-    name,
-    latitude: lat,
-    longitude: lng,
-    admin1: a.state,
-    country: a.country,
-  };
+    const res = await fetch(url.toString(), {
+      headers: {
+        "User-Agent": "ContentVerse India/1.0 (https://contentverse.co.in; tools@contentverse.co.in)",
+        Accept: "application/json",
+      },
+      next: { revalidate: 3600 },
+    });
+
+    if (res.ok) {
+      const data = (await res.json()) as { address?: Record<string, string> };
+      const a = data.address ?? {};
+      const name =
+        a.city ||
+        a.town ||
+        a.village ||
+        a.municipality ||
+        a.city_district ||
+        a.suburb ||
+        a.county ||
+        a.state_district ||
+        a.state;
+      if (name) {
+        return {
+          name,
+          latitude: lat,
+          longitude: lng,
+          admin1: a.state,
+          country: a.country,
+        };
+      }
+    }
+  } catch {
+    /* fall through */
+  }
+
+  return { name: "Near you", latitude: lat, longitude: lng };
 }
 
 async function geocodeCity(city: string): Promise<GeoPlace | null> {

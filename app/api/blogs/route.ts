@@ -58,7 +58,7 @@ const CreateSchema = z.object({
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q") || "";
+  const q = (searchParams.get("q") || "").trim();
   const category = searchParams.get("category") || "";
   const sort = searchParams.get("sort") || "trending";
   const limit = Number(searchParams.get("limit") || 20);
@@ -66,7 +66,14 @@ export async function GET(req: Request) {
   const key = `blogs:${q}:${category}:${sort}:${limit}`;
   const result = await cache.wrap(key, 60, async () => {
     let list = await getPublishedBlogsLiteHybrid(200);
-    if (q) list = list.filter((b) => searchBlogs(q).some((m) => m.slug === b.slug) || `${b.title} ${b.excerpt}`.toLowerCase().includes(q.toLowerCase()));
+    if (q) {
+      const term = q.toLowerCase();
+      list = list.filter(
+        (b) =>
+          searchBlogs(q).some((m) => m.slug === b.slug) ||
+          `${b.title} ${b.excerpt}`.toLowerCase().includes(term)
+      );
+    }
     if (category) list = list.filter((b) => b.category === category);
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const todayStart = new Date();

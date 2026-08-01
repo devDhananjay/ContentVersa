@@ -51,7 +51,9 @@ export function BlogFilters({
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setParam("q", q || undefined);
+    const trimmed = q.trim();
+    setQ(trimmed);
+    setParam("q", trimmed || undefined);
   };
 
   const activeCategory = defaultCategory;

@@ -138,8 +138,8 @@ export function getRecommendedFor(currentSlug: string, limit = 3) {
 }
 
 export function searchBlogs(q: string) {
-  if (!q) return [] as Blog[];
-  const term = q.toLowerCase();
+  const term = q.trim().toLowerCase();
+  if (!term) return [] as Blog[];
   return BLOGS.filter(
     (b) =>
       b.title.toLowerCase().includes(term) ||
