@@ -1,17 +1,35 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  Briefcase,
+  Clapperboard,
+  Cpu,
   ExternalLink,
   Flame,
+  Medal,
   Newspaper,
   Play,
   Search,
+  Wallet,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { shortTrendBlurb, type TrendItem } from "@/lib/trending/google-trends";
-import type { HubNewsItem, HubYouTubeItem } from "@/lib/trending/hub";
+import type {
+  HubNewsItem,
+  HubTopicLane,
+  HubYouTubeItem,
+} from "@/lib/trending/hub";
 import { Badge } from "@/components/ui/badge";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { TrendThumb } from "@/components/trending/trend-thumb";
+
+const LANE_ICONS: Record<string, LucideIcon> = {
+  cricket: Medal,
+  entertainment: Clapperboard,
+  "ai-tech": Cpu,
+  jobs: Briefcase,
+  finance: Wallet,
+};
 
 function SpikeCard({
   trend,
@@ -32,10 +50,7 @@ function SpikeCard({
         className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/80 transition hover:border-orange-400/40"
       >
         <div className="relative">
-          <TrendThumb
-            src={trend.picture}
-            className="aspect-[16/10] w-full"
-          />
+          <TrendThumb src={trend.picture} className="aspect-[16/10] w-full" />
           <span className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-sm font-bold text-orange-300 backdrop-blur">
             {rank}
           </span>
@@ -68,10 +83,6 @@ function SpikeCard({
               ))}
             </ul>
           ) : null}
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-orange-300/90">
-            Open briefing
-            <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-          </span>
         </div>
       </Link>
     );
@@ -104,15 +115,6 @@ function SpikeCard({
           <p className="text-sm leading-relaxed text-muted-foreground line-clamp-2">
             {blurb}
           </p>
-          {extraNews[0] ? (
-            <p className="flex items-start gap-1.5 text-[11px] text-muted-foreground/90">
-              <Newspaper className="mt-0.5 h-3 w-3 shrink-0 opacity-60" />
-              <span className="line-clamp-1">
-                {extraNews[0].title}
-                {extraNews[0].source ? ` · ${extraNews[0].source}` : ""}
-              </span>
-            </p>
-          ) : null}
         </div>
       </div>
     </Link>
@@ -150,7 +152,6 @@ function NewsCard({ item }: { item: HubNewsItem }) {
 }
 
 function YouTubeCard({ item }: { item: HubYouTubeItem }) {
-  const isApi = item.source === "youtube-api";
   return (
     <a
       href={item.href}
@@ -176,9 +177,8 @@ function YouTubeCard({ item }: { item: HubYouTubeItem }) {
         <p className="text-sm text-muted-foreground line-clamp-2">{item.blurb}</p>
         <div className="mt-auto flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
           {item.channel ? <span className="truncate">{item.channel}</span> : null}
-          {item.views ? <span>· {item.views}</span> : null}
           <span className="inline-flex items-center gap-0.5 text-red-300/90">
-            {isApi ? "Popular" : "Watch"}
+            Watch
             <ExternalLink className="h-3 w-3" />
           </span>
         </div>
@@ -187,47 +187,79 @@ function YouTubeCard({ item }: { item: HubYouTubeItem }) {
   );
 }
 
+function SectionJump({
+  id,
+  label,
+}: {
+  id: string;
+  label: string;
+}) {
+  return (
+    <a
+      href={`#${id}`}
+      className="shrink-0 rounded-full border border-border/50 bg-card/80 px-3 py-1.5 text-xs font-semibold transition hover:border-orange-400/50 hover:text-orange-300"
+    >
+      {label}
+    </a>
+  );
+}
+
 export function TrendingHub({
   spikes,
   news,
+  lanes,
   youtube,
 }: {
   spikes: TrendItem[];
   news: HubNewsItem[];
+  lanes: HubTopicLane[];
   youtube: HubYouTubeItem[];
 }) {
   const hero = spikes.slice(0, 3);
   const rest = spikes.slice(3);
+  const filledLanes = lanes.filter((l) => l.items.length > 0);
+
+  const empty =
+    spikes.length === 0 &&
+    news.length === 0 &&
+    youtube.length === 0 &&
+    filledLanes.length === 0;
 
   return (
     <div className="space-y-12">
-      {hero.length > 0 ? (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Flame className="h-4 w-4 text-orange-400" />
-            <h2 className="font-display text-xl font-bold tracking-tight">
-              Top spikes right now
-            </h2>
-          </div>
+      <nav
+        className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
+        aria-label="Trending sections"
+      >
+        <SectionJump id="google-trends" label="Google Trends" />
+        <SectionJump id="trending-news" label="Trending News" />
+        {filledLanes.map((l) => (
+          <SectionJump key={l.id} id={l.id} label={l.title} />
+        ))}
+        {youtube.length > 0 ? (
+          <SectionJump id="youtube-india" label="YouTube" />
+        ) : null}
+      </nav>
+
+      <section id="google-trends" className="scroll-mt-24 space-y-4">
+        <div className="flex items-center gap-2">
+          <Search className="h-4 w-4 text-orange-400" />
+          <h2 className="font-display text-xl font-bold tracking-tight">
+            Google Trends
+          </h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Live search spikes from Google Trends India — what people are
+          searching right now.
+        </p>
+        {hero.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-3">
             {hero.map((t, i) => (
               <SpikeCard key={t.slug} trend={t} rank={i + 1} featured />
             ))}
           </div>
-        </section>
-      ) : null}
-
-      {rest.length > 0 ? (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Search className="h-4 w-4 text-orange-400" />
-            <h2 className="font-display text-xl font-bold tracking-tight">
-              Google search spikes
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Live from Google Trends India — what people are searching right now.
-          </p>
+        ) : null}
+        {rest.length > 0 ? (
           <ol className="grid gap-4 sm:grid-cols-2">
             {rest.map((t, i) => (
               <li key={t.slug}>
@@ -235,13 +267,67 @@ export function TrendingHub({
               </li>
             ))}
           </ol>
-        </section>
-      ) : null}
+        ) : null}
+        {spikes.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Google Trends feed is refreshing…
+          </p>
+        ) : null}
+      </section>
 
       <HubAdSense className="my-2" />
 
+      <section id="trending-news" className="scroll-mt-24 space-y-4">
+        <div className="flex items-center gap-2">
+          <Newspaper className="h-4 w-4 text-sky-400" />
+          <h2 className="font-display text-xl font-bold tracking-tight">
+            Trending News
+          </h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Top India headlines right now — short blurbs on ContentVerse.
+        </p>
+        {news.length > 0 ? (
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {news.map((item) => (
+              <li key={item.slug}>
+                <NewsCard item={item} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted-foreground">News feed refreshing…</p>
+        )}
+      </section>
+
+      {filledLanes.map((lane) => {
+        const Icon = LANE_ICONS[lane.id] || Flame;
+        return (
+          <section
+            key={lane.id}
+            id={lane.id}
+            className="scroll-mt-24 space-y-4"
+          >
+            <div className="flex items-center gap-2">
+              <Icon className="h-4 w-4 text-orange-400" />
+              <h2 className="font-display text-xl font-bold tracking-tight">
+                {lane.title}
+              </h2>
+            </div>
+            <p className="text-sm text-muted-foreground">{lane.description}</p>
+            <ul className="grid gap-4 sm:grid-cols-2">
+              {lane.items.map((item) => (
+                <li key={item.slug}>
+                  <NewsCard item={item} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+
       {youtube.length > 0 ? (
-        <section className="space-y-4">
+        <section id="youtube-india" className="scroll-mt-24 space-y-4">
           <div className="flex items-center gap-2">
             <Play className="h-4 w-4 text-red-400" />
             <h2 className="font-display text-xl font-bold tracking-tight">
@@ -249,8 +335,7 @@ export function TrendingHub({
             </h2>
           </div>
           <p className="text-sm text-muted-foreground">
-            Fresh uploads from top India channels on YouTube — thumbnails and
-            watch links, without leaving the trending hub flow.
+            Fresh uploads from top India channels — watch on YouTube.
           </p>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {youtube.map((item) => (
@@ -262,29 +347,7 @@ export function TrendingHub({
         </section>
       ) : null}
 
-      {news.length > 0 ? (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Newspaper className="h-4 w-4 text-sky-400" />
-            <h2 className="font-display text-xl font-bold tracking-tight">
-              News headlines India
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            What&apos;s moving in Indian news — short context on ContentVerse,
-            full articles on publisher sites.
-          </p>
-          <ul className="grid gap-4 sm:grid-cols-2">
-            {news.map((item) => (
-              <li key={item.slug}>
-                <NewsCard item={item} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      {spikes.length === 0 && news.length === 0 && youtube.length === 0 ? (
+      {empty ? (
         <p className="text-sm text-muted-foreground">
           Trends feed is refreshing — check back in a minute.
         </p>

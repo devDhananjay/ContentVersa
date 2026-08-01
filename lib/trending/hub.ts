@@ -1,4 +1,5 @@
 import {
+  fetchGoogleNewsByQuery,
   fetchIndiaTopNews,
   type GoogleNewsHeadline,
 } from "@/lib/seo/google-news-trends";
@@ -25,13 +26,20 @@ export type HubNewsItem = {
   slug: string;
   href: string;
   blurb: string;
-  /** When headline soft-matches a live Google Trends spike */
   matchedSpikeSlug?: string;
+};
+
+export type HubTopicLane = {
+  id: string;
+  title: string;
+  description: string;
+  items: HubNewsItem[];
 };
 
 export type TrendingHubData = {
   spikes: TrendItem[];
   news: HubNewsItem[];
+  lanes: HubTopicLane[];
   youtube: HubYouTubeItem[];
 };
 
@@ -48,6 +56,41 @@ export type ResolvedTrendingTopic =
       newsItems: TrendNewsItem[];
     };
 
+/** Auto sections on /trending (besides Google Trends + top news). */
+export const TRENDING_TOPIC_LANES = [
+  {
+    id: "cricket",
+    title: "Cricket",
+    description: "IPL, Team India, and match-day buzz.",
+    query: "cricket India OR IPL OR Team India when:1d",
+  },
+  {
+    id: "entertainment",
+    title: "Entertainment",
+    description: "Bollywood, OTT, and celebrity chatter.",
+    query: "Bollywood OR OTT India OR Netflix India OR Tollywood when:1d",
+  },
+  {
+    id: "ai-tech",
+    title: "AI & Tech",
+    description: "AI launches, gadgets, and India tech news.",
+    query:
+      "artificial intelligence India OR ChatGPT OR Gemini AI OR technology India when:1d",
+  },
+  {
+    id: "jobs",
+    title: "Jobs",
+    description: "Hiring, exams, and career updates.",
+    query: "jobs India OR hiring India OR SSC OR UPSC OR placement when:1d",
+  },
+  {
+    id: "finance",
+    title: "Finance",
+    description: "Markets, Sensex/Nifty, and money news.",
+    query: "Sensex OR Nifty OR stock market India OR RBI OR personal finance India when:1d",
+  },
+] as const;
+
 let hubCache: { data: TrendingHubData; ts: number } | null = null;
 const HUB_TTL_MS = 15 * 60 * 1000;
 
@@ -61,7 +104,6 @@ function tokens(text: string): Set<string> {
   return new Set(parts);
 }
 
-/** Soft-match a news headline to a live Google Trends spike. */
 export function matchHeadlineToSpike(
   headline: string,
   spikes: TrendItem[]
@@ -77,8 +119,6 @@ export function matchHeadlineToSpike(
     for (const t of sTokens) {
       if (hTokens.has(t)) overlap += 1;
     }
-    // Need meaningful overlap: at least 1 shared token for short titles,
-    // or ~40% of spike tokens for longer ones.
     const need = sTokens.size <= 2 ? 1 : Math.max(2, Math.ceil(sTokens.size * 0.4));
     if (overlap < need) continue;
     const score = overlap / sTokens.size;
@@ -87,7 +127,10 @@ export function matchHeadlineToSpike(
   return best?.spike ?? null;
 }
 
-function shortNewsBlurb(h: GoogleNewsHeadline): string {
+function shortNewsBlurb(h: GoogleNewsHeadline, laneTitle?: string): string {
+  if (h.source && laneTitle) {
+    return `${laneTitle} buzz from ${h.source} — open for a short ContentVerse briefing.`;
+  }
   if (h.source) {
     return `Breaking coverage from ${h.source} — open for a short ContentVerse briefing.`;
   }
@@ -96,17 +139,19 @@ function shortNewsBlurb(h: GoogleNewsHeadline): string {
 
 function toHubNews(
   headlines: GoogleNewsHeadline[],
-  spikes: TrendItem[]
+  spikes: TrendItem[],
+  usedSlugs: Set<string>,
+  laneTitle?: string,
+  slugPrefix?: string
 ): HubNewsItem[] {
-  const usedSlugs = new Set(spikes.map((s) => s.slug));
   const out: HubNewsItem[] = [];
 
   for (const h of headlines) {
     const matched = matchHeadlineToSpike(h.title, spikes);
     let slug = matched?.slug ?? trendSlug(h.title);
-    // Avoid colliding with an unrelated spike slug when unmatched
-    if (!matched && usedSlugs.has(slug)) {
-      slug = `${slug}-news`;
+    if (!matched) {
+      if (slugPrefix) slug = `${slugPrefix}-${slug}`.slice(0, 96);
+      if (usedSlugs.has(slug)) slug = `${slug}-n`;
     }
     usedSlugs.add(slug);
 
@@ -117,11 +162,15 @@ function toHubNews(
       link: h.link,
       slug,
       href: matched ? matched.href : trendPath(slug),
-      blurb: shortNewsBlurb(h),
+      blurb: shortNewsBlurb(h, laneTitle),
       matchedSpikeSlug: matched?.slug,
     });
   }
   return out;
+}
+
+function allNewsItems(data: TrendingHubData): HubNewsItem[] {
+  return [...data.news, ...data.lanes.flatMap((l) => l.items)];
 }
 
 export async function getTrendingHub(): Promise<TrendingHubData> {
@@ -129,22 +178,41 @@ export async function getTrendingHub(): Promise<TrendingHubData> {
     return hubCache.data;
   }
 
-  const [spikes, headlines, youtube] = await Promise.all([
+  const [spikes, headlines, youtube, ...laneHeadlines] = await Promise.all([
     fetchIndiaTrends(),
-    fetchIndiaTopNews(16),
+    fetchIndiaTopNews(12),
     fetchIndiaYouTubeTrending(8),
+    ...TRENDING_TOPIC_LANES.map((lane) =>
+      fetchGoogleNewsByQuery(lane.query, 8, lane.id)
+    ),
   ]);
+
+  const usedSlugs = new Set(spikes.map((s) => s.slug));
+  const news = toHubNews(headlines, spikes, usedSlugs);
+
+  const lanes: HubTopicLane[] = TRENDING_TOPIC_LANES.map((lane, i) => ({
+    id: lane.id,
+    title: lane.title,
+    description: lane.description,
+    items: toHubNews(
+      laneHeadlines[i] ?? [],
+      spikes,
+      usedSlugs,
+      lane.title,
+      lane.id
+    ),
+  }));
 
   const data: TrendingHubData = {
     spikes,
-    news: toHubNews(headlines, spikes),
+    news,
+    lanes,
     youtube,
   };
   hubCache = { data, ts: Date.now() };
   return data;
 }
 
-/** Resolve /trending/[slug] from spikes or news-backed hub items. */
 export async function resolveTrendingTopic(
   slug: string
 ): Promise<ResolvedTrendingTopic | null> {
@@ -161,7 +229,8 @@ export async function resolveTrendingTopic(
   })().normalize("NFC");
 
   const news =
-    hub.news.find((n) => n.slug === decoded || n.slug === slug) ?? null;
+    allNewsItems(hub).find((n) => n.slug === decoded || n.slug === slug) ??
+    null;
   if (news) {
     const newsItems: TrendNewsItem[] = news.link
       ? [

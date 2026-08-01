@@ -10,31 +10,33 @@ export const dynamic = "force-dynamic";
 export const revalidate = 900;
 
 export const metadata: Metadata = buildMetadata({
-  title: "Trending in India today",
+  title: "🔥 Trending Now — India",
   description:
-    "What India is searching, watching, and reading right now — Google Trends, YouTube India, and news headlines with short descriptions on ContentVerse.",
+    "Trending Now in India: Google Trends, trending news, cricket, entertainment, AI & tech, jobs, and finance — auto-updated on ContentVerse.",
   path: "/trending",
   keywords: [
+    "Trending Now India",
     "Google Trends India",
-    "trending India today",
-    "YouTube trending India",
-    "what is trending",
-    "India search trends",
-    "India news headlines",
+    "trending news India",
+    "cricket trending",
+    "AI tech India",
+    "jobs India trending",
+    "finance Sensex Nifty",
   ],
 });
 
 export default async function TrendingHubPage() {
-  const { spikes, news, youtube } = await getTrendingHub();
+  const { spikes, news, lanes, youtube } = await getTrendingHub();
+  const laneCount = lanes.reduce((n, l) => n + l.items.length, 0);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Trending in India today",
+    name: "🔥 Trending Now — India",
     url: `${SITE.url}/trending`,
     description:
-      "Current Google Trends, YouTube India, and news headlines with short descriptions on ContentVerse.",
-    numberOfItems: spikes.length + news.length + youtube.length,
+      "Google Trends, trending news, cricket, entertainment, AI & tech, jobs, and finance — live on ContentVerse.",
+    numberOfItems: spikes.length + news.length + laneCount + youtube.length,
   };
 
   return (
@@ -50,26 +52,30 @@ export default async function TrendingHubPage() {
           Live · India
         </Badge>
         <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
-          Trending in India <span className="text-gradient">today</span>
+          🔥 Trending <span className="text-gradient">Now</span>
         </h1>
         <p className="max-w-2xl text-muted-foreground leading-relaxed">
-          Search spikes, YouTube popular videos, and India news — each with a
-          short description so you can skim fast and stay on ContentVerse for
-          briefings.
+          Automatically updated: Google Trends, Trending News, Cricket,
+          Entertainment, AI &amp; Tech, Jobs, and Finance — each with a short
+          description so you can skim fast on ContentVerse.
         </p>
-        {(spikes.length > 0 || news.length > 0 || youtube.length > 0) && (
-          <p className="text-xs text-muted-foreground">
-            {spikes.length} search spikes
-            {youtube.length ? ` · ${youtube.length} YouTube` : ""}
-            {news.length ? ` · ${news.length} news` : ""} · refreshed about
-            every 15 minutes
-          </p>
-        )}
+        <p className="text-xs text-muted-foreground">
+          {spikes.length} Google Trends
+          {news.length ? ` · ${news.length} news` : ""}
+          {laneCount ? ` · ${laneCount} topic headlines` : ""}
+          {youtube.length ? ` · ${youtube.length} YouTube` : ""} · refreshes
+          about every 15 minutes
+        </p>
       </header>
 
       <HubAdSense className="my-2" />
 
-      <TrendingHub spikes={spikes} news={news} youtube={youtube} />
+      <TrendingHub
+        spikes={spikes}
+        news={news}
+        lanes={lanes}
+        youtube={youtube}
+      />
     </div>
   );
 }
