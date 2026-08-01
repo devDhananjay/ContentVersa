@@ -10,6 +10,12 @@ import {
   type TrendItem,
   type TrendNewsItem,
 } from "@/lib/trending/google-trends";
+import {
+  fetchIndiaYouTubeTrending,
+  type HubYouTubeItem,
+} from "@/lib/trending/youtube-india";
+
+export type { HubYouTubeItem };
 
 export type HubNewsItem = {
   title: string;
@@ -26,6 +32,7 @@ export type HubNewsItem = {
 export type TrendingHubData = {
   spikes: TrendItem[];
   news: HubNewsItem[];
+  youtube: HubYouTubeItem[];
 };
 
 export type ResolvedTrendingTopic =
@@ -122,14 +129,16 @@ export async function getTrendingHub(): Promise<TrendingHubData> {
     return hubCache.data;
   }
 
-  const [spikes, headlines] = await Promise.all([
+  const [spikes, headlines, youtube] = await Promise.all([
     fetchIndiaTrends(),
     fetchIndiaTopNews(16),
+    fetchIndiaYouTubeTrending(8),
   ]);
 
   const data: TrendingHubData = {
     spikes,
     news: toHubNews(headlines, spikes),
+    youtube,
   };
   hubCache = { data, ts: Date.now() };
   return data;

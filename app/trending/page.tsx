@@ -12,11 +12,12 @@ export const revalidate = 900;
 export const metadata: Metadata = buildMetadata({
   title: "Trending in India today",
   description:
-    "What India is searching and reading right now — Google Trends spikes plus India news headlines, each with a short description on ContentVerse.",
+    "What India is searching, watching, and reading right now — Google Trends, YouTube India, and news headlines with short descriptions on ContentVerse.",
   path: "/trending",
   keywords: [
     "Google Trends India",
     "trending India today",
+    "YouTube trending India",
     "what is trending",
     "India search trends",
     "India news headlines",
@@ -24,7 +25,7 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function TrendingHubPage() {
-  const { spikes, news } = await getTrendingHub();
+  const { spikes, news, youtube } = await getTrendingHub();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -32,8 +33,8 @@ export default async function TrendingHubPage() {
     name: "Trending in India today",
     url: `${SITE.url}/trending`,
     description:
-      "Current Google Trends and India news headlines with short descriptions on ContentVerse.",
-    numberOfItems: spikes.length + news.length,
+      "Current Google Trends, YouTube India, and news headlines with short descriptions on ContentVerse.",
+    numberOfItems: spikes.length + news.length + youtube.length,
   };
 
   return (
@@ -52,22 +53,23 @@ export default async function TrendingHubPage() {
           Trending in India <span className="text-gradient">today</span>
         </h1>
         <p className="max-w-2xl text-muted-foreground leading-relaxed">
-          Search spikes from Google Trends and headlines from Indian news —
-          each with a short description. Open any topic for a briefing and
-          chat without leaving ContentVerse.
+          Search spikes, YouTube popular videos, and India news — each with a
+          short description so you can skim fast and stay on ContentVerse for
+          briefings.
         </p>
-        {(spikes.length > 0 || news.length > 0) && (
+        {(spikes.length > 0 || news.length > 0 || youtube.length > 0) && (
           <p className="text-xs text-muted-foreground">
             {spikes.length} search spikes
-            {news.length ? ` · ${news.length} news headlines` : ""} · refreshed
-            about every 15 minutes
+            {youtube.length ? ` · ${youtube.length} YouTube` : ""}
+            {news.length ? ` · ${news.length} news` : ""} · refreshed about
+            every 15 minutes
           </p>
         )}
       </header>
 
       <HubAdSense className="my-2" />
 
-      <TrendingHub spikes={spikes} news={news} />
+      <TrendingHub spikes={spikes} news={news} youtube={youtube} />
     </div>
   );
 }

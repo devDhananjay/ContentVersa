@@ -125,7 +125,7 @@ export async function fetchIndiaTopNews(
   return fetchGoogleNewsByQuery(INDIA_TOP_NEWS_QUERY, limit, "india-top");
 }
 
-async function fetchGoogleNewsByQuery(
+export async function fetchGoogleNewsByQuery(
   query: string,
   max: number,
   label: string
