@@ -17,7 +17,7 @@ const SOCIAL_LINKS: { label: string; href: string; Icon: ElementType }[] = [
 const WHATSAPP_CHANNEL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL?.trim();
 
 const EXPLORE = [
-  { label: "🔥 Trending Now", href: "/trending" },
+  { label: "Trending Now", href: "/trending" },
   { label: "Sports", href: "/sports" },
   { label: "Finance", href: "/finance" },
   { label: "CineVerse", href: "/cineverse" },

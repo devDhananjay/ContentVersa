@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Flame } from "lucide-react";
 
 interface Trend {
   title: string;
@@ -38,7 +38,8 @@ export function TrendingStrip() {
             href="/trending"
             className="flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white"
           >
-            🔥 Trending Now
+            <Flame className="h-3.5 w-3.5" />
+            Trending Now
           </Link>
 
           <div className="relative min-w-0 flex-1 overflow-hidden">
