@@ -165,7 +165,7 @@ export function buildMetadata(input: {
       siteName: SITE.searchName,
       type: input.type || "website",
       publishedTime: input.publishedTime,
-      images: [{ url: image, width: 1200, height: 1200, alt: SITE.searchName }],
+      images: [{ url: image, width: 1200, height: 630, alt: SITE.searchName }],
     },
     twitter: {
       card: "summary_large_image",

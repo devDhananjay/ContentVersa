@@ -9,7 +9,17 @@ import { BLOGS, getBlogBySlug as getMockBlogBySlug } from "@/lib/data/blogs";
 type BlogWithRelations = DbBlog & {
   author: User & { profile: Profile | null };
   category: Category | null;
+  tags?: Array<{ tag: { name: string; slug: string } }>;
 };
+
+function mapBlogTags(
+  tags?: Array<{ tag: { name: string; slug: string } }>
+): string[] {
+  if (!tags?.length) return [];
+  return tags
+    .map((t) => t.tag.name?.trim() || t.tag.slug?.trim() || "")
+    .filter(Boolean);
+}
 
 export function mapUserToAuthor(
   user: User & { profile?: Profile | null },
@@ -50,8 +60,10 @@ export function mapDbBlogToBlog(blog: BlogWithRelations): Blog {
     likes: blog.likesCount,
     comments: blog.commentsCount,
     category: blog.category?.slug || "technology",
-    tags: [],
-    publishedAt: blog.publishedAt?.toISOString().slice(0, 10) || blog.createdAt.toISOString().slice(0, 10),
+    tags: mapBlogTags(blog.tags),
+    publishedAt:
+      blog.publishedAt?.toISOString() || blog.createdAt.toISOString(),
+    updatedAt: blog.updatedAt?.toISOString(),
     author,
     featured: blog.isFeatured,
     editorPick: blog.isEditorPick,
@@ -73,11 +85,13 @@ type BlogLiteRow = {
   commentsCount: number;
   publishedAt: Date | null;
   createdAt: Date;
+  updatedAt: Date;
   isFeatured: boolean;
   isEditorPick: boolean;
   isPremium: boolean;
   author: User & { profile: Profile | null };
   category: Category | null;
+  tags?: Array<{ tag: { name: string; slug: string } }>;
 };
 
 function mapLiteToBlog(row: BlogLiteRow): Blog {
@@ -96,10 +110,10 @@ function mapLiteToBlog(row: BlogLiteRow): Blog {
     likes: row.likesCount,
     comments: row.commentsCount,
     category: row.category?.slug || "technology",
-    tags: [],
+    tags: mapBlogTags(row.tags),
     publishedAt:
-      row.publishedAt?.toISOString().slice(0, 10) ||
-      row.createdAt.toISOString().slice(0, 10),
+      row.publishedAt?.toISOString() || row.createdAt.toISOString(),
+    updatedAt: row.updatedAt?.toISOString(),
     author,
     featured: row.isFeatured,
     editorPick: row.isEditorPick,
@@ -111,6 +125,7 @@ function mapLiteToBlog(row: BlogLiteRow): Blog {
 const blogInclude = {
   author: { include: { profile: true } },
   category: true,
+  tags: { include: { tag: true } },
 } as const;
 
 const blogLiteSelect = {
@@ -125,11 +140,13 @@ const blogLiteSelect = {
   commentsCount: true,
   publishedAt: true,
   createdAt: true,
+  updatedAt: true,
   isFeatured: true,
   isEditorPick: true,
   isPremium: true,
   author: { include: { profile: true } },
   category: true,
+  tags: { include: { tag: { select: { name: true, slug: true } } } },
 } as const;
 
 export async function getOwnerUser() {
@@ -174,7 +191,7 @@ export async function getPublishedBlogsFromDb(limit?: number) {
 }
 
 /** Fast list fetch without article body */
-export async function getPublishedBlogsLiteFromDb(limit = 24) {
+export async function getPublishedBlogsLiteFromDb(limit?: number) {
   if (!isDatabaseConfigured()) return null;
   return safeDbQuery(null, async () => {
     const rows = await prisma.blog.findMany({
@@ -184,7 +201,7 @@ export async function getPublishedBlogsLiteFromDb(limit = 24) {
       },
       select: blogLiteSelect,
       orderBy: { publishedAt: "desc" },
-      take: limit,
+      ...(typeof limit === "number" ? { take: limit } : {}),
     });
     return rows.map(mapLiteToBlog);
   }, "blogs");
@@ -251,15 +268,30 @@ export async function getPublishedBlogsHybrid(limit?: number) {
   return limit ? merged.slice(0, limit) : merged;
 }
 
-export async function getPublishedBlogsLiteHybrid(limit = 24) {
-  const merged = await getPublishedBlogsHybrid(limit * 2);
-  return merged
-    .slice(0, limit)
-    .map((b) => ({ ...b, content: "" }));
+/** Lite list for Explore / category grids — never loads article bodies. */
+export async function getPublishedBlogsLiteHybrid(limit?: number) {
+  if (!isDatabaseConfigured()) {
+    const mock = [...BLOGS].sort(
+      (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
+    );
+    const sliced = limit ? mock.slice(0, limit) : mock;
+    return sliced.map((b) => ({ ...b, content: "" }));
+  }
+
+  const fromDb = (await getPublishedBlogsLiteFromDb(limit)) ?? [];
+  const dbSlugs = new Set(fromDb.map((b) => b.slug));
+  const mockExtra = BLOGS.filter((b) => !dbSlugs.has(b.slug)).map((b) => ({
+    ...b,
+    content: "",
+  }));
+  const merged = [...fromDb, ...mockExtra].sort(
+    (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
+  );
+  return limit ? merged.slice(0, limit) : merged;
 }
 
 export async function getBlogsByCategoryHybrid(categorySlug: string, limit = 48) {
-  const all = await getPublishedBlogsHybrid(limit * 2);
+  const all = await getPublishedBlogsLiteHybrid(Math.max(limit * 3, 120));
   return all.filter((b) => b.category === categorySlug).slice(0, limit);
 }
 

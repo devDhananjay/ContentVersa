@@ -12,7 +12,7 @@ import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getTopWritersForCategoryCached } from "@/lib/data/top-writers";
 import { getCategoryFeed } from "@/lib/feeds/data";
 import { CategorySubscribeButton } from "@/components/category/category-subscribe-button";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, SITE } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -61,8 +61,26 @@ export default async function CategoryPage({
     getCategoryFeed(slug),
   ]);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `${cat.name} · ContentVerse`,
+    description: cat.description,
+    url: `${SITE.url}/category/${cat.slug}`,
+    numberOfItems: blogs.length,
+    isPartOf: {
+      "@type": "WebSite",
+      name: SITE.name,
+      url: SITE.url,
+    },
+  };
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="relative h-[min(380px,42vh)] sm:h-[min(420px,48vh)] overflow-hidden">
         <Image
           src={cat.banner}

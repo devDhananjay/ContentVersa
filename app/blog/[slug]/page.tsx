@@ -103,6 +103,7 @@ export default async function BlogPage({
           url,
           image: blog.coverImage,
           datePublished: blog.publishedAt,
+          dateModified: blog.updatedAt || blog.publishedAt,
           authorName: blog.author.name,
         });
 

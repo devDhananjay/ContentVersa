@@ -5,17 +5,24 @@ import { BlogFilters } from "@/components/blog/blog-filters";
 import { BlogPagination } from "@/components/blog/blog-pagination";
 import { CategoryLiveFeedGrid } from "@/components/feeds/category-live-feed-grid";
 import type { Blog } from "@/lib/data/blogs";
-import { getPublishedBlogsHybrid } from "@/lib/data/blog-db";
+import { getPublishedBlogsLiteHybrid } from "@/lib/data/blog-db";
 import { getCategoryFeed } from "@/lib/feeds/data";
 import { hasCategoryFeed } from "@/lib/feeds/constants";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, SITE } from "@/lib/seo";
 
 const PAGE_SIZE = 18;
 
 export const metadata: Metadata = buildMetadata({
-  title: "Explore",
-  description: "Browse every article on ContentVerse. Filter by category, search and sort.",
+  title: "Explore articles",
+  description:
+    "Browse every article on ContentVerse. Filter by category, search, and sort — stories, guides, and India topics.",
   path: "/blogs",
+  keywords: [
+    "ContentVerse articles",
+    "Explore blogs India",
+    "read articles",
+    "India content",
+  ],
 });
 
 function applyFilters(
@@ -92,7 +99,7 @@ export default async function BlogsPage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const sp = await searchParams;
-  const all = await getPublishedBlogsHybrid();
+  const all = await getPublishedBlogsLiteHybrid();
   const list = applyFilters(all, sp);
   const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
   const page = Math.min(
@@ -105,8 +112,23 @@ export default async function BlogsPage({
   const feed =
     category && hasCategoryFeed(category) ? await getCategoryFeed(category) : null;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Explore articles · ContentVerse",
+    url: `${SITE.url}/blogs`,
+    description:
+      "Browse articles on ContentVerse — filter by category, search, and sort.",
+    numberOfItems: list.length,
+    isPartOf: { "@type": "WebSite", name: SITE.name, url: SITE.url },
+  };
+
   return (
     <div className="container pt-8 pb-8 md:pt-10 md:pb-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Suspense fallback={<div className="h-20 rounded-2xl bg-muted/40 animate-pulse mb-6" />}>
         <BlogFilters
           defaultQuery={sp.q}

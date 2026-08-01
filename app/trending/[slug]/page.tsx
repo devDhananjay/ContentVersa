@@ -71,8 +71,8 @@ export default async function TrendingTopicPage({ params }: Props) {
   const jsonLd = resolved
     ? {
         "@context": "https://schema.org",
-        "@type": "NewsArticle",
-        headline: `${title} — Trending in India`,
+        "@type": "WebPage",
+        name: `${title} — Trending in India`,
         description: localTrendSummary(briefingInput).slice(0, 160),
         datePublished:
           (trend?.publishedAt || (isNews ? resolved.publishedAt : undefined))
@@ -91,6 +91,11 @@ export default async function TrendingTopicPage({ params }: Props) {
         },
         mainEntityOfPage: `${SITE.url}${trendPath(slug)}`,
         image: trend?.picture ? [trend.picture] : undefined,
+        isPartOf: {
+          "@type": "CollectionPage",
+          name: "Trending Now — India",
+          url: `${SITE.url}/trending`,
+        },
       }
     : null;
 

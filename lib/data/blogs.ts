@@ -26,6 +26,8 @@ export interface Blog {
   category: string;
   tags: string[];
   publishedAt: string;
+  /** ISO timestamp for SEO dateModified when available */
+  updatedAt?: string;
   author: Author;
   featured?: boolean;
   editorPick?: boolean;
