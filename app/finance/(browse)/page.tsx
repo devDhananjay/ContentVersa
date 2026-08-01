@@ -16,10 +16,17 @@ export const metadata: Metadata = buildMetadata({
   path: "/finance",
   keywords: [
     "finance India",
-    "Nifty Sensex",
+    "Nifty 50 live",
+    "Sensex today",
     "gold price today",
     "SIP calculator",
     "mutual funds India",
+    "FD interest rates India",
+    "home loan EMI",
+    "IPO apply India",
+    "credit score India",
+    "income tax India",
+    "personal finance India",
     "MoneyVerse",
   ],
   image:

@@ -19,9 +19,13 @@ export const metadata: Metadata = buildMetadata({
   path: "/blogs",
   keywords: [
     "ContentVerse India articles",
-    "Explore blogs India",
-    "read articles",
-    "India content",
+    "Indian blogs to read",
+    "finance blogs India",
+    "cricket blogs India",
+    "career articles India",
+    "technology blogs India",
+    "creator stories India",
+    "explore blogs India",
   ],
 });
 

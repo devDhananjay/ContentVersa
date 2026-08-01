@@ -15,10 +15,21 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Sports — Live Cricket Scores & News",
+  title: "Sports — Live Cricket Scores, Fixtures & News India",
   description:
-    "Live cricket scores, upcoming fixtures, match results and sports news from ContentVerse India.",
+    "Live cricket scores India, upcoming fixtures, match results, IPL updates and sports news on ContentVerse India.",
   path: "/sports",
+  keywords: [
+    "live cricket score India",
+    "IPL live score",
+    "cricket match today",
+    "cricket fixtures India",
+    "cricket news India",
+    "live scorecard",
+    "Team India cricket",
+    "T20 cricket score",
+    "ContentVerse India sports",
+  ],
   image:
     "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1600",
 });

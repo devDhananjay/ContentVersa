@@ -22,8 +22,14 @@ export const metadata: Metadata = buildMetadata({
   keywords: [
     "OTT release date India",
     "where to watch movie India",
+    "Bollywood movies",
+    "Netflix India movies",
+    "Prime Video India",
+    "JioCinema release date",
     "movie cast",
-    "movie trailer",
+    "movie trailer India",
+    "movie watchlist India",
+    "web series where to watch",
     "CineVerse",
   ],
   image:

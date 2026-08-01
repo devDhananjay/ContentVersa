@@ -16,6 +16,10 @@ export const metadata: Metadata = buildMetadata({
     "AI bank statement analyzer",
     "bank statement expense analyzer",
     "PDF bank statement to CSV",
+    "HDFC statement analyzer",
+    "SBI bank statement PDF",
+    "cash flow analysis India",
+    "recurring payment detector",
   ],
 });
 

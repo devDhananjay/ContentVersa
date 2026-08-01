@@ -19,12 +19,24 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   const meta = GOVT_CATEGORIES.find((item) => item.id === category);
 
   return buildMetadata({
-    title: `Government ${meta?.label ?? "Jobs"} — Sarkari Updates`,
+    title: `Government ${meta?.label ?? "Jobs"} — Sarkari Naukri India`,
     description:
       meta?.description ??
-      "Latest government job notifications, results and exam updates from Sarkari Result.",
-    // Always canonicalize to the hub — ?cat= variants must not compete as separate URLs.
+      "Latest government job notifications, sarkari results and exam updates India.",
     path: "/jobs/govt",
+    keywords: [
+      "sarkari naukri",
+      "government jobs India",
+      "govt job notification",
+      "SSC jobs",
+      "UPSC vacancy",
+      "railway recruitment",
+      "bank jobs India",
+      "state PSC jobs",
+      "admit card",
+      "sarkari result jobs",
+      meta?.label,
+    ].filter(Boolean) as string[],
     image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600",
   });
 }

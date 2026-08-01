@@ -10,13 +10,16 @@ export const dynamic = "force-dynamic";
 export const revalidate = 900;
 
 export const metadata: Metadata = buildMetadata({
-  title: "🔥 Trending Now — India",
+  title: "Trending Now India — Google Trends, News & Topics",
   description:
     "Trending Now in India: Google Trends, trending news, cricket, entertainment, AI & tech, jobs, and finance — auto-updated on ContentVerse India.",
   path: "/trending",
   keywords: [
     "Trending Now India",
     "Google Trends India",
+    "what's trending in India",
+    "today trending India",
+    "viral topics India",
     "trending news India",
     "cricket trending",
     "AI tech India",

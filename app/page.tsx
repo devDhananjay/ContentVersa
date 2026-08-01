@@ -50,14 +50,15 @@ export const metadata: Metadata = buildMetadata({
   keywords: [
     "ContentVerse India",
     "contentverse.co.in",
-    "Indian blogs",
-    "MoneyVerse",
-    "CineVerse",
-    "GoldVerse",
-    "sports scores India",
+    "live cricket score India",
     "Nifty Sensex live",
-    "sarkari jobs",
-    "creator reels India",
+    "sarkari naukri",
+    "MoneyVerse expense tracker",
+    "CineVerse OTT India",
+    "GoldVerse HUID",
+    "free India tools",
+    "gold price today",
+    "ContentVerse India AI",
   ],
 });
 

@@ -15,10 +15,22 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Jobs — Government & Private Careers India",
+  title: "Jobs — Sarkari Naukri & Private Careers India",
   description:
-    "Latest sarkari jobs, results, admit cards and private-sector openings on ContentVerse India.",
+    "Latest sarkari naukri, government job notifications, admit cards, results and private-sector openings on ContentVerse India.",
   path: "/jobs",
+  keywords: [
+    "sarkari naukri",
+    "government jobs India",
+    "latest sarkari jobs",
+    "SSC jobs",
+    "railway jobs",
+    "bank jobs India",
+    "admit card download",
+    "private jobs India",
+    "fresher jobs India",
+    "ContentVerse India jobs",
+  ],
   image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1600",
 });
 
