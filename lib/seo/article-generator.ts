@@ -8,6 +8,7 @@ import {
   ARTICLE_TARGET_WORDS,
   coverPromptMatchesTitle,
   passesArticleQualityGate,
+  passesDraftQualityGate,
   wordCount,
 } from "@/lib/seo/article-quality";
 
@@ -228,14 +229,14 @@ export async function generateSeoArticle(input: {
     8192
   );
 
+  let bestPartial: GeneratedArticle | null = null;
+
   if (jsonResult.ok && jsonResult.data.content) {
     const article = normalizeArticle(jsonResult.data, categorySlug);
     if (article && passesArticleQualityGate(article.content)) {
       return { article };
     }
-    if (article && wordCount(article.content) >= 500) {
-      return { article: null, reason: "short" };
-    }
+    if (article) bestPartial = article;
   }
 
   const textResult = await callGeminiTextWithMeta(
@@ -251,8 +252,49 @@ Return ONLY valid JSON (no markdown fences) with keys: title, excerpt, metaDescr
     if (parsed?.content && passesArticleQualityGate(parsed.content)) {
       return { article: parsed };
     }
-    if (parsed?.content && wordCount(parsed.content) >= 500) {
-      return { article: null, reason: "short" };
+    if (
+      parsed &&
+      (!bestPartial || wordCount(parsed.content) > wordCount(bestPartial.content))
+    ) {
+      bestPartial = parsed;
+    }
+  }
+
+  // Short drafts used to be discarded (≥500 words but <800). Expand once so
+  // cron/admin still get a saveable draft instead of silent failure.
+  if (bestPartial?.content && wordCount(bestPartial.content) >= 350) {
+    const expandPrompts = buildPrompts({
+      title: bestPartial.title || input.title,
+      category: input.category,
+      searchIntent: input.searchIntent,
+      affiliateNote: input.affiliateNote,
+      minWords,
+      maxWords,
+      expandFrom: bestPartial.content,
+    });
+    const expanded = await callGeminiJsonWithMeta<GeneratedArticle>(
+      expandPrompts.system,
+      expandPrompts.user,
+      ARTICLE_JSON_SCHEMA,
+      8192
+    );
+    if (expanded.ok && expanded.data.content) {
+      const article = normalizeArticle(expanded.data, categorySlug);
+      if (article && passesArticleQualityGate(article.content)) {
+        return { article };
+      }
+      if (
+        article &&
+        wordCount(article.content) > wordCount(bestPartial.content)
+      ) {
+        bestPartial = article;
+      }
+    }
+
+    // Last resort: keep a usable draft (≥600 words) so nightly cron / admin
+    // still save something for human edit instead of failing silently.
+    if (bestPartial && passesDraftQualityGate(bestPartial.content)) {
+      return { article: bestPartial };
     }
   }
 
@@ -262,11 +304,7 @@ Return ONLY valid JSON (no markdown fences) with keys: title, excerpt, metaDescr
       ? textResult.failure
       : undefined;
 
-  const partial = jsonResult.ok
-    ? jsonResult.data
-    : parseArticleJson(textResult.ok ? textResult.text : "", categorySlug);
-
-  if (partial?.content && partial.content.length > 0) {
+  if (bestPartial?.content) {
     return {
       article: null,
       failure,

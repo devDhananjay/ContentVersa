@@ -8,39 +8,22 @@ type GeoPlace = {
   country?: string;
 };
 
-async function reversePlace(lat: number, lng: number): Promise<GeoPlace> {
-  // BigDataCloud works reliably from servers (no API key for client endpoint).
-  try {
-    const bdc = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
-    bdc.searchParams.set("latitude", String(lat));
-    bdc.searchParams.set("longitude", String(lng));
-    bdc.searchParams.set("localityLanguage", "en");
-    const res = await fetch(bdc.toString(), { next: { revalidate: 3600 } });
-    if (res.ok) {
-      const data = (await res.json()) as {
-        city?: string;
-        locality?: string;
-        principalSubdivision?: string;
-        countryName?: string;
-      };
-      const name =
-        data.city?.trim() ||
-        data.locality?.trim() ||
-        data.principalSubdivision?.trim();
-      if (name) {
-        return {
-          name,
-          latitude: lat,
-          longitude: lng,
-          admin1: data.principalSubdivision,
-          country: data.countryName,
-        };
-      }
-    }
-  } catch {
-    /* fall through */
+/**
+ * Prefer the recognizable city/locality over admin tehsil names.
+ * BigDataCloud often sets city="Dadri" for Noida coords while locality="Noida".
+ */
+function pickPlaceName(
+  candidates: Array<string | undefined | null>
+): string | undefined {
+  for (const raw of candidates) {
+    const name = raw?.trim();
+    if (name) return name;
   }
+  return undefined;
+}
 
+async function reversePlace(lat: number, lng: number): Promise<GeoPlace> {
+  // Nominatim first — better India city labels than BigDataCloud tehsil names.
   try {
     const url = new URL("https://nominatim.openstreetmap.org/reverse");
     url.searchParams.set("lat", String(lat));
@@ -60,16 +43,17 @@ async function reversePlace(lat: number, lng: number): Promise<GeoPlace> {
     if (res.ok) {
       const data = (await res.json()) as { address?: Record<string, string> };
       const a = data.address ?? {};
-      const name =
-        a.city ||
-        a.town ||
-        a.village ||
-        a.municipality ||
-        a.city_district ||
-        a.suburb ||
-        a.county ||
-        a.state_district ||
-        a.state;
+      const name = pickPlaceName([
+        a.city,
+        a.town,
+        a.village,
+        a.municipality,
+        a.city_district,
+        a.suburb,
+        a.county,
+        a.state_district,
+        a.state,
+      ]);
       if (name) {
         return {
           name,
@@ -77,6 +61,39 @@ async function reversePlace(lat: number, lng: number): Promise<GeoPlace> {
           longitude: lng,
           admin1: a.state,
           country: a.country,
+        };
+      }
+    }
+  } catch {
+    /* fall through */
+  }
+
+  try {
+    const bdc = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
+    bdc.searchParams.set("latitude", String(lat));
+    bdc.searchParams.set("longitude", String(lng));
+    bdc.searchParams.set("localityLanguage", "en");
+    const res = await fetch(bdc.toString(), { next: { revalidate: 3600 } });
+    if (res.ok) {
+      const data = (await res.json()) as {
+        city?: string;
+        locality?: string;
+        principalSubdivision?: string;
+        countryName?: string;
+      };
+      // locality before city — avoids tehsil labels like "Dadri" over "Noida"
+      const name = pickPlaceName([
+        data.locality,
+        data.city,
+        data.principalSubdivision,
+      ]);
+      if (name) {
+        return {
+          name,
+          latitude: lat,
+          longitude: lng,
+          admin1: data.principalSubdivision,
+          country: data.countryName,
         };
       }
     }

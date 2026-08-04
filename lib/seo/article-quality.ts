@@ -69,3 +69,12 @@ export function passesArticleQualityGate(content: string): boolean {
   const words = wordCount(content);
   return content.trim().length >= MIN_ARTICLE_CHARS && words >= MIN_ARTICLE_WORDS;
 }
+
+/** Softer bar for nightly DRAFT saves — editor can expand before publish. */
+export const MIN_DRAFT_WORDS = 600;
+export const MIN_DRAFT_CHARS = 2400;
+
+export function passesDraftQualityGate(content: string): boolean {
+  const words = wordCount(content);
+  return content.trim().length >= MIN_DRAFT_CHARS && words >= MIN_DRAFT_WORDS;
+}

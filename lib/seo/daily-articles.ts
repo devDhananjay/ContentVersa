@@ -5,7 +5,7 @@ import { CATEGORIES } from "@/lib/data/categories";
 import { callGeminiJson } from "@/lib/ai/gemini";
 import { istDayKey } from "@/lib/engagement/streak";
 import { generateSeoArticle } from "@/lib/seo/article-generator";
-import { passesArticleQualityGate } from "@/lib/seo/article-quality";
+import { passesDraftQualityGate } from "@/lib/seo/article-quality";
 import { fetchGoogleNewsHeadlines } from "@/lib/seo/google-news-trends";
 import { suggestHotTopics, type HotTopic } from "@/lib/seo/hot-topics";
 import { readingTime, slugify } from "@/lib/utils";
@@ -263,7 +263,7 @@ export async function runDailyArticleGeneration(options?: {
             : `Editorial angle: ${topic.whyTrending}`,
       });
 
-      if (!article?.content || !passesArticleQualityGate(article.content)) {
+      if (!article?.content || !passesDraftQualityGate(article.content)) {
         failed++;
         console.warn(
           `[daily-articles] ${cat.slug} slot ${slot}: ${reason ?? "quality gate failed"} — "${topic.title}"`

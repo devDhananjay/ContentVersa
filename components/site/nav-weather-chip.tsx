@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Cloud, CloudRain, CloudSun, Loader2, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const CACHE_KEY = "cv-nav-weather-v3";
+/** Bump when place-name logic changes so sticky wrong cities (e.g. Dadri) refresh. */
+const CACHE_KEY = "cv-nav-weather-v4";
 const CACHE_MS = 45 * 60 * 1000;
 
 type WeatherCache = {
@@ -71,6 +72,12 @@ export function NavWeatherChip({
   const [denied, setDenied] = React.useState(false);
 
   React.useEffect(() => {
+    try {
+      localStorage.removeItem("cv-nav-weather-v3");
+    } catch {
+      /* ignore */
+    }
+
     const cached = readCache();
     if (cached) {
       setData(cached);
