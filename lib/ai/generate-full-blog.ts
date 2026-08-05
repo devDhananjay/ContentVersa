@@ -1,6 +1,7 @@
 import {
   callGeminiTextWithMeta,
-  isGeminiConfigured,
+  getGeminiBlogApiKey,
+  isGeminiBlogConfigured,
   type GeminiFailure,
 } from "@/lib/ai/gemini";
 import {
@@ -56,9 +57,9 @@ export async function generateFullBlogFromTitle(
 ): Promise<{ blog: FullBlogPackage; source: AiSource }> {
   const title = input.title.trim() || "Untitled blog";
 
-  if (!isGeminiConfigured()) {
+  if (!isGeminiBlogConfigured()) {
     throw new BlogGenerationError(
-      "GEMINI_API_KEY is not set on the server. Add it to .env and restart.",
+      "GEMINI_BLOG_API_KEY (or GEMINI_API_KEY) is not set on the server. Add it to .env and restart.",
       "NOT_CONFIGURED"
     );
   }
@@ -80,7 +81,9 @@ Return ONLY valid JSON with keys: excerpt, category, tags, metaTitle, metaDescri
     existingExcerpt: input.excerpt || undefined,
   });
 
-  const result = await callGeminiTextWithMeta(system, user, 8192);
+  const result = await callGeminiTextWithMeta(system, user, 8192, {
+    apiKey: getGeminiBlogApiKey(),
+  });
   if (!result.ok) {
     if (result.failure.quotaExceeded) {
       throw new BlogGenerationError(

@@ -3,10 +3,10 @@ import { ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AiArticleGenerator } from "@/components/admin/ai-article-generator";
 import { AiPublishingPipeline } from "@/components/admin/ai-publishing-pipeline";
-import { isGeminiConfigured } from "@/lib/ai/gemini";
+import { isGeminiBlogConfigured } from "@/lib/ai/gemini";
 
 export default function AdminAiArticlesPage() {
-  const geminiOk = isGeminiConfigured();
+  const geminiOk = isGeminiBlogConfigured();
 
   return (
     <div className="container py-8 max-w-4xl space-y-12">
@@ -27,7 +27,8 @@ export default function AdminAiArticlesPage() {
 
       {!geminiOk && (
         <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-4 text-sm">
-          <strong>GEMINI_API_KEY</strong> is not set on the server. Add it to{" "}
+          <strong>GEMINI_BLOG_API_KEY</strong> (or{" "}
+          <strong>GEMINI_API_KEY</strong>) is not set on the server. Add it to{" "}
           <code className="text-xs">.env</code> and restart the app.
         </div>
       )}

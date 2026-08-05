@@ -3,7 +3,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
-import { isGeminiConfigured } from "@/lib/ai/gemini";
+import { isGeminiBlogConfigured } from "@/lib/ai/gemini";
 import { isDatabaseConfigured } from "@/lib/prisma";
 import { CATEGORIES } from "@/lib/data/categories";
 import {
@@ -42,9 +42,9 @@ export async function POST(req: Request) {
     if (!isDatabaseConfigured()) {
       return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     }
-    if (!isGeminiConfigured()) {
+    if (!isGeminiBlogConfigured()) {
       return NextResponse.json(
-        { error: "GEMINI_API_KEY not configured on server" },
+        { error: "GEMINI_BLOG_API_KEY (or GEMINI_API_KEY) not configured on server" },
         { status: 503 }
       );
     }

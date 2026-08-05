@@ -2,7 +2,7 @@ import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
 import { CATEGORIES } from "@/lib/data/categories";
-import { callGeminiJson } from "@/lib/ai/gemini";
+import { callGeminiJson, getGeminiBlogApiKey, isGeminiBlogConfigured } from "@/lib/ai/gemini";
 import { istDayKey } from "@/lib/engagement/streak";
 import { generateSeoArticle } from "@/lib/seo/article-generator";
 import { passesDraftQualityGate } from "@/lib/seo/article-quality";
@@ -145,7 +145,8 @@ Return JSON: { "topics": [{ "title": "...", "searchIntent": "...", "whyTrending"
       system,
       user,
       NEWS_TOPIC_SCHEMA,
-      2048
+      2048,
+      { apiKey: getGeminiBlogApiKey() }
     );
 
     const fromNews = jsonResult?.topics
@@ -198,8 +199,8 @@ export async function runDailyArticleGeneration(options?: {
   if (!isDatabaseConfigured()) {
     throw new Error("Database not configured");
   }
-  if (!process.env.GEMINI_API_KEY?.trim()) {
-    throw new Error("GEMINI_API_KEY missing");
+  if (!isGeminiBlogConfigured()) {
+    throw new Error("GEMINI_BLOG_API_KEY (or GEMINI_API_KEY) missing");
   }
 
   const perCategory = options?.perCategory ?? PER_CATEGORY_DEFAULT;

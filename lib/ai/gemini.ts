@@ -1,6 +1,7 @@
 /**
  * Google Gemini API — text + image generation.
  * Set GEMINI_API_KEY in .env (from Google AI Studio).
+ * Optional GEMINI_BLOG_API_KEY — used only for create-blog / generate-from-title.
  */
 
 const GEMINI_IMAGE_MODEL =
@@ -12,12 +13,30 @@ export type GeminiFailure = {
   message: string;
 };
 
-function apiKey() {
-  return process.env.GEMINI_API_KEY?.trim() || "";
+export type GeminiCallOptions = {
+  /** Override API key (e.g. dedicated create-blog key). */
+  apiKey?: string;
+};
+
+function apiKey(override?: string) {
+  return override?.trim() || process.env.GEMINI_API_KEY?.trim() || "";
+}
+
+/** Dedicated key for create-blog; falls back to GEMINI_API_KEY. */
+export function getGeminiBlogApiKey() {
+  return (
+    process.env.GEMINI_BLOG_API_KEY?.trim() ||
+    process.env.GEMINI_API_KEY?.trim() ||
+    ""
+  );
 }
 
 export function isGeminiConfigured() {
   return Boolean(apiKey());
+}
+
+export function isGeminiBlogConfigured() {
+  return Boolean(getGeminiBlogApiKey());
 }
 
 function textModels(): string[] {
@@ -49,12 +68,13 @@ function parseGeminiFailure(status: number, body: string): GeminiFailure {
 
 async function geminiGenerate(
   model: string,
-  body: object
+  body: object,
+  keyOverride?: string
 ): Promise<
   | { ok: true; data: { candidates?: { content?: { parts?: { text?: string }[] } }[] } }
   | { ok: false; failure: GeminiFailure }
 > {
-  const key = apiKey();
+  const key = apiKey(keyOverride);
   if (!key) {
     return {
       ok: false,
@@ -124,7 +144,8 @@ function extractText(data: {
 }
 
 async function generateAcrossModels(
-  buildBody: (model: string) => object
+  buildBody: (model: string) => object,
+  options?: GeminiCallOptions
 ): Promise<
   | { ok: true; text: string; model: string }
   | { ok: false; failure: GeminiFailure }
@@ -137,7 +158,7 @@ async function generateAcrossModels(
   };
 
   for (const model of models) {
-    const result = await geminiGenerate(model, buildBody(model));
+    const result = await geminiGenerate(model, buildBody(model), options?.apiKey);
     if (!result.ok) {
       lastFailure = result.failure;
       if (result.failure.quotaExceeded) continue;
@@ -153,16 +174,20 @@ async function generateAcrossModels(
 export async function callGeminiText(
   system: string,
   user: string,
-  maxTokens = 512
+  maxTokens = 512,
+  options?: GeminiCallOptions
 ): Promise<string | null> {
-  const result = await generateAcrossModels(() => ({
-    systemInstruction: { parts: [{ text: system }] },
-    contents: [{ role: "user", parts: [{ text: user.slice(0, 14000) }] }],
-    generationConfig: {
-      maxOutputTokens: maxTokens,
-      temperature: 0.6,
-    },
-  }));
+  const result = await generateAcrossModels(
+    () => ({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: "user", parts: [{ text: user.slice(0, 14000) }] }],
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        temperature: 0.6,
+      },
+    }),
+    options
+  );
 
   return result.ok ? result.text : null;
 }
@@ -173,20 +198,23 @@ export async function callGeminiJson<T>(
   user: string,
   responseSchema: object,
   maxTokens = 8192,
-  options?: { maxInputChars?: number; temperature?: number }
+  options?: GeminiCallOptions & { maxInputChars?: number; temperature?: number }
 ): Promise<T | null> {
   const maxInput = options?.maxInputChars ?? 14_000;
   const temperature = options?.temperature ?? 0.7;
-  const result = await generateAcrossModels(() => ({
-    systemInstruction: { parts: [{ text: system }] },
-    contents: [{ role: "user", parts: [{ text: user.slice(0, maxInput) }] }],
-    generationConfig: {
-      maxOutputTokens: maxTokens,
-      temperature,
-      responseMimeType: "application/json",
-      responseSchema,
-    },
-  }));
+  const result = await generateAcrossModels(
+    () => ({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: "user", parts: [{ text: user.slice(0, maxInput) }] }],
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        temperature,
+        responseMimeType: "application/json",
+        responseSchema,
+      },
+    }),
+    { apiKey: options?.apiKey }
+  );
 
   if (!result.ok) return null;
 
@@ -202,21 +230,25 @@ export async function callGeminiJsonWithMeta<T>(
   system: string,
   user: string,
   responseSchema: object,
-  maxTokens = 8192
+  maxTokens = 8192,
+  options?: GeminiCallOptions
 ): Promise<
   | { ok: true; data: T; model: string }
   | { ok: false; failure: GeminiFailure }
 > {
-  const result = await generateAcrossModels(() => ({
-    systemInstruction: { parts: [{ text: system }] },
-    contents: [{ role: "user", parts: [{ text: user.slice(0, 14000) }] }],
-    generationConfig: {
-      maxOutputTokens: maxTokens,
-      temperature: 0.7,
-      responseMimeType: "application/json",
-      responseSchema,
-    },
-  }));
+  const result = await generateAcrossModels(
+    () => ({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: "user", parts: [{ text: user.slice(0, 14000) }] }],
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        temperature: 0.7,
+        responseMimeType: "application/json",
+        responseSchema,
+      },
+    }),
+    options
+  );
 
   if (!result.ok) return result;
 
@@ -237,19 +269,23 @@ export async function callGeminiJsonWithMeta<T>(
 export async function callGeminiTextWithMeta(
   system: string,
   user: string,
-  maxTokens = 8192
+  maxTokens = 8192,
+  options?: GeminiCallOptions
 ): Promise<
   | { ok: true; text: string; model: string }
   | { ok: false; failure: GeminiFailure }
 > {
-  return generateAcrossModels(() => ({
-    systemInstruction: { parts: [{ text: system }] },
-    contents: [{ role: "user", parts: [{ text: user.slice(0, 14000) }] }],
-    generationConfig: {
-      maxOutputTokens: maxTokens,
-      temperature: 0.6,
-    },
-  }));
+  return generateAcrossModels(
+    () => ({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: "user", parts: [{ text: user.slice(0, 14000) }] }],
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        temperature: 0.6,
+      },
+    }),
+    options
+  );
 }
 
 /** Vision + JSON — e.g. receipt / UPI screenshot parsing. */

@@ -1,4 +1,8 @@
-import { callGeminiJson, callGeminiText } from "@/lib/ai/gemini";
+import {
+  callGeminiJson,
+  callGeminiText,
+  getGeminiBlogApiKey,
+} from "@/lib/ai/gemini";
 import { CATEGORIES } from "@/lib/data/categories";
 import { istDayKey } from "@/lib/engagement/streak";
 
@@ -142,17 +146,19 @@ whyTrending: one sentence on why this matters now in India.
 
 Return JSON: { "topics": [{ "title": "...", "searchIntent": "...", "whyTrending": "..." }] }`;
 
+  const blogKey = { apiKey: getGeminiBlogApiKey() };
   const jsonResult = await callGeminiJson<{ topics: HotTopic[] }>(
     system,
     user,
     TOPICS_SCHEMA,
-    4096
+    4096,
+    blogKey
   );
   if (jsonResult?.topics?.length) {
     return jsonResult.topics;
   }
 
-  const textResult = await callGeminiText(system, user, 4096);
+  const textResult = await callGeminiText(system, user, 4096, blogKey);
   if (textResult) {
     return parseTopicsJson(textResult);
   }

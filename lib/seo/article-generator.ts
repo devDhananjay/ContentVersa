@@ -1,6 +1,7 @@
 import {
   callGeminiJsonWithMeta,
   callGeminiTextWithMeta,
+  getGeminiBlogApiKey,
   type GeminiFailure,
 } from "@/lib/ai/gemini";
 import { detectCoverTheme } from "@/lib/seo/cover-image";
@@ -221,12 +222,15 @@ export async function generateSeoArticle(input: {
     input.categorySlug?.trim() ||
     input.category.toLowerCase().replace(/\s+/g, "-");
   const { system, user } = buildPrompts({ ...input, minWords, maxWords });
+  const blogKey = getGeminiBlogApiKey();
+  const geminiOpts = { apiKey: blogKey };
 
   const jsonResult = await callGeminiJsonWithMeta<GeneratedArticle>(
     system,
     user,
     ARTICLE_JSON_SCHEMA,
-    8192
+    8192,
+    geminiOpts
   );
 
   let bestPartial: GeneratedArticle | null = null;
@@ -244,7 +248,8 @@ export async function generateSeoArticle(input: {
     `${user}
 
 Return ONLY valid JSON (no markdown fences) with keys: title, excerpt, metaDescription, metaKeywords, tags (string array), coverKeywords (string array, 4 visual tags), coverImagePrompt (one detailed photorealistic scene sentence), content (markdown body).`,
-    8192
+    8192,
+    geminiOpts
   );
 
   if (textResult.ok) {
@@ -276,7 +281,8 @@ Return ONLY valid JSON (no markdown fences) with keys: title, excerpt, metaDescr
       expandPrompts.system,
       expandPrompts.user,
       ARTICLE_JSON_SCHEMA,
-      8192
+      8192,
+      geminiOpts
     );
     if (expanded.ok && expanded.data.content) {
       const article = normalizeArticle(expanded.data, categorySlug);
