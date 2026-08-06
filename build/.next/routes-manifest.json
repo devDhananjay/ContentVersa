@@ -70,6 +70,16 @@
       "regex": "^/ads\\.txt(?:/)?$"
     },
     {
+      "source": "/videos/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ],
+      "regex": "^/videos(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    },
+    {
       "source": "/:path*",
       "headers": [
         {

@@ -4,19 +4,35 @@ import * as React from "react";
 import { homeHeroVideoUrl, isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
 import { cn } from "@/lib/utils";
 
+type ConnectionLike = {
+  saveData?: boolean;
+  effectiveType?: string;
+};
+
+function shouldLoadHeroVideo(): boolean {
+  if (typeof window === "undefined") return false;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+  // Background autoplay video wrecks mobile LCP / data — keep gradient on phones
+  if (window.matchMedia("(max-width: 767px)").matches) return false;
+  const conn = (navigator as Navigator & { connection?: ConnectionLike }).connection;
+  if (conn?.saveData) return false;
+  if (conn?.effectiveType === "slow-2g" || conn?.effectiveType === "2g") return false;
+  return true;
+}
+
 /** Keep hero video playing — resume after tab focus, stall, or accidental pause. */
-function usePersistentVideoPlayback(videoRef: React.RefObject<HTMLVideoElement | null>) {
+function usePersistentVideoPlayback(
+  videoRef: React.RefObject<HTMLVideoElement | null>,
+  active: boolean
+) {
   React.useEffect(() => {
+    if (!active) return;
     const video = videoRef.current;
     if (!video) return;
 
     const play = () => {
-      if (video.ended) {
-        video.currentTime = 0;
-      }
-      void video.play().catch(() => {
-        // Browser may block until next gesture — retry once on interaction
-      });
+      if (video.ended) video.currentTime = 0;
+      void video.play().catch(() => {});
     };
 
     const onVisibility = () => {
@@ -24,7 +40,6 @@ function usePersistentVideoPlayback(videoRef: React.RefObject<HTMLVideoElement |
     };
 
     const onPause = () => {
-      // Background loops should not stay paused (unless tab hidden)
       if (document.visibilityState === "visible") {
         window.requestAnimationFrame(play);
       }
@@ -51,7 +66,13 @@ function usePersistentVideoPlayback(videoRef: React.RefObject<HTMLVideoElement |
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("focus", play);
     };
-  }, [videoRef]);
+  }, [videoRef, active]);
+}
+
+function GradientFallback() {
+  return (
+    <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-background" />
+  );
 }
 
 export function HeroVideoBackground({ className }: { className?: string }) {
@@ -59,33 +80,64 @@ export function HeroVideoBackground({ className }: { className?: string }) {
   const url = homeHeroVideoUrl();
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = React.useState(false);
+  const [src, setSrc] = React.useState<string | null>(null);
 
-  usePersistentVideoPlayback(videoRef);
+  React.useEffect(() => {
+    if (!enabled) return;
+    if (!shouldLoadHeroVideo()) return;
+
+    let cancelled = false;
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const arm = () => {
+      if (cancelled) return;
+      setSrc(url);
+    };
+
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    if (typeof win.requestIdleCallback === "function") {
+      idleId = win.requestIdleCallback(arm, { timeout: 1800 });
+    } else {
+      timeoutId = setTimeout(arm, 900);
+    }
+
+    return () => {
+      cancelled = true;
+      if (idleId != null) win.cancelIdleCallback?.(idleId);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [enabled, url]);
+
+  usePersistentVideoPlayback(videoRef, Boolean(src) && !failed);
 
   if (!enabled) return null;
 
   return (
     <div className={cn("hero-video-active absolute inset-0 overflow-hidden", className)} aria-hidden>
-      {!failed ? (
+      {src && !failed ? (
         <video
           ref={videoRef}
           autoPlay
           muted
           loop
           playsInline
-          preload="auto"
+          preload="none"
           disablePictureInPicture
           controls={false}
           className="absolute left-1/2 top-1/2 h-full w-full min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover object-center scale-[1.35] sm:scale-[1.4] lg:scale-[1.45]"
           onError={() => setFailed(true)}
         >
-          <source src={url} type="video/mp4" />
+          <source src={src} type="video/mp4" />
         </video>
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-background" />
+        <GradientFallback />
       )}
 
-      {/* Overlays — keep text readable without washing out the zoomed video */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-background/90" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(0,0,0,0.35)_100%)]" />
       <div className="absolute inset-0 opacity-[0.07] grid-noise" />
