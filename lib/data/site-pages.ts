@@ -86,6 +86,26 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
         ],
       },
       {
+        heading: "Editorial standards (for readers & advertisers)",
+        paragraphs: [
+          "Every public article on ContentVerse India is expected to be original, useful, and clearly written for Indian readers. We reject thin rewrites, scraped pages, and keyword-stuffed filler. Where we use AI assist in the studio, human review still decides what goes live.",
+          "Utility tools (IFSC, EMI, tax estimates, weather, and similar) exist to help readers complete everyday tasks. They are free, labelled as independent utilities — not official government portals — and sit alongside long-form guides so pages are not empty widgets.",
+        ],
+        bullets: [
+          "Prefer 800+ word explainers with examples, checklists, and FAQs",
+          "Disclose when content is educational (tax, investments, legal) and not formal advice",
+          "Maintain About, Privacy, Terms, Cookies, Contact, and Content Policy in the footer",
+          "Respond to valid reports and legal notices under Indian intermediary rules",
+        ],
+      },
+      {
+        heading: "Who runs ContentVerse India",
+        paragraphs: [
+          "ContentVerse India is operated from India with a small product and editorial team focused on publishing quality. Our public contact for readers, creators, and grievance redressal is listed on the Contact page and in policy documents.",
+          `For partnership, press, or policy questions, email ${CONTACT_EMAIL}. We aim to reply within a few business days.`,
+        ],
+      },
+      {
         heading: "By the numbers",
         cards: [
           {

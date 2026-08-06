@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FileSearch } from "lucide-react";
 import { BankStatementAnalyzer } from "@/components/moneyverse/bank-statement-analyzer";
+import { BankStatementGuide } from "@/components/moneyverse/bank-statement-guide";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -46,6 +47,7 @@ export default function BankStatementAnalyzerPage() {
       </header>
 
       <BankStatementAnalyzer />
+      <BankStatementGuide />
     </div>
   );
 }
