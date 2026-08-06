@@ -21,6 +21,7 @@
     "db:seed-dashboard": "tsx prisma/seed-dashboard-owner.ts",
     "db:seed-seo": "tsx scripts/seed-seo-articles.ts",
     "db:seed-manual": "tsx scripts/seed-manual-articles.ts",
+    "db:seed-adsense": "tsx scripts/seed-adsense-boost.ts",
     "db:archive-discover": "tsx scripts/archive-discover-blogs.ts",
     "db:fix-covers": "tsx scripts/fix-missing-covers.ts",
     "db:fix-duplicate-covers": "tsx scripts/fix-duplicate-covers.ts",
