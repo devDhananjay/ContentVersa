@@ -407,6 +407,30 @@ export function notificationEmail(opts: {
   return { subject: opts.title, html };
 }
 
+export function accountInactiveEmail(opts: {
+  name?: string | null;
+  reason?: string | null;
+  contactEmail: string;
+}) {
+  const first = (opts.name || "").trim().split(/\s+/)[0] || "there";
+  const reason = opts.reason?.trim();
+  const reasonBlock = reason
+    ? `<p style="margin:16px 0 0;padding:14px 16px;background:#09090b;border-radius:12px;border:1px solid #27272a;color:#d4d4d8;font-size:14px;line-height:1.55;"><span style="display:block;font-size:11px;color:#f87171;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Reason</span>${escapeHtml(reason)}</p>`
+    : "";
+
+  const html = layout(
+    `<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Your account is inactive</h1>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">Hi ${escapeHtml(first)}, your ContentVerse India account has been deactivated by our team. You will not be able to sign in until it is reactivated.</p>
+    ${reasonBlock}
+    <p style="margin:20px 0 0;line-height:1.65;color:#a1a1aa;font-size:14px;">If you believe this was a mistake or need help, reply to this email or write to <a href="mailto:${escapeHtml(opts.contactEmail)}" style="color:#c4b5fd;">${escapeHtml(opts.contactEmail)}</a>.</p>`,
+  );
+
+  return {
+    subject: "Your ContentVerse India account is inactive",
+    html,
+  };
+}
+
 function escapeHtml(s: string) {
   return s
     .replace(/&/g, "&amp;")

@@ -41,13 +41,14 @@ export async function PATCH(
 
     const target = await prisma.user.findUnique({
       where: { id },
-      select: { id: true, email: true, role: true, banned: true },
+      select: { id: true, email: true, name: true, role: true, banned: true },
     });
     if (!target) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const actorId = await resolveUserId(actor);
+    const wasBanned = target.banned;
 
     const updateData: {
       role?: UserRole;
@@ -120,11 +121,24 @@ export async function PATCH(
         id: true,
         email: true,
         username: true,
+        name: true,
         role: true,
         banned: true,
         banReason: true,
       },
     });
+
+    let emailed = false;
+    if (parsed.banned === true && !wasBanned) {
+      const { notifyAccountInactive } = await import(
+        "@/lib/notifications/account-inactive"
+      );
+      emailed = await notifyAccountInactive({
+        email: user.email,
+        name: user.name,
+        reason: user.banReason,
+      });
+    }
 
     revalidatePath("/admin/users");
     revalidatePath(`/admin/users/${id}`);
@@ -132,10 +146,11 @@ export async function PATCH(
     return NextResponse.json({
       ok: true,
       user,
+      emailed,
       message:
         passwordMessage ||
         (parsed.banned === true
-          ? `${user.email} marked inactive`
+          ? `${user.email} marked inactive${emailed ? " — email sent" : ""}`
           : parsed.banned === false
             ? `${user.email} reactivated`
             : undefined),

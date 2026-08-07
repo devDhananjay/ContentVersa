@@ -128,24 +128,31 @@ export async function PATCH(
         }
         case "USER": {
           if (action === "BAN_USER") {
-            await prisma.$transaction([
-              prisma.user.update({
-                where: { id: report.targetId },
-                data: {
-                  banned: true,
-                  banReason: actionNote || `Report: ${report.reason}`,
-                },
-              }),
-              prisma.contentReport.update({
-                where: { id },
-                data: {
-                  status: "ACTION_TAKEN",
-                  reviewedById: reviewerId,
-                  reviewedAt: new Date(),
-                  actionNote: actionNote || "User banned",
-                },
-              }),
-            ]);
+            const bannedUser = await prisma.user.update({
+              where: { id: report.targetId },
+              data: {
+                banned: true,
+                banReason: actionNote || `Report: ${report.reason}`,
+              },
+              select: { email: true, name: true, banReason: true },
+            });
+            await prisma.contentReport.update({
+              where: { id },
+              data: {
+                status: "ACTION_TAKEN",
+                reviewedById: reviewerId,
+                reviewedAt: new Date(),
+                actionNote: actionNote || "User banned",
+              },
+            });
+            const { notifyAccountInactive } = await import(
+              "@/lib/notifications/account-inactive"
+            );
+            void notifyAccountInactive({
+              email: bannedUser.email,
+              name: bannedUser.name,
+              reason: bannedUser.banReason,
+            });
           } else if (action === "WARN_USER") {
             await prisma.$transaction([
               prisma.user.update({
