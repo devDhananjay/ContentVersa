@@ -11,10 +11,16 @@ const PatchSchema = z
   .object({
     role: z.enum(["USER", "VERIFIED_CREATOR", "MODERATOR", "ADMIN", "SUPER_ADMIN"]).optional(),
     password: z.string().min(8, "Password must be at least 8 characters").optional(),
+    banned: z.boolean().optional(),
+    banReason: z.string().max(300).nullable().optional(),
   })
-  .refine((data) => data.role !== undefined || data.password !== undefined, {
-    message: "Provide role and/or password to update",
-  });
+  .refine(
+    (data) =>
+      data.role !== undefined ||
+      data.password !== undefined ||
+      data.banned !== undefined,
+    { message: "Provide role, password, and/or banned status to update" }
+  );
 
 const ELEVATED = ["ADMIN", "SUPER_ADMIN"] as const;
 
@@ -35,13 +41,20 @@ export async function PATCH(
 
     const target = await prisma.user.findUnique({
       where: { id },
-      select: { id: true, email: true, role: true },
+      select: { id: true, email: true, role: true, banned: true },
     });
     if (!target) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const updateData: { role?: UserRole; password?: string } = {};
+    const actorId = await resolveUserId(actor);
+
+    const updateData: {
+      role?: UserRole;
+      password?: string;
+      banned?: boolean;
+      banReason?: string | null;
+    } = {};
 
     if (parsed.role !== undefined) {
       if (ELEVATED.includes(parsed.role as (typeof ELEVATED)[number]) && actor.role !== "SUPER_ADMIN") {
@@ -51,7 +64,6 @@ export async function PATCH(
         );
       }
 
-      const actorId = await resolveUserId(actor);
       if (actorId === id && parsed.role !== "SUPER_ADMIN" && actor.role === "SUPER_ADMIN") {
         return NextResponse.json(
           { error: "You cannot demote your own Super Admin account" },
@@ -69,10 +81,49 @@ export async function PATCH(
       passwordMessage = `Password updated for ${target.email}. User can sign in with the new password.`;
     }
 
+    if (parsed.banned !== undefined) {
+      if (actorId === id) {
+        return NextResponse.json(
+          { error: "You cannot deactivate your own account" },
+          { status: 400 }
+        );
+      }
+      if (
+        (target.role === "SUPER_ADMIN" || target.role === "ADMIN") &&
+        actor.role !== "SUPER_ADMIN"
+      ) {
+        return NextResponse.json(
+          { error: "Only Super Admin can deactivate Admin accounts" },
+          { status: 403 }
+        );
+      }
+      if (target.role === "SUPER_ADMIN" && parsed.banned) {
+        return NextResponse.json(
+          { error: "Super Admin accounts cannot be deactivated" },
+          { status: 400 }
+        );
+      }
+
+      updateData.banned = parsed.banned;
+      if (parsed.banned) {
+        const reason = parsed.banReason?.trim();
+        updateData.banReason = reason || "Deactivated by admin";
+      } else {
+        updateData.banReason = null;
+      }
+    }
+
     const user = await prisma.user.update({
       where: { id },
       data: updateData,
-      select: { id: true, email: true, username: true, role: true },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        role: true,
+        banned: true,
+        banReason: true,
+      },
     });
 
     revalidatePath("/admin/users");
@@ -81,7 +132,13 @@ export async function PATCH(
     return NextResponse.json({
       ok: true,
       user,
-      message: passwordMessage,
+      message:
+        passwordMessage ||
+        (parsed.banned === true
+          ? `${user.email} marked inactive`
+          : parsed.banned === false
+            ? `${user.email} reactivated`
+            : undefined),
     });
   } catch (err) {
     if (err instanceof z.ZodError) {

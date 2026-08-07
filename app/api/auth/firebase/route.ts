@@ -131,6 +131,13 @@ export async function POST(req: Request) {
         }
       });
 
+      if (upserted.user.banned) {
+        return NextResponse.json(
+          { error: "This account is inactive. Contact support if you need access." },
+          { status: 403 }
+        );
+      }
+
       if (upserted.isNew) {
         const { welcomeNewUser } = await import("@/lib/notifications/welcome-user");
         void welcomeNewUser({

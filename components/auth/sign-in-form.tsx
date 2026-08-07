@@ -22,6 +22,8 @@ const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   state_mismatch: "Sign-in session expired. Please try again.",
   google_exchange_failed: "Could not exchange Google's response. Please retry.",
   no_email: "Your Google account did not return an email.",
+  account_inactive:
+    "This account is inactive. Contact support if you need access.",
 };
 
 export function SignInForm() {

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChangeUserPassword } from "@/components/admin/change-user-password";
+import { UserInactiveToggle } from "@/components/admin/user-inactive-toggle";
 import { getAdminUserDetail } from "@/lib/data/admin-data";
 import { getCurrentUser } from "@/lib/auth";
 import { formatNumber, getInitials } from "@/lib/utils";
@@ -27,6 +28,10 @@ export default async function AdminUserDetailPage({
   const user = await getAdminUserDetail(id);
   if (!user) notFound();
   const isSuperAdmin = session?.role === "SUPER_ADMIN";
+  const canManageStatus =
+    session?.role === "ADMIN" ||
+    session?.role === "SUPER_ADMIN" ||
+    session?.role === "MODERATOR";
 
   const byStatus = {
     published: user.blogs.filter((b) => b.status === "PUBLISHED").length,
@@ -61,7 +66,7 @@ export default async function AdminUserDetailPage({
               {user.role.replace(/_/g, " ")}
             </Badge>
             {user.isVerified && <Badge variant="neon">Verified</Badge>}
-            {user.banned && <Badge variant="destructive">Banned</Badge>}
+            {user.banned && <Badge variant="destructive">Inactive</Badge>}
           </div>
           <p className="text-muted-foreground mt-1">@{user.username}</p>
           <p className="flex items-center gap-1.5 text-sm mt-2">
@@ -76,6 +81,15 @@ export default async function AdminUserDetailPage({
           </p>
         </div>
       </div>
+
+      {canManageStatus ? (
+        <UserInactiveToggle
+          userId={user.id}
+          userEmail={user.email}
+          banned={user.banned}
+          banReason={user.banReason}
+        />
+      ) : null}
 
       {isSuperAdmin && (
         <ChangeUserPassword

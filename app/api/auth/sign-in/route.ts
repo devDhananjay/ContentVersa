@@ -16,7 +16,16 @@ export async function POST(req: Request) {
     const normalized = identifier.trim().toLowerCase();
 
     // Lookup user (gracefully degrades when DB is unreachable, returns demo mode)
-    let user: { id: string; email: string; name: string | null; username: string; password: string | null; role: string; image: string | null } | null = null;
+    let user: {
+      id: string;
+      email: string;
+      name: string | null;
+      username: string;
+      password: string | null;
+      role: string;
+      image: string | null;
+      banned: boolean;
+    } | null = null;
     try {
       user = await prisma.user.findFirst({
         where: {
@@ -38,6 +47,12 @@ export async function POST(req: Request) {
 
     if (!user || !user.password) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+    if (user.banned) {
+      return NextResponse.json(
+        { error: "This account is inactive. Contact support if you need access." },
+        { status: 403 }
+      );
     }
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {

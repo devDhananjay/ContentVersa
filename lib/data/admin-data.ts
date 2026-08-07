@@ -37,6 +37,7 @@ export type AdminUserRow = {
   image: string | null;
   role: string;
   banned: boolean;
+  banReason: string | null;
   warnings: number;
   createdAt: Date;
   blogCount: number;
@@ -278,6 +279,7 @@ export async function getAdminUsers(): Promise<AdminUserRow[]> {
     image: u.image,
     role: u.role,
     banned: u.banned,
+    banReason: u.banReason,
     warnings: u.warnings,
     createdAt: u.createdAt,
     blogCount: u._count.blogs,
@@ -327,6 +329,7 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     image: user.image,
     role: user.role,
     banned: user.banned,
+    banReason: user.banReason,
     warnings: user.warnings,
     createdAt: user.createdAt,
     blogCount: user._count.blogs,

@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AddUserDialog } from "@/components/admin/add-user-dialog";
+import { UserInactiveToggle } from "@/components/admin/user-inactive-toggle";
 import { AdminListFilters, useAdminFilters } from "@/components/admin/admin-list-filters";
 import { formatNumber, getInitials } from "@/lib/utils";
 import {
@@ -189,7 +190,7 @@ export function AdminUsersTable({
                 options: [
                   { value: "all", label: "All accounts" },
                   { value: "active", label: "Active only" },
-                  { value: "banned", label: "Banned only" },
+                  { value: "banned", label: "Inactive only" },
                 ],
               },
               {
@@ -274,7 +275,7 @@ export function AdminUsersTable({
                       <div className="flex items-center gap-1.5">
                         <p className="font-semibold">{u.name || u.username}</p>
                         {u.isVerified && <BadgeCheck className="h-3.5 w-3.5 text-neon-cyan" />}
-                        {u.banned && <Badge variant="destructive">Banned</Badge>}
+                        {u.banned && <Badge variant="destructive">Inactive</Badge>}
                       </div>
                       <p className="text-xs text-muted-foreground">@{u.username}</p>
                     </div>
@@ -318,11 +319,22 @@ export function AdminUsersTable({
                   )}
                 </td>
                 <td className="p-4 text-right">
-                  <Link href={`/admin/users/${u.id}`}>
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <Eye className="h-3.5 w-3.5" /> View
-                    </Button>
-                  </Link>
+                  <div className="inline-flex items-center gap-2 justify-end">
+                    {u.role !== "SUPER_ADMIN" ? (
+                      <UserInactiveToggle
+                        userId={u.id}
+                        userEmail={u.email}
+                        banned={u.banned}
+                        banReason={u.banReason}
+                        compact
+                      />
+                    ) : null}
+                    <Link href={`/admin/users/${u.id}`}>
+                      <Button variant="outline" size="sm" className="gap-1">
+                        <Eye className="h-3.5 w-3.5" /> View
+                      </Button>
+                    </Link>
+                  </div>
                 </td>
               </tr>
             ))}

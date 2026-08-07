@@ -99,6 +99,9 @@ export async function GET(req: Request) {
   if (isDatabaseConfigured()) {
     try {
       const { user, isNew } = await persistGoogleUser(profile);
+      if (user.banned) {
+        return fail("account_inactive");
+      }
       if (isNew) {
         const { welcomeNewUser } = await import("@/lib/notifications/welcome-user");
         void welcomeNewUser({

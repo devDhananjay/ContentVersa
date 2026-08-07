@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, clearSessionCookie } from "@/lib/auth";
 import { refreshSessionIfStale } from "@/lib/auth/refresh-session";
 import { resolveUserId } from "@/lib/auth/resolve-user-id";
 import { getUserReadingStats } from "@/lib/data/reading-history";
@@ -21,6 +21,21 @@ export async function GET() {
   }
 
   const user = isDatabaseConfigured() ? await refreshSessionIfStale(current) : current;
+  const userId = isDatabaseConfigured() ? await resolveUserId(user) : null;
+
+  if (isDatabaseConfigured() && userId) {
+    const row = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { banned: true },
+    });
+    if (row?.banned) {
+      await clearSessionCookie();
+      return NextResponse.json(
+        { user: null, error: "account_inactive" },
+        { status: 403, headers: NO_STORE }
+      );
+    }
+  }
 
   let profile: {
     bio: string | null;
@@ -37,8 +52,6 @@ export async function GET() {
   const role = isDatabaseConfigured()
     ? await resolveSessionRole(user)
     : user.role;
-
-  const userId = isDatabaseConfigured() ? await resolveUserId(user) : null;
 
   if (isDatabaseConfigured() && userId) {
     profile = await prisma.profile.findUnique({
