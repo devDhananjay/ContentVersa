@@ -43,7 +43,8 @@ export function BlogFilters({
       const next = new URLSearchParams(sp?.toString() || "");
       if (value) next.set(key, value);
       else next.delete(key);
-      if (key !== "page") next.delete("page");
+      // Keep `limit`; reset page when filters change
+      if (key !== "page" && key !== "limit") next.delete("page");
       router.push(`/blogs?${next.toString()}`);
     },
     [router, sp]

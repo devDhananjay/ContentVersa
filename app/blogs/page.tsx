@@ -8,9 +8,8 @@ import type { Blog } from "@/lib/data/blogs";
 import { getPublishedBlogsLiteHybrid } from "@/lib/data/blog-db";
 import { getCategoryFeed } from "@/lib/feeds/data";
 import { hasCategoryFeed } from "@/lib/feeds/constants";
+import { parseBlogPageSize } from "@/lib/blogs/list-params";
 import { buildMetadata, SITE } from "@/lib/seo";
-
-const PAGE_SIZE = 18;
 
 export const metadata: Metadata = buildMetadata({
   title: "Explore articles",
@@ -109,15 +108,16 @@ export default async function BlogsPage({
     ...spRaw,
     q: spRaw.q?.trim() || undefined,
   };
+  const pageSize = parseBlogPageSize(sp.limit);
   const all = await getPublishedBlogsLiteHybrid();
   const list = applyFilters(all, sp);
-  const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
   const page = Math.min(
     totalPages,
     Math.max(1, Number.parseInt(sp.page || "1", 10) || 1)
   );
-  const start = (page - 1) * PAGE_SIZE;
-  const pageItems = list.slice(start, start + PAGE_SIZE);
+  const start = (page - 1) * pageSize;
+  const pageItems = list.slice(start, start + pageSize);
   const category = sp.category;
   const feed =
     category && hasCategoryFeed(category) ? await getCategoryFeed(category) : null;
@@ -156,16 +156,18 @@ export default async function BlogsPage({
         </div>
       ) : (
         <>
-          <p className="mt-6 text-sm text-muted-foreground">
-            Showing {start + 1}–{Math.min(start + PAGE_SIZE, list.length)} of {list.length}{" "}
-            articles
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mt-4">
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
             {pageItems.map((b, i) => (
               <BlogCard key={b.id} blog={b} index={i} eager={i < 6} />
             ))}
           </div>
-          <BlogPagination page={page} totalPages={totalPages} searchParams={sp} />
+          <BlogPagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={list.length}
+            pageSize={pageSize}
+            searchParams={sp}
+          />
         </>
       )}
     </div>

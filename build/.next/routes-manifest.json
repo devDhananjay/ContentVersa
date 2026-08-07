@@ -1014,12 +1014,6 @@
       "namedRegex": "^/terms(?:/)?$"
     },
     {
-      "page": "/test-kyc",
-      "regex": "^/test\\-kyc(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/test\\-kyc(?:/)?$"
-    },
-    {
       "page": "/tools",
       "regex": "^/tools(?:/)?$",
       "routeKeys": {},
