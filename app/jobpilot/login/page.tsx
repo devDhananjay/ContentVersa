@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { JobPilotLoginClient } from "@/components/jobpilot/login-client";
 
 export const metadata = {
-  title: "JobPilot AI — Sign in",
-  description: "Connect JobPilot AI Chrome extension to your ContentVerse account.",
+  title: "ContentVerse HirePilot — Sign in",
+  description: "Connect ContentVerse HirePilot Chrome extension to your account.",
 };
 
 export default function JobPilotLoginPage() {

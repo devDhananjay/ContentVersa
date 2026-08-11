@@ -119,7 +119,7 @@ export function JobPilotTrackerClient() {
 
       {apps.length === 0 ? (
         <div className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-          No jobs saved yet. Analyze a LinkedIn/Naukri job in the extension and tap
+          No jobs saved yet. Analyze a LinkedIn/Naukri job in the HirePilot extension and tap
           Save to Tracker.
         </div>
       ) : (
@@ -171,7 +171,7 @@ export function JobPilotTrackerClient() {
       )}
 
       <Button asChild variant="outline" size="sm">
-        <Link href="/jobpilot">Back to JobPilot</Link>
+        <Link href="/jobpilot">Back to HirePilot</Link>
       </Button>
     </div>
   );

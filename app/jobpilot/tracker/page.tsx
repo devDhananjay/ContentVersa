@@ -1,7 +1,7 @@
 import { JobPilotTrackerClient } from "@/components/jobpilot/tracker-client";
 
 export const metadata = {
-  title: "Job Tracker — JobPilot AI",
+  title: "Job Tracker — ContentVerse HirePilot",
 };
 
 export default function JobPilotTrackerPage() {

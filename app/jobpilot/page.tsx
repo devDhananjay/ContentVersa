@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { JobPilotHomeClient } from "@/components/jobpilot/home-client";
 
 export const metadata = {
-  title: "JobPilot AI",
+  title: "ContentVerse HirePilot",
   description: "Find jobs. Understand jobs. Apply smarter.",
 };
 
@@ -15,7 +15,7 @@ export default function JobPilotHomePage() {
         <div>
           <h1 className="font-display text-3xl font-extrabold tracking-tight flex items-center gap-2">
             <Target className="h-8 w-8 text-emerald-500" />
-            JobPilot AI
+            ContentVerse HirePilot
           </h1>
           <p className="text-muted-foreground mt-1">
             Find jobs. Understand jobs. Apply smarter.

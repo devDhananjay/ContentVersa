@@ -1,8 +1,8 @@
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import type { JobPilotUsageSnapshot } from "@/lib/jobpilot/types";
 
-export const FREE_ANALYSIS_LIMIT = 5;
-export const FREE_COVER_LETTER_LIMIT = 3;
+export const FREE_ANALYSIS_LIMIT = 20;
+export const FREE_COVER_LETTER_LIMIT = 10;
 
 export function currentMonthKey(date = new Date()): string {
   return date.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }).slice(0, 7);

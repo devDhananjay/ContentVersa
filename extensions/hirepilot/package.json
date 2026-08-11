@@ -1,0 +1,32 @@
+{
+  "name": "contentverse-hirepilot",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "ContentVerse HirePilot — Chrome extension (LinkedIn/Naukri job match, cover letters, tracker)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:check": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.7.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/chrome": "^0.2.5",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "oxlint": "^1.75.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.0"
+  }
+}

@@ -66,9 +66,9 @@ export function JobPilotLoginClient() {
     return (
       <div className="rounded-2xl border bg-card p-8 space-y-4 text-center">
         <Target className="h-10 w-10 text-emerald-500 mx-auto" />
-        <h1 className="font-display text-2xl font-bold">JobPilot AI</h1>
+        <h1 className="font-display text-2xl font-bold">ContentVerse HirePilot</h1>
         <p className="text-sm text-muted-foreground">
-          Sign in to ContentVerse to connect the Chrome extension and sync your
+          Sign in to ContentVerse to connect the HirePilot Chrome extension and sync your
           resume, analyses, and job tracker.
         </p>
         <Button asChild variant="gradient">
@@ -83,9 +83,9 @@ export function JobPilotLoginClient() {
   return (
     <div className="rounded-2xl border bg-card p-8 space-y-5">
       <div className="flex items-center gap-3">
-        <Target className="h-8 w-8 text-emerald-500" />
+          <Target className="h-8 w-8 text-emerald-500" />
         <div>
-          <h1 className="font-display text-2xl font-bold">JobPilot AI</h1>
+          <h1 className="font-display text-2xl font-bold">ContentVerse HirePilot</h1>
           <p className="text-sm text-muted-foreground">
             Signed in as {user.email}
           </p>

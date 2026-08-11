@@ -108,7 +108,7 @@ export function JobPilotHomeClient() {
         <Link href="/auth/sign-in?next=/jobpilot" className="text-emerald-600 underline">
           Sign in
         </Link>{" "}
-        to upload your resume and use JobPilot.
+        to upload your resume and use ContentVerse HirePilot.
       </div>
     );
   }
