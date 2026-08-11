@@ -882,6 +882,24 @@
       "namedRegex": "^/icon\\.png(?:/)?$"
     },
     {
+      "page": "/jobpilot",
+      "regex": "^/jobpilot(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/jobpilot(?:/)?$"
+    },
+    {
+      "page": "/jobpilot/login",
+      "regex": "^/jobpilot/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/jobpilot/login(?:/)?$"
+    },
+    {
+      "page": "/jobpilot/tracker",
+      "regex": "^/jobpilot/tracker(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/jobpilot/tracker(?:/)?$"
+    },
+    {
       "page": "/jobs",
       "regex": "^/jobs(?:/)?$",
       "routeKeys": {},
