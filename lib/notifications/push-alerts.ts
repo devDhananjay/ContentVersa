@@ -44,7 +44,7 @@ async function notifyUsers(payloads: NotificationPayload[]) {
   return { sent, push: payloads.length };
 }
 
-/** 30 minutes before a cricket match — email + in-app + push for all users. */
+/** 30 minutes before a cricket match — only users who subscribed to cricket alerts. */
 export async function sendCricketMatchReminders() {
   if (!isDatabaseConfigured()) return { sent: 0, push: 0, match: null };
 
@@ -57,17 +57,21 @@ export async function sendCricketMatchReminders() {
   const claimed = await claimAlertDispatch(alertKey);
   if (!claimed) return { sent: 0, push: 0, match: soon.id, skipped: true };
 
+  const subscribers = await prisma.cricketAlertSubscription.findMany({
+    select: { userId: true },
+    take: 5000,
+  });
+
+  if (!subscribers.length) {
+    return { sent: 0, push: 0, match: soon.id, subscribers: 0 };
+  }
+
   const link = `/sports/match/${soon.id}`;
   const title = "Cricket match starts in 30 minutes";
   const message = `${soon.team1.name} vs ${soon.team2.name} · ${soon.matchDesc || soon.seriesName}. Tap to view live score.`;
 
-  const users = await prisma.user.findMany({
-    select: { id: true },
-    take: 5000,
-  });
-
-  const payloads: NotificationPayload[] = users.map((user) => ({
-    userId: user.id,
+  const payloads: NotificationPayload[] = subscribers.map((sub) => ({
+    userId: sub.userId,
     type: NotificationType.CRICKET_MATCH_REMINDER,
     title,
     message,
@@ -75,7 +79,7 @@ export async function sendCricketMatchReminders() {
   }));
 
   const result = await notifyUsers(payloads);
-  return { ...result, match: soon.id };
+  return { ...result, match: soon.id, subscribers: subscribers.length };
 }
 
 type StockPhase = "open" | "close";

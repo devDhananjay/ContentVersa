@@ -10,7 +10,7 @@ import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
 import { HubAdSense } from "@/components/ads/hub-adsense";
-import { HubPushCta } from "@/components/engagement/hub-push-cta";
+import { CricketAlertSubscribe } from "@/components/sports/cricket-alert-subscribe";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getSportsHubDataCached } from "@/lib/sports/data";
 import { hubSeoJsonLdBlocks, SPORTS_HUB_SEO } from "@/lib/seo/hub-seo";
@@ -75,10 +75,7 @@ export default async function SportsHubPage() {
       </HubEditorialIntro>
 
       <HubAdSense />
-      <HubPushCta
-        title="Cricket match alerts"
-        description="Get a push 30 minutes before big matches — never miss toss or first ball."
-      />
+      <CricketAlertSubscribe />
 
       <section>
         <SportsSectionHeader

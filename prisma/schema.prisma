@@ -186,6 +186,7 @@ model User {
   jobPilotCoverLetters JobPilotCoverLetter[]
   jobPilotApplications JobPilotApplication[]
   jobPilotUsage        JobPilotUsage[]
+  cricketAlertSub      CricketAlertSubscription?
 
   @@index([role])
   @@index([createdAt])
@@ -677,6 +678,14 @@ model CategorySubscription {
 
   @@id([userId, categoryId])
   @@index([categoryId])
+}
+
+// Opt-in for cricket match reminders (30 min before start).
+model CricketAlertSubscription {
+  userId    String   @id
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ---------------------- Monetization ----------------------
