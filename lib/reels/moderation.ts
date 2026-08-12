@@ -69,7 +69,7 @@ async function geminiModerationCheck(
   const image = await fetchImageBase64(imageUrl);
   if (!image) return null;
 
-  const model = process.env.GEMINI_TEXT_MODEL?.trim() || "gemini-2.5-flash";
+  const model = process.env.GEMINI_TEXT_MODEL?.trim() || "gemini-3.5-flash-lite";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
 
   const res = await fetch(url, {

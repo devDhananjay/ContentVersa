@@ -43,9 +43,9 @@ function textModels(): string[] {
   const configured = process.env.GEMINI_TEXT_MODEL?.trim();
   const chain = [
     configured,
-    "gemini-2.5-flash",
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-lite",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.5-flash",
   ].filter((m): m is string => Boolean(m));
   return [...new Set(chain)];
 }
