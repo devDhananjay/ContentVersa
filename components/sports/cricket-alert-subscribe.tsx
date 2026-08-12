@@ -71,8 +71,8 @@ export function CricketAlertSubscribe() {
           <div>
             <p className="text-sm font-semibold">Cricket match alerts</p>
             <p className="text-xs text-muted-foreground">
-              Upcoming matches ke liye 30 min pehle notification chahiye? Subscribe
-              karo — miss mat karo toss aur first ball.
+              Want a notification 30 minutes before upcoming matches? Subscribe
+              so you never miss the toss or the first ball.
             </p>
           </div>
         </div>
