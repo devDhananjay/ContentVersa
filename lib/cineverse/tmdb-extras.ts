@@ -40,6 +40,7 @@ function parseTrailers(
       site: string;
       type: string;
       official?: boolean;
+      published_at?: string | null;
     }[];
   } | null
 ): CineTrailer[] {
@@ -58,6 +59,7 @@ function parseTrailers(
     site: v.site,
     type: v.type,
     youtubeUrl: `https://www.youtube.com/watch?v=${v.key}`,
+    publishedAt: v.published_at?.trim() || undefined,
   }));
 }
 

@@ -11,12 +11,20 @@ export function movieJsonLd(movie: CineMovieDetail) {
 
   const trailer = movie.trailers[0];
   const providers = movie.providers.filter((p) => p.type === "stream").slice(0, 8);
+  const movieDescription =
+    movie.overview ||
+    `${movie.title} cast, OTT release, trailer and where to watch in India.`;
+  const uploadDate =
+    trailer?.publishedAt ||
+    movie.theatricalReleaseDate ||
+    movie.releaseDate ||
+    new Date().toISOString().slice(0, 10);
 
   return {
     "@context": "https://schema.org",
     "@type": "Movie",
     name: movie.title,
-    description: movie.overview || `${movie.title} cast, OTT release, trailer and where to watch in India.`,
+    description: movieDescription,
     url,
     image: movie.posterUrl ?? movie.backdropUrl,
     datePublished: movie.theatricalReleaseDate ?? movie.releaseDate,
@@ -42,7 +50,12 @@ export function movieJsonLd(movie: CineMovieDetail) {
           trailer: {
             "@type": "VideoObject",
             name: trailer.name,
+            description:
+              movie.overview?.slice(0, 300) ||
+              `Official ${trailer.type.toLowerCase()} for ${movie.title} on ContentVerse India CineVerse.`,
+            uploadDate,
             embedUrl: `https://www.youtube.com/embed/${trailer.key}`,
+            contentUrl: trailer.youtubeUrl,
             url: trailer.youtubeUrl,
             thumbnailUrl: `https://i.ytimg.com/vi/${trailer.key}/hqdefault.jpg`,
           },

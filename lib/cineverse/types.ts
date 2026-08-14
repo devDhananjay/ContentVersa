@@ -25,6 +25,8 @@ export type CineTrailer = {
   site: string;
   type: string;
   youtubeUrl?: string;
+  /** ISO date from TMDB `published_at` (for VideoObject uploadDate). */
+  publishedAt?: string;
 };
 
 export type CineCastMember = {
