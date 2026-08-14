@@ -96,10 +96,12 @@ export function ImageCropDialog({
   const cropStageRef = React.useRef<HTMLDivElement>(null);
   const logoInputRef = React.useRef<HTMLInputElement>(null);
   const dragRef = React.useRef<{
+    mode: "move" | "resize";
     startX: number;
     startY: number;
     originX: number;
     originY: number;
+    originSize: number;
   } | null>(null);
 
   React.useEffect(() => {
@@ -185,15 +187,25 @@ export function ImageCropDialog({
     return stage.querySelector(".reactEasyCrop_CropArea") as HTMLElement | null;
   };
 
-  const onLogoPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const clampLogoSize = (size: number, x: number, y: number) => {
+    const maxByPos = Math.min(0.6, Math.max(0.05, 1 - x), Math.max(0.05, (1 - y) / 0.6));
+    return Math.min(0.6, Math.max(0.05, Math.min(size, maxByPos)));
+  };
+
+  const onLogoPointerDown = (
+    e: React.PointerEvent<HTMLDivElement>,
+    mode: "move" | "resize"
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     dragRef.current = {
+      mode,
       startX: e.clientX,
       startY: e.clientY,
       originX: logoPos.x,
       originY: logoPos.y,
+      originSize: logoSizePct,
     };
   };
 
@@ -206,9 +218,21 @@ export function ImageCropDialog({
 
     const dx = (e.clientX - dragRef.current.startX) / rect.width;
     const dy = (e.clientY - dragRef.current.startY) / rect.height;
-    const maxX = Math.max(0, 1 - logoSizePct);
-    // Height fraction depends on logo aspect; approximate square-ish clamp for drag
-    const maxY = Math.max(0, 1 - logoSizePct * 0.6);
+
+    if (dragRef.current.mode === "resize") {
+      // Drag bottom-right corner — size follows horizontal drag primarily
+      const next = clampLogoSize(
+        dragRef.current.originSize + dx,
+        dragRef.current.originX,
+        dragRef.current.originY
+      );
+      setLogoSizePct(next);
+      return;
+    }
+
+    const size = logoSizePct;
+    const maxX = Math.max(0, 1 - size);
+    const maxY = Math.max(0, 1 - size * 0.6);
     setLogoPos({
       x: Math.min(maxX, Math.max(0, dragRef.current.originX + dx)),
       y: Math.min(maxY, Math.max(0, dragRef.current.originY + dy)),
@@ -222,6 +246,15 @@ export function ImageCropDialog({
     } catch {
       /* ignore */
     }
+  };
+
+  const setLogoSizePreservingBounds = (size: number) => {
+    const next = Math.min(0.6, Math.max(0.05, size));
+    setLogoSizePct(next);
+    setLogoPos((p) => ({
+      x: Math.min(Math.max(0, 1 - next), p.x),
+      y: Math.min(Math.max(0, 1 - next * 0.6), p.y),
+    }));
   };
 
   const enableSiteLogo = () => {
@@ -369,7 +402,8 @@ export function ImageCropDialog({
                   pos={logoPos}
                   sizePct={logoSizePct}
                   opacity={logoOpacity}
-                  onPointerDown={onLogoPointerDown}
+                  onMovePointerDown={(e) => onLogoPointerDown(e, "move")}
+                  onResizePointerDown={(e) => onLogoPointerDown(e, "resize")}
                   onPointerMove={onLogoPointerMove}
                   onPointerUp={onLogoPointerUp}
                 />
@@ -476,18 +510,49 @@ export function ImageCropDialog({
             {logoEnabled && logoSrc ? (
               <>
                 <p className="text-[10px] text-muted-foreground">
-                  Drag the logo on the preview to place it anywhere.
+                  Drag the logo to move. Drag the corner handle to resize.
                 </p>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] text-muted-foreground w-14">Presets</span>
+                  {(
+                    [
+                      ["S", 0.1],
+                      ["M", 0.18],
+                      ["L", 0.28],
+                      ["XL", 0.4],
+                    ] as const
+                  ).map(([label, size]) => (
+                    <button
+                      key={label}
+                      type="button"
+                      disabled={busy}
+                      onClick={() => setLogoSizePreservingBounds(size)}
+                      className={cn(
+                        "rounded-full border px-2.5 py-0.5 text-[11px] font-semibold transition",
+                        Math.abs(logoSizePct - size) < 0.02
+                          ? "border-neon-purple/50 bg-neon-purple/15 text-foreground"
+                          : "border-border/60 text-muted-foreground hover:border-foreground/25"
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                  <span className="text-[10px] tabular-nums text-muted-foreground ml-auto">
+                    {Math.round(logoSizePct * 100)}%
+                  </span>
+                </div>
                 <label className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="w-14 shrink-0">Size</span>
+                  <span className="w-14 shrink-0">Resize</span>
                   <input
                     type="range"
-                    min={0.08}
-                    max={0.4}
+                    min={0.05}
+                    max={0.6}
                     step={0.01}
                     value={logoSizePct}
                     disabled={busy}
-                    onChange={(e) => setLogoSizePct(Number(e.target.value))}
+                    onChange={(e) =>
+                      setLogoSizePreservingBounds(Number(e.target.value))
+                    }
                     className="h-1.5 w-full accent-neon-purple"
                   />
                 </label>
@@ -564,7 +629,8 @@ function LogoOverlayLayer({
   pos,
   sizePct,
   opacity,
-  onPointerDown,
+  onMovePointerDown,
+  onResizePointerDown,
   onPointerMove,
   onPointerUp,
 }: {
@@ -573,7 +639,8 @@ function LogoOverlayLayer({
   pos: { x: number; y: number };
   sizePct: number;
   opacity: number;
-  onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
+  onMovePointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
+  onResizePointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
   onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => void;
   onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => void;
 }) {
@@ -638,7 +705,7 @@ function LogoOverlayLayer({
           width: logoW,
           opacity,
         }}
-        onPointerDown={onPointerDown}
+        onPointerDown={onMovePointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
@@ -648,7 +715,18 @@ function LogoOverlayLayer({
           src={logoSrc}
           alt="Logo"
           draggable={false}
-          className="h-auto w-full select-none drop-shadow-md ring-2 ring-white/40 rounded-sm"
+          className="h-auto w-full select-none drop-shadow-md ring-2 ring-white/50 rounded-sm"
+        />
+        <div
+          className="absolute -bottom-1.5 -right-1.5 h-4 w-4 cursor-nwse-resize rounded-sm border-2 border-white bg-neon-purple shadow touch-none"
+          title="Drag to resize"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            onResizePointerDown(e);
+          }}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
         />
       </div>
     </div>
