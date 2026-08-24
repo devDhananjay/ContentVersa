@@ -195,12 +195,21 @@ export async function runDailyArticleGeneration(options?: {
   perCategory?: number;
   maxTotal?: number;
   runSlot?: "all" | "first" | "second";
+  force?: boolean;
 }): Promise<DailyArticlesResult> {
   if (!isDatabaseConfigured()) {
     throw new Error("Database not configured");
   }
   if (!isGeminiBlogConfigured()) {
     throw new Error("GEMINI_BLOG_API_KEY (or GEMINI_API_KEY) missing");
+  }
+
+  if (!options?.force) {
+    const { isAiAutoGenEnabled } = await import("@/lib/ai/auto-gen-toggle");
+    const enabled = await isAiAutoGenEnabled();
+    if (!enabled) {
+      return { created: 0, skipped: 0, failed: 0, day: new Date().toISOString().slice(0, 10), runSlot: options?.runSlot ?? "all", categoriesProcessed: 0 };
+    }
   }
 
   const perCategory = options?.perCategory ?? PER_CATEGORY_DEFAULT;

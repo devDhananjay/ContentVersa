@@ -7,7 +7,7 @@ import { resolveBlogCoverImage } from "@/lib/upload";
 import { BLOGS, getBlogBySlug as getMockBlogBySlug } from "@/lib/data/blogs";
 
 type BlogWithRelations = DbBlog & {
-  author: User & { profile: Profile | null };
+  author: User & { profile: Profile | null; _count?: { blogs?: number; followers?: number } };
   category: Category | null;
   tags?: Array<{ tag: { name: string; slug: string } }>;
 };
@@ -45,7 +45,11 @@ export function mapUserToAuthor(
 }
 
 export function mapDbBlogToBlog(blog: BlogWithRelations): Blog {
-  const author = mapUserToAuthor(blog.author);
+  const author = mapUserToAuthor(
+    blog.author,
+    blog.author._count?.blogs ?? 0,
+    blog.author._count?.followers ?? 0,
+  );
   return {
     id: blog.id,
     slug: blog.slug,
@@ -128,7 +132,12 @@ function mapLiteToBlog(row: BlogLiteRow): Blog {
 }
 
 const blogInclude = {
-  author: { include: { profile: true } },
+  author: {
+    include: {
+      profile: true,
+      _count: { select: { blogs: { where: { status: "PUBLISHED" } }, followers: true } },
+    },
+  },
   category: true,
   tags: { include: { tag: true } },
 } as const;

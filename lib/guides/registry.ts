@@ -1,3 +1,6 @@
+import { PILLAR_GUIDE_ARTICLES } from "./pillar-articles";
+import { TOP_30_TOPIC_ARTICLES } from "./top-30-topics";
+
 export const GUIDES_HUB_PATH = "/guides";
 
 export type GuideSectionSlug =
@@ -157,10 +160,9 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
 ];
 
-import { PILLAR_GUIDE_ARTICLES } from "./pillar-articles";
-
 export const GUIDE_ARTICLES: GuideArticle[] = [
   ...PILLAR_GUIDE_ARTICLES,
+  ...TOP_30_TOPIC_ARTICLES,
   {
     slug: "why-topics-trend-in-india",
     section: "trending",

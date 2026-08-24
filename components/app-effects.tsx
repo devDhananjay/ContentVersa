@@ -5,6 +5,7 @@ import { A11yAnnouncerProvider } from "@/components/a11y/a11y-announcer";
 import { ColorVisionProvider } from "@/components/a11y/color-vision-provider";
 import { ScreenReaderProvider } from "@/components/a11y/screen-reader-provider";
 import { RecordSiteVisit } from "@/components/site/record-site-visit";
+import { TrackPageVisit } from "@/components/site/track-page-visit";
 import { ScrollToTop } from "@/components/site/scroll-to-top";
 import { FloatingActionDock } from "@/components/site/floating-action-dock";
 
@@ -15,6 +16,7 @@ export function AppEffects() {
         <ColorVisionProvider>
           <ScrollToTop />
           <RecordSiteVisit />
+          <TrackPageVisit />
           <AutoPushPermission />
           <FloatingActionDock />
         </ColorVisionProvider>

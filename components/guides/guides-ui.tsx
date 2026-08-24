@@ -7,6 +7,7 @@ import {
   guideSectionPath,
   type GuideSection,
 } from "@/lib/guides/registry";
+import { TOP_30_GUIDE_PATHS } from "@/lib/guides/top-30-topics";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -78,6 +79,42 @@ export function GuideArticleList({ section }: { section: GuideSection }) {
         </Link>
       ))}
     </div>
+  );
+}
+
+export function TopThirtyGuidesGrid() {
+  return (
+    <section className="space-y-4">
+      <div className="space-y-1">
+        <h2 className="font-display text-xl font-bold tracking-tight">
+          30 high-intent India topics
+        </h2>
+        <p className="text-sm text-muted-foreground max-w-2xl">
+          Pillar pages built for how people search — FASTag, EMI, SIP, tax, scams,
+          schemes, and more. Each has FAQ schema and links to tools.
+        </p>
+      </div>
+      <ol className="grid gap-2 sm:grid-cols-2">
+        {TOP_30_GUIDE_PATHS.map((item, i) => (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              className="flex gap-3 rounded-xl border bg-card/50 p-3 text-sm transition-colors hover:border-primary/40 hover:bg-card"
+            >
+              <span className="font-mono text-xs text-muted-foreground w-6 shrink-0 pt-0.5">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span>
+                <span className="font-medium leading-snug">{item.label}</span>
+                <span className="block text-xs text-muted-foreground mt-0.5">
+                  {item.intent}
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 

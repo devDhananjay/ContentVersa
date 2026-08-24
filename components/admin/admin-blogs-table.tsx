@@ -91,7 +91,7 @@ function applyBlogFilters(rows: AdminBlogRow[], f: BlogFilters): AdminBlogRow[] 
   return sortBlogs(filtered, f.sort);
 }
 
-function BlogTable({ rows }: { rows: AdminBlogRow[] }) {
+function BlogTable({ rows, onDeleted }: { rows: AdminBlogRow[]; onDeleted?: (id: string) => void }) {
   if (rows.length === 0) {
     return (
       <p className="text-sm text-muted-foreground py-10 text-center">No blogs match your filters.</p>
@@ -116,69 +116,107 @@ function BlogTable({ rows }: { rows: AdminBlogRow[] }) {
         </thead>
         <tbody>
           {rows.map((b) => (
-            <tr key={b.id} className="border-t border-border/40 text-sm hover:bg-muted/20">
-              <td className="p-4">
-                <Link href={`/admin/blogs/${b.id}`} className="flex items-center gap-3 group">
-                  <div className="relative h-12 w-16 rounded-lg bg-muted overflow-hidden shrink-0">
-                    {b.coverImage ? (
-                      <Image src={b.coverImage} alt="" fill sizes="64px" className="object-cover" />
-                    ) : null}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold truncate group-hover:text-orange-500 transition-colors">
-                      {b.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground line-clamp-1">{b.excerpt || "—"}</p>
-                  </div>
-                </Link>
-              </td>
-              <td className="p-4">
-                {b.category ? (
-                  <Badge variant="secondary" className="text-[10px]">
-                    {b.category}
-                  </Badge>
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </td>
-              <td className="p-4">
-                <Link href={`/admin/users/${b.author.id}`} className="hover:underline">
-                  <p className="font-medium">{b.author.name}</p>
-                  <p className="text-xs text-muted-foreground">@{b.author.username}</p>
-                </Link>
-              </td>
-              <td className="p-4">
-                <div className="flex flex-col gap-1 items-start">
-                  <Badge variant={STATUS_VARIANT[b.status] ?? "secondary"}>{b.status}</Badge>
-                  {b.scheduledFor ? (
-                    <Badge variant="neon" className="text-[10px]">
-                      Scheduled
-                    </Badge>
-                  ) : null}
-                </div>
-              </td>
-              <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
-                {formatAdminDate(b.createdAt)}
-              </td>
-              <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
-                {formatAdminDate(b.scheduledFor)}
-              </td>
-              <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
-                {formatAdminDate(b.publishedAt)}
-              </td>
-              <td className="p-4 font-semibold">{formatNumber(b.views)}</td>
-              <td className="p-4 text-right">
-                <Link href={`/admin/blogs/${b.id}`}>
-                  <Button variant="outline" size="sm" className="gap-1">
-                    <Eye className="h-3.5 w-3.5" /> View
-                  </Button>
-                </Link>
-              </td>
-            </tr>
+            <BlogTableRow key={b.id} blog={b} onDeleted={onDeleted} />
           ))}
         </tbody>
       </table>
     </div>
+  );
+}
+
+function BlogTableRow({ blog: b, onDeleted }: { blog: AdminBlogRow; onDeleted?: (id: string) => void }) {
+  const router = useRouter();
+  const [deleting, setDeleting] = React.useState(false);
+
+  const handleDelete = async () => {
+    const ok = window.confirm(`Delete "${b.title}"? This cannot be undone.`);
+    if (!ok) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/blogs/${b.id}`, { method: "DELETE", credentials: "include" });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) throw new Error(data.error || "Delete failed");
+      toast.success("Blog deleted");
+      onDeleted?.(b.id);
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not delete");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  return (
+    <tr className="border-t border-border/40 text-sm hover:bg-muted/20">
+      <td className="p-4">
+        <Link href={`/admin/blogs/${b.id}`} className="flex items-center gap-3 group">
+          <div className="relative h-12 w-16 rounded-lg bg-muted overflow-hidden shrink-0">
+            {b.coverImage ? (
+              <Image src={b.coverImage} alt="" fill sizes="64px" className="object-cover" />
+            ) : null}
+          </div>
+          <div className="min-w-0">
+            <p className="font-semibold truncate group-hover:text-orange-500 transition-colors">
+              {b.title}
+            </p>
+            <p className="text-xs text-muted-foreground line-clamp-1">{b.excerpt || "—"}</p>
+          </div>
+        </Link>
+      </td>
+      <td className="p-4">
+        {b.category ? (
+          <Badge variant="secondary" className="text-[10px]">
+            {b.category}
+          </Badge>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </td>
+      <td className="p-4">
+        <Link href={`/admin/users/${b.author.id}`} className="hover:underline">
+          <p className="font-medium">{b.author.name}</p>
+          <p className="text-xs text-muted-foreground">@{b.author.username}</p>
+        </Link>
+      </td>
+      <td className="p-4">
+        <div className="flex flex-col gap-1 items-start">
+          <Badge variant={STATUS_VARIANT[b.status] ?? "secondary"}>{b.status}</Badge>
+          {b.scheduledFor ? (
+            <Badge variant="neon" className="text-[10px]">
+              Scheduled
+            </Badge>
+          ) : null}
+        </div>
+      </td>
+      <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
+        {formatAdminDate(b.createdAt)}
+      </td>
+      <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
+        {formatAdminDate(b.scheduledFor)}
+      </td>
+      <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
+        {formatAdminDate(b.publishedAt)}
+      </td>
+      <td className="p-4 font-semibold">{formatNumber(b.views)}</td>
+      <td className="p-4 text-right">
+        <div className="flex items-center justify-end gap-1">
+          <Link href={`/admin/blogs/${b.id}`}>
+            <Button variant="outline" size="sm" className="gap-1">
+              <Eye className="h-3.5 w-3.5" /> View
+            </Button>
+          </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={deleting}
+            onClick={handleDelete}
+            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          >
+            {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+          </Button>
+        </div>
+      </td>
+    </tr>
   );
 }
 
@@ -200,28 +238,40 @@ export function AdminBlogsTable({
   const router = useRouter();
   const { filters, set, clear, hasActive } = useAdminFilters(FILTER_DEFAULTS);
   const [deletingArchived, setDeletingArchived] = React.useState(false);
+  const [deletedIds, setDeletedIds] = React.useState<Set<string>>(new Set());
+
+  const removeRow = React.useCallback((id: string) => {
+    setDeletedIds((prev) => new Set(prev).add(id));
+  }, []);
+
+  const liveAll = React.useMemo(() => all.filter((b) => !deletedIds.has(b.id)), [all, deletedIds]);
+  const livePending = React.useMemo(() => pending.filter((b) => !deletedIds.has(b.id)), [pending, deletedIds]);
+  const livePublished = React.useMemo(() => published.filter((b) => !deletedIds.has(b.id)), [published, deletedIds]);
+  const liveRejected = React.useMemo(() => rejected.filter((b) => !deletedIds.has(b.id)), [rejected, deletedIds]);
+  const liveDraft = React.useMemo(() => draft.filter((b) => !deletedIds.has(b.id)), [draft, deletedIds]);
+  const liveArchived = React.useMemo(() => archived.filter((b) => !deletedIds.has(b.id)), [archived, deletedIds]);
 
   const categories = React.useMemo(() => {
     const set = new Set<string>();
-    for (const b of all) {
+    for (const b of liveAll) {
       if (b.category) set.add(b.category);
     }
     return [...set].sort();
-  }, [all]);
+  }, [liveAll]);
 
   const filter = (rows: AdminBlogRow[]) => applyBlogFilters(rows, filters);
   const scheduled = React.useMemo(
     () =>
-      all
+      liveAll
         .filter((b) => b.scheduledFor)
         .sort(
           (a, b) =>
             new Date(a.scheduledFor!).getTime() - new Date(b.scheduledFor!).getTime()
         ),
-    [all]
+    [liveAll]
   );
   const filteredScheduled = filter(scheduled);
-  const filteredArchived = filter(archived);
+  const filteredArchived = filter(liveArchived);
 
   const deleteAllArchived = async () => {
     if (filteredArchived.length === 0) return;
@@ -298,29 +348,29 @@ export function AdminBlogsTable({
             className: "w-[180px]",
           },
         ]}
-        resultCount={filter(all).length}
+        resultCount={filter(liveAll).length}
         showClear={hasActive}
         onClear={clear}
       />
 
       <Tabs defaultValue="all">
         <TabsList className="flex-wrap h-auto gap-1">
-          <TabsTrigger value="all">All ({filter(all).length})</TabsTrigger>
-          <TabsTrigger value="pending">Pending ({filter(pending).length})</TabsTrigger>
-          <TabsTrigger value="published">Published ({filter(published).length})</TabsTrigger>
+          <TabsTrigger value="all">All ({filter(liveAll).length})</TabsTrigger>
+          <TabsTrigger value="pending">Pending ({filter(livePending).length})</TabsTrigger>
+          <TabsTrigger value="published">Published ({filter(livePublished).length})</TabsTrigger>
           <TabsTrigger value="scheduled">Scheduled ({filteredScheduled.length})</TabsTrigger>
-          <TabsTrigger value="rejected">Rejected ({filter(rejected).length})</TabsTrigger>
-          <TabsTrigger value="draft">Drafts ({filter(draft).length})</TabsTrigger>
+          <TabsTrigger value="rejected">Rejected ({filter(liveRejected).length})</TabsTrigger>
+          <TabsTrigger value="draft">Drafts ({filter(liveDraft).length})</TabsTrigger>
           <TabsTrigger value="archived">Archived ({filteredArchived.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="mt-4">
-          <BlogTable rows={filter(all)} />
+          <BlogTable rows={filter(liveAll)} onDeleted={removeRow} />
         </TabsContent>
         <TabsContent value="pending" className="mt-4">
-          <BlogTable rows={filter(pending)} />
+          <BlogTable rows={filter(livePending)} onDeleted={removeRow} />
         </TabsContent>
         <TabsContent value="published" className="mt-4">
-          <BlogTable rows={filter(published)} />
+          <BlogTable rows={filter(livePublished)} onDeleted={removeRow} />
         </TabsContent>
         <TabsContent value="scheduled" className="mt-4 space-y-3">
           {filteredScheduled.length > 0 ? (
@@ -328,13 +378,13 @@ export function AdminBlogsTable({
               Auto-publish when the scheduled time is reached (cron every 10 min, IST).
             </p>
           ) : null}
-          <BlogTable rows={filteredScheduled} />
+          <BlogTable rows={filteredScheduled} onDeleted={removeRow} />
         </TabsContent>
         <TabsContent value="rejected" className="mt-4">
-          <BlogTable rows={filter(rejected)} />
+          <BlogTable rows={filter(liveRejected)} onDeleted={removeRow} />
         </TabsContent>
         <TabsContent value="draft" className="mt-4">
-          <BlogTable rows={filter(draft)} />
+          <BlogTable rows={filter(liveDraft)} onDeleted={removeRow} />
         </TabsContent>
         <TabsContent value="archived" className="mt-4 space-y-4">
           {filteredArchived.length > 0 ? (
@@ -358,7 +408,7 @@ export function AdminBlogsTable({
               </Button>
             </div>
           ) : null}
-          <BlogTable rows={filteredArchived} />
+          <BlogTable rows={filteredArchived} onDeleted={removeRow} />
         </TabsContent>
       </Tabs>
     </div>

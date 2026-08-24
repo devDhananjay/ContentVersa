@@ -30,6 +30,10 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
         href: "/guides/schemes/fastag-india-eligibility-recharge-faq",
         label: "FASTag eligibility & recharge FAQ",
       },
+      {
+        href: "/guides/money/highway-fuel-fastag-trip-planner",
+        label: "Highway fuel + FASTag buffer",
+      },
       { href: "/tools/fuel-price", label: "Fuel price checker" },
       { href: "/tools/rto-finder", label: "RTO code finder" },
       { href: "/guides/schemes", label: "More govt schemes" },
@@ -46,11 +50,17 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     toolSlugs: ["emi-calculator", "fd-calculator", "rd-calculator", "salary-tax-calculator"],
     links: [
       { href: "/guides/money/emi-calculator-india-guide", label: "EMI guide" },
+      {
+        href: "/guides/money/credit-score-cibil-india-guide",
+        label: "CIBIL / credit score",
+      },
+      {
+        href: "/guides/money/gold-loan-vs-personal-loan-india",
+        label: "Gold loan vs personal loan",
+      },
       { href: "/tools/emi-calculator", label: "EMI calculator" },
       { href: "/tools/fd-calculator", label: "FD calculator" },
       { href: "/tools/salary-tax-calculator", label: "Salary tax estimator" },
-      { href: "/finance", label: "Finance hub" },
-      { href: "/moneyverse", label: "MoneyVerse budgets" },
     ],
   },
   {
@@ -63,11 +73,11 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     toolSlugs: ["sip-calculator", "ppf-calculator", "fd-calculator"],
     links: [
       { href: "/guides/money/sip-calculator-india-beginners-guide", label: "SIP guide" },
+      { href: "/guides/money/ppf-account-india-guide", label: "PPF account rules" },
+      { href: "/guides/money/fd-vs-rd-india-guide", label: "FD vs RD" },
+      { href: "/guides/money/when-to-stop-sip-mutual-fund", label: "When to pause a SIP" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
       { href: "/tools/ppf-calculator", label: "PPF calculator" },
-      { href: "/tools/fd-calculator", label: "FD calculator" },
-      { href: "/finance", label: "Finance hub" },
-      { href: "/guides/money", label: "Money guides" },
     ],
   },
   {
@@ -80,6 +90,10 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     toolSlugs: ["ifsc-finder", "pan-gstin-checker", "pincode-finder"],
     links: [
       { href: "/guides/money/ifsc-code-finder-india-guide", label: "IFSC guide" },
+      {
+        href: "/guides/money/huid-hallmark-gold-buying-india",
+        label: "HUID & hallmark gold",
+      },
       { href: "/tools/ifsc-finder", label: "IFSC finder" },
       { href: "/tools/pincode-finder", label: "Pincode finder" },
       { href: "/tools/pan-gstin-checker", label: "PAN / GSTIN checker" },
@@ -96,10 +110,17 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     toolSlugs: ["salary-tax-calculator", "gst-calculator", "sip-calculator"],
     links: [
       { href: "/guides/money/salary-tax-calculator-india-guide", label: "Salary tax guide" },
+      {
+        href: "/guides/money/hra-exemption-documents-india",
+        label: "HRA exemption documents",
+      },
+      {
+        href: "/guides/money/section-80c-elss-ppf-lic-india",
+        label: "Section 80C options",
+      },
       { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
       { href: "/tools/gst-calculator", label: "GST calculator" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
-      { href: "/moneyverse", label: "Expense tracker" },
     ],
   },
   {
@@ -112,6 +133,10 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     toolSlugs: ["gst-calculator", "pan-gstin-checker", "salary-tax-calculator"],
     links: [
       { href: "/guides/money/gst-calculator-india-freelancers-guide", label: "GST guide" },
+      {
+        href: "/guides/money/content-creator-tax-gst-india",
+        label: "Creator tax & GST",
+      },
       { href: "/tools/gst-calculator", label: "GST calculator" },
       { href: "/tools/pan-gstin-checker", label: "PAN / GSTIN checker" },
       { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
@@ -132,9 +157,19 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
         href: "/guides/schemes/fastag-india-eligibility-recharge-faq",
         label: "FASTag guide",
       },
+      {
+        href: "/guides/schemes/upi-fraud-otp-scam-india",
+        label: "UPI fraud & OTP scams",
+      },
+      {
+        href: "/guides/schemes/aadhaar-update-online-india",
+        label: "Aadhaar update online",
+      },
+      {
+        href: "/guides/schemes/pm-kisan-status-ekyc-pending",
+        label: "PM-KISAN status & e-KYC",
+      },
       { href: "/guides/jobs", label: "Job notification guides" },
-      { href: "/jobs", label: "Jobs hub" },
-      { href: "/results", label: "Sarkari results" },
     ],
   },
   {
@@ -148,12 +183,19 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     links: [
       { href: "/tools/fuel-price", label: "Fuel price" },
       { href: "/tools/rto-finder", label: "RTO finder" },
-      { href: "/tools/weather", label: "Weather" },
-      { href: "/tools/pincode-finder", label: "Pincode finder" },
+      {
+        href: "/guides/money/highway-fuel-fastag-trip-planner",
+        label: "Highway trip planner",
+      },
+      {
+        href: "/guides/money/used-car-rc-rto-vahan-india",
+        label: "Used car RC / Vahan",
+      },
       {
         href: "/guides/schemes/fastag-india-eligibility-recharge-faq",
         label: "FASTag FAQ",
       },
+      { href: "/tools/pincode-finder", label: "Pincode finder" },
     ],
   },
 ];

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { buildMetadata } from "@/lib/seo";
 import { GUIDES_HUB_PATH } from "@/lib/guides/registry";
-import { guidesHubJsonLd } from "@/lib/guides/guides-seo";
-import { GuidesSectionGrid } from "@/components/guides/guides-ui";
+import { guidesHubJsonLd, top30GuidesItemListJsonLd } from "@/lib/guides/guides-seo";
+import { GuidesSectionGrid, TopThirtyGuidesGrid } from "@/components/guides/guides-ui";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
@@ -23,13 +23,16 @@ export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "India Guides — Trending, Govt Schemes, Money, Jobs, Cricket, AI & Movies",
   description:
-    "Free India explainers built for search: FASTag, EMI/SIP/IFSC/tax pillars, why topics trend, government scheme eligibility, sarkari jobs, cricket match guides, AI how-tos, and OTT where-to-watch.",
+    "Free India explainers built for search: 30 high-intent topics — FASTag, EMI, SIP, tax, CIBIL, UPI fraud, PPF, schemes, jobs — plus cricket, AI, and OTT watch guides.",
   path: GUIDES_HUB_PATH,
   keywords: [
     "india guides",
     "fastag guide india",
     "emi calculator guide",
     "sip beginners india",
+    "cibil score india",
+    "upi fraud india",
+    "ppf account rules",
     "ifsc code guide",
     "govt schemes eligibility",
     "why is it trending",
@@ -41,6 +44,7 @@ export const metadata: Metadata = buildMetadata({
 export default function GuidesHubPage() {
   const blocks = [
     guidesHubJsonLd(),
+    top30GuidesItemListJsonLd(),
     hubFaqJsonLd(GUIDES_HUB_FAQS),
     hubBreadcrumbJsonLd("India Guides", GUIDES_HUB_PATH),
   ];
@@ -59,9 +63,9 @@ export default function GuidesHubPage() {
           <span className="text-gradient">searches</span>
         </h1>
         <p className="text-muted-foreground leading-relaxed">
-          Six high-intent formats — trending explainers, cricket match moments,
-          government schemes, job notifications, AI tool how-tos, and movie/OTT
-          watch guides. Each section links to live hubs where useful.
+          Thirty high-intent topic pages sit on top of six formats — trending,
+          cricket, schemes, jobs, AI, movies, and money. Each pillar uses H2s,
+          FAQs, and links to live tools.
         </p>
         <p className="text-sm text-muted-foreground">
           Also explore{" "}
@@ -83,6 +87,8 @@ export default function GuidesHubPage() {
       <HubAdSense className="my-2" />
 
       <GuidesSectionGrid />
+
+      <TopThirtyGuidesGrid />
 
       <TopicClustersHubStrip
         title="Topic clusters"

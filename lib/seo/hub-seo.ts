@@ -296,7 +296,7 @@ export const GUIDES_HUB_FAQS: HubFaq[] = [
   {
     question: "What are India Guides on ContentVerse India?",
     answer:
-      "Free explainers built for how India searches: why topics trend, govt scheme eligibility, job notifications, cricket moments, AI how-tos and OTT where-to-watch.",
+      "Free explainers built for how India searches: 30 high-intent topics (FASTag, EMI, SIP, tax, CIBIL, UPI fraud, schemes), plus why topics trend, job notifications, cricket moments, AI how-tos and OTT where-to-watch.",
   },
   {
     question: "Are scheme and job guides official?",
@@ -307,6 +307,11 @@ export const GUIDES_HUB_FAQS: HubFaq[] = [
     question: "Are India Guides free?",
     answer:
       "Yes. You can read them without signing up. Live hubs like Tools, Jobs and Sports are linked where useful.",
+  },
+  {
+    question: "What are the 30 high-intent guides?",
+    answer:
+      "They are pillar pages on money, schemes, jobs and AI — each with H2 sections, FAQ schema, and links to free India Tools. Start from the numbered list on the Guides hub.",
   },
 ];
 

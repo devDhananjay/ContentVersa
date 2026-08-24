@@ -63,6 +63,15 @@ export default async function GuideArticlePage({ params }: Props) {
     article.clusterId === "sip-investing" ||
     article.clusterId === "emi-loans";
 
+  const ymylKind =
+    article.slug === "ayushman-bharat-pmjay-eligibility"
+      ? "health"
+      : article.clusterId === "salary-tax" || article.clusterId === "gst-business"
+        ? "tax"
+        : article.section === "money"
+          ? "finance"
+          : "schemes";
+
   return (
     <article className="container max-w-3xl space-y-8 py-8 md:py-10">
       {Array.isArray(jsonLd) ? (
@@ -113,17 +122,7 @@ export default async function GuideArticlePage({ params }: Props) {
 
       <HubAdSense className="my-2" />
 
-      {showYmyl ? (
-        <YmylDisclaimer
-          kind={
-            article.clusterId === "salary-tax" || article.clusterId === "gst-business"
-              ? "tax"
-              : article.section === "money"
-                ? "finance"
-                : "schemes"
-          }
-        />
-      ) : null}
+      {showYmyl ? <YmylDisclaimer kind={ymylKind} /> : null}
 
       <div className="space-y-8">
         {article.blocks.map((block) => (

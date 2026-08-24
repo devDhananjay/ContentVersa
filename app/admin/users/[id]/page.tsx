@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText, Eye, Mail, Calendar } from "lucide-react";
+import { ArrowLeft, FileText, Eye, Mail, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,6 +10,7 @@ import { UserInactiveToggle } from "@/components/admin/user-inactive-toggle";
 import { getAdminUserDetail } from "@/lib/data/admin-data";
 import { getCurrentUser } from "@/lib/auth";
 import { formatNumber, getInitials } from "@/lib/utils";
+import { UserJourneyMap } from "@/components/admin/user-journey-map";
 
 const STATUS_VARIANT: Record<string, "success" | "warning" | "secondary" | "destructive"> = {
   PUBLISHED: "success",
@@ -115,6 +116,17 @@ export default async function AdminUserDetailPage({
             <p className="font-display text-2xl font-extrabold mt-1">{s.value}</p>
           </div>
         ))}
+      </div>
+
+      <div className="mt-10">
+        <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
+          <MapPin className="h-5 w-5" />
+          User journey map
+        </h2>
+        <p className="text-sm text-muted-foreground mb-3">
+          Page-by-page journey with drop-off points highlighted.
+        </p>
+        <UserJourneyMap userId={user.id} />
       </div>
 
       <div className="mt-10">

@@ -7,6 +7,7 @@ import {
   type GuideArticle,
   type GuideSection,
 } from "./registry";
+import { TOP_30_GUIDE_PATHS } from "./top-30-topics";
 
 export function guidesHubUrl() {
   return `${SITE.url}${GUIDES_HUB_PATH}`;
@@ -16,9 +17,9 @@ export function guidesHubJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "India Guides — Trending, Schemes, Jobs, Cricket, AI & Movies",
+    name: "India Guides — Trending, Schemes, Money, Jobs, Cricket, AI & Movies",
     description:
-      "Free India explainers: why topics trend, govt schemes, job notifications, cricket match guides, AI how-tos, and OTT watch guides.",
+      "Free India explainers: FASTag, EMI, SIP, tax, schemes, jobs, cricket, AI, and OTT — plus 30 high-intent topic guides built for search.",
     url: guidesHubUrl(),
     isPartOf: { "@type": "WebSite", name: SITE.searchName, url: SITE.url },
     hasPart: GUIDE_SECTIONS.map((s) => ({
@@ -26,6 +27,22 @@ export function guidesHubJsonLd() {
       name: s.shortTitle,
       url: `${SITE.url}${guideSectionPath(s.slug)}`,
       description: s.description,
+    })),
+  };
+}
+
+export function top30GuidesItemListJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "ContentVerse India — 30 high-intent guides",
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    numberOfItems: TOP_30_GUIDE_PATHS.length,
+    itemListElement: TOP_30_GUIDE_PATHS.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.label,
+      url: `${SITE.url}${item.href}`,
     })),
   };
 }
@@ -71,12 +88,13 @@ export function guideSectionJsonLd(section: GuideSection) {
 }
 
 export function guideArticleJsonLd(article: GuideArticle, section: GuideSection) {
+  const url = `${SITE.url}${guideArticlePath(article)}`;
   const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
     description: article.description,
-    url: `${SITE.url}${guideArticlePath(article)}`,
+    url,
     dateModified: article.updatedLabel,
     author: { "@type": "Organization", name: SITE.legalName, url: SITE.url },
     publisher: {
@@ -88,6 +106,7 @@ export function guideArticleJsonLd(article: GuideArticle, section: GuideSection)
     inLanguage: "en-IN",
     keywords: article.keywords.join(", "),
     wordCount: Math.max(400, article.readingMinutes * 180),
+    mainEntityOfPage: url,
     isPartOf: {
       "@type": "WebPage",
       name: section.title,
@@ -95,11 +114,34 @@ export function guideArticleJsonLd(article: GuideArticle, section: GuideSection)
     },
   };
 
-  if (!article.faqs?.length) return articleLd;
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "India Guides",
+        item: `${SITE.url}${GUIDES_HUB_PATH}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: section.shortTitle,
+        item: `${SITE.url}${guideSectionPath(section.slug)}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: article.shortTitle,
+        item: url,
+      },
+    ],
+  };
 
-  return [
-    articleLd,
-    {
+  const blocks: unknown[] = [articleLd, breadcrumb];
+  if (article.faqs?.length) {
+    blocks.push({
       "@context": "https://schema.org",
       "@type": "FAQPage",
       mainEntity: article.faqs.map((item) => ({
@@ -107,6 +149,7 @@ export function guideArticleJsonLd(article: GuideArticle, section: GuideSection)
         name: item.q,
         acceptedAnswer: { "@type": "Answer", text: item.a },
       })),
-    },
-  ];
+    });
+  }
+  return blocks;
 }

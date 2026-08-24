@@ -265,3 +265,40 @@ export async function PATCH(
     return NextResponse.json({ error: "Failed to update blog" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireRole(["MODERATOR", "ADMIN", "SUPER_ADMIN"]);
+    if (!isDatabaseConfigured()) {
+      return NextResponse.json({ error: "DB not configured" }, { status: 503 });
+    }
+
+    const { id } = await params;
+    const blog = await prisma.blog.findUnique({ where: { id }, select: { id: true } });
+    if (!blog) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+
+    await prisma.$transaction([
+      prisma.poll.deleteMany({ where: { blogId: id } }),
+      prisma.readingHistory.deleteMany({ where: { blogId: id } }),
+      prisma.articleFeedback.deleteMany({ where: { blogId: id } }),
+      prisma.blog.delete({ where: { id } }),
+    ]);
+
+    revalidatePath("/admin/blogs");
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    if (err instanceof Error && err.message === "FORBIDDEN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (err instanceof Error && err.message === "UNAUTHENTICATED") {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+    }
+    console.error("[admin blogs DELETE]", err);
+    return NextResponse.json({ error: "Failed to delete blog" }, { status: 500 });
+  }
+}
