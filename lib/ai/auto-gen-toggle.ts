@@ -5,7 +5,7 @@ const KEY = "ai.daily_articles_enabled";
 export async function isAiAutoGenEnabled(): Promise<boolean> {
   if (!isDatabaseConfigured()) return false;
   const row = await prisma.siteSetting.findUnique({ where: { key: KEY } });
-  if (!row) return true; // enabled by default
+  if (!row) return false; // off until admin explicitly starts it (AdSense safety)
   return (row.valueJson as { enabled?: boolean })?.enabled !== false;
 }
 

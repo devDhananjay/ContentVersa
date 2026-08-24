@@ -101,13 +101,29 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
         status: BlogStatus.PUBLISHED,
         slug: { not: { startsWith: "discover-" } },
         readingTime: { gte: MIN_INDEXABLE_READING_MINUTES },
+        NOT: [
+          { slug: { contains: "-daily-" } },
+          { metaKeywords: { contains: "ai-daily" } },
+        ],
       },
-      select: { slug: true, updatedAt: true, publishedAt: true, readingTime: true },
+      select: {
+        slug: true,
+        updatedAt: true,
+        publishedAt: true,
+        readingTime: true,
+        metaKeywords: true,
+      },
       orderBy: { publishedAt: "desc" },
   });
 
   const blogEntries: MetadataRoute.Sitemap = blogs
-    .filter((b) => isIndexableArticle({ slug: b.slug, readingTime: b.readingTime }))
+    .filter((b) =>
+      isIndexableArticle({
+        slug: b.slug,
+        readingTime: b.readingTime,
+        metaKeywords: b.metaKeywords,
+      })
+    )
     .map((b) =>
       entry(`/blog/${b.slug}`, {
         lastModified: b.publishedAt ?? b.updatedAt,

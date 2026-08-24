@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AiArticleGenerator } from "@/components/admin/ai-article-generator";
 import { AiPublishingPipeline } from "@/components/admin/ai-publishing-pipeline";
 import { AiAutoGenToggle } from "@/components/admin/ai-auto-gen-toggle";
+import { AdsenseRecoveryPanel } from "@/components/admin/adsense-recovery-panel";
 import { isGeminiBlogConfigured } from "@/lib/ai/gemini";
 
 export default function AdminAiArticlesPage() {
@@ -33,6 +34,8 @@ export default function AdminAiArticlesPage() {
           <code className="text-xs">.env</code> and restart the app.
         </div>
       )}
+
+      <AdsenseRecoveryPanel />
 
       <AiAutoGenToggle />
 

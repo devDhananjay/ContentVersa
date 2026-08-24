@@ -55,8 +55,8 @@ export function AiAutoGenToggle() {
           </p>
           <p className="text-xs text-muted-foreground">
             {enabled
-              ? "Cron will auto-generate articles on schedule."
-              : "Paused — cron will skip generation until you re-enable."}
+              ? "Cron will auto-generate articles on schedule. Keep this off while AdSense review is pending."
+              : "Paused — cron skips generation. Leave off until AdSense is approved."}
           </p>
         </div>
       </div>

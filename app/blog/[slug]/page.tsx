@@ -58,7 +58,11 @@ export async function generateMetadata({
   if (!blog) return buildMetadata({ title: "Not found", noIndex: true });
   const isPublic = blog.status === "PUBLISHED";
   const syndicated = isDiscoverSyndicatedSlug(blog.slug);
-  const thin = !isIndexableArticle({ slug: blog.slug, readingTime: blog.readingTime });
+  const thin = !isIndexableArticle({
+    slug: blog.slug,
+    readingTime: blog.readingTime,
+    metaKeywords: blog.metaKeywords,
+  });
   const keywordList = [
     ...(blog.metaKeywords
       ? blog.metaKeywords.split(",").map((k) => k.trim()).filter(Boolean)

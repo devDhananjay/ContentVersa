@@ -1,10 +1,22 @@
 import { cache } from "react";
-import type { BlogStatus, User, Profile, Category, Blog as DbBlog } from "@prisma/client";
+import type { BlogStatus, User, Profile, Category, Blog as DbBlog, Prisma } from "@prisma/client";
 import { prisma, isDatabaseConfigured, safeDbQuery } from "@/lib/prisma";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
 import type { Author, Blog } from "@/lib/data/blogs";
 import { resolveBlogCoverImage } from "@/lib/upload";
 import { BLOGS, getBlogBySlug as getMockBlogBySlug } from "@/lib/data/blogs";
+import { MIN_INDEXABLE_READING_MINUTES } from "@/lib/seo/crawl-policy";
+
+/** Public listings / homepage — hide thin, syndicated, and nightly AI volume. */
+export const publicListingBlogWhere: Prisma.BlogWhereInput = {
+  status: "PUBLISHED",
+  readingTime: { gte: MIN_INDEXABLE_READING_MINUTES },
+  NOT: [
+    { slug: { startsWith: "discover-" } },
+    { slug: { contains: "-daily-" } },
+    { metaKeywords: { contains: "ai-daily" } },
+  ],
+};
 
 type BlogWithRelations = DbBlog & {
   author: User & { profile: Profile | null; _count?: { blogs?: number; followers?: number } };
@@ -192,10 +204,7 @@ export async function getPublishedBlogsFromDb(limit?: number) {
   if (!isDatabaseConfigured()) return null;
   return safeDbQuery(null, async () => {
     const rows = await prisma.blog.findMany({
-      where: {
-        status: "PUBLISHED",
-        slug: { not: { startsWith: "discover-" } },
-      },
+      where: publicListingBlogWhere,
       include: blogInclude,
       orderBy: { publishedAt: "desc" },
       take: limit,
@@ -209,10 +218,7 @@ export async function getPublishedBlogsLiteFromDb(limit?: number) {
   if (!isDatabaseConfigured()) return null;
   return safeDbQuery(null, async () => {
     const rows = await prisma.blog.findMany({
-      where: {
-        status: "PUBLISHED",
-        slug: { not: { startsWith: "discover-" } },
-      },
+      where: publicListingBlogWhere,
       select: blogLiteSelect,
       orderBy: { publishedAt: "desc" },
       ...(typeof limit === "number" ? { take: limit } : {}),

@@ -28,12 +28,22 @@ export function isAutoDailyCronSlug(slug: string): boolean {
   return /-daily-\d{4}-\d{2}-\d{2}-/.test(slug);
 }
 
+export function isAiVolumeArticle(input: {
+  slug: string;
+  metaKeywords?: string | null;
+}): boolean {
+  if (isAutoDailyCronSlug(input.slug)) return true;
+  const keys = (input.metaKeywords || "").toLowerCase();
+  return keys.includes("ai-daily");
+}
+
 export function isIndexableArticle(input: {
   slug: string;
   readingTime: number;
+  metaKeywords?: string | null;
 }): boolean {
   if (isDiscoverSyndicatedSlug(input.slug)) return false;
-  if (isAutoDailyCronSlug(input.slug)) return false;
+  if (isAiVolumeArticle(input)) return false;
   return input.readingTime >= MIN_INDEXABLE_READING_MINUTES;
 }
 
