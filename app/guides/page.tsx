@@ -21,22 +21,19 @@ import {
 export const dynamic = "force-static";
 
 export const metadata: Metadata = buildMetadata({
-  title: "India Guides — Trending, Govt Schemes, Jobs, Cricket, AI & Movies",
+  title: "India Guides — Trending, Govt Schemes, Money, Jobs, Cricket, AI & Movies",
   description:
-    "Free India explainers built for search: why topics trend, government scheme eligibility, sarkari job notifications, cricket match guides, AI how-tos, and OTT where-to-watch.",
+    "Free India explainers built for search: FASTag, EMI/SIP/IFSC/tax pillars, why topics trend, government scheme eligibility, sarkari jobs, cricket match guides, AI how-tos, and OTT where-to-watch.",
   path: GUIDES_HUB_PATH,
   keywords: [
     "india guides",
+    "fastag guide india",
+    "emi calculator guide",
+    "sip beginners india",
+    "ifsc code guide",
     "govt schemes eligibility",
     "why is it trending",
     "sarkari job notification",
-    "ott where to watch india",
-    "cricket match guide",
-    "PM Kisan eligibility",
-    "AI tools India how to",
-    "Google Trends India explainer",
-    "SSC job notification checklist",
-    "movie release watch checklist",
     "ContentVerse India guides",
   ],
 });

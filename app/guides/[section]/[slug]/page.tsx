@@ -13,6 +13,7 @@ import { guideArticleJsonLd } from "@/lib/guides/guides-seo";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { getTopicCluster } from "@/lib/seo/topic-clusters";
 import { TopicClusterLinks } from "@/components/seo/topic-cluster-links";
@@ -37,6 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: `${GUIDES_HUB_PATH}/${article.section}/${article.slug}`,
     keywords: article.keywords,
     type: "article",
+    modifiedTime: article.updatedLabel,
   });
 }
 
@@ -47,19 +49,36 @@ export default async function GuideArticlePage({ params }: Props) {
   if (!article || !section) notFound();
 
   const jsonLd = guideArticleJsonLd(article, section);
-  const cluster =
-    article.slug.includes("fastag")
-      ? getTopicCluster("fastag")
-      : article.section === "schemes"
-        ? getTopicCluster("govt-schemes")
-        : undefined;
+  const cluster = article.clusterId
+    ? getTopicCluster(article.clusterId)
+    : article.section === "schemes"
+      ? getTopicCluster("govt-schemes")
+      : undefined;
+
+  const showYmyl =
+    article.section === "schemes" ||
+    article.section === "money" ||
+    article.clusterId === "salary-tax" ||
+    article.clusterId === "gst-business" ||
+    article.clusterId === "sip-investing" ||
+    article.clusterId === "emi-loans";
 
   return (
     <article className="container max-w-3xl space-y-8 py-8 md:py-10">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {Array.isArray(jsonLd) ? (
+        jsonLd.map((block, i) => (
+          <script
+            key={i}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(block) }}
+          />
+        ))
+      ) : (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
 
       <nav className="text-sm text-muted-foreground">
         <Link href={GUIDES_HUB_PATH} className="hover:text-foreground">
@@ -94,7 +113,17 @@ export default async function GuideArticlePage({ params }: Props) {
 
       <HubAdSense className="my-2" />
 
-      {article.section === "schemes" ? <YmylDisclaimer kind="schemes" /> : null}
+      {showYmyl ? (
+        <YmylDisclaimer
+          kind={
+            article.clusterId === "salary-tax" || article.clusterId === "gst-business"
+              ? "tax"
+              : article.section === "money"
+                ? "finance"
+                : "schemes"
+          }
+        />
+      ) : null}
 
       <div className="space-y-8">
         {article.blocks.map((block) => (
@@ -117,6 +146,26 @@ export default async function GuideArticlePage({ params }: Props) {
           </section>
         ))}
       </div>
+
+      {article.faqs?.length ? (
+        <section className="space-y-4">
+          <h2 className="font-display text-xl font-bold tracking-tight">
+            Frequently asked questions
+          </h2>
+          <div className="space-y-3">
+            {article.faqs.map((item) => (
+              <Card key={item.q}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{item.q}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  {item.a}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {(article.relatedHref || section.relatedHub) && (
         <div className="rounded-2xl border border-border/60 bg-card/50 p-5">
@@ -154,8 +203,8 @@ export default async function GuideArticlePage({ params }: Props) {
       ) : null}
 
       <p className="text-xs text-muted-foreground">
-        Educational guide only. For government schemes and jobs, confirm details
-        on official portals before applying or paying fees.
+        Educational guide only. For government schemes, tax, and banking decisions,
+        confirm details on official portals or with qualified professionals.
       </p>
     </article>
   );

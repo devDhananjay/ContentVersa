@@ -71,7 +71,7 @@ export function guideSectionJsonLd(section: GuideSection) {
 }
 
 export function guideArticleJsonLd(article: GuideArticle, section: GuideSection) {
-  return {
+  const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
@@ -86,10 +86,27 @@ export function guideArticleJsonLd(article: GuideArticle, section: GuideSection)
     },
     articleSection: section.shortTitle,
     inLanguage: "en-IN",
+    keywords: article.keywords.join(", "),
+    wordCount: Math.max(400, article.readingMinutes * 180),
     isPartOf: {
       "@type": "WebPage",
       name: section.title,
       url: `${SITE.url}${guideSectionPath(section.slug)}`,
     },
   };
+
+  if (!article.faqs?.length) return articleLd;
+
+  return [
+    articleLd,
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: article.faqs.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    },
+  ];
 }

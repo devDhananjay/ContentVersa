@@ -14,17 +14,21 @@ import { AnimatedGrid, FloatingOrbs } from "@/components/home/motion";
 import { cn } from "@/lib/utils";
 
 const ROTATING_WORDS = ["Read", "Create", "Grow", "Earn", "Build"];
+/** Longest word locks typewriter width so partial text never shifts the line. */
+const LONGEST_ROTATING_WORD = ROTATING_WORDS.reduce((a, b) =>
+  a.length >= b.length ? a : b
+);
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
-/** Typewriter + blink caret for the rotating hero word. */
+/** Typewriter + blink caret — reserved width prevents layout flicker. */
 function TypewriterWord({ words, reduce }: { words: string[]; reduce: boolean | null }) {
   const [wordIndex, setWordIndex] = React.useState(0);
-  const [text, setText] = React.useState("");
+  const [text, setText] = React.useState(words[0] ?? "");
   const [phase, setPhase] = React.useState<"typing" | "pause" | "deleting">("typing");
 
   React.useEffect(() => {
     if (reduce) {
-      setText(words[0] ?? "");
+      setText(words[wordIndex] ?? "");
       const t = setInterval(
         () => setWordIndex((i) => (i + 1) % words.length),
         2400
@@ -62,18 +66,26 @@ function TypewriterWord({ words, reduce }: { words: string[]; reduce: boolean | 
   const display = reduce ? words[wordIndex] : text;
 
   return (
-    <span className="text-gradient inline-flex items-baseline relative align-bottom min-h-[1.05em]">
-      <span className="inline-block whitespace-nowrap">{display}</span>
-      <motion.span
+    <span className="text-gradient relative inline-grid align-bottom text-left">
+      <span
+        className="invisible col-start-1 row-start-1 whitespace-nowrap"
         aria-hidden
-        className="ml-0.5 inline-block w-[0.08em] min-w-[3px] h-[0.85em] translate-y-[0.08em] rounded-sm bg-gradient-to-b from-neon-blue via-neon-purple to-neon-pink shadow-[0_0_12px_2px] shadow-neon-purple/50"
-        animate={reduce ? { opacity: 1 } : { opacity: [1, 1, 0, 0] }}
-        transition={
-          reduce
-            ? undefined
-            : { duration: 1, repeat: Infinity, times: [0, 0.45, 0.55, 1], ease: "linear" }
-        }
-      />
+      >
+        {LONGEST_ROTATING_WORD}
+      </span>
+      <span className="col-start-1 row-start-1 inline-flex items-baseline whitespace-nowrap min-h-[1.05em]">
+        <span className="inline-block">{display}</span>
+        <motion.span
+          aria-hidden
+          className="ml-0.5 inline-block w-[0.08em] min-w-[3px] h-[0.85em] translate-y-[0.08em] rounded-sm bg-gradient-to-b from-neon-blue via-neon-purple to-neon-pink shadow-[0_0_12px_2px] shadow-neon-purple/50"
+          animate={reduce ? { opacity: 1 } : { opacity: [1, 1, 0, 0] }}
+          transition={
+            reduce
+              ? undefined
+              : { duration: 1, repeat: Infinity, times: [0, 0.45, 0.55, 1], ease: "linear" }
+          }
+        />
+      </span>
     </span>
   );
 }
@@ -155,7 +167,7 @@ export function Hero({ categories, stats }: Props) {
             </motion.span>
             <motion.span
               className={cn(
-                "block mt-2 text-[0.55em] sm:text-[0.5em] md:text-[0.48em] font-bold leading-tight",
+                "mt-2 flex flex-wrap items-baseline justify-center gap-x-[0.35em] gap-y-1 text-[0.55em] sm:text-[0.5em] md:text-[0.48em] font-bold leading-[1.25] min-h-[1.35em]",
                 cinematic ? "text-white/90" : "text-foreground"
               )}
               initial={reduce ? false : { opacity: 0, y: 24 }}
@@ -163,8 +175,9 @@ export function Hero({ categories, stats }: Props) {
               transition={{ delay: 0.28, duration: 0.7, ease: easeOut }}
             >
               <TypewriterWord words={ROTATING_WORDS} reduce={reduce} />
-              {" — "}
-              blogs, live cricket, finance &amp; free India tools.
+              <span className="text-left">
+                — blogs, live cricket, finance &amp; free India tools.
+              </span>
             </motion.span>
           </h1>
 

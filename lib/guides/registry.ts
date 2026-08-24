@@ -6,7 +6,13 @@ export type GuideSectionSlug =
   | "schemes"
   | "jobs"
   | "ai-tools"
-  | "movies";
+  | "movies"
+  | "money";
+
+export type GuideFaq = {
+  q: string;
+  a: string;
+};
 
 export type GuideBlock = {
   heading: string;
@@ -24,6 +30,9 @@ export type GuideArticle = {
   readingMinutes: number;
   updatedLabel: string;
   blocks: GuideBlock[];
+  faqs?: GuideFaq[];
+  /** Optional topic-cluster id for internal linking */
+  clusterId?: string;
   relatedHref?: string;
   relatedLabel?: string;
 };
@@ -129,9 +138,29 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     badge: "OTT",
     relatedHub: { href: "/cineverse", label: "CineVerse" },
   },
+  {
+    slug: "money",
+    title: "Money Guides — EMI, SIP, IFSC, Tax & GST",
+    shortTitle: "Money",
+    template: "[Money Topic] — How It Works in India",
+    description:
+      "Practical India money explainers: EMI and SIP maths, IFSC transfers, salary tax regimes, and GST on invoices — with free calculators and clear disclaimers.",
+    keywords: [
+      "emi calculator guide india",
+      "sip beginners india",
+      "ifsc code guide",
+      "salary tax regime india",
+      "gst invoice calculator",
+    ],
+    badge: "Money",
+    relatedHub: { href: "/tools", label: "India Tools" },
+  },
 ];
 
+import { PILLAR_GUIDE_ARTICLES } from "./pillar-articles";
+
 export const GUIDE_ARTICLES: GuideArticle[] = [
+  ...PILLAR_GUIDE_ARTICLES,
   {
     slug: "why-topics-trend-in-india",
     section: "trending",
@@ -298,64 +327,6 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         heading: "How to apply / check status",
         paragraphs: [
           "New registrations and e-KYC are handled through the official website or authorised Common Service Centres (CSC), depending on your state’s process. After submission, track payment status and e-KYC flags on the same portal. ContentVerse India does not collect scheme applications — we only explain the process.",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "fastag-india-eligibility-recharge-faq",
-    section: "schemes",
-    title: "FASTag in India — Eligibility, Buy, Recharge & Common FAQ",
-    shortTitle: "FASTag guide",
-    description:
-      "Plain-English FASTag pillar: who needs it, where to buy or link, how to recharge, and what to do when a toll plaza does not deduct correctly.",
-    keywords: [
-      "fastag india",
-      "fastag recharge",
-      "fastag eligibility",
-      "how to buy fastag",
-      "nhai fastag faq",
-    ],
-    readingMinutes: 7,
-    updatedLabel: "Aug 2026",
-    relatedHref: "/tools/fuel-price",
-    relatedLabel: "Check fuel prices",
-    blocks: [
-      {
-        heading: "What FASTag is (and why highways need it)",
-        paragraphs: [
-          "FASTag is an RFID sticker linked to a prepaid wallet or bank account. Toll plazas on many national highways scan the tag so vehicles can pass without cash queues. Rules and bank partners can change — confirm current issuers on the official NHAI / IHMCL FASTag resources before you buy.",
-          "Cars, commercial vehicles, and many two-wheelers on notified stretches are expected to use FASTag. Driving without a working tag can mean higher cash toll or penalties depending on plaza policy.",
-        ],
-      },
-      {
-        heading: "Who should get FASTag",
-        paragraphs: [
-          "If you use national highways regularly — weekend trips, office interstate travel, logistics, or cab duty — FASTag usually saves time. Occasional city-only drivers may still want one for rare highway journeys.",
-        ],
-        bullets: [
-          "Keep RC (registration certificate) details ready when activating",
-          "Affix the tag on the windscreen as the issuer instructs — wrong placement can fail reads",
-          "One FASTag is typically mapped to one vehicle registration",
-        ],
-      },
-      {
-        heading: "How to buy, link, and recharge",
-        paragraphs: [
-          "You can usually buy FASTag from participating banks, authorised Point of Sale locations, or bank apps/websites that list FASTag products. Activation links the tag ID to your vehicle number and a wallet or account.",
-          "Recharge via the issuer’s app/UPI/net banking. Set a low-balance alert so you are not stuck with a declined plaza read. After recharge, wait a few minutes and confirm balance in the issuer app before a long trip.",
-        ],
-      },
-      {
-        heading: "Common problems & safe practices",
-        paragraphs: [
-          "If a plaza charges twice or fails to open, note the plaza name, time, lane, and transaction SMS. Raise a dispute with your FASTag issuer first. Avoid random “FASTag recharge agents” that ask for OTPs or remote access to your phone.",
-          "This ContentVerse India guide is educational only. For official blacklist status, KYC, or bank-specific fees, use NHAI/IHMCL and your bank’s FASTag support channels.",
-        ],
-        bullets: [
-          "Never share banking OTP to “fix FASTag” over WhatsApp",
-          "Screenshot failed transactions before leaving the plaza area if safe to do so",
-          "Pair trip planning with fuel estimates on our Fuel Price tool",
         ],
       },
     ],
