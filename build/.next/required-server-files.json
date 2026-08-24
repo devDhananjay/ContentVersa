@@ -412,6 +412,21 @@
         "source": "/discover",
         "destination": "/blogs",
         "permanent": true
+      },
+      {
+        "source": "/movies",
+        "destination": "/cineverse",
+        "permanent": true
+      },
+      {
+        "source": "/movies/:path*",
+        "destination": "/cineverse/:path*",
+        "permanent": true
+      },
+      {
+        "source": "/movie/:id",
+        "destination": "/cineverse/movie/:id",
+        "permanent": true
       }
     ]
   },

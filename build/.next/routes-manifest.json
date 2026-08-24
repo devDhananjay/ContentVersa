@@ -52,6 +52,24 @@
       "destination": "/blogs",
       "statusCode": 308,
       "regex": "^(?!/_next)/discover(?:/)?$"
+    },
+    {
+      "source": "/movies",
+      "destination": "/cineverse",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/movies(?:/)?$"
+    },
+    {
+      "source": "/movies/:path*",
+      "destination": "/cineverse/:path*",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/movies(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    },
+    {
+      "source": "/movie/:id",
+      "destination": "/cineverse/movie/:id",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/movie(?:/([^/]+?))(?:/)?$"
     }
   ],
   "headers": [
@@ -682,6 +700,12 @@
       "regex": "^/admin/revenue(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admin/revenue(?:/)?$"
+    },
+    {
+      "page": "/admin/seo",
+      "regex": "^/admin/seo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/seo(?:/)?$"
     },
     {
       "page": "/admin/settings",

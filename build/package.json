@@ -36,7 +36,10 @@
     "db:tunnel": "bash scripts/db-tunnel.sh",
     "db:sync-env": "node scripts/sync-prod-db-env.mjs",
     "sports:sync": "tsx scripts/sports-sync.ts",
-    "sports:bootstrap": "tsx scripts/sports-bootstrap-sync.ts"
+    "sports:bootstrap": "tsx scripts/sports-bootstrap-sync.ts",
+    "hirepilot:install": "npm install --prefix extensions/hirepilot",
+    "hirepilot:dev": "npm run dev --prefix extensions/hirepilot",
+    "hirepilot:build": "npm run build --prefix extensions/hirepilot"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.758.0",
