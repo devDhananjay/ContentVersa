@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { dispatchBlogPublishedNotifications } from "@/lib/notifications/blog-published";
+import { isAdEligibleByQuality } from "@/lib/seo/crawl-policy";
+import { defaultAdEligibleOnApprove } from "@/lib/seo/creator-quality";
+import { getCreatorQualityForUser } from "@/lib/seo/creator-quality-db";
 
 /** POST /api/admin/blogs/[id]/publish — publish a draft AI article after admin preview */
 export async function POST(
@@ -19,7 +22,14 @@ export async function POST(
     const { id } = await ctx.params;
     const existing = await prisma.blog.findUnique({
       where: { id },
-      select: { id: true, slug: true, title: true, status: true },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        status: true,
+        readingTime: true,
+        authorId: true,
+      },
     });
 
     if (!existing) {
@@ -34,13 +44,28 @@ export async function POST(
       });
     }
 
+    const qualityOk = isAdEligibleByQuality({
+      slug: existing.slug,
+      readingTime: existing.readingTime,
+    });
+    const creator = await getCreatorQualityForUser(existing.authorId);
+    const adEligible = defaultAdEligibleOnApprove({ qualityOk, creator });
+
     const blog = await prisma.blog.update({
       where: { id },
       data: {
         status: BlogStatus.PUBLISHED,
         publishedAt: new Date(),
+        adEligible,
       },
-      select: { id: true, slug: true, title: true, readingTime: true, status: true },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        readingTime: true,
+        status: true,
+        adEligible: true,
+      },
     });
 
     void dispatchBlogPublishedNotifications(blog.id);

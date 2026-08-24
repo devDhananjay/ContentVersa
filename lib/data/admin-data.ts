@@ -78,6 +78,8 @@ export type AdminBlogDetail = AdminBlogRow & {
   rejectionNote: string | null;
   metaTitle: string | null;
   metaDescription: string | null;
+  canonicalUrl: string | null;
+  adEligible: boolean;
   updatedAt: Date;
   tags: string[];
   submission: {
@@ -406,6 +408,8 @@ export async function getAdminBlogDetail(blogId: string): Promise<AdminBlogDetai
     rejectionNote: blog.rejectionNote,
     metaTitle: blog.metaTitle,
     metaDescription: blog.metaDescription,
+    canonicalUrl: blog.canonicalUrl,
+    adEligible: blog.adEligible,
     updatedAt: blog.updatedAt,
     tags: blog.tags.map((t) => t.tag.name),
     submission: sub

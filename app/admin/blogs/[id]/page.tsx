@@ -53,6 +53,11 @@ export default async function AdminBlogDetailPage({
         <Badge variant={STATUS_VARIANT[blog.status] ?? "secondary"}>{blog.status}</Badge>
         {blog.category && <Badge variant="secondary">{blog.category}</Badge>}
         {blog.isPremium && <Badge variant="pink">Premium</Badge>}
+        {blog.adEligible ? (
+          <Badge variant="success">Ads on</Badge>
+        ) : (
+          <Badge variant="outline">Ads off</Badge>
+        )}
         {blog.tags.map((t) => (
           <Badge key={t} variant="outline">
             #{t}
@@ -156,7 +161,11 @@ export default async function AdminBlogDetailPage({
         </div>
       )}
 
-      <BlogModerationActions blogId={blog.id} status={blog.status} />
+      <BlogModerationActions
+        blogId={blog.id}
+        status={blog.status}
+        adEligible={blog.adEligible}
+      />
 
       <div className="mt-8 flex flex-wrap gap-2">
         {blog.status === "PUBLISHED" && (

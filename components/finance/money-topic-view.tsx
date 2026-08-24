@@ -8,6 +8,8 @@ import {
   moneyTopicPath,
   moneyTopicWebPageJsonLd,
 } from "@/lib/finance/money-topics";
+import { YmylDisclaimer } from "@/components/seo/ymyl-disclaimer";
+import { RelatedHubs } from "@/components/seo/related-hubs";
 
 export function MoneyTopicJsonLd({ topic }: { topic: MoneyTopic }) {
   const blocks = [
@@ -120,6 +122,10 @@ export function MoneyTopicView({ topic }: { topic: MoneyTopic }) {
           </div>
         </section>
       ) : null}
+
+      <YmylDisclaimer kind="finance" />
+
+      <RelatedHubs current="finance" className="!px-0" />
 
       <p className="text-[11px] text-muted-foreground">
         Educational content only — not investment, tax, or credit advice. Verify rates and

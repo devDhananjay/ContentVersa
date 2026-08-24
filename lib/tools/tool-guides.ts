@@ -6,9 +6,23 @@ export type ToolGuideSection = {
   bullets?: string[];
 };
 
+export type ToolGuideExample = {
+  title: string;
+  body: string;
+};
+
+export type ToolGuideRelated = {
+  href: string;
+  label: string;
+};
+
 export type ToolGuide = {
   intro: string;
   sections: ToolGuideSection[];
+  examples?: ToolGuideExample[];
+  relatedLinks?: ToolGuideRelated[];
+  /** Maps to YmylDisclaimer kind when set */
+  ymylKind?: "finance" | "tax" | "general";
 };
 
 const GUIDES: Partial<Record<string, ToolGuide>> = {
@@ -35,6 +49,17 @@ const GUIDES: Partial<Record<string, ToolGuide>> = {
           "This tool is a convenience utility for ContentVerse India readers. It is not a banking website. For disputes or official confirmation, contact your bank or use the bank’s official locator.",
         ],
       },
+    ],
+    examples: [
+      {
+        title: "Example — NEFT to a new vendor",
+        body: "Ask the vendor for account name, number, and IFSC in one message. Paste IFSC into this finder to confirm bank + branch city matches their invoice letterhead before you send the first payment.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/tools/pincode-finder", label: "Pincode finder" },
+      { href: "/tools/pan-gstin-checker", label: "PAN / GSTIN checker" },
+      { href: "/tools", label: "All India Tools" },
     ],
   },
   "pincode-finder": {
@@ -80,6 +105,23 @@ const GUIDES: Partial<Record<string, ToolGuide>> = {
         ],
       },
     ],
+    examples: [
+      {
+        title: "Example — ₹10 lakh personal loan",
+        body: "Principal ₹10,00,000 at 12% p.a. for 48 months lands near a mid-five-figure EMI. Shorten tenure to 36 months and EMI rises, but total interest falls — compare both totals, not only the monthly number.",
+      },
+      {
+        title: "Example — stress-test a floating rate",
+        body: "Re-run the same principal and tenure at +1% and +2% interest. If the higher EMI breaks your budget, negotiate a longer tenure or a smaller loan amount before you sign.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/tools/fd-calculator", label: "FD calculator" },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
+      { href: "/moneyverse", label: "MoneyVerse budgets" },
+      { href: "/finance", label: "Finance hub" },
+    ],
+    ymylKind: "finance",
   },
   "sip-calculator": {
     intro:
@@ -100,6 +142,23 @@ const GUIDES: Partial<Record<string, ToolGuide>> = {
         ],
       },
     ],
+    examples: [
+      {
+        title: "Example — ₹5,000 monthly SIP for 10 years",
+        body: "At an assumed 12% annualised return, a ₹5,000 SIP for 10 years invests ₹6 lakh in contributions while the projected corpus is materially higher — but a flat 12% path is only an illustration, not a promise.",
+      },
+      {
+        title: "Example — compare horizons",
+        body: "Keep the SIP amount fixed and toggle 5 vs 15 years. Longer horizons usually matter more than chasing last year’s top fund return assumption.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/tools/ppf-calculator", label: "PPF calculator" },
+      { href: "/tools/fd-calculator", label: "FD calculator" },
+      { href: "/tools/emi-calculator", label: "EMI calculator" },
+      { href: "/finance", label: "Finance hub" },
+    ],
+    ymylKind: "finance",
   },
   "salary-tax-calculator": {
     intro:
@@ -119,6 +178,19 @@ const GUIDES: Partial<Record<string, ToolGuide>> = {
         ],
       },
     ],
+    examples: [
+      {
+        title: "Example — compare regimes with the same CTC",
+        body: "Enter the same annual income twice: once assuming new-regime defaults, once with old-regime deductions you actually claim (80C, HRA, etc.). Pick the lower tax only after Form 16 / CA review.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/tools/gst-calculator", label: "GST calculator" },
+      { href: "/tools/sip-calculator", label: "SIP calculator" },
+      { href: "/moneyverse", label: "Expense tracker" },
+      { href: "/guides", label: "India Guides" },
+    ],
+    ymylKind: "tax",
   },
   "gst-calculator": {
     intro:
@@ -132,6 +204,18 @@ const GUIDES: Partial<Record<string, ToolGuide>> = {
         ],
       },
     ],
+    examples: [
+      {
+        title: "Example — ₹10,000 + 18% GST (exclusive)",
+        body: "Base ₹10,000 at 18% adds ₹1,800 tax → invoice total ₹11,800. Inclusive mode does the reverse: from a ₹11,800 total, recover base and tax components.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/tools/pan-gstin-checker", label: "PAN / GSTIN checker" },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
+      { href: "/blogs?q=gst", label: "GST explainers" },
+    ],
+    ymylKind: "tax",
   },
   "fuel-price": {
     intro:
@@ -149,6 +233,20 @@ const GUIDES: Partial<Record<string, ToolGuide>> = {
           "This page is not an Oil Marketing Company portal",
         ],
       },
+    ],
+    examples: [
+      {
+        title: "Example — highway trip budget",
+        body: "Estimate litres needed for your car’s km/l, multiply by today’s city petrol reading, then add 10–15% buffer for traffic and price differences between city and highway pumps.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/tools/rto-finder", label: "RTO finder" },
+      {
+        href: "/guides/schemes/fastag-india-eligibility-recharge-faq",
+        label: "FASTag guide",
+      },
+      { href: "/tools/weather", label: "Weather" },
     ],
   },
   weather: {
@@ -204,6 +302,62 @@ const GUIDES: Partial<Record<string, ToolGuide>> = {
         ],
       },
     ],
+  },
+  "fd-calculator": {
+    intro:
+      "A fixed deposit calculator estimates maturity value from principal, interest rate, and tenure. Banks publish their own compounding conventions — treat this as a planning estimate.",
+    sections: [
+      {
+        heading: "How to compare FD offers",
+        paragraphs: [
+          "Match tenure and compounding (quarterly vs annual) before you compare two banks. Senior-citizen rates and premature withdrawal penalties change the real outcome.",
+          "Laddering (splitting money across tenures) can balance liquidity and rate. This tool does not open an FD — complete booking on your bank’s official channel.",
+        ],
+        bullets: [
+          "Confirm TDS rules if interest exceeds thresholds",
+          "Check auto-renewal defaults so money is not locked unexpectedly",
+          "Educational estimate only — not a bank offer",
+        ],
+      },
+    ],
+    examples: [
+      {
+        title: "Example — ₹2 lakh for 3 years",
+        body: "Enter principal ₹2,00,000, your bank’s published rate, and 36 months. Note maturity value and total interest, then compare with a shorter tenure at a different rate.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/tools/rd-calculator", label: "RD calculator" },
+      { href: "/tools/ppf-calculator", label: "PPF calculator" },
+      { href: "/tools/sip-calculator", label: "SIP calculator" },
+      { href: "/finance", label: "Finance hub" },
+    ],
+    ymylKind: "finance",
+  },
+  "ppf-calculator": {
+    intro:
+      "The Public Provident Fund (PPF) calculator projects contributions and interest under PPF-like assumptions for planning. Official limits, interest rates, and lock-in rules are set by the government and can change.",
+    sections: [
+      {
+        heading: "PPF planning basics",
+        paragraphs: [
+          "PPF is a long-horizon savings scheme with contribution caps and a multi-year lock-in. Use this calculator to visualise yearly contributions — then confirm the current rate and rules on official Post Office / bank PPF pages.",
+          "Do not treat projected interest as guaranteed forever. Rates are reviewed periodically. This page is educational, not a subscription or account opening service.",
+        ],
+      },
+    ],
+    examples: [
+      {
+        title: "Example — ₹1.5 lakh yearly for 15 years",
+        body: "Model the common annual contribution ceiling across a full PPF tenure to see how contributions and assumed interest combine — then verify today’s notified rate before you commit cashflow.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/tools/sip-calculator", label: "SIP calculator" },
+      { href: "/tools/fd-calculator", label: "FD calculator" },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
+    ],
+    ymylKind: "finance",
   },
 };
 

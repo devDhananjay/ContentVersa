@@ -70,6 +70,22 @@ const nextConfig: NextConfig = {
         destination: "/blogs",
         permanent: true,
       },
+      // P2 vanity SEO aliases — permanent redirects only
+      {
+        source: "/movies",
+        destination: "/cineverse",
+        permanent: true,
+      },
+      {
+        source: "/movies/:path*",
+        destination: "/cineverse/:path*",
+        permanent: true,
+      },
+      {
+        source: "/movie/:id",
+        destination: "/cineverse/movie/:id",
+        permanent: true,
+      },
     ];
   },
   async headers() {

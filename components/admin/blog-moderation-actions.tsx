@@ -7,17 +7,29 @@ import { Check, X, Loader2, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export function BlogModerationActions({
   blogId,
   status,
+  adEligible: initialAdEligible = false,
 }: {
   blogId: string;
   status: string;
+  adEligible?: boolean;
 }) {
   const router = useRouter();
   const [feedback, setFeedback] = React.useState("");
-  const [loading, setLoading] = React.useState<"approve" | "reject" | "publish" | null>(null);
+  const [adEligibleOnApprove, setAdEligibleOnApprove] = React.useState(true);
+  const [adEligible, setAdEligible] = React.useState(initialAdEligible);
+  const [loading, setLoading] = React.useState<"approve" | "reject" | "publish" | "ads" | null>(
+    null
+  );
+
+  React.useEffect(() => {
+    setAdEligible(initialAdEligible);
+  }, [initialAdEligible]);
 
   const decide = async (decision: "APPROVED" | "REJECTED") => {
     setLoading(decision === "APPROVED" ? "approve" : "reject");
@@ -25,7 +37,12 @@ export function BlogModerationActions({
       const res = await fetch("/api/admin/moderation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blogId, decision, feedback: feedback || undefined }),
+        body: JSON.stringify({
+          blogId,
+          decision,
+          feedback: feedback || undefined,
+          ...(decision === "APPROVED" ? { adEligible: adEligibleOnApprove } : {}),
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -57,6 +74,28 @@ export function BlogModerationActions({
     }
   };
 
+  const toggleAds = async (next: boolean) => {
+    setLoading("ads");
+    const prev = adEligible;
+    setAdEligible(next);
+    try {
+      const res = await fetch("/api/admin/moderation", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId, adEligible: next }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not update ads flag");
+      toast.success(next ? "Ads enabled for this post" : "Ads disabled for this post");
+      router.refresh();
+    } catch (err) {
+      setAdEligible(prev);
+      toast.error(err instanceof Error ? err.message : "Failed");
+    } finally {
+      setLoading(null);
+    }
+  };
+
   const editHref = `/admin/blogs/${blogId}/edit`;
 
   if (status === "PUBLISHED") {
@@ -66,6 +105,18 @@ export function BlogModerationActions({
         <p className="text-sm text-muted-foreground">
           Changes save in place and stay published. Use Unpublish in the editor to take it offline.
         </p>
+        <div className="flex items-center justify-between gap-3 rounded-xl border bg-background/60 px-3 py-2">
+          <div>
+            <Label htmlFor={`ad-eligible-${blogId}`}>Show AdSense</Label>
+            <p className="text-xs text-muted-foreground">Only for quality, indexable posts.</p>
+          </div>
+          <Switch
+            id={`ad-eligible-${blogId}`}
+            checked={adEligible}
+            disabled={loading === "ads"}
+            onCheckedChange={toggleAds}
+          />
+        </div>
         <Link href={editHref}>
           <Button variant="outline" className="gap-1.5">
             <Pencil className="h-4 w-4" /> Edit published blog
@@ -82,7 +133,8 @@ export function BlogModerationActions({
           {status === "DRAFT" ? "Draft — review before publishing" : `${status} — edit or publish`}
         </h3>
         <p className="text-sm text-muted-foreground">
-          Edit title, cover, or content if needed, then publish when ready.
+          Edit title, cover, or content if needed, then publish when ready. Ads follow the quality
+          gate on publish.
         </p>
         <div className="flex flex-wrap gap-2">
           <Link href={editHref}>
@@ -119,6 +171,21 @@ export function BlogModerationActions({
         onChange={(e) => setFeedback(e.target.value)}
         className="min-h-[80px]"
       />
+      <label className="flex items-start gap-2 text-sm cursor-pointer select-none">
+        <input
+          type="checkbox"
+          className="mt-1 h-4 w-4 rounded border"
+          checked={adEligibleOnApprove}
+          onChange={(e) => setAdEligibleOnApprove(e.target.checked)}
+          disabled={!!loading}
+        />
+        <span>
+          Eligible for ads on approve
+          <span className="block text-xs text-muted-foreground">
+            Still blocked for thin / syndicated slugs by the quality gate.
+          </span>
+        </span>
+      </label>
       <div className="flex flex-wrap gap-2">
         <Link href={editHref}>
           <Button variant="outline" className="gap-1.5" disabled={!!loading}>

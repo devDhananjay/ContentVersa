@@ -134,11 +134,14 @@ export function buildMetadata(input: {
   title?: string;
   description?: string;
   path?: string;
+  /** Absolute URL override for canonical (external or preferred URL). */
+  canonicalUrl?: string;
   image?: string;
   noIndex?: boolean;
   keywords?: string[];
   type?: "website" | "article";
   publishedTime?: string;
+  modifiedTime?: string;
   authors?: string[];
 }): Metadata {
   const title = input.title
@@ -146,7 +149,8 @@ export function buildMetadata(input: {
       ? input.title
       : `${input.title} · ${SITE.name}`
     : SITE.homeTitle;
-  const url = input.path ? `${SITE.url}${input.path}` : SITE.url;
+  const url = input.canonicalUrl?.trim()
+    || (input.path ? `${SITE.url}${input.path}` : SITE.url);
   const image = input.image || SITE.ogImage;
   const verification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
 
@@ -182,6 +186,7 @@ export function buildMetadata(input: {
       siteName: SITE.searchName,
       type: input.type || "website",
       publishedTime: input.publishedTime,
+      modifiedTime: input.modifiedTime || input.publishedTime,
       images: [{ url: image, width: 1200, height: 630, alt: SITE.searchName }],
     },
     twitter: {

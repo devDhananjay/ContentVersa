@@ -336,6 +336,9 @@ model Blog {
   seriesSlug      String?
   seriesPart      Int?
 
+  // Ads only when true — set on approve if quality gates pass, or via admin toggle.
+  adEligible Boolean @default(false)
+
   authorId      String
   categoryId    String?
   subcategoryId String?

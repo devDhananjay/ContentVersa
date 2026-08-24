@@ -2,8 +2,11 @@ import Link from "next/link";
 import type { ToolSlug } from "@/lib/tools/registry";
 import { getToolBySlugOrThrow, toolFaq } from "@/lib/tools/tools-seo";
 import { getToolGuide } from "@/lib/tools/tool-guides";
+import { getTopicClusterForTool } from "@/lib/seo/topic-clusters";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TopicClusterLinks } from "@/components/seo/topic-cluster-links";
+import { YmylDisclaimer } from "@/components/seo/ymyl-disclaimer";
 import { ToolIcon } from "./tool-icon";
 
 export function ToolPageShell({
@@ -16,6 +19,8 @@ export function ToolPageShell({
   const tool = getToolBySlugOrThrow(slug);
   const faq = toolFaq(tool);
   const guide = getToolGuide(slug);
+  const cluster = getTopicClusterForTool(slug);
+  const currentHref = `/tools/${slug}`;
 
   return (
     <div className="container space-y-10 py-8 md:py-10">
@@ -44,7 +49,10 @@ export function ToolPageShell({
         </p>
       </header>
 
+      {/* Calculators/forms only — no AdSense beside interactive inputs (AdSense UX policy). */}
       {children}
+
+      {guide?.ymylKind ? <YmylDisclaimer kind={guide.ymylKind} /> : null}
 
       {guide ? (
         <section className="max-w-3xl space-y-6">
@@ -79,6 +87,46 @@ export function ToolPageShell({
             </div>
           ))}
         </section>
+      ) : null}
+
+      {guide?.examples?.length ? (
+        <section className="max-w-3xl space-y-4">
+          <h2 className="font-display text-xl font-semibold">Worked examples</h2>
+          <div className="space-y-3">
+            {guide.examples.map((ex) => (
+              <Card key={ex.title}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{ex.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                  {ex.body}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {guide?.relatedLinks?.length ? (
+        <section className="max-w-3xl space-y-3">
+          <h2 className="font-display text-xl font-semibold">Related tools & hubs</h2>
+          <ul className="flex flex-wrap gap-2">
+            {guide.relatedLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="inline-flex rounded-full border px-3.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {cluster ? (
+        <TopicClusterLinks cluster={cluster} currentHref={currentHref} />
       ) : null}
 
       <section className="max-w-3xl space-y-4">

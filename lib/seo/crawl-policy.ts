@@ -5,6 +5,12 @@
  * stay crawlable but use page-level `noIndex` with `follow: true` so Google can
  * still pass link equity to hub pages without indexing the thin URL.
  * Private surfaces (/dashboard, /admin, /api, /auth) are Disallow'd in app/robots.ts.
+ *
+ * P1 ops note: expand new articles only for queries with Search Console impressions/CTR —
+ * do not mass-publish AI volume without that signal.
+ *
+ * P2 ops note: `/tools/locations/*` stays noindex until unique editorial depth exists.
+ * Programmatic IFSC/pincode tools remain indexable hub utilities, not doorway matrices.
  */
 
 /** Minimum reading minutes for blog posts in sitemap / Google index */
@@ -29,6 +35,14 @@ export function isIndexableArticle(input: {
   if (isDiscoverSyndicatedSlug(input.slug)) return false;
   if (isAutoDailyCronSlug(input.slug)) return false;
   return input.readingTime >= MIN_INDEXABLE_READING_MINUTES;
+}
+
+/** Monetization gate — same quality bar as indexability for now. */
+export function isAdEligibleByQuality(input: {
+  slug: string;
+  readingTime: number;
+}): boolean {
+  return isIndexableArticle(input);
 }
 
 export function isIndexableProfile(publishedArticleCount: number): boolean {

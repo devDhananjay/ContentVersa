@@ -13,7 +13,7 @@ import { isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
 import { AnimatedGrid, FloatingOrbs } from "@/components/home/motion";
 import { cn } from "@/lib/utils";
 
-const ROTATING_WORDS = ["Read.", "Create.", "Grow.", "Earn.", "Build."];
+const ROTATING_WORDS = ["Read", "Create", "Grow", "Earn", "Build"];
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
 /** Typewriter + blink caret for the rotating hero word. */
@@ -151,16 +151,20 @@ export function Hero({ categories, stats }: Props) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.7, ease: easeOut }}
             >
-              The home for{" "}
-              <TypewriterWord words={ROTATING_WORDS} reduce={reduce} />
+              ContentVerse India
             </motion.span>
             <motion.span
-              className={cn("block text-foreground mt-1", cinematic && "text-white")}
+              className={cn(
+                "block mt-2 text-[0.55em] sm:text-[0.5em] md:text-[0.48em] font-bold leading-tight",
+                cinematic ? "text-white/90" : "text-foreground"
+              )}
               initial={reduce ? false : { opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.28, duration: 0.7, ease: easeOut }}
             >
-              creators of the new internet.
+              <TypewriterWord words={ROTATING_WORDS} reduce={reduce} />
+              {" — "}
+              blogs, live cricket, finance &amp; free India tools.
             </motion.span>
           </h1>
 
@@ -173,8 +177,8 @@ export function Hero({ categories, stats }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            Publish long-form stories, grow a real audience, and earn in ₹ — with
-            human moderation, AI assist, and tools built for Indian creators.
+            Publish long-form stories, follow cricket and markets, and use free
+            calculators — with human moderation and tools built for India.
           </motion.p>
 
           <motion.form

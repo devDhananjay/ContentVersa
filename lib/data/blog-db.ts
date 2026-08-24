@@ -69,6 +69,11 @@ export function mapDbBlogToBlog(blog: BlogWithRelations): Blog {
     editorPick: blog.isEditorPick,
     premium: blog.isPremium,
     trending: blog.views > 50_000,
+    metaTitle: blog.metaTitle,
+    metaDescription: blog.metaDescription,
+    metaKeywords: blog.metaKeywords,
+    canonicalUrl: blog.canonicalUrl,
+    adEligible: blog.adEligible,
   };
 }
 

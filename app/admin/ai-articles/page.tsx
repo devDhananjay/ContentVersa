@@ -35,6 +35,16 @@ export default function AdminAiArticlesPage() {
 
       <AiPublishingPipeline />
 
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-sm">
+        <p className="font-medium">P2 SEO pipeline</p>
+        <p className="text-muted-foreground mt-1">
+          Curated topics & refresh queue — pick GSC winners first, then draft here.
+        </p>
+        <Link href="/admin/seo" className="inline-block mt-2 text-primary hover:underline text-sm font-medium">
+          Open SEO pipeline →
+        </Link>
+      </div>
+
       <div className="border-t pt-10">
         <h2 className="font-display text-2xl font-bold mb-2">Classic hot topics</h2>
         <p className="text-sm text-muted-foreground mb-6">

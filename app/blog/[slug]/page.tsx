@@ -28,7 +28,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { resolveUserId } from "@/lib/auth/resolve-user-id";
 import { isDatabaseConfigured } from "@/lib/prisma";
 import { shouldSkipImageOptimization } from "@/lib/upload";
-import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
+import { formatNumber, getInitials, formatShortDate, timeAgo } from "@/lib/utils";
 import { buildMetadata, articleJsonLd, SITE } from "@/lib/seo";
 import { isDiscoverSyndicatedSlug } from "@/lib/feeds/discover-blog";
 import { isIndexableArticle } from "@/lib/seo/crawl-policy";
@@ -37,6 +37,11 @@ import { resolveBlogCoverImage } from "@/lib/upload";
 import { SeriesNav } from "@/components/blog/series-nav";
 import { GoogleAdSense } from "@/components/ads/google-adsense";
 import { StickyWhatsAppShare } from "@/components/blog/sticky-whatsapp-share";
+import {
+  YmylDisclaimer,
+  ymylKindForBlogCategory,
+} from "@/components/seo/ymyl-disclaimer";
+import { blogAdSlots, getAdDensity } from "@/lib/ads/density";
 import { getBlogSeriesMeta } from "@/lib/data/series";
 
 export const dynamic = "force-dynamic";
@@ -54,15 +59,25 @@ export async function generateMetadata({
   const isPublic = blog.status === "PUBLISHED";
   const syndicated = isDiscoverSyndicatedSlug(blog.slug);
   const thin = !isIndexableArticle({ slug: blog.slug, readingTime: blog.readingTime });
+  const keywordList = [
+    ...(blog.metaKeywords
+      ? blog.metaKeywords.split(",").map((k) => k.trim()).filter(Boolean)
+      : []),
+    ...blog.tags,
+  ];
   return buildMetadata({
-    title: isPublic ? blog.title : `${blog.title} (Preview)`,
-    description: blog.excerpt,
+    title: isPublic
+      ? blog.metaTitle?.trim() || blog.title
+      : `${blog.metaTitle?.trim() || blog.title} (Preview)`,
+    description: blog.metaDescription?.trim() || blog.excerpt,
     path: `/blog/${blog.slug}`,
+    canonicalUrl: blog.canonicalUrl?.trim() || undefined,
     image: blog.coverImage,
     type: "article",
     publishedTime: blog.publishedAt,
+    modifiedTime: blog.updatedAt || blog.publishedAt,
     authors: [blog.author.name],
-    keywords: blog.tags,
+    keywords: keywordList.length ? keywordList : blog.tags,
     noIndex: !isPublic || syndicated || thin,
   });
 }
@@ -93,6 +108,9 @@ export default async function BlogPage({
   const isOwnArticle =
     Boolean(userId && blog.author.id && userId === blog.author.id) ||
     Boolean(session?.username && session.username === blog.author.username);
+  const showAds = isPublic && Boolean(blog.adEligible);
+  const adSlots = blogAdSlots(getAdDensity());
+  const ymylKind = ymylKindForBlogCategory(blog.category);
 
   const jsonLd =
     !isPublic || syndicated
@@ -231,23 +249,48 @@ export default async function BlogPage({
                     <BadgeCheck className="h-4 w-4 text-neon-cyan" />
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground flex items-center gap-2">
-                  {timeAgo(blog.publishedAt)} ·
+                <p className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <time dateTime={blog.publishedAt}>
+                    Published {formatShortDate(blog.publishedAt)}
+                  </time>
+                  {blog.updatedAt &&
+                  new Date(blog.updatedAt).getTime() - new Date(blog.publishedAt).getTime() >
+                    60_000 ? (
+                    <>
+                      <span aria-hidden>·</span>
+                      <time dateTime={blog.updatedAt}>
+                        Updated {formatShortDate(blog.updatedAt)}
+                      </time>
+                    </>
+                  ) : null}
+                  <span className="text-muted-foreground/80" title={timeAgo(blog.publishedAt)}>
+                    ({timeAgo(blog.publishedAt)})
+                  </span>
+                  <span aria-hidden>·</span>
                   <Clock className="h-3 w-3" />
                   <span className="font-medium">{blog.readingTime} min read</span>
-                  <span className="text-muted-foreground">·</span>
-                  <Eye className="h-3 w-3" /> {formatNumber(blog.views)} ·
-                  <Heart className="h-3 w-3" /> {formatNumber(blog.likes)} ·
+                  <span aria-hidden>·</span>
+                  <Eye className="h-3 w-3" /> {formatNumber(blog.views)}
+                  <span aria-hidden>·</span>
+                  <Heart className="h-3 w-3" /> {formatNumber(blog.likes)}
+                  <span aria-hidden>·</span>
                   <MessageCircle className="h-3 w-3" /> {formatNumber(blog.comments)}
                 </p>
+                {blog.author.bio ? (
+                  <p className="text-xs text-muted-foreground line-clamp-2 mt-1 max-w-md">
+                    {blog.author.bio}
+                  </p>
+                ) : null}
               </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <FollowButton
-                username={blog.author.username}
-                targetUserId={blog.author.id}
-                initialFollowerCount={blog.author.followers}
-              />
+              {!isOwnArticle ? (
+                <FollowButton
+                  username={blog.author.username}
+                  targetUserId={blog.author.id}
+                  initialFollowerCount={blog.author.followers}
+                />
+              ) : null}
               <ShareBar url={url} title={blog.title} imageUrl={blog.coverImage} />
               {blog.id && !isOwnArticle && (
                 <ReportContentButton targetType="BLOG" targetId={blog.id} />
@@ -270,7 +313,7 @@ export default async function BlogPage({
           </div>
         )}
 
-        {isPublic ? (
+        {showAds && adSlots.afterCover ? (
           <GoogleAdSense
             slotKey="inArticle"
             format="horizontal"
@@ -280,6 +323,9 @@ export default async function BlogPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12 items-start">
           <div>
+            {ymylKind ? (
+              <YmylDisclaimer kind={ymylKind} className="mb-6 rounded-2xl border border-amber-500/25 bg-amber-500/5 p-4 text-sm text-muted-foreground" />
+            ) : null}
             <h2 className="font-display text-2xl font-bold mb-6">Full story</h2>
             {(() => {
               const parts = blog.content.split(/\n\n+/);
@@ -289,7 +335,7 @@ export default async function BlogPage({
               return (
                 <>
                   {renderMarkdown(first || blog.content)}
-                  {isPublic && second ? (
+                  {showAds && adSlots.midArticle && second ? (
                     <GoogleAdSense
                       slotKey="inArticle"
                       format="horizontal"
@@ -301,7 +347,7 @@ export default async function BlogPage({
               );
             })()}
 
-            {isPublic ? (
+            {showAds && adSlots.afterContent ? (
               <GoogleAdSense
                 slotKey="horizontal"
                 format="horizontal"
@@ -343,22 +389,30 @@ export default async function BlogPage({
               </div>
             )}
 
-            {!isOwnArticle && (
-              <div className="mt-10 p-6 rounded-3xl border bg-card">
-                <AuthorActions
-                  id={blog.author.id}
-                  name={blog.author.name}
-                  username={blog.author.username}
-                  avatar={blog.author.avatar}
-                  verified={blog.author.verified}
-                  bio={blog.author.bio}
-                  followers={blog.author.followers}
-                  blogs={blog.author.blogs}
-                  layout="card"
-                  avatarSize="lg"
-                />
-              </div>
-            )}
+            <div className="mt-10 p-6 rounded-3xl border bg-card">
+              <AuthorActions
+                id={blog.author.id}
+                name={blog.author.name}
+                username={blog.author.username}
+                avatar={blog.author.avatar}
+                verified={blog.author.verified}
+                bio={blog.author.bio}
+                followers={blog.author.followers}
+                blogs={blog.author.blogs}
+                layout="card"
+                avatarSize="lg"
+                showFollow={!isOwnArticle}
+                publishedLabel={formatShortDate(blog.publishedAt)}
+                updatedLabel={
+                  blog.updatedAt &&
+                  new Date(blog.updatedAt).getTime() -
+                    new Date(blog.publishedAt).getTime() >
+                    60_000
+                    ? formatShortDate(blog.updatedAt)
+                    : undefined
+                }
+              />
+            </div>
 
             <div className="mt-14">
               <PollWidget
@@ -394,7 +448,7 @@ export default async function BlogPage({
 
           <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto overscroll-y-contain scrollbar-hide space-y-6">
             <TableOfContents items={toc} />
-            {isPublic ? (
+            {showAds && adSlots.sidebar ? (
               <GoogleAdSense
                 slotKey="sidebar"
                 format="rectangle"

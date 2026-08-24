@@ -33,6 +33,13 @@ export interface Blog {
   editorPick?: boolean;
   trending?: boolean;
   premium?: boolean;
+  /** Optional per-article SEO overrides from DB */
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  metaKeywords?: string | null;
+  canonicalUrl?: string | null;
+  /** Show AdSense only when true */
+  adEligible?: boolean;
 }
 
 export const AUTHORS: Author[] = [

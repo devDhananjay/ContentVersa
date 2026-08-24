@@ -31,6 +31,10 @@ const MIN_HEIGHT: Record<Format, string> = {
   horizontal: "min-h-[90px]",
 };
 
+/**
+ * AdSense unit. Keep away from nav, calculator forms, and ambiguous CTAs.
+ * Prefer HubAdSense on hubs; blog units only when `adEligible`.
+ */
 export function GoogleAdSense({
   slot,
   slotKey,
@@ -54,6 +58,7 @@ export function GoogleAdSense({
 
   return (
     <div
+      data-cv-ad-zone="editorial"
       className={cn(
         "overflow-hidden rounded-xl bg-muted/10 dark:bg-muted/20 [&_.adsbygoogle]:bg-transparent",
         MIN_HEIGHT[format],

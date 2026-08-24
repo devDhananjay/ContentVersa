@@ -14,6 +14,9 @@ import { HubAdSense } from "@/components/ads/hub-adsense";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { getTopicCluster } from "@/lib/seo/topic-clusters";
+import { TopicClusterLinks } from "@/components/seo/topic-cluster-links";
+import { YmylDisclaimer } from "@/components/seo/ymyl-disclaimer";
 
 type Props = { params: Promise<{ section: string; slug: string }> };
 
@@ -44,6 +47,12 @@ export default async function GuideArticlePage({ params }: Props) {
   if (!article || !section) notFound();
 
   const jsonLd = guideArticleJsonLd(article, section);
+  const cluster =
+    article.slug.includes("fastag")
+      ? getTopicCluster("fastag")
+      : article.section === "schemes"
+        ? getTopicCluster("govt-schemes")
+        : undefined;
 
   return (
     <article className="container max-w-3xl space-y-8 py-8 md:py-10">
@@ -84,6 +93,8 @@ export default async function GuideArticlePage({ params }: Props) {
       </header>
 
       <HubAdSense className="my-2" />
+
+      {article.section === "schemes" ? <YmylDisclaimer kind="schemes" /> : null}
 
       <div className="space-y-8">
         {article.blocks.map((block) => (
@@ -134,6 +145,13 @@ export default async function GuideArticlePage({ params }: Props) {
           </div>
         </div>
       )}
+
+      {cluster ? (
+        <TopicClusterLinks
+          cluster={cluster}
+          currentHref={`${GUIDES_HUB_PATH}/${article.section}/${article.slug}`}
+        />
+      ) : null}
 
       <p className="text-xs text-muted-foreground">
         Educational guide only. For government schemes and jobs, confirm details

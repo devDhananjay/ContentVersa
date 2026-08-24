@@ -8,6 +8,8 @@ import { GuidesSectionGrid } from "@/components/guides/guides-ui";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
+import { TopicClustersHubStrip } from "@/components/seo/topic-cluster-links";
+import { YmylDisclaimer } from "@/components/seo/ymyl-disclaimer";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -84,6 +86,13 @@ export default function GuidesHubPage() {
       <HubAdSense className="my-2" />
 
       <GuidesSectionGrid />
+
+      <TopicClustersHubStrip
+        title="Topic clusters"
+        subtitle="Start from a pillar page, then move between guides, tools, and related reading."
+      />
+
+      <YmylDisclaimer kind="schemes" />
 
       <HubEditorialIntro title="Why these guide formats?">
         <p>

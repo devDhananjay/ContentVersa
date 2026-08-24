@@ -5,6 +5,7 @@ import { HubAdSense } from "@/components/ads/hub-adsense";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
+import { TopicClustersHubStrip } from "@/components/seo/topic-cluster-links";
 import {
   hubBreadcrumbJsonLd,
   hubFaqJsonLd,
@@ -86,6 +87,10 @@ export default function ToolsHubPage() {
       </HubEditorialIntro>
       <HubAdSense className="my-2" />
       <ToolsHubGrid />
+      <TopicClustersHubStrip
+        title="Topic clusters"
+        subtitle="EMI, SIP, tax, IFSC, FASTag and more — pillar pages with related tools and guides."
+      />
       <section className="max-w-3xl rounded-xl border border-border/60 bg-muted/20 p-5 text-sm text-muted-foreground">
         <p className="font-medium text-foreground">Official government portals</p>
         <p className="mt-2">

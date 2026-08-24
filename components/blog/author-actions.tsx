@@ -17,6 +17,11 @@ export type AuthorActionsProps = {
   blogs?: number;
   avatarSize?: "sm" | "md" | "lg";
   layout?: "row" | "card";
+  /** Hide follow control on own articles / preview. */
+  showFollow?: boolean;
+  /** Absolute published / updated labels for E-E-A-T. */
+  publishedLabel?: string;
+  updatedLabel?: string;
 };
 
 export function AuthorActions({
@@ -30,6 +35,9 @@ export function AuthorActions({
   blogs = 0,
   avatarSize = "md",
   layout = "row",
+  showFollow = true,
+  publishedLabel,
+  updatedLabel,
 }: AuthorActionsProps) {
   const avatarClass =
     avatarSize === "lg"
@@ -55,14 +63,29 @@ export function AuthorActions({
           <p className="text-sm text-muted-foreground">
             {formatNumber(followers)} followers · {blogs} blogs
           </p>
+          {(publishedLabel || updatedLabel) && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {publishedLabel ? <span>Published {publishedLabel}</span> : null}
+              {publishedLabel && updatedLabel ? " · " : null}
+              {updatedLabel ? <span>Updated {updatedLabel}</span> : null}
+            </p>
+          )}
           {bio && <p className="mt-2 text-sm text-foreground/90">{bio}</p>}
+          <Link
+            href={`/profile/${username}`}
+            className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
+          >
+            View full profile
+          </Link>
         </div>
-        <FollowButton
-          username={username}
-          targetUserId={id}
-          initialFollowerCount={followers}
-          className="shrink-0"
-        />
+        {showFollow ? (
+          <FollowButton
+            username={username}
+            targetUserId={id}
+            initialFollowerCount={followers}
+            className="shrink-0"
+          />
+        ) : null}
       </div>
     );
   }
@@ -80,13 +103,18 @@ export function AuthorActions({
           <span className="font-semibold">{name}</span>
           {verified && <BadgeCheck className="h-4 w-4 text-neon-cyan" />}
         </Link>
+        {bio ? (
+          <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{bio}</p>
+        ) : null}
       </div>
-      <FollowButton
-        username={username}
-        targetUserId={id}
-        initialFollowerCount={followers}
-        className="shrink-0"
-      />
+      {showFollow ? (
+        <FollowButton
+          username={username}
+          targetUserId={id}
+          initialFollowerCount={followers}
+          className="shrink-0"
+        />
+      ) : null}
     </div>
   );
 }

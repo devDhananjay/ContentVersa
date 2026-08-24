@@ -14,8 +14,14 @@ import { getInitials, timeAgo } from "@/lib/utils";
 import { AdminListFilters, useAdminFilters } from "@/components/admin/admin-list-filters";
 import { inDateRange, matchesSearch } from "@/lib/admin/list-filters";
 import type { Blog } from "@/lib/data/blogs";
+import type { CreatorQualityResult } from "@/lib/seo/creator-quality";
 
-type QueueItem = Blog & { status: string; blogId: string };
+type QueueItem = Blog & {
+  status: string;
+  blogId: string;
+  adEligible?: boolean;
+  creatorQuality?: CreatorQualityResult | null;
+};
 
 const MOD_FILTER_DEFAULTS = {
   q: "",
@@ -38,7 +44,14 @@ function filterModerationItems(items: QueueItem[], f: typeof MOD_FILTER_DEFAULTS
 function ReviewCard({ blog }: { blog: QueueItem }) {
   const router = useRouter();
   const [feedback, setFeedback] = React.useState("");
+  const [adEligible, setAdEligible] = React.useState(
+    () => blog.creatorQuality?.trusted ?? false
+  );
   const [loading, setLoading] = React.useState<"approve" | "reject" | "changes" | null>(null);
+
+  React.useEffect(() => {
+    setAdEligible(blog.creatorQuality?.trusted ?? false);
+  }, [blog.blogId, blog.creatorQuality?.trusted]);
 
   const decide = async (decision: "APPROVED" | "REJECTED" | "REQUEST_CHANGES") => {
     setLoading(
@@ -48,7 +61,12 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
       const res = await fetch("/api/admin/moderation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blogId: blog.blogId, decision, feedback: feedback || undefined }),
+        body: JSON.stringify({
+          blogId: blog.blogId,
+          decision,
+          feedback: feedback || undefined,
+          ...(decision === "APPROVED" ? { adEligible } : {}),
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -77,6 +95,19 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
               {blog.status}
             </Badge>
             <Badge variant="secondary">{blog.category}</Badge>
+            {blog.creatorQuality ? (
+              <Badge
+                variant={
+                  blog.creatorQuality.label === "Trusted"
+                    ? "success"
+                    : blog.creatorQuality.label === "At risk"
+                      ? "destructive"
+                      : "outline"
+                }
+              >
+                Creator {blog.creatorQuality.label} ({blog.creatorQuality.score})
+              </Badge>
+            ) : null}
             <span className="text-xs text-muted-foreground">{timeAgo(blog.publishedAt)}</span>
           </div>
           <h3 className="font-display text-xl font-bold leading-snug">{blog.title}</h3>
@@ -121,6 +152,22 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
               </Button>
             </div>
           </div>
+
+          <label className="mt-4 flex items-start gap-2 text-sm cursor-pointer select-none">
+            <input
+              type="checkbox"
+              className="mt-1 h-4 w-4 rounded border"
+              checked={adEligible}
+              onChange={(e) => setAdEligible(e.target.checked)}
+              disabled={!!loading}
+            />
+            <span>
+              Eligible for ads on publish
+              <span className="block text-xs text-muted-foreground">
+                Auto-on for trusted creators (score ≥70). Quality gate still applies.
+              </span>
+            </span>
+          </label>
 
           <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
             <Button

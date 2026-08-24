@@ -62,6 +62,8 @@ type BlogDraft = {
   premium: boolean;
   metaTitle: string;
   metaDescription: string;
+  canonicalUrl: string;
+  adEligible?: boolean;
   status: string;
   scheduledFor: string | null;
   seriesSlug: string;
@@ -113,6 +115,8 @@ export function BlogEditorForm({
   const [markdown, setMarkdown] = React.useState("");
   const [seoTitle, setSeoTitle] = React.useState("");
   const [seoDescription, setSeoDescription] = React.useState("");
+  const [canonicalUrl, setCanonicalUrl] = React.useState("");
+  const [adEligible, setAdEligible] = React.useState(false);
   const [premium, setPremium] = React.useState(false);
   const [allowComments, setAllowComments] = React.useState(true);
   const [seriesSlug, setSeriesSlug] = React.useState("");
@@ -151,6 +155,8 @@ export function BlogEditorForm({
     setMarkdown(data.content);
     setSeoTitle(data.metaTitle);
     setSeoDescription(data.metaDescription);
+    setCanonicalUrl(data.canonicalUrl || "");
+    setAdEligible(Boolean(data.adEligible));
     setPremium(data.premium);
     setSeriesSlug(data.seriesSlug || "");
     setSeriesPart(data.seriesPart != null ? String(data.seriesPart) : "");
@@ -338,6 +344,8 @@ export function BlogEditorForm({
         premium,
         metaTitle: seoTitle.trim() || undefined,
         metaDescription: seoDescription.trim() || undefined,
+        canonicalUrl: canonicalUrl.trim() || undefined,
+        ...(adminMode ? { adEligible } : {}),
         seriesSlug: seriesSlug.trim() || undefined,
         seriesPart: seriesSlug.trim()
           ? Math.max(1, parseInt(seriesPart, 10) || 1)
@@ -774,6 +782,29 @@ export function BlogEditorForm({
                   />
                   <p className="text-xs text-muted-foreground text-right">{seoDescription.length}/160</p>
                 </div>
+                <div className="space-y-1.5">
+                  <Label>Canonical URL (optional)</Label>
+                  <Input
+                    placeholder="https://… leave blank for this page"
+                    value={canonicalUrl}
+                    onChange={(e) => setCanonicalUrl(e.target.value)}
+                  />
+                </div>
+                {adminMode ? (
+                  <div className="flex items-center justify-between gap-3 rounded-xl border p-3">
+                    <div>
+                      <Label htmlFor="ad-eligible-editor">Show AdSense</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Quality gate still blocks thin / syndicated posts.
+                      </p>
+                    </div>
+                    <Switch
+                      id="ad-eligible-editor"
+                      checked={adEligible}
+                      onCheckedChange={setAdEligible}
+                    />
+                  </div>
+                ) : null}
 
                 <div className="rounded-xl border p-4 bg-muted/30">
                   <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">

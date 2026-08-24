@@ -6,6 +6,9 @@ import { requireRole } from "@/lib/auth";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { readingTime, slugify } from "@/lib/utils";
 import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
+import { isAdEligibleByQuality } from "@/lib/seo/crawl-policy";
+import { defaultAdEligibleOnApprove } from "@/lib/seo/creator-quality";
+import { getCreatorQualityForUser } from "@/lib/seo/creator-quality-db";
 
 const coverImageSchema = z
   .string()
@@ -37,6 +40,17 @@ const UpdateSchema = z.object({
   premium: z.boolean().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
+  canonicalUrl: z
+    .string()
+    .optional()
+    .transform((v) => {
+      const s = v?.trim();
+      return s || undefined;
+    })
+    .refine((v) => !v || /^https?:\/\//i.test(v), {
+      message: "Canonical URL must be http(s)",
+    }),
+  adEligible: z.boolean().optional(),
   status: z.enum(["DRAFT", "PENDING", "PUBLISHED", "REJECTED", "ARCHIVED"]).optional(),
   scheduledFor: z.union([z.string(), z.null()]).optional(),
   seriesSlug: z
@@ -99,6 +113,8 @@ export async function GET(
         premium: blog.isPremium,
         metaTitle: blog.metaTitle || "",
         metaDescription: blog.metaDescription || "",
+        canonicalUrl: blog.canonicalUrl || "",
+        adEligible: blog.adEligible,
         status: blog.status,
         scheduledFor: blog.scheduledFor?.toISOString() ?? null,
         seriesSlug: blog.seriesSlug || "",
@@ -173,6 +189,26 @@ export async function PATCH(
     const coverImage = await normalizeCoverImageUrl(parsed.coverImage);
     const becomingPublished =
       status === BlogStatus.PUBLISHED && existing.status !== BlogStatus.PUBLISHED;
+    const nextReadingTime = readingTime(parsed.content);
+    const qualityOk = isAdEligibleByQuality({
+      slug: existing.slug,
+      readingTime: nextReadingTime,
+    });
+    let nextAdEligible = existing.adEligible;
+    if (status !== BlogStatus.PUBLISHED) {
+      nextAdEligible = false;
+    } else if (typeof parsed.adEligible === "boolean") {
+      nextAdEligible = parsed.adEligible && qualityOk;
+    } else if (becomingPublished) {
+      const creator = await getCreatorQualityForUser(existing.authorId);
+      nextAdEligible = defaultAdEligibleOnApprove({
+        qualityOk,
+        creator,
+        moderatorOverride: parsed.adEligible,
+      });
+    } else if (!qualityOk) {
+      nextAdEligible = false;
+    }
 
     const blog = await prisma.blog.update({
       where: { id },
@@ -181,11 +217,14 @@ export async function PATCH(
         excerpt: parsed.excerpt || "",
         content: parsed.content,
         coverImage,
-        readingTime: readingTime(parsed.content),
+        readingTime: nextReadingTime,
         status,
         isPremium: parsed.premium ?? existing.isPremium,
         metaTitle: parsed.metaTitle,
         metaDescription: parsed.metaDescription,
+        canonicalUrl:
+          parsed.canonicalUrl !== undefined ? parsed.canonicalUrl || null : undefined,
+        adEligible: nextAdEligible,
         seriesSlug: parsed.seriesSlug ?? null,
         seriesPart: parsed.seriesSlug ? (parsed.seriesPart ?? 1) : null,
         ...(scheduledFor !== undefined ? { scheduledFor } : {}),

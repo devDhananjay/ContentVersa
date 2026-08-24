@@ -38,6 +38,16 @@ const UpdateSchema = z.object({
   premium: z.boolean().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
+  canonicalUrl: z
+    .string()
+    .optional()
+    .transform((v) => {
+      const s = v?.trim();
+      return s || undefined;
+    })
+    .refine((v) => !v || /^https?:\/\//i.test(v), {
+      message: "Canonical URL must be http(s)",
+    }),
   /** PUBLISHED only allowed when the post is already live (in-place edit). */
   status: z.enum(["DRAFT", "PENDING", "PUBLISHED"]).optional(),
   scheduledFor: z.union([z.string(), z.null()]).optional(),
@@ -110,6 +120,7 @@ export async function GET(
         premium: blog.isPremium,
         metaTitle: blog.metaTitle || "",
         metaDescription: blog.metaDescription || "",
+        canonicalUrl: blog.canonicalUrl || "",
         status: blog.status,
         scheduledFor: blog.scheduledFor?.toISOString() ?? null,
         seriesSlug: blog.seriesSlug || "",
@@ -218,6 +229,9 @@ export async function PATCH(
         isPremium: parsed.premium ?? existing.isPremium,
         metaTitle: parsed.metaTitle,
         metaDescription: parsed.metaDescription,
+        ...(parsed.canonicalUrl !== undefined
+          ? { canonicalUrl: parsed.canonicalUrl || null }
+          : {}),
         seriesSlug: parsed.seriesSlug ?? null,
         seriesPart: parsed.seriesSlug ? (parsed.seriesPart ?? 1) : null,
         ...(scheduledFor !== undefined ? { scheduledFor } : {}),

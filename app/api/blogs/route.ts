@@ -41,6 +41,16 @@ const CreateSchema = z.object({
   premium: z.boolean().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
+  canonicalUrl: z
+    .string()
+    .optional()
+    .transform((v) => {
+      const s = v?.trim();
+      return s || undefined;
+    })
+    .refine((v) => !v || /^https?:\/\//i.test(v), {
+      message: "Canonical URL must be http(s)",
+    }),
   status: z.enum(["DRAFT", "PENDING"]).optional().default("PENDING"),
   scheduledFor: z.union([z.string(), z.null()]).optional(),
   seriesSlug: z
@@ -206,6 +216,7 @@ export async function POST(req: Request) {
         isPremium: parsed.premium || false,
         metaTitle: parsed.metaTitle,
         metaDescription: parsed.metaDescription,
+        canonicalUrl: parsed.canonicalUrl ?? null,
         authorId,
         categoryId,
         seriesSlug: parsed.seriesSlug ?? null,
