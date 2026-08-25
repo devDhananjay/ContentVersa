@@ -4,5 +4,8 @@ Disallow: /dashboard
 Disallow: /admin
 Disallow: /api
 Disallow: /auth/
+Disallow: /discover
+Disallow: /reels
+Disallow: /leaderboard
 
 Sitemap: https://contentverse.co.in/sitemap.xml

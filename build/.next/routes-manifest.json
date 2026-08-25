@@ -179,6 +179,14 @@
       "namedRegex": "^/api/admin/users/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/admin/users/[id]/journey",
+      "regex": "^/api/admin/users/([^/]+?)/journey(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admin/users/(?<nxtPid>[^/]+?)/journey(?:/)?$"
+    },
+    {
       "page": "/api/blogs/mine/[id]",
       "regex": "^/api/blogs/mine/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -862,12 +870,6 @@
       "regex": "^/dashboard/settings(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/settings(?:/)?$"
-    },
-    {
-      "page": "/favicon.ico",
-      "regex": "^/favicon\\.ico(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/favicon\\.ico(?:/)?$"
     },
     {
       "page": "/finance",

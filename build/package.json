@@ -23,6 +23,7 @@
     "db:seed-manual": "tsx scripts/seed-manual-articles.ts",
     "db:seed-adsense": "tsx scripts/seed-adsense-boost.ts",
     "db:archive-discover": "tsx scripts/archive-discover-blogs.ts",
+    "db:archive-thin": "tsx scripts/archive-thin-published.ts",
     "db:fix-covers": "tsx scripts/fix-missing-covers.ts",
     "db:fix-duplicate-covers": "tsx scripts/fix-duplicate-covers.ts",
     "db:audit-duplicates": "tsx scripts/audit-duplicate-blogs.ts",
