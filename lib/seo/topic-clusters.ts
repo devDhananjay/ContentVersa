@@ -145,14 +145,20 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
   },
   {
     id: "govt-schemes",
-    title: "Government schemes",
+    title: "Government schemes & ID checks",
     description:
-      "Eligibility, documents, and how to apply — with clear educational disclaimers.",
+      "Eligibility, documents, Voter ID / EPIC format help, and how to apply — with clear educational disclaimers.",
     pillarHref: "/guides/schemes",
     pillarLabel: "Govt schemes hub",
-    toolSlugs: [],
+    toolSlugs: ["election-info", "pan-gstin-checker"],
     links: [
       { href: "/guides/schemes", label: "Schemes hub" },
+      { href: "/tools/election-info", label: "Voter ID / EPIC check" },
+      {
+        href: "/guides/schemes/aadhaar-update-online-india",
+        label: "Aadhaar update online",
+      },
+      { href: "/tools/pan-gstin-checker", label: "PAN / GSTIN checker" },
       {
         href: "/guides/schemes/fastag-india-eligibility-recharge-faq",
         label: "FASTag guide",
@@ -160,10 +166,6 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       {
         href: "/guides/schemes/upi-fraud-otp-scam-india",
         label: "UPI fraud & OTP scams",
-      },
-      {
-        href: "/guides/schemes/aadhaar-update-online-india",
-        label: "Aadhaar update online",
       },
       {
         href: "/guides/schemes/pm-kisan-status-ekyc-pending",

@@ -141,11 +141,24 @@ export const TOOL_REGISTRY: ToolDef[] = [
   },
   {
     slug: "election-info",
-    title: "Voter ID & Election Info India",
-    shortTitle: "Election Info",
+    title: "Voter ID Check Online — EPIC Number Format & ECI Electoral Search India",
+    shortTitle: "Voter ID / EPIC Check",
     description:
-      "Check EPIC / Voter ID format and find official Election Commission links to verify voter status, booth, and elections.",
-    keywords: ["voter id check", "epic number format", "election commission india", "voter status"],
+      "Free Voter ID / EPIC format checker for India. Validate your 10-character EPIC number, select your state or UT, and open official Election Commission (ECI) electoral roll search links — CAPTCHA required on ECI.",
+    keywords: [
+      "voter id check online",
+      "epic number check",
+      "voter id format",
+      "epic number format india",
+      "search name in voter list",
+      "electoral roll search",
+      "election commission of india",
+      "electoralsearch.eci.gov.in",
+      "voter status india",
+      "how to check voter id",
+      "voter id card number",
+      "nvsp voter search",
+    ],
     badge: "Govt",
   },
   {

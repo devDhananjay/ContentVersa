@@ -22,11 +22,36 @@ export function toolFaq(tool: ToolDef) {
     },
   ];
 
-  if (tool.slug === "pan-gstin-checker" || tool.slug === "fssai-checker" || tool.slug === "election-info") {
+  if (tool.slug === "pan-gstin-checker" || tool.slug === "fssai-checker") {
     base.push({
       q: "Does this verify with the government live?",
       a: "This tool checks format and provides official links only. It does not confirm active registration with government databases.",
     });
+  }
+
+  if (tool.slug === "election-info") {
+    base.push(
+      {
+        q: "Does this tool check my voter status live with ECI?",
+        a: "No. It validates EPIC format and helps you open official Election Commission links. Live electoral-roll results appear only after you complete CAPTCHA on electoralsearch.eci.gov.in or other official ECI services.",
+      },
+      {
+        q: "What is the correct EPIC / Voter ID number format in India?",
+        a: "Most EPICs are 10 characters: three letters followed by seven digits (for example ABC1234567). Ignore spaces or hyphens. If your older card looks different, still search with the exact printed number on the official ECI portal.",
+      },
+      {
+        q: "How do I search my name in the voter list online?",
+        a: "Go to electoralsearch.eci.gov.in, choose Search by EPIC or Search by Details, select your state, enter the required fields, solve CAPTCHA, and submit. You can also use voters.eci.gov.in, the Voter Helpline app, or SMS ECI <EPIC> to 1950.",
+      },
+      {
+        q: "My EPIC format looks correct but ECI shows no record. What next?",
+        a: "Confirm the state matches your enrolment, re-check letters vs digits (O vs 0), try Search by Details, or apply for correction / new registration through the Voters’ Services Portal (forms such as Form 6 or Form 8).",
+      },
+      {
+        q: "Is ContentVerse India an official Election Commission website?",
+        a: "No. We are an independent India utility site. For official voter status, booth details, forms, and e-EPIC, use eci.gov.in, voters.eci.gov.in, or electoralsearch.eci.gov.in only.",
+      }
+    );
   }
 
   if (tool.slug === "vehicle-plate-decoder" || tool.slug === "rto-finder") {
