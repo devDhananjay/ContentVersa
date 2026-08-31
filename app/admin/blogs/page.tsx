@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FileText, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdminBlogsTable } from "@/components/admin/admin-blogs-table";
+import { OrphanCoversPanel } from "@/components/admin/orphan-covers-panel";
 import { getAdminBlogs, getAdminBlogsByStatus } from "@/lib/data/admin-data";
 
 export default async function AdminBlogsPage() {
@@ -23,6 +24,8 @@ export default async function AdminBlogsPage() {
           Click any post to read full content, author info, and approval history.
         </p>
       </div>
+
+      <OrphanCoversPanel />
 
       <AdminBlogsTable
         all={all}

@@ -26,6 +26,7 @@
     "db:archive-thin": "tsx scripts/archive-thin-published.ts",
     "db:fix-covers": "tsx scripts/fix-missing-covers.ts",
     "db:restore-covers": "tsx scripts/fix-blog-covers.ts",
+    "db:restore-uploads": "tsx scripts/restore-upload-covers.ts",
     "db:fix-duplicate-covers": "tsx scripts/fix-duplicate-covers.ts",
     "db:audit-duplicates": "tsx scripts/audit-duplicate-blogs.ts",
     "db:regen-covers": "tsx scripts/regenerate-article-covers.ts",
