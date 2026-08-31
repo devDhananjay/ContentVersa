@@ -235,6 +235,8 @@ export function HelpChatWidget() {
   React.useEffect(() => {
     if (hidden) return;
     if (sessionStorage.getItem(WELCOME_SESSION_KEY)) return;
+    // Auto-open welcome chat on desktop only — mobile users open via the button.
+    if (window.matchMedia("(max-width: 767px)").matches) return;
 
     const timer = window.setTimeout(() => {
       sessionStorage.setItem(WELCOME_SESSION_KEY, "1");

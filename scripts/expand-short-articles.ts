@@ -7,7 +7,6 @@
  */
 import { PrismaClient, BlogStatus } from "@prisma/client";
 import { generateSeoArticle } from "../lib/seo/article-generator";
-import { resolveArticleCoverImage } from "../lib/seo/article-cover";
 import { passesArticleQualityGate } from "../lib/seo/article-quality";
 import { readingTime } from "../lib/utils";
 import { loadScriptEnv } from "./load-script-env";
@@ -81,28 +80,13 @@ async function main() {
       continue;
     }
 
-    const coverImage = await resolveArticleCoverImage(
-      {
-        categorySlug: blog.category?.slug ?? "technology",
-        title: article.title || blog.title,
-        excerpt: article.excerpt,
-        tags: article.tags,
-        coverKeywords: article.coverKeywords,
-        coverImagePrompt: article.coverImagePrompt,
-        searchIntent: blog.metaKeywords ?? blog.excerpt ?? undefined,
-        contentSnippet: article.content.slice(0, 800),
-        slug: blog.slug,
-      },
-      { preferAi: true, retries: 2 }
-    );
-
     await prisma.blog.update({
       where: { id: blog.id },
       data: {
         title: article.title || blog.title,
         excerpt: article.excerpt,
         content: article.content.trim(),
-        coverImage,
+        // Keep existing cover — images are added manually in admin.
         readingTime: readingTime(article.content),
         metaDescription: article.metaDescription,
         metaKeywords: article.metaKeywords ?? article.tags.join(", "),

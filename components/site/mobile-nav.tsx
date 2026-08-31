@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, PenSquare, Bell, User } from "lucide-react";
+import { Home, Compass, PenSquare, Bell, User, Map } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MOBILE_TABS = [
   { href: "/", label: "Home", icon: Home },
   { href: "/blogs", label: "Explore", icon: Compass },
+  { href: "/site-map", label: "Sitemap", icon: Map },
   { href: "/dashboard/create", label: "Write", icon: PenSquare, primary: true },
   { href: "/dashboard/notifications", label: "Alerts", icon: Bell },
   { href: "/dashboard", label: "Profile", icon: User },
@@ -17,7 +18,7 @@ export function MobileNav() {
   const pathname = usePathname();
   return (
     <div className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border/60 bg-background/95 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
-      <nav className="grid grid-cols-5">
+      <nav className="grid grid-cols-6">
         {MOBILE_TABS.map((tab) => {
           const active =
             tab.href === "/"

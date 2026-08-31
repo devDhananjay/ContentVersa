@@ -64,6 +64,7 @@ const LEGAL = [
   { label: "Cookies", href: "/cookies" },
   { label: "Content Policy", href: "/policy" },
   { label: "Site Map", href: "/site-map" },
+  { label: "Sitemap", href: "/sitemap.xml" },
 ] as const;
 
 function FooterLink({ href, label }: { href: string; label: string }) {
