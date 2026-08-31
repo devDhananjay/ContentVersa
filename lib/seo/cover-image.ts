@@ -510,13 +510,13 @@ export function pickArticleCoverImage(
     if (!takenUrls?.has(norm)) return url;
   }
 
-  for (let salt = 0; salt < 64; salt++) {
-    const url = picsumCover(`${seed}|${salt}`);
+  for (let salt = 0; salt < pool.length * 4; salt++) {
+    const url = unsplash(pool[(start + salt) % pool.length]!);
     const norm = normalizeCoverUrl(url);
     if (!takenUrls?.has(norm)) return url;
   }
 
-  return picsumCover(`${seed}|final`);
+  return unsplash(pool[start]!);
 }
 
 function picsumCover(seed: string): string {

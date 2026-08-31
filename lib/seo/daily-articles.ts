@@ -214,13 +214,32 @@ export async function runDailyArticleGeneration(options?: {
 
   const perCategory = options?.perCategory ?? PER_CATEGORY_DEFAULT;
   const runSlot = options?.runSlot ?? "all";
-  const mid = Math.ceil(CATEGORIES.length / 2);
+
+  const { getAiAutoGenCategorySlugs } = await import("@/lib/ai/auto-gen-toggle");
+  const allowedSlugs = options?.force
+    ? CATEGORIES.map((c) => c.slug)
+    : await getAiAutoGenCategorySlugs();
+  const allowedSet = new Set(allowedSlugs);
+
+  const slotPool = CATEGORIES.filter((c) => allowedSet.has(c.slug));
+  const mid = Math.ceil(slotPool.length / 2);
   const categories =
     runSlot === "first"
-      ? CATEGORIES.slice(0, mid)
+      ? slotPool.slice(0, mid)
       : runSlot === "second"
-        ? CATEGORIES.slice(mid)
-        : CATEGORIES;
+        ? slotPool.slice(mid)
+        : slotPool;
+
+  if (categories.length === 0) {
+    return {
+      created: 0,
+      skipped: 0,
+      failed: 0,
+      day: istDayKey(),
+      runSlot,
+      categoriesProcessed: 0,
+    };
+  }
 
   const maxTotal =
     options?.maxTotal ??

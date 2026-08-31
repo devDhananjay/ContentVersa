@@ -4,9 +4,19 @@
 export const BLOG_COVER_PLACEHOLDER =
   "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800";
 
+export function isBrokenCoverUrl(src?: string | null): boolean {
+  const trimmed = src?.trim();
+  if (!trimmed) return true;
+  if (trimmed.includes("picsum.photos")) return true;
+  return false;
+}
+
 export function resolveBlogCoverImage(src?: string | null): string {
   const trimmed = src?.trim();
-  return trimmed || BLOG_COVER_PLACEHOLDER;
+  if (!trimmed || isBrokenCoverUrl(trimmed)) {
+    return BLOG_COVER_PLACEHOLDER;
+  }
+  return trimmed;
 }
 
 /** Bypass Next.js image optimizer for paths/hosts we don't whitelist in next.config. */
