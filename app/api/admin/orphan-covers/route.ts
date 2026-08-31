@@ -28,7 +28,10 @@ function score(file: string, slug: string, title: string): number {
 export async function GET(req: Request) {
   try {
     await requireRole(["ADMIN", "SUPER_ADMIN"]);
-    const limit = Number(new URL(req.url).searchParams.get("limit") ?? 80);
+    const params = new URL(req.url).searchParams;
+    const limit = Number(params.get("limit") ?? 200);
+    const offset = Number(params.get("offset") ?? 0);
+    const blogSearch = params.get("blogSearch")?.trim().toLowerCase() ?? "";
 
     const files = await readdir(getUploadsDirectory());
     const imageFiles = files.filter((f) => /\.(jpe?g|png|webp|gif|avif)$/i.test(f));
@@ -47,7 +50,26 @@ export async function GET(req: Request) {
 
     const orphans = imageFiles.filter((f) => !used.has(f));
 
-    const rows = orphans.slice(0, limit).map((file) => {
+    if (blogSearch.length >= 2) {
+      const matches = blogs
+        .filter(
+          (b) =>
+            !b.coverImage?.startsWith("/uploads/") &&
+            (b.slug.toLowerCase().includes(blogSearch) ||
+              b.title.toLowerCase().includes(blogSearch))
+        )
+        .slice(0, 20)
+        .map((b) => ({
+          id: b.id,
+          slug: b.slug,
+          title: b.title,
+          status: b.status,
+        }));
+      return NextResponse.json({ blogs: matches });
+    }
+
+    const page = orphans.slice(offset, offset + limit);
+    const rows = page.map((file) => {
       const suggestions = blogs
         .filter((b) => !b.coverImage?.startsWith("/uploads/"))
         .map((b) => ({
@@ -74,6 +96,9 @@ export async function GET(req: Request) {
       totalOrphans: orphans.length,
       usedCount: used.size,
       diskCount: imageFiles.length,
+      offset,
+      limit,
+      hasMore: offset + limit < orphans.length,
       rows,
     });
   } catch (err) {

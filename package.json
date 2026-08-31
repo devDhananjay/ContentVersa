@@ -27,6 +27,8 @@
     "db:fix-covers": "tsx scripts/fix-missing-covers.ts",
     "db:restore-covers": "tsx scripts/fix-blog-covers.ts",
     "db:restore-uploads": "tsx scripts/restore-upload-covers.ts",
+    "db:restore-from-content": "tsx scripts/restore-covers-from-content.ts",
+    "db:orphan-covers-report": "tsx scripts/orphan-covers-report.ts",
     "db:fix-duplicate-covers": "tsx scripts/fix-duplicate-covers.ts",
     "db:audit-duplicates": "tsx scripts/audit-duplicate-blogs.ts",
     "db:regen-covers": "tsx scripts/regenerate-article-covers.ts",
