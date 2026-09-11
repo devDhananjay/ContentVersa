@@ -32,6 +32,7 @@ import { formatNumber, getInitials, formatShortDate, timeAgo } from "@/lib/utils
 import { buildMetadata, articleJsonLd, SITE } from "@/lib/seo";
 import { isDiscoverSyndicatedSlug } from "@/lib/feeds/discover-blog";
 import { isIndexableArticle } from "@/lib/seo/crawl-policy";
+import { redirectTargetFromCanonical } from "@/lib/seo/content-redirects";
 import { CATEGORIES } from "@/lib/data/categories";
 import { resolveBlogCoverImage } from "@/lib/upload";
 import { SeriesNav } from "@/components/blog/series-nav";
@@ -104,8 +105,7 @@ export default async function BlogPage({
   const blog = await getBlogBySlugForViewer(slug, userId);
   if (!blog) return notFound();
   if (blog.status === "ARCHIVED" && blog.canonicalUrl?.trim()) {
-    const dest = blog.canonicalUrl.trim();
-    permanentRedirect(dest.startsWith("http") ? dest : dest.startsWith("/") ? dest : `/${dest}`);
+    permanentRedirect(redirectTargetFromCanonical(blog.canonicalUrl));
   }
 
   const isPublic = blog.status === "PUBLISHED";

@@ -196,3 +196,45 @@ export function categoryFallbackPath(categorySlug: string): string {
   if (categorySlug === "career" || categorySlug === "careers") return "/jobs";
   return `/category/${categorySlug}`;
 }
+
+/**
+ * Absolute canonical for archived posts. Always production — local .env
+ * APP_URL/NEXT_PUBLIC_APP_URL must never be written into the live DB.
+ */
+export function publicCanonicalUrl(pathOrUrl: string): string {
+  const origin = "https://contentverse.co.in";
+  if (/^https?:\/\//i.test(pathOrUrl)) {
+    try {
+      const u = new URL(pathOrUrl);
+      const host = u.hostname.toLowerCase();
+      if (host === "localhost" || host === "127.0.0.1") {
+        return `${origin}${u.pathname}${u.search}`;
+      }
+      return `${u.origin}${u.pathname}${u.search}`.replace(/\/$/, "") || origin;
+    } catch {
+      return origin;
+    }
+  }
+  const path = pathOrUrl.startsWith("/") ? pathOrUrl : `/${pathOrUrl}`;
+  return `${origin}${path}`;
+}
+
+/** Next.js redirect target — never send crawlers to localhost. */
+export function redirectTargetFromCanonical(canonicalUrl: string): string {
+  const raw = canonicalUrl.trim();
+  try {
+    const u = new URL(raw, "https://contentverse.co.in");
+    const host = u.hostname.toLowerCase();
+    if (
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      host === "contentverse.co.in" ||
+      host === "www.contentverse.co.in"
+    ) {
+      return `${u.pathname}${u.search}` || "/";
+    }
+    return u.toString();
+  } catch {
+    return raw.startsWith("/") ? raw : `/${raw}`;
+  }
+}

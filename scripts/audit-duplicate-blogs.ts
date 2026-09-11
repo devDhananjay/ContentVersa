@@ -12,19 +12,13 @@ import {
   normalizeTitleKey,
   scoreBlogForKeep,
 } from "../lib/seo/article-quality";
-import { categoryFallbackPath } from "../lib/seo/content-redirects";
-import { SITE } from "../lib/seo";
+import { categoryFallbackPath, publicCanonicalUrl } from "../lib/seo/content-redirects";
 import { loadScriptEnv } from "./load-script-env";
 
 loadScriptEnv();
 
 const prisma = new PrismaClient();
 const apply = process.argv.includes("--apply");
-
-function absCanonical(dest: string): string {
-  if (dest.startsWith("http")) return dest;
-  return `${SITE.url}${dest.startsWith("/") ? dest : `/${dest}`}`;
-}
 
 async function main() {
   const blogs = await prisma.blog.findMany({
@@ -95,7 +89,7 @@ async function main() {
       data: {
         status: BlogStatus.ARCHIVED,
         adEligible: false,
-        canonicalUrl: absCanonical(job.dest),
+        canonicalUrl: publicCanonicalUrl(job.dest),
       },
     });
     archived += result.count;

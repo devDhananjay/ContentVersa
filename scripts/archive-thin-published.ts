@@ -8,8 +8,7 @@ import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "../lib/prisma";
 import { thinPublishedWhere } from "../lib/seo/thin-published";
 import { setAiAutoGenEnabled } from "../lib/ai/auto-gen-toggle";
-import { categoryFallbackPath } from "../lib/seo/content-redirects";
-import { SITE } from "../lib/seo";
+import { categoryFallbackPath, publicCanonicalUrl } from "../lib/seo/content-redirects";
 import { loadScriptEnv } from "./load-script-env";
 
 loadScriptEnv();
@@ -51,7 +50,7 @@ async function main() {
       data: {
         status: BlogStatus.ARCHIVED,
         adEligible: false,
-        canonicalUrl: `${SITE.url}${dest}`,
+        canonicalUrl: publicCanonicalUrl(dest),
       },
     });
     archived += result.count;

@@ -20,16 +20,11 @@ import {
   MERGE_BLOG_SLUGS,
   destinationForBlogSlug,
   categoryFallbackPath,
+  publicCanonicalUrl,
 } from "../lib/seo/content-redirects";
-import { SITE } from "../lib/seo";
 import { loadScriptEnv } from "./load-script-env";
 
 loadScriptEnv();
-
-function absCanonical(dest: string): string {
-  if (dest.startsWith("http")) return dest;
-  return `${SITE.url}${dest.startsWith("/") ? dest : `/${dest}`}`;
-}
 
 async function main() {
   if (!isDatabaseConfigured()) {
@@ -136,7 +131,7 @@ async function main() {
       data: {
         status: BlogStatus.ARCHIVED,
         adEligible: false,
-        canonicalUrl: absCanonical(row.dest),
+        canonicalUrl: publicCanonicalUrl(row.dest),
       },
     });
     archived += result.count;
