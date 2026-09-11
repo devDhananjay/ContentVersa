@@ -80,7 +80,7 @@ export default function RootLayout({
           <SessionProvider>
           <BookmarkStatusProvider>
           <SkipToMainLink />
-          <div id="site-content" className="flex flex-1 flex-col min-h-0">
+          <div id="site-content" className="flex flex-1 flex-col min-h-0 max-w-full overflow-x-clip">
             <SiteHeader />
             <main
               id="main-content"
