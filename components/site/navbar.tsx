@@ -73,15 +73,17 @@ export function Navbar({
   return (
     <header
       className={cn(
+        "overflow-x-clip",
         !embedded && "border-b border-border/50 bg-background/95 backdrop-blur-xl"
       )}
     >
-      <div className="container grid h-[3.75rem] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 min-w-0">
+      <div className="container flex h-[3.75rem] items-center gap-2 xl:gap-3 flex-nowrap min-w-0">
         <Logo src={logoSrc} size="sm" immersive={immersive} className="shrink-0" />
 
+        {/* Nav links — fixed width cluster so Jobs never gets crushed */}
         <nav
           className={cn(
-            "hidden lg:flex min-w-0 items-center gap-0.5 overflow-hidden rounded-full border px-0.5 py-0.5",
+            "hidden lg:flex items-center gap-0.5 min-w-0 ml-1 rounded-full border px-0.5 py-0.5 overflow-x-auto scrollbar-hide",
             immersive
               ? "border-white/10 bg-white/5 backdrop-blur-md"
               : "border-border/50 bg-muted/30 backdrop-blur-sm"
@@ -94,18 +96,8 @@ export function Navbar({
           {NAV_TOP_LINKS.map((link) => {
             const active = isNavActive(pathname, link.href);
             const Icon = link.icon;
-            const compact =
-              link.href === "/trending" || link.href === "/sports"
-                ? "hidden 2xl:inline-flex"
-                : link.href === "/finance"
-                  ? "hidden xl:inline-flex"
-                  : undefined;
             return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(linkClass(active), compact)}
-              >
+              <Link key={link.href} href={link.href} className={linkClass(active)}>
                 <span className="inline-flex items-center gap-1.5">
                   {Icon ? <Icon className="h-3.5 w-3.5 opacity-70" /> : null}
                   {link.label}
@@ -125,81 +117,90 @@ export function Navbar({
           })}
         </nav>
 
-        <div className="flex items-center justify-end gap-1.5 shrink-0">
-          <div className="hidden md:flex items-center gap-1.5">
-            <NavWeatherChip immersive={immersive} className="hidden 2xl:inline-flex" />
-            {!isBlogsPage && (
-              <div className="hidden 2xl:flex items-center relative w-36 shrink-0">
-                <Search
+        {/* Breathing room between Jobs and weather */}
+        <div className="flex-1 min-w-4" aria-hidden />
+
+        <div className="ml-auto hidden md:flex items-center gap-2 shrink-0">
+          <NavWeatherChip immersive={immersive} className="hidden lg:inline-flex" />
+          {!isBlogsPage && (
+            <div className="hidden 2xl:flex items-center relative w-36 shrink-0">
+              <Search
+                className={cn(
+                  "absolute left-2.5 h-3.5 w-3.5 pointer-events-none",
+                  immersive ? "text-white/50" : "text-muted-foreground"
+                )}
+              />
+              <form onSubmit={submitSearch} className="w-full">
+                <Input
+                  name="q"
+                  placeholder="Search…"
                   className={cn(
-                    "absolute left-2.5 h-3.5 w-3.5 pointer-events-none",
-                    immersive ? "text-white/50" : "text-muted-foreground"
+                    "pl-8 h-9 text-sm w-full rounded-full transition-colors",
+                    immersive
+                      ? "border-white/15 bg-white/10 text-white placeholder:text-white/45 focus-visible:ring-white/25"
+                      : "bg-muted/50 border-transparent focus:border-input"
                   )}
                 />
-                <form onSubmit={submitSearch} className="w-full">
-                  <Input
-                    name="q"
-                    placeholder="Search…"
-                    className={cn(
-                      "pl-8 h-9 text-sm w-full rounded-full transition-colors",
-                      immersive
-                        ? "border-white/15 bg-white/10 text-white placeholder:text-white/45 focus-visible:ring-white/25"
-                        : "bg-muted/50 border-transparent focus:border-input"
-                    )}
-                  />
-                </form>
-              </div>
+              </form>
+            </div>
+          )}
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            className={cn(
+              "2xl:hidden rounded-full",
+              immersive && "text-white hover:bg-white/10 hover:text-white"
             )}
+            onClick={() => setSearchOpen((v) => !v)}
+            aria-label="Search"
+          >
+            <Search className="h-4 w-4" />
+          </Button>
+          <Link href="/dashboard/create">
             <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              className={cn(
-                "2xl:hidden rounded-full",
-                immersive && "text-white hover:bg-white/10 hover:text-white"
-              )}
-              onClick={() => setSearchOpen((v) => !v)}
-              aria-label="Search"
+              variant="gradient"
+              size="sm"
+              className="gap-1.5 shrink-0 rounded-full shadow-lg shadow-neon-purple/20"
             >
-              <Search className="h-4 w-4" />
+              <PenSquare className="h-4 w-4" />
+              <span className="hidden xl:inline">Write</span>
             </Button>
-            <Link href="/dashboard/create">
-              <Button
-                variant="gradient"
-                size="sm"
-                className="gap-1.5 shrink-0 rounded-full shadow-lg shadow-neon-purple/20"
-              >
-                <PenSquare className="h-4 w-4" />
-                <span className="hidden 2xl:inline">Write</span>
-              </Button>
-            </Link>
-            <div className={cn("hidden 2xl:block", immersive && "[&_a]:border-white/25 [&_a]:text-white")}>
-              <StreakBadge />
-            </div>
-            <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
-              <NotificationBell />
-            </div>
-            <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
-              <ThemeToggle />
-            </div>
-            <UserNav immersive={immersive} />
-          </div>
-
-          <div className="flex items-center gap-1.5 md:hidden">
-            <NavWeatherChip immersive={immersive} />
+          </Link>
+          <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
             <StreakBadge />
           </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn("md:hidden shrink-0 rounded-full", immersive && "text-white hover:bg-white/10")}
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-label="Toggle menu"
+          <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
+            <NotificationBell />
+          </div>
+          <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
+            <ThemeToggle />
+          </div>
+          <div
+            className={cn(
+              "shrink-0",
+              immersive &&
+                "[&_button]:border-white/35 [&_button]:bg-white/10 [&_button]:text-white [&_button]:hover:bg-white/20 [&_button]:hover:text-white"
+            )}
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+            <UserNav />
+          </div>
         </div>
+
+        <div className="flex items-center gap-1.5 md:hidden shrink-0">
+          <NavWeatherChip immersive={immersive} />
+          <StreakBadge />
+        </div>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn("md:hidden shrink-0 rounded-full", immersive && "text-white hover:bg-white/10")}
+          onClick={() => setMobileOpen((v) => !v)}
+          aria-label="Toggle menu"
+        >
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
       </div>
 
       <AnimatePresence>

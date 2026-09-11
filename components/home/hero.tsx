@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { CategoryWithCount } from "@/lib/data/home-data";
 import { categoryPageHref } from "@/lib/data/categories";
-import { useCinematicHero } from "@/components/home/use-cinematic-hero";
+import { isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
 import { AnimatedGrid, FloatingOrbs } from "@/components/home/motion";
 import { cn } from "@/lib/utils";
 
@@ -97,7 +97,7 @@ interface Props {
 
 export function Hero({ categories, stats }: Props) {
   const reduce = useReducedMotion();
-  const cinematic = useCinematicHero();
+  const cinematic = isHomeHeroVideoEnabled();
 
   const quickCategories = categories.slice(0, 8);
   const visibleStats = [

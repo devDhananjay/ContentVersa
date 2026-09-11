@@ -20,7 +20,7 @@ export function NewsIn60Section({ blogs }: { blogs: Blog[] }) {
   if (shorts.length === 0) return null;
 
   return (
-    <section className="py-14 md:py-24 border-y border-border/40 bg-muted/40">
+    <section className="py-14 md:py-24 border-y border-border/40 bg-zinc-950/40">
       <div className="container mb-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
