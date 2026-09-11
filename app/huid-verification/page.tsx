@@ -46,8 +46,8 @@ export default function HuidVerificationPage() {
             ContentVerse India GoldVerse
           </Link>
           — gold rates, hallmark guide and buyer tools. Also see{" "}
-          <Link href="/finance/gold-price-today" className="text-amber-400 hover:underline">
-            gold price today
+          <Link href="/guides/money/huid-hallmark-gold-buying-india" className="text-amber-400 hover:underline">
+            gold buying & HUID checklist
           </Link>
           .
         </p>

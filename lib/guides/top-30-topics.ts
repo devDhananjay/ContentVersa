@@ -161,6 +161,16 @@ export const TOP_30_TOPIC_ARTICLES: GuideArticle[] = [
       block("Before you take a new EMI", [
         "Run the EMI through our calculator so the new obligation fits take-home pay. A score is not a substitute for cashflow. If a lender rejects you, read the reason code on the bureau report instead of applying everywhere the same day.",
       ]),
+      block("A practical 30-day repair plan", [
+        "Week 1: pull your report from a legitimate bureau source. List every account, recent enquiries, and overdue amounts. Dispute clear errors (closed loans still open, wrong personal details) with documents.",
+        "Week 2: stop new late marks — pay EMI and card bills on time, even if you can only clear the statement in parts after the due date is protected. Autopay helps when the salary account is reliable.",
+        "Week 3: cut revolving utilisation. Pay down cards near the limit; avoid opening several new accounts in one week. Do not close your oldest healthy card just to “reset” history.",
+        "Week 4: make a monthly money date. Bureaux update on cycles, not overnight. Be sceptical of anyone who guarantees a 100-point jump.",
+      ], [
+        "Target keeping card utilisation comfortably under ~30% where you can",
+        "Soft self-checks usually do not hurt the way lender hard enquiries can",
+        "ContentVerse India does not sell score-repair packages",
+      ]),
     ],
     faqs: [
       faq("How long does a late payment stay?", "Typically years on the report — confirm bureau FAQs. The practical fix is a long stretch of on-time payments, not a paid “deletion” service."),
@@ -241,6 +251,9 @@ export const TOP_30_TOPIC_ARTICLES: GuideArticle[] = [
       ]),
       block("Invoice red flags", [
         "Cash-only deals with no GST invoice, “we’ll hallmark later”, or pressure to skip weighing in front of you. For investment-like buying, compare making charges and buyback policy — this is not investment advice.",
+      ]),
+      block("How to verify HUID on ContentVerse India", [
+        "Open the free HUID checker, enter the 6-character code from the piece (or invoice), and match purity / jeweller details against what you were told at the counter. Treat mismatches as a stop-the-purchase signal and confirm on BIS / official channels. Never share OTP or remote-access apps with a “hallmark agent”.",
       ]),
       block("After you buy", [
         "Keep the invoice. Photograph HUID marks. If you ever pledge gold for a loan, lenders will weigh and test — undocumented pieces are harder to use.",
@@ -491,6 +504,13 @@ export const TOP_30_TOPIC_ARTICLES: GuideArticle[] = [
       ]),
       block("Do not buy for the deduction alone", [
         "A deduction is not free money if the product is a poor fit. Use our tax calculator to see whether old regime even wins for you this year.",
+      ]),
+      block("Salaried 80C checklist (do this before March)", [
+        "Count what is already happening: EPF on the payslip, eligible home-loan principal, children’s tuition fees. Many employees are closer to the ₹1.5 lakh cap than they think. Fill remaining room only with products you would buy without the tax label — PPF for long safety, ELSS for long equity risk. Keep proofs for the employer declaration and for ITR. Limits change with budgets — verify the current FY on the Income Tax portal.",
+      ], [
+        "Do not double-count the same investment",
+        "Review insurance need separately from “80C selling”",
+        "Use the salary-tax calculator for estimates, then confirm with Form 16",
       ]),
     ],
     faqs: [

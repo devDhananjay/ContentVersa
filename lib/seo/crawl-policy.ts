@@ -37,6 +37,8 @@ export function isAiVolumeArticle(input: {
   return keys.includes("ai-daily");
 }
 
+import { MERGE_BLOG_SLUG_SET } from "@/lib/seo/content-redirects";
+
 export function isIndexableArticle(input: {
   slug: string;
   readingTime: number;
@@ -44,6 +46,7 @@ export function isIndexableArticle(input: {
 }): boolean {
   if (isDiscoverSyndicatedSlug(input.slug)) return false;
   if (isAiVolumeArticle(input)) return false;
+  if (MERGE_BLOG_SLUG_SET.has(input.slug)) return false;
   return input.readingTime >= MIN_INDEXABLE_READING_MINUTES;
 }
 

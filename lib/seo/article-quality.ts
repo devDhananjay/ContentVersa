@@ -23,7 +23,9 @@ export function isGenericDailyTitle(title: string): boolean {
   return (
     t.includes("what to know today") ||
     t.includes("what indian readers should know") ||
-    /in india:.*today/i.test(t)
+    /in india:.*today/i.test(t) ||
+    t.includes("data-driven leadership") ||
+    t.includes("boosting business strategy")
   );
 }
 

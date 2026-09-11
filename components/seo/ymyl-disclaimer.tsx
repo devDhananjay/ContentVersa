@@ -63,6 +63,7 @@ export function YmylDisclaimer({
     >
       <p className="font-medium text-foreground">{copy.title}</p>
       <p className="mt-1.5 leading-relaxed">{copy.body}</p>
+      <p className="mt-2 text-xs">Last reviewed: September 2026. Confirm live rules on official portals.</p>
       {copy.sources?.length ? (
         <p className="mt-2 text-xs">
           {copy.sourcesLabel}:{" "}

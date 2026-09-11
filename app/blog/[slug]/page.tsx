@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
@@ -56,6 +56,13 @@ export async function generateMetadata({
   const userId = session ? await resolveUserId(session) : null;
   const blog = await getBlogBySlugForViewer(slug, userId);
   if (!blog) return buildMetadata({ title: "Not found", noIndex: true });
+  if (blog.status === "ARCHIVED" && blog.canonicalUrl?.trim()) {
+    return buildMetadata({
+      title: blog.title,
+      canonicalUrl: blog.canonicalUrl.trim(),
+      noIndex: true,
+    });
+  }
   const isPublic = blog.status === "PUBLISHED";
   const syndicated = isDiscoverSyndicatedSlug(blog.slug);
   const thin = !isIndexableArticle({
@@ -96,6 +103,10 @@ export default async function BlogPage({
   const userId = session ? await resolveUserId(session) : null;
   const blog = await getBlogBySlugForViewer(slug, userId);
   if (!blog) return notFound();
+  if (blog.status === "ARCHIVED" && blog.canonicalUrl?.trim()) {
+    const dest = blog.canonicalUrl.trim();
+    permanentRedirect(dest.startsWith("http") ? dest : dest.startsWith("/") ? dest : `/${dest}`);
+  }
 
   const isPublic = blog.status === "PUBLISHED";
   const category = CATEGORIES.find((c) => c.slug === blog.category);

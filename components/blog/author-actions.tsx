@@ -71,6 +71,9 @@ export function AuthorActions({
             </p>
           )}
           {bio && <p className="mt-2 text-sm text-foreground/90">{bio}</p>}
+          <p className="mt-2 text-xs text-muted-foreground">
+            Reviewed by the ContentVerse India editorial team. Educational pages are not personalised advice.
+          </p>
           <Link
             href={`/profile/${username}`}
             className="mt-2 inline-block text-xs font-medium text-primary hover:underline"

@@ -13,6 +13,7 @@ import {
   MOCK_BLOG_SLUGS,
 } from "../lib/seo/manual-articles";
 import { readingTime, slugify } from "../lib/utils";
+import { shouldSkipBlogSeed } from "../lib/seo/content-redirects";
 
 function loadEnvFiles() {
   for (const file of [".env.local", ".env"]) {
@@ -181,6 +182,10 @@ async function main() {
     const pool = MANUAL_ARTICLES.filter((a) => a.category === cat.slug);
 
     for (const article of pool) {
+      if (shouldSkipBlogSeed(article.slug)) {
+        skipped++;
+        continue;
+      }
       if (count >= 2) break;
 
       const category = await ensureCategory(cat.slug);

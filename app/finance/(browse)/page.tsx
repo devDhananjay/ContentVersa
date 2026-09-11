@@ -54,23 +54,19 @@ export default async function FinanceHubPage() {
         </p>
         <p>
           Start with high-intent guides:{" "}
-          <Link href="/finance/gold-price-today" className="text-primary hover:underline">
+          <Link href="/goldverse" className="text-primary hover:underline">
             gold price today
           </Link>
           ,{" "}
-          <Link href="/finance/sip" className="text-primary hover:underline">
+          <Link href="/guides/money/sip-calculator-india-beginners-guide" className="text-primary hover:underline">
             SIP
           </Link>
           ,{" "}
-          <Link href="/finance/mutual-funds" className="text-primary hover:underline">
-            mutual funds
+          <Link href="/guides/money/fd-vs-rd-india-guide" className="text-primary hover:underline">
+            FD vs RD
           </Link>
           ,{" "}
-          <Link href="/finance/fd" className="text-primary hover:underline">
-            FD
-          </Link>
-          ,{" "}
-          <Link href="/finance/tax" className="text-primary hover:underline">
+          <Link href="/guides/money/salary-tax-calculator-india-guide" className="text-primary hover:underline">
             income tax
           </Link>
           , plus{" "}

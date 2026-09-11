@@ -43,40 +43,38 @@ import { buildMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "ContentVerse India — Read. Create. Grow.",
+  title: "ContentVerse India — original Indian guides, explainers and stories",
   description:
-    "ContentVerse India — blogs, reels, live cricket, Nifty & Sensex, MoneyVerse expense tools, CineVerse movies & OTT, GoldVerse, sarkari jobs and free India calculators. Read. Create. Grow.",
+    "Original Indian guides, explainers and stories on money, schemes, jobs, and everyday how-tos — with free calculators as supporting tools.",
   path: "/",
   keywords: [
     "ContentVerse India",
     "contentverse.co.in",
-    "live cricket score India",
-    "Nifty Sensex live",
-    "sarkari naukri",
-    "MoneyVerse expense tracker",
-    "CineVerse OTT India",
-    "GoldVerse HUID",
+    "Indian guides",
+    "SIP calculator India",
+    "CIBIL credit score India",
+    "HUID verification",
+    "government schemes India",
     "free India tools",
-    "gold price today",
     "ContentVerse India AI",
   ],
 });
 
 const HOME_SIDEBAR_SECTIONS = [
   { id: "home-top", label: "Home" },
-  { id: "trending-topics", label: "Trending" },
+  { id: "home-articles", label: "Articles" },
+  { id: "home-guides", label: "Guides" },
+  { id: "home-latest", label: "Latest" },
   { id: "continue-reading", label: "Continue" },
+  { id: "trending-topics", label: "Trending" },
   { id: "explore-modules", label: "Modules" },
+  { id: "home-tools", label: "Tools" },
   { id: "home-sports", label: "Sports" },
   { id: "home-finance", label: "Finance" },
   { id: "home-money", label: "Money" },
   { id: "home-gold", label: "Gold" },
-  { id: "home-tools", label: "Tools" },
   { id: "home-jobs", label: "Jobs" },
-  { id: "home-guides", label: "Guides" },
   { id: "home-cine", label: "Cine" },
-  { id: "home-articles", label: "Articles" },
-  { id: "home-latest", label: "Latest" },
   { id: "newsletter", label: "Newsletter" },
 ];
 
@@ -149,16 +147,43 @@ export default async function HomePage() {
       <div className="xl:[&_.container]:pl-16 2xl:[&_.container]:pl-20">
       <div id="home-top" className="scroll-mt-0">
         <HomeHeroShell>
-          <ReelsStripSection />
-          <HomeModulesRail />
           <Hero stats={data.stats} categories={data.categories} />
         </HomeHeroShell>
       </div>
 
-      <TrendingStrip />
-      <CricketStrip />
       <ContinueReadingStrip />
 
+      <Reveal>
+        <HomeModuleSpotlight
+          id="home-guides"
+          eyebrow="India Guides"
+          title={
+            <>
+              Original explainers for <span className="text-gradient">Indian readers</span>
+            </>
+          }
+          description="Schemes, money, jobs, and how-tos — one strong page per topic, not a dozen clones."
+          href="/guides"
+          cta="Open Guides"
+          icon={BookOpen}
+          accentClassName="text-violet-300"
+          items={GUIDE_SECTIONS.slice(0, 4).map((s) => ({
+            title: s.shortTitle,
+            href: guideSectionPath(s.slug),
+            meta: s.template,
+          }))}
+        />
+      </Reveal>
+
+      <TrendingSection blogs={data.trending} />
+      <Reveal>
+        <LatestSection blogs={data.latest} />
+      </Reveal>
+
+      <TrendingStrip />
+      <CricketStrip />
+
+      <HomeModulesRail />
       <PlatformModulesStrip previews={modulePreviews} />
 
       <Reveal>
@@ -264,28 +289,6 @@ export default async function HomePage() {
         />
       </Reveal>
 
-      <Reveal>
-        <HomeModuleSpotlight
-          id="home-guides"
-          eyebrow="India Guides"
-          title={
-            <>
-              Trends, schemes & <span className="text-gradient">how-tos</span>
-            </>
-          }
-          description="Search-ready formats: why it’s trending, scheme eligibility, job notifications, cricket, AI tools, and OTT."
-          href="/guides"
-          cta="Open Guides"
-          icon={BookOpen}
-          accentClassName="text-violet-300"
-          items={GUIDE_SECTIONS.slice(0, 4).map((s) => ({
-            title: s.shortTitle,
-            href: guideSectionPath(s.slug),
-            meta: s.template,
-          }))}
-        />
-      </Reveal>
-
       <MoviesPriceStrip />
       <Reveal>
         <HomeModuleSpotlight
@@ -310,10 +313,7 @@ export default async function HomePage() {
         />
       </Reveal>
 
-      <TrendingSection blogs={data.trending} />
-      <Reveal>
-        <LatestSection blogs={data.latest} />
-      </Reveal>
+      <ReelsStripSection />
       <Newsletter />
       </div>
     </>

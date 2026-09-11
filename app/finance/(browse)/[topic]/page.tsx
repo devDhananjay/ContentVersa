@@ -7,6 +7,7 @@ import {
   moneyTopicPath,
 } from "@/lib/finance/money-topics";
 import { buildMetadata } from "@/lib/seo";
+import { isNoindexFinanceTopic } from "@/lib/seo/content-redirects";
 
 export const dynamic = "force-static";
 
@@ -29,6 +30,7 @@ export async function generateMetadata({
     path: moneyTopicPath(topic.slug),
     keywords: topic.keywords,
     image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1600",
+    noIndex: isNoindexFinanceTopic(topic.slug),
   });
 }
 

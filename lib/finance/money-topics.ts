@@ -103,7 +103,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     toolLinks: [
       { href: "/tools/silver-rate", label: "Silver rate calculator" },
       { href: "/goldverse", label: "GoldVerse" },
-      { href: "/finance/gold-price-today", label: "Gold price today" },
+      { href: "/goldverse", label: "Gold price today" },
     ],
     relatedSlugs: ["gold-price-today", "sip", "mutual-funds"],
   },
@@ -146,7 +146,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     ],
     toolLinks: [
       { href: "/tools/sip-calculator", label: "SIP calculator" },
-      { href: "/finance/mutual-funds", label: "Mutual funds guide" },
+      { href: "/guides/money/sip-calculator-india-beginners-guide", label: "Mutual funds guide" },
       { href: "/moneyverse", label: "Track expenses in MoneyVerse" },
     ],
     relatedSlugs: ["mutual-funds", "stocks", "fd"],
@@ -185,7 +185,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     ],
     toolLinks: [
       { href: "/tools/sip-calculator", label: "SIP calculator" },
-      { href: "/finance/sip", label: "SIP explained" },
+      { href: "/guides/money/sip-calculator-india-beginners-guide", label: "SIP explained" },
       { href: "/finance/stocks", label: "Stocks basics" },
     ],
     relatedSlugs: ["sip", "stocks", "ipo"],
@@ -225,7 +225,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     toolLinks: [
       { href: "/finance", label: "Finance Hub (live markets)" },
       { href: "/finance/ipo", label: "IPO basics" },
-      { href: "/finance/mutual-funds", label: "Mutual funds" },
+      { href: "/guides/money/sip-calculator-india-beginners-guide", label: "Mutual funds" },
     ],
     relatedSlugs: ["ipo", "mutual-funds", "sip"],
   },
@@ -264,7 +264,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     toolLinks: [
       { href: "/finance", label: "Finance Hub" },
       { href: "/finance/stocks", label: "Stocks basics" },
-      { href: "/finance/mutual-funds", label: "Mutual funds" },
+      { href: "/guides/money/sip-calculator-india-beginners-guide", label: "Mutual funds" },
     ],
     relatedSlugs: ["stocks", "mutual-funds", "sip"],
   },
@@ -302,7 +302,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     ],
     toolLinks: [
       { href: "/tools/fd-calculator", label: "FD calculator" },
-      { href: "/finance/rd", label: "RD guide" },
+      { href: "/guides/money/fd-vs-rd-india-guide", label: "RD guide" },
       { href: "/tools/ppf-calculator", label: "PPF calculator" },
     ],
     relatedSlugs: ["rd", "sip", "tax"],
@@ -379,7 +379,7 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     ],
     toolLinks: [
       { href: "/tools/emi-calculator", label: "EMI calculator" },
-      { href: "/finance/credit-score", label: "Credit score basics" },
+      { href: "/guides/money/credit-score-cibil-india-guide", label: "Credit score basics" },
       { href: "/moneyverse", label: "MoneyVerse budgets" },
     ],
     relatedSlugs: ["credit-cards", "credit-score", "fd"],
@@ -418,8 +418,8 @@ export const MONEY_TOPICS: MoneyTopic[] = [
     ],
     toolLinks: [
       { href: "/moneyverse", label: "Set card bill reminders" },
-      { href: "/finance/credit-score", label: "Credit score guide" },
-      { href: "/finance/loans", label: "Loans & EMI" },
+      { href: "/guides/money/credit-score-cibil-india-guide", label: "Credit score guide" },
+      { href: "/guides/money/emi-calculator-india-guide", label: "Loans & EMI" },
     ],
     relatedSlugs: ["credit-score", "loans", "tax"],
   },
@@ -456,8 +456,8 @@ export const MONEY_TOPICS: MoneyTopic[] = [
       },
     ],
     toolLinks: [
-      { href: "/finance/credit-cards", label: "Credit cards guide" },
-      { href: "/finance/loans", label: "Loans & EMI" },
+      { href: "/guides/money/credit-card-minimum-due-india", label: "Credit cards guide" },
+      { href: "/guides/money/emi-calculator-india-guide", label: "Loans & EMI" },
       { href: "/moneyverse", label: "Payment reminders" },
     ],
     relatedSlugs: ["credit-cards", "loans", "tax"],

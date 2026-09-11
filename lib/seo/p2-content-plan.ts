@@ -2,6 +2,7 @@
  * P2 curated content plan — ~35 high-intent topics.
  * Generate as DRAFT only; human review before publish. Tie to GSC impressions when available.
  */
+import { P2_SKIP_SEED_IDS } from "@/lib/seo/content-redirects";
 
 export type P2ContentPriority = "high" | "medium" | "low";
 
@@ -377,8 +378,9 @@ export const P2_CONTENT_TOPICS: P2ContentTopic[] = [
 ];
 
 export function getP2TopicsByPriority(priority?: P2ContentPriority) {
-  if (!priority) return P2_CONTENT_TOPICS;
-  return P2_CONTENT_TOPICS.filter((t) => t.priority === priority);
+  const active = P2_CONTENT_TOPICS.filter((t) => !P2_SKIP_SEED_IDS.has(t.id));
+  if (!priority) return active;
+  return active.filter((t) => t.priority === priority);
 }
 
 export function getP2TopicById(id: string) {

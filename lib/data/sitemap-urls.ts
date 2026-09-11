@@ -12,6 +12,7 @@ import { TOOL_REGISTRY, TOOLS_HUB_PATH } from "@/lib/tools/registry";
 import { guideSitemapEntries } from "@/lib/guides/registry";
 import { getCineverseHubDataCached } from "@/lib/cineverse/data";
 import { MONEY_TOPIC_SLUGS } from "@/lib/finance/money-topics";
+import { isRedirectedPath, isNoindexFinanceTopic } from "@/lib/seo/content-redirects";
 
 type SitemapFreq = MetadataRoute.Sitemap[0]["changeFrequency"];
 
@@ -44,7 +45,10 @@ const STATIC_PAGES: Array<{
   { path: "/sports/teams", changeFrequency: "daily", priority: 0.75 },
   { path: "/sports/players", changeFrequency: "daily", priority: 0.75 },
   { path: "/finance", changeFrequency: "hourly", priority: 0.85 },
-  ...MONEY_TOPIC_SLUGS.map((slug) => ({
+  ...MONEY_TOPIC_SLUGS.filter(
+    (slug) =>
+      !isRedirectedPath(`/finance/${slug}`) && !isNoindexFinanceTopic(slug)
+  ).map((slug) => ({
     path: `/finance/${slug}`,
     changeFrequency: "weekly" as SitemapFreq,
     priority: 0.8,
@@ -124,6 +128,7 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
         metaKeywords: b.metaKeywords,
       })
     )
+    .filter((b) => !isRedirectedPath(`/blog/${b.slug}`))
     .map((b) =>
       entry(`/blog/${b.slug}`, {
         lastModified: b.publishedAt ?? b.updatedAt,
@@ -203,7 +208,9 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticPaths = new Set(STATIC_PAGES.map((p) => p.path || "/"));
 
-  const staticEntries: MetadataRoute.Sitemap = STATIC_PAGES.map((page) =>
+  const staticEntries: MetadataRoute.Sitemap = STATIC_PAGES.filter(
+    (page) => !isRedirectedPath(page.path || "/")
+  ).map((page) =>
     entry(page.path, {
       lastModified: now,
       changeFrequency: page.changeFrequency,

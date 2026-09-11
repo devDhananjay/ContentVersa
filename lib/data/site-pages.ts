@@ -39,7 +39,7 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
     badge: "Company",
     title: "Building the home for bold writers",
     subtitle:
-      "ContentVerse India is a creator-first publishing platform — built in India, for readers and writers who care about depth, design, and fair monetization in rupees.",
+      "ContentVerse India is a publisher of original Indian guides, explainers, and stories — built in India, with human review and fair monetization in rupees. Tools and live data sit alongside the writing; they do not replace it.",
     sections: [
       {
         heading: "Our mission",
@@ -88,20 +88,21 @@ const DEFAULT_PAGES: Record<SitePageSlug, Omit<SitePageData, "updatedAt">> = {
       {
         heading: "Editorial standards (for readers & advertisers)",
         paragraphs: [
-          "Every public article on ContentVerse India is expected to be original, useful, and clearly written for Indian readers. We reject thin rewrites, scraped pages, and keyword-stuffed filler. Where we use AI assist in the studio, human review still decides what goes live.",
-          "Utility tools (IFSC, EMI, tax estimates, weather, and similar) exist to help readers complete everyday tasks. They are free, labelled as independent utilities — not official government portals — and sit alongside long-form guides so pages are not empty widgets.",
+          "ContentVerse India’s primary identity is original Indian guides, explainers, and reported stories. We keep one strong URL per search intent: overlapping blog posts are merged into a pillar guide and redirected. We reject thin rewrites, scraped pages, keyword-stuffed filler, and cloned “what to know today” articles.",
+          "Where we use AI assist in the studio, a human still decides what goes live. Utility tools (IFSC, EMI, tax estimates, live scores, job boards) help readers finish a task — they are secondary to editorial pages and are labelled as independent utilities, not government portals.",
         ],
         bullets: [
-          "Prefer 800+ word explainers with examples, checklists, and FAQs",
+          "Prefer 800+ word explainers with rupee examples, checklists, FAQs, and a last-reviewed date",
           "Disclose when content is educational (tax, investments, legal) and not formal advice",
-          "Maintain About, Privacy, Terms, Cookies, Contact, and Content Policy in the footer",
+          "Named operator in India, grievance contact, and public About / Policy / Privacy / Terms",
           "Respond to valid reports and legal notices under Indian intermediary rules",
         ],
       },
       {
         heading: "Who runs ContentVerse India",
         paragraphs: [
-          "ContentVerse India is operated from India with a small product and editorial team focused on publishing quality. Our public contact for readers, creators, and grievance redressal is listed on the Contact page and in policy documents.",
+          "ContentVerse India is operated from India by a small product and editorial team. Public articles show the author’s name, profile, and publish/update dates. Money, tax, and scheme pages carry an educational disclaimer and links to official sources (SEBI, RBI, Income Tax, GST, BIS).",
+          "Our public contact for readers, creators, and grievance redressal is listed on the Contact page and in policy documents.",
           `For partnership, press, or policy questions, email ${CONTACT_EMAIL}. We aim to reply within a few business days.`,
         ],
       },

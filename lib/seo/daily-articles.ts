@@ -5,7 +5,7 @@ import { CATEGORIES } from "@/lib/data/categories";
 import { callGeminiJson, getGeminiBlogApiKey, isGeminiBlogConfigured } from "@/lib/ai/gemini";
 import { istDayKey } from "@/lib/engagement/streak";
 import { generateSeoArticle } from "@/lib/seo/article-generator";
-import { passesDraftQualityGate } from "@/lib/seo/article-quality";
+import { isGenericDailyTitle, passesDraftQualityGate } from "@/lib/seo/article-quality";
 import { fetchGoogleNewsHeadlines } from "@/lib/seo/google-news-trends";
 import { suggestHotTopics, type HotTopic } from "@/lib/seo/hot-topics";
 import { readingTime, slugify } from "@/lib/utils";
@@ -291,6 +291,14 @@ export async function runDailyArticleGeneration(options?: {
             ? "Include educational disclaimer; no stock tips."
             : `Editorial angle: ${topic.whyTrending}`,
       });
+
+      if (isGenericDailyTitle(topic.title) || isGenericDailyTitle(article?.title ?? "")) {
+        skipped++;
+        console.warn(
+          `[daily-articles] ${cat.slug} slot ${slot}: skipped generic title — "${article?.title ?? topic.title}"`
+        );
+        continue;
+      }
 
       if (!article?.content || !passesDraftQualityGate(article.content)) {
         failed++;

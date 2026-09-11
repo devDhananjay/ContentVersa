@@ -53,8 +53,8 @@ export default function GoldVersePage() {
             HUID verification online
           </Link>
           , read{" "}
-          <Link href="/finance/gold-price-today" className="font-medium text-amber-400 hover:underline">
-            gold price today
+          <Link href="/guides/money/huid-hallmark-gold-buying-india" className="font-medium text-amber-400 hover:underline">
+            gold buying & HUID checklist
           </Link>
           , or check{" "}
           <Link href="/tools/silver-rate" className="font-medium text-amber-400 hover:underline">

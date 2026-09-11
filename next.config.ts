@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { nextContentRedirects } from "./lib/seo/content-redirects";
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -86,6 +87,7 @@ const nextConfig: NextConfig = {
         destination: "/cineverse/movie/:id",
         permanent: true,
       },
+      ...nextContentRedirects(),
     ];
   },
   async headers() {

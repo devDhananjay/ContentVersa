@@ -401,25 +401,33 @@ export const MANUAL_ARTICLES: ManualArticle[] = [
   {
     slug: "home-workout-no-gym-equipment",
     category: "fitness",
-    title: "Home Workout Plan Without Gym Equipment",
+    title: "Home Workout Plan Without Gym Equipment (India Apartment Edition)",
     excerpt:
-      "A 4-week bodyweight program for beginners — progressive and apartment-friendly.",
+      "A 4-week bodyweight plan for Indian flats — humidity, neighbours, 30-minute sessions, and food you already cook.",
     coverImage: img("photo-1517836357463-d25dfeac3438"),
-    tags: ["home-workout", "bodyweight", "beginners", "fitness"],
+    tags: ["home-workout", "bodyweight", "beginners", "fitness", "india"],
     content: body(
-      "No gym membership? You can still build strength and stamina with consistency and progressive overload using bodyweight variants.",
+      "Most Indian apartments have little floor space, thin walls, and summers that make a 7 a.m. session smarter than a 2 p.m. one. You do not need a gym membership or imported gadgets. You need three sessions a week, a yoga mat or towel, and progression you can measure. This plan is educational, not medical advice — skip jumps if your knees or a downstairs neighbour cannot take it.",
       [
         {
-          h: "Week 1–2 foundation",
-          p: "Squats, incline push-ups, glute bridges, plank holds. 3 sessions/week, 30 minutes. Focus on form videos, not speed.",
+          h: "What “no equipment” still needs",
+          p: "A 2×1 metre clear patch, shoes or barefoot on a non-slip surface, and a bottle of water. A filled backpack can stand in for a goblet squat if you already lift groceries. Do not buy a foldable bench on day one.",
         },
         {
-          h: "Week 3–4 progression",
-          p: "Lower incline push-ups, split squats, dead bug core work. Add reps before adding fancy exercises.",
+          h: "Week 1–2: foundation (Mon / Wed / Fri)",
+          p: "Circuit, 3 rounds, rest 60–90 seconds between rounds: 10 chair squats, 6–10 incline push-ups on a sturdy sofa arm or kitchen counter, 10 glute bridges, 20-second plank, 30-second march in place. Finish with slow breathing. If the plank shakes, drop to knees. Consistency beats a heroic first session that makes you skip Thursday.",
         },
         {
-          h: "Recovery and nutrition",
-          p: "Sleep 7+ hours. Protein at each meal supports repair — dal, eggs, paneer, chicken, or supplements if needed.",
+          h: "Week 3–4: progression without noise",
+          p: "Lower the incline on push-ups, add split squats (hold a wall), swap marches for step-backs if knees allow. Add 2 reps to any move you finished easily. Avoid burpees at 9 p.m. in a society with a complaint group on WhatsApp.",
+        },
+        {
+          h: "Heat, recovery, Indian meals",
+          p: "Train before 8 a.m. or after sunset in peak summer. Sleep 7+ hours. Protein at each meal helps repair: dal + rice, paneer/curd, eggs, soy chunks, or chicken if you eat it. A scoop of powder is optional backup, not the plan. If you feel chest pain, dizziness, or joint swelling, stop and see a doctor.",
+        },
+        {
+          h: "How to know it is working",
+          p: "Write the reps in a notes app. After 14 days you should complete the circuit with less rest. After 28 days, add a fourth shorter session or a 20-minute walk. This is not a 12-week “shred” programme and it will not replace physiotherapy.",
         },
       ]
     ),
@@ -1040,23 +1048,27 @@ export const MANUAL_ARTICLES: ManualArticle[] = [
     category: "career",
     title: "How to Switch Careers in Your 30s in India",
     excerpt:
-      "Transferable skills, bridge roles, and financial runway — a realistic transition map.",
+      "A realistic India playbook: 6–12 month runway, notice periods, PF transfer, bridge roles, and what not to quit for.",
     coverImage: img("photo-1521737711867-e3b97375f902"),
-    tags: ["career-change", "jobs", "india", "skills"],
+    tags: ["career-change", "jobs", "india", "notice-period", "pf"],
     content: body(
-      "Career switches at 30+ are common in India's tech and services economy — plan finances before drama.",
+      "Switching careers after 30 is common in Indian IT, BPO, sales, teaching, and government-to-private moves. The constraint is rarely “motivation.” It is notice period, household EMIs, PF/gratuity paperwork, and whether the new field will pay enough before the savings run out. This is a planning guide, not a coaching pitch.",
       [
         {
-          h: "Skill audit",
-          p: "List capabilities (communication, Excel, client management) that cross industries. Reframe CV for outcomes, not titles.",
+          h: "Build a 6–12 month rupee runway first",
+          p: "List essential EMIs, rent, school fees, and insurance. Target 6 months if you are dual-income; closer to 9–12 if you are the sole earner or have a 90-day notice. Do not fund a career leap with credit-card EMI. Pause discretionary SIPs before you pause the emergency fund.",
         },
         {
-          h: "Bridge roles",
-          p: "Move to adjacent function first — sales to product marketing — before leap to unrelated field.",
+          h: "Translate skills, do not hide the old title",
+          p: "Recruiters in India still search keywords. Rewrite the CV around outcomes: “reduced collection delay by 12 days” beats “dynamic professional.” Move to an adjacent function first — sales to customer success, support to QA, teaching to L&D — before a leap into an unrelated field that needs a full degree.",
         },
         {
-          h: "Runway",
-          p: "6–12 months expenses saved reduces panic accepts. Side projects prove new field before quit.",
+          h: "Handle notice, PF, and relieving letters",
+          p: "Read the current appointment letter for buyout, garden leave, and training bonds. Ask the new employer in writing whether they will wait out 60–90 days. Start PF transfer (or UAN KYC) before the last working day so the new HR is not blocked. Keep Form 16 and last three payslips in one folder.",
+        },
+        {
+          h: "Prove the new field before you resign",
+          p: "A weekend course is not proof. Ship a small public artefact: a GitHub repo, a GST-registered freelance invoice, a sample lesson plan, or a case study. Interview for the bridge role while employed. If every offer demands an immediate join, you do not yet have leverage.",
         },
       ]
     ),

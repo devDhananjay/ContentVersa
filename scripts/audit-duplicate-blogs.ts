@@ -3,6 +3,8 @@
  *
  *   npm run db:audit-duplicates
  *   npm run db:audit-duplicates -- --apply
+ *
+ * Sets canonicalUrl to the keeper before ARCHIVED so Google hits a 301, not a 404.
  */
 import { BlogStatus, PrismaClient } from "@prisma/client";
 import {
@@ -10,12 +12,19 @@ import {
   normalizeTitleKey,
   scoreBlogForKeep,
 } from "../lib/seo/article-quality";
+import { categoryFallbackPath } from "../lib/seo/content-redirects";
+import { SITE } from "../lib/seo";
 import { loadScriptEnv } from "./load-script-env";
 
 loadScriptEnv();
 
 const prisma = new PrismaClient();
 const apply = process.argv.includes("--apply");
+
+function absCanonical(dest: string): string {
+  if (dest.startsWith("http")) return dest;
+  return `${SITE.url}${dest.startsWith("/") ? dest : `/${dest}`}`;
+}
 
 async function main() {
   const blogs = await prisma.blog.findMany({
@@ -31,6 +40,7 @@ async function main() {
       readingTime: true,
       content: true,
       createdAt: true,
+      category: { select: { slug: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -45,42 +55,52 @@ async function main() {
   }
 
   const duplicateGroups = [...groups.entries()].filter(([, list]) => list.length > 1);
-  const toArchive: string[] = [];
+  const jobs: { id: string; slug: string; dest: string }[] = [];
 
   for (const [key, list] of duplicateGroups) {
     const sorted = [...list].sort(
-      (a, b) =>
-        scoreBlogForKeep(b) - scoreBlogForKeep(a)
+      (a, b) => scoreBlogForKeep(b) - scoreBlogForKeep(a)
     );
     const keeper = sorted[0]!;
-    const losers = sorted.slice(1);
+    const generic = isGenericDailyTitle(keeper.title);
+    const dest = generic
+      ? categoryFallbackPath(keeper.category?.slug || "technology")
+      : `/blog/${keeper.slug}`;
     console.log(`\n"${key.slice(0, 70)}" (${list.length})`);
     console.log(`  keep: ${keeper.slug} (${keeper.readingTime}m, ${keeper.views} views)`);
-    for (const loser of losers) {
-      console.log(`  archive: ${loser.slug}`);
-      toArchive.push(loser.id);
+    if (generic) {
+      console.log("  ⚠ generic daily title — archiving the whole cluster");
     }
-    if (isGenericDailyTitle(keeper.title)) {
-      console.log("  ⚠ generic daily title — consider regenerating with hot topics");
+    const losers = generic ? sorted : sorted.slice(1);
+    for (const loser of losers) {
+      if (!generic && loser.id === keeper.id) continue;
+      console.log(`  archive: ${loser.slug} → ${dest}`);
+      jobs.push({ id: loser.id, slug: loser.slug, dest });
     }
   }
 
   console.log(`\nPublished: ${blogs.length}`);
   console.log(`Duplicate title groups: ${duplicateGroups.length}`);
-  console.log(`To archive: ${toArchive.length}`);
+  console.log(`To archive: ${jobs.length}`);
 
   if (!apply) {
-    console.log("\nDry run — pass --apply to archive duplicates.");
+    console.log("\nDry run — pass --apply to archive duplicates with 301 canonicals.");
     return;
   }
 
-  if (toArchive.length) {
+  let archived = 0;
+  for (const job of jobs) {
     const result = await prisma.blog.updateMany({
-      where: { id: { in: toArchive } },
-      data: { status: BlogStatus.ARCHIVED },
+      where: { id: job.id, status: { not: BlogStatus.ARCHIVED } },
+      data: {
+        status: BlogStatus.ARCHIVED,
+        adEligible: false,
+        canonicalUrl: absCanonical(job.dest),
+      },
     });
-    console.log(`\nArchived ${result.count} duplicate blog(s).`);
+    archived += result.count;
   }
+  console.log(`\nArchived ${archived} duplicate blog(s) with canonical 301s.`);
 }
 
 main()

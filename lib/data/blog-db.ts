@@ -6,11 +6,13 @@ import type { Author, Blog } from "@/lib/data/blogs";
 import { resolveBlogCoverImage } from "@/lib/upload";
 import { BLOGS, getBlogBySlug as getMockBlogBySlug } from "@/lib/data/blogs";
 import { MIN_INDEXABLE_READING_MINUTES } from "@/lib/seo/crawl-policy";
+import { MERGE_BLOG_SLUGS } from "@/lib/seo/content-redirects";
 
-/** Public listings / homepage — hide thin, syndicated, and nightly AI volume. */
+/** Public listings / homepage — hide thin, syndicated, nightly AI, and merged twins. */
 export const publicListingBlogWhere: Prisma.BlogWhereInput = {
   status: "PUBLISHED",
   readingTime: { gte: MIN_INDEXABLE_READING_MINUTES },
+  slug: { notIn: MERGE_BLOG_SLUGS },
   NOT: [
     { slug: { startsWith: "discover-" } },
     { slug: { contains: "-daily-" } },
@@ -255,6 +257,10 @@ export async function getBlogBySlugForViewer(
     });
     if (!row) return null;
     if (row.status === "PUBLISHED") {
+      return { ...mapDbBlogToBlog(row), status: row.status };
+    }
+    /** Public 301 for merged/archived URLs that still have a canonical keeper. */
+    if (row.status === "ARCHIVED" && row.canonicalUrl?.trim()) {
       return { ...mapDbBlogToBlog(row), status: row.status };
     }
     if (viewerUserId && row.authorId === viewerUserId) {

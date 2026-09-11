@@ -16,14 +16,16 @@ export const SITE_LOGO_URL = "/icon-192.png";
 
 /** Main hub modules — prioritized for sitelinks & internal linking. */
 export const SITE_NAV_HUBS = [
+  { name: "India Guides", path: "/guides", description: "Original explainers — schemes, money, jobs, cricket, AI tools, OTT" },
+  { name: "Blogs", path: "/blogs", description: "Long-form articles and stories from Indian writers" },
   { name: "ContentVerse India AI", path: "/ai", description: "Ask, summarise, resume, bank PDF & screenshot OCR India" },
   { name: "Sports", path: "/sports", description: "Live cricket scores, fixtures and sports news" },
-  { name: "Finance", path: "/finance", description: "Nifty, Sensex, MoneyVerse guides — gold, SIP, FD, loans & tax" },
+  { name: "Finance", path: "/finance", description: "Nifty, Sensex, and links to money guides" },
   { name: "CineVerse", path: "/cineverse", description: "Movies — OTT release, cast, where to watch & watchlist India" },
   { name: "GoldVerse", path: "/goldverse", description: "HUID verify, gold & silver rates and BIS hallmark tools" },
   { name: "MoneyVerse", path: "/moneyverse", description: "Expense tracker, budget planner, UPI spending & screenshot OCR scan India" },
-  { name: "Gold Price Today", path: "/finance/gold-price-today", description: "Gold price today India 22K 24K rates and HUID tips" },
-  { name: "SIP India", path: "/finance/sip", description: "SIP mutual fund investing explained with free calculator" },
+  { name: "Gold Price Today", path: "/goldverse", description: "Gold price today India 22K 24K rates and HUID tips" },
+  { name: "SIP India", path: "/guides/money/sip-calculator-india-beginners-guide", description: "SIP mutual fund investing explained with free calculator" },
   { name: "Silver Rate", path: "/tools/silver-rate", description: "Silver rate today India per gram and kg" },
   { name: "Screenshot Scan (OCR)", path: "/moneyverse/screenshot-scan", description: "UPI payment screenshot OCR — auto-fill expenses from PhonePe, GPay, Paytm" },
   { name: "Bank Statement Analyzer", path: "/moneyverse/bank-statement-analyzer", description: "AI bank statement PDF analysis — credits, debits, expenses and CSV India" },
@@ -49,12 +51,6 @@ export const SITE_NAV_HUBS = [
     description: "Income tax and in-hand salary calculator India new vs old regime",
   },
   {
-    name: "India Guides",
-    path: "/guides",
-    description:
-      "Trending explainers, govt schemes, job notifications, cricket, AI tools and OTT guides India",
-  },
-  {
     name: "Trending India",
     path: "/trending",
     description: "Google Trends India topics with on-site briefings and chat",
@@ -65,7 +61,6 @@ export const SITE_NAV_HUBS = [
     description: "Government scheme eligibility and how to apply India",
   },
   { name: "Reels", path: "/reels", description: "Short-form videos from Indian creators" },
-  { name: "Blogs", path: "/blogs", description: "Read articles and stories from creators" },
 ] as const;
 
 /** Main site sections — helps Google understand navigation (sitelinks). */
@@ -91,9 +86,9 @@ export const SITE = {
    * Homepage `<title>` / SERP purple link.
    * Brand + tagline for the clickable result title.
    */
-  homeTitle: "ContentVerse India — Read. Create. Grow.",
+  homeTitle: "ContentVerse India — original Indian guides, explainers and stories",
   description:
-    "ContentVerse India — blogs, reels, live cricket, Nifty & Sensex, MoneyVerse, CineVerse, GoldVerse, sarkari jobs and free India tools. Read. Create. Grow.",
+    "ContentVerse India publishes original Indian guides, explainers and stories — plus free calculators, cricket scores, and jobs as supporting tools. Educational content, human review, India-first.",
   get url() {
     return siteUrl();
   },

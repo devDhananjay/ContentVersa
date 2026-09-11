@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { MONEY_TOPICS, moneyTopicPath } from "@/lib/finance/money-topics";
+import { resolvedPublicHref } from "@/lib/seo/content-redirects";
 
 export function MoneyTopicsGrid({
   title = "MoneyVerse guides",
@@ -21,7 +22,7 @@ export function MoneyTopicsGrid({
         {MONEY_TOPICS.map((topic) => (
           <Link
             key={topic.slug}
-            href={moneyTopicPath(topic.slug)}
+            href={resolvedPublicHref(moneyTopicPath(topic.slug))}
             className="group rounded-2xl border border-border/50 bg-muted/15 p-4 transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/5"
           >
             <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/90">

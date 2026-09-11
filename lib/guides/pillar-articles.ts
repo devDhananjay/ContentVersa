@@ -182,6 +182,17 @@ export const PILLAR_GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
+        heading: "First home-loan checklist (salaried)",
+        paragraphs: [
+          "Before you sign: list take-home pay, existing EMIs, and a 6-month emergency buffer. Stress-test a 1–2% floating-rate hike. Keep processing fees, insurance, and prepayment charges out of the “lowest EMI” screenshot. If two lenders quote similar EMIs, pick the clearer foreclosure rules — not the flashier app.",
+        ],
+        bullets: [
+          "Same principal + tenure when you compare offers",
+          "Ask whether prepayment cuts EMI or tenure",
+          "This is not a loan offer — verify the bank’s KFS / MITC",
+        ],
+      },
+      {
         heading: "Worked example you can recreate",
         paragraphs: [
           "Take ₹10 lakh at 12% p.a. for 48 months and note EMI and total interest. Then switch to 36 months: EMI rises, total interest usually falls. That comparison is more useful than any single “lowest EMI” screenshot from a marketplace ad.",
@@ -201,10 +212,11 @@ export const PILLAR_GUIDE_ARTICLES: GuideArticle[] = [
       "sip for beginners",
       "systematic investment plan",
       "mutual fund sip",
+      "sip vs lumpsum",
       "sip returns explained",
     ],
-    readingMinutes: 11,
-    updatedLabel: "Aug 2026",
+    readingMinutes: 14,
+    updatedLabel: "Sept 2026",
     relatedHref: "/tools/sip-calculator",
     relatedLabel: "Open SIP calculator",
     clusterId: "sip-investing",
@@ -220,6 +232,10 @@ export const PILLAR_GUIDE_ARTICLES: GuideArticle[] = [
       {
         q: "SIP vs FD — which is better?",
         a: "They solve different problems. FDs prioritise predictable rupee outcomes (issuer risk aside); SIPs in market-linked funds prioritise long-horizon growth with volatility. Many households use both — this is not personalised advice.",
+      },
+      {
+        q: "Is SIP always safer than lumpsum?",
+        a: "SIP reduces timing stress; market risk remains. A lumpsum of bonus money can still be staged over a few months if your emergency fund is ready. Safety comes from allocation and horizon, not the SIP label.",
       },
     ],
     blocks: [
@@ -246,6 +262,26 @@ export const PILLAR_GUIDE_ARTICLES: GuideArticle[] = [
           "Start small, stay consistent",
           "Increase SIP with salary hikes",
           "Do not confuse past returns with future results",
+        ],
+      },
+      {
+        heading: "Worked examples: ₹1,000 / ₹5,000 / ₹10,000 a month",
+        paragraphs: [
+          "Use the calculator twice: once at a conservative assumed return (around 8–10%) and once at a moderate one (around 11–12%). A ₹1,000 SIP is a habit starter; ₹5,000 is a common salaried step-up; ₹10,000 is meaningful only if the emergency fund and EMIs are already stable. The rupee gap after 10–15 years is usually larger than people expect — that is compounding plus time, not a promised rate.",
+          "These figures are illustrations inside our tool, not forecasts. Markets can be flat or negative for years. Raise the SIP when take-home pay rises rather than chasing last year’s top fund.",
+        ],
+      },
+      {
+        heading: "SIP vs lumpsum (when a bonus arrives)",
+        paragraphs: [
+          "SIP optimises for monthly cash-flow and reduces the urge to time the market. A lumpsum can make sense for a bonus, matured FD, or inheritance that would otherwise sit idle — if the emergency fund is already funded and the horizon is long. Dumping everything on an all-time-high headline is the usual behavioural failure.",
+          "A practical hybrid for many salaried households: keep the SIP running, and stagger windfalls over 3–6 months into the same asset-allocation plan. Rebalance yearly. Educational only — not a recommendation.",
+        ],
+      },
+      {
+        heading: "Common mistakes to avoid",
+        paragraphs: [
+          "Pausing SIPs after one bad month, investing money you need within two years, and ignoring expense ratios / direct vs regular plans are more damaging than picking the “wrong” popular large-cap. Do not treat a calculator maturity number as guaranteed corpus for a home down-payment next year.",
         ],
       },
     ],

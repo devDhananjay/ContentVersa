@@ -143,11 +143,7 @@ export function Hero({ categories, stats }: Props) {
               >
                 <Sparkles className="h-3 w-3" />
               </motion.span>
-              India&apos;s home for long-form creators ·{" "}
-              <Link href="/ai" className="underline underline-offset-2 hover:text-inherit">
-                ContentVerse India AI
-              </Link>{" "}
-              live
+              India&apos;s original guides, explainers and stories
             </Badge>
           </motion.div>
 
@@ -176,7 +172,7 @@ export function Hero({ categories, stats }: Props) {
             >
               <TypewriterWord words={ROTATING_WORDS} reduce={reduce} />
               <span className="text-left">
-                — blogs, live cricket, finance &amp; free India tools.
+                — original Indian guides, explainers and stories.
               </span>
             </motion.span>
           </h1>
@@ -190,8 +186,8 @@ export function Hero({ categories, stats }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            Publish long-form stories, follow cricket and markets, and use free
-            calculators — with human moderation and tools built for India.
+            Publish useful India explainers — SIP, schemes, jobs, HUID — with human
+            review. Free calculators and live scores sit underneath, not in front.
           </motion.p>
 
           <motion.form
@@ -206,7 +202,7 @@ export function Hero({ categories, stats }: Props) {
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 name="q"
-                placeholder="Search ‘AI agents’, ‘growth loops’, ‘TypeScript’…"
+                placeholder="Search ‘SIP’, ‘CIBIL’, ‘HUID’, ‘PM-Kisan’…"
                 className={cn(
                   "h-16 pl-14 pr-32 text-base rounded-2xl shadow-glow backdrop-blur focus-visible:ring-neon-purple/40",
                   cinematic

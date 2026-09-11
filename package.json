@@ -31,6 +31,8 @@
     "db:orphan-covers-report": "tsx scripts/orphan-covers-report.ts",
     "db:fix-duplicate-covers": "tsx scripts/fix-duplicate-covers.ts",
     "db:audit-duplicates": "tsx scripts/audit-duplicate-blogs.ts",
+    "db:adsense-audit": "tsx scripts/adsense-content-audit.ts",
+    "db:adsense-apply": "tsx scripts/apply-adsense-merges.ts",
     "db:regen-covers": "tsx scripts/regenerate-article-covers.ts",
     "db:expand-articles": "tsx scripts/expand-short-articles.ts",
     "db:daily-ai": "tsx scripts/daily-ai-articles.ts",

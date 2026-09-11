@@ -11,6 +11,7 @@ import { PrismaClient, BlogStatus } from "@prisma/client";
 import { generateSeoArticle, type GeneratedArticle } from "../lib/seo/article-generator";
 import { PLATFORM_OWNER_EMAIL } from "../lib/owner";
 import { SEO_ARTICLE_TOPICS, type SeedTopic } from "../lib/seo/seed-topics";
+import { shouldSkipBlogSeed } from "../lib/seo/content-redirects";
 import { CATEGORIES } from "../lib/data/categories";
 import { readingTime, slugify } from "../lib/utils";
 
@@ -169,7 +170,7 @@ async function main() {
     );
   }
 
-  let topics = SEO_ARTICLE_TOPICS;
+  let topics = SEO_ARTICLE_TOPICS.filter((t) => !shouldSkipBlogSeed(t.slug));
   if (slug) topics = topics.filter((t) => t.slug === slug);
   topics = topics.slice(0, limit);
 

@@ -7,6 +7,7 @@ import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "../lib/prisma";
 import { PLATFORM_OWNER_EMAIL } from "../lib/owner";
 import { INDIA_EVERGREEN_GUIDES } from "../lib/seo/india-evergreen-guides";
+import { shouldSkipBlogSeed } from "../lib/seo/content-redirects";
 import { CATEGORIES } from "../lib/data/categories";
 import { readingTime, slugify } from "../lib/utils";
 
@@ -35,6 +36,11 @@ async function main() {
   let skipped = 0;
 
   for (const g of INDIA_EVERGREEN_GUIDES) {
+    if (shouldSkipBlogSeed(g.slug)) {
+      skipped++;
+      console.log("skip (guide pillar owns this intent)", g.slug);
+      continue;
+    }
     const exists = await prisma.blog.findUnique({
       where: { slug: g.slug },
       select: { id: true },

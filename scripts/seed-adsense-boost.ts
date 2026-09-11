@@ -9,6 +9,7 @@ import { PrismaClient, BlogStatus } from "@prisma/client";
 import { CATEGORIES } from "../lib/data/categories";
 import { PLATFORM_OWNER_EMAIL } from "../lib/owner";
 import { ADSENSE_BOOST_ARTICLES } from "../lib/seo/adsense-boost-articles";
+import { shouldSkipBlogSeed } from "../lib/seo/content-redirects";
 import { readingTime, slugify } from "../lib/utils";
 
 function loadEnvFiles() {
@@ -131,7 +132,13 @@ async function main() {
 
   let created = 0;
   let updated = 0;
+  let skipped = 0;
   for (const article of ADSENSE_BOOST_ARTICLES) {
+    if (shouldSkipBlogSeed(article.slug)) {
+      skipped++;
+      console.log(`[adsense-boost] skip (merged to pillar): ${article.slug}`);
+      continue;
+    }
     const cat = await ensureCategory(article.category);
     const result = await publishOne(article, owner.id, cat.id);
     if (result === "created") created++;
@@ -140,7 +147,7 @@ async function main() {
   }
 
   console.log(
-    `\nDone. ${created} created, ${updated} updated (${ADSENSE_BOOST_ARTICLES.length} total).`
+    `\nDone. ${created} created, ${updated} updated, ${skipped} skipped (merged to pillars).`
   );
 }
 

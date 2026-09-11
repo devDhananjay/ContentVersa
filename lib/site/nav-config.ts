@@ -35,6 +35,8 @@ export type NavDropdown = {
 };
 
 export const NAV_TOP_LINKS: NavLinkItem[] = [
+  { href: "/guides", label: "Guides", icon: BookOpen },
+  { href: "/blogs", label: "Articles", icon: Compass },
   { href: "/trending", label: "Trending", icon: Flame },
   { href: "/sports", label: "Sports", icon: Medal },
   { href: "/finance", label: "Finance", icon: TrendingUp },
@@ -71,9 +73,9 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
       { href: "/goldverse", label: "GoldVerse", description: "Gold & silver rates, hallmark", icon: Gem },
       { href: "/moneyverse", label: "MoneyVerse", description: "Expense tracker India", icon: Wallet },
       {
-        href: "/finance#money-guides",
+        href: "/guides/money",
         label: "Money Guides",
-        description: "Gold, SIP, FD, loans & tax",
+        description: "SIP, CIBIL, 80C, EMI & tax",
         icon: TrendingUp,
       },
       {

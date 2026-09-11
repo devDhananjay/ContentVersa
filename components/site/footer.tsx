@@ -17,6 +17,10 @@ const SOCIAL_LINKS: { label: string; href: string; Icon: ElementType }[] = [
 const WHATSAPP_CHANNEL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL?.trim();
 
 const EXPLORE = [
+  { label: "India Guides", href: "/guides" },
+  { label: "Blogs", href: "/blogs" },
+  { label: "Govt Schemes", href: "/guides/schemes" },
+  { label: "India Tools", href: "/tools" },
   { label: "ContentVerse India AI", href: "/ai" },
   { label: "Trending Now", href: "/trending" },
   { label: "Sports", href: "/sports" },
@@ -26,10 +30,7 @@ const EXPLORE = [
   { label: "MoneyVerse", href: "/moneyverse" },
   { label: "Jobs", href: "/jobs" },
   { label: "Sarkari Result", href: "/results" },
-  { label: "India Guides", href: "/guides" },
-  { label: "Govt Schemes", href: "/guides/schemes" },
   { label: "Reels", href: "/reels" },
-  { label: "Blogs", href: "/blogs" },
   { label: "Categories", href: "/categories" },
 ] as const;
 
