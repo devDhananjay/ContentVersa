@@ -70,6 +70,210 @@
       "destination": "/cineverse/movie/:id",
       "statusCode": 308,
       "regex": "^(?!/_next)/movie(?:/([^/]+?))(?:/)?$"
+    },
+    {
+      "source": "/blog/sip-calculator-india-guide",
+      "destination": "/guides/money/sip-calculator-india-beginners-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/sip-calculator-india-guide(?:/)?$"
+    },
+    {
+      "source": "/blog/how-to-start-sip-investing-india-2026",
+      "destination": "/guides/money/sip-calculator-india-beginners-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/how-to-start-sip-investing-india-2026(?:/)?$"
+    },
+    {
+      "source": "/blog/sip-vs-lumpsum-mutual-funds-india-guide",
+      "destination": "/guides/money/sip-calculator-india-beginners-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/sip-vs-lumpsum-mutual-funds-india-guide(?:/)?$"
+    },
+    {
+      "source": "/finance/sip",
+      "destination": "/guides/money/sip-calculator-india-beginners-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/sip(?:/)?$"
+    },
+    {
+      "source": "/finance/mutual-funds",
+      "destination": "/guides/money/sip-calculator-india-beginners-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/mutual-funds(?:/)?$"
+    },
+    {
+      "source": "/blog/credit-score-improve-india-practical-30-day-plan",
+      "destination": "/guides/money/credit-score-cibil-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/credit-score-improve-india-practical-30-day-plan(?:/)?$"
+    },
+    {
+      "source": "/finance/credit-score",
+      "destination": "/guides/money/credit-score-cibil-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/credit-score(?:/)?$"
+    },
+    {
+      "source": "/blog/huid-verification-bis-gold-guide",
+      "destination": "/guides/money/huid-hallmark-gold-buying-india",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/huid-verification-bis-gold-guide(?:/)?$"
+    },
+    {
+      "source": "/blog/gold-rate-india-how-to-read",
+      "destination": "/goldverse",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/gold-rate-india-how-to-read(?:/)?$"
+    },
+    {
+      "source": "/finance/gold-price-today",
+      "destination": "/goldverse",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/gold-price-today(?:/)?$"
+    },
+    {
+      "source": "/finance/silver-price-today",
+      "destination": "/guides/money/silver-rate-today-india-cities",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/silver-price-today(?:/)?$"
+    },
+    {
+      "source": "/blog/tax-saving-investments-80c-guide-india-2026",
+      "destination": "/guides/money/section-80c-elss-ppf-lic-india",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/tax-saving-investments-80c-guide-india-2026(?:/)?$"
+    },
+    {
+      "source": "/blog/section-80c-checklist-salaried-india-fy",
+      "destination": "/guides/money/section-80c-elss-ppf-lic-india",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/section-80c-checklist-salaried-india-fy(?:/)?$"
+    },
+    {
+      "source": "/blog/nps-vs-ppf-vs-elss-tax-saving-india-comparison",
+      "destination": "/guides/money/ppf-account-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/nps-vs-ppf-vs-elss-tax-saving-india-comparison(?:/)?$"
+    },
+    {
+      "source": "/blog/ppf-vs-nps-vs-mutual-funds-comparison",
+      "destination": "/guides/money/ppf-account-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/ppf-vs-nps-vs-mutual-funds-comparison(?:/)?$"
+    },
+    {
+      "source": "/blog/itr-filing-deadlines-india",
+      "destination": "/guides/money/salary-tax-calculator-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/itr-filing-deadlines-india(?:/)?$"
+    },
+    {
+      "source": "/blog/freelancer-income-tax-guide-india",
+      "destination": "/guides/money/content-creator-tax-gst-india",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/freelancer-income-tax-guide-india(?:/)?$"
+    },
+    {
+      "source": "/finance/tax",
+      "destination": "/guides/money/salary-tax-calculator-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/tax(?:/)?$"
+    },
+    {
+      "source": "/blog/emergency-fund-how-much-save-india",
+      "destination": "/blog/emergency-fund-india-how-much-to-save-2026",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/emergency-fund-how-much-save-india(?:/)?$"
+    },
+    {
+      "source": "/blog/emi-calculator-home-loan-india",
+      "destination": "/guides/money/emi-calculator-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/emi-calculator-home-loan-india(?:/)?$"
+    },
+    {
+      "source": "/blog/first-home-loan-checklist-india-salaried",
+      "destination": "/guides/money/emi-calculator-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/first-home-loan-checklist-india-salaried(?:/)?$"
+    },
+    {
+      "source": "/finance/loans",
+      "destination": "/guides/money/emi-calculator-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/loans(?:/)?$"
+    },
+    {
+      "source": "/finance/fd",
+      "destination": "/guides/money/fd-vs-rd-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/fd(?:/)?$"
+    },
+    {
+      "source": "/finance/rd",
+      "destination": "/guides/money/fd-vs-rd-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/rd(?:/)?$"
+    },
+    {
+      "source": "/blog/ifsc-code-finder-india-guide",
+      "destination": "/guides/money/ifsc-code-finder-india-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/ifsc-code-finder-india-guide(?:/)?$"
+    },
+    {
+      "source": "/blog/gst-basics-freelancers-sole-proprietors-india",
+      "destination": "/guides/money/gst-calculator-india-freelancers-guide",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/gst-basics-freelancers-sole-proprietors-india(?:/)?$"
+    },
+    {
+      "source": "/blog/pincode-finder-india-postal-guide",
+      "destination": "/tools/pincode-finder",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/pincode-finder-india-postal-guide(?:/)?$"
+    },
+    {
+      "source": "/blog/rto-code-finder-india",
+      "destination": "/guides/money/used-car-rc-rto-vahan-india",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/rto-code-finder-india(?:/)?$"
+    },
+    {
+      "source": "/blog/fuel-price-today-india-explained",
+      "destination": "/guides/money/highway-fuel-fastag-trip-planner",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/fuel-price-today-india-explained(?:/)?$"
+    },
+    {
+      "source": "/blog/upi-expense-tracking-india",
+      "destination": "/guides/money/track-upi-expenses-phonepe-gpay",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/upi-expense-tracking-india(?:/)?$"
+    },
+    {
+      "source": "/blog/bank-statement-analyzer-india",
+      "destination": "/guides/money/bank-statement-analysis-loan-india",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/bank-statement-analyzer-india(?:/)?$"
+    },
+    {
+      "source": "/blog/sarkari-naukri-alert-guide",
+      "destination": "/guides/jobs/how-to-read-sarkari-job-notification",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/sarkari-naukri-alert-guide(?:/)?$"
+    },
+    {
+      "source": "/blog/linkedin-profile-optimization-job-seekers-india",
+      "destination": "/blog/linkedin-profile-india-job-seekers-2026-checklist",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/blog/linkedin-profile-optimization-job-seekers-india(?:/)?$"
+    },
+    {
+      "source": "/finance/credit-cards",
+      "destination": "/guides/money/credit-card-minimum-due-india",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/finance/credit-cards(?:/)?$"
     }
   ],
   "headers": [

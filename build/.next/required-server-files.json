@@ -427,6 +427,176 @@
         "source": "/movie/:id",
         "destination": "/cineverse/movie/:id",
         "permanent": true
+      },
+      {
+        "source": "/blog/sip-calculator-india-guide",
+        "destination": "/guides/money/sip-calculator-india-beginners-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/how-to-start-sip-investing-india-2026",
+        "destination": "/guides/money/sip-calculator-india-beginners-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/sip-vs-lumpsum-mutual-funds-india-guide",
+        "destination": "/guides/money/sip-calculator-india-beginners-guide",
+        "permanent": true
+      },
+      {
+        "source": "/finance/sip",
+        "destination": "/guides/money/sip-calculator-india-beginners-guide",
+        "permanent": true
+      },
+      {
+        "source": "/finance/mutual-funds",
+        "destination": "/guides/money/sip-calculator-india-beginners-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/credit-score-improve-india-practical-30-day-plan",
+        "destination": "/guides/money/credit-score-cibil-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/finance/credit-score",
+        "destination": "/guides/money/credit-score-cibil-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/huid-verification-bis-gold-guide",
+        "destination": "/guides/money/huid-hallmark-gold-buying-india",
+        "permanent": true
+      },
+      {
+        "source": "/blog/gold-rate-india-how-to-read",
+        "destination": "/goldverse",
+        "permanent": true
+      },
+      {
+        "source": "/finance/gold-price-today",
+        "destination": "/goldverse",
+        "permanent": true
+      },
+      {
+        "source": "/finance/silver-price-today",
+        "destination": "/guides/money/silver-rate-today-india-cities",
+        "permanent": true
+      },
+      {
+        "source": "/blog/tax-saving-investments-80c-guide-india-2026",
+        "destination": "/guides/money/section-80c-elss-ppf-lic-india",
+        "permanent": true
+      },
+      {
+        "source": "/blog/section-80c-checklist-salaried-india-fy",
+        "destination": "/guides/money/section-80c-elss-ppf-lic-india",
+        "permanent": true
+      },
+      {
+        "source": "/blog/nps-vs-ppf-vs-elss-tax-saving-india-comparison",
+        "destination": "/guides/money/ppf-account-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/ppf-vs-nps-vs-mutual-funds-comparison",
+        "destination": "/guides/money/ppf-account-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/itr-filing-deadlines-india",
+        "destination": "/guides/money/salary-tax-calculator-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/freelancer-income-tax-guide-india",
+        "destination": "/guides/money/content-creator-tax-gst-india",
+        "permanent": true
+      },
+      {
+        "source": "/finance/tax",
+        "destination": "/guides/money/salary-tax-calculator-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/emergency-fund-how-much-save-india",
+        "destination": "/blog/emergency-fund-india-how-much-to-save-2026",
+        "permanent": true
+      },
+      {
+        "source": "/blog/emi-calculator-home-loan-india",
+        "destination": "/guides/money/emi-calculator-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/first-home-loan-checklist-india-salaried",
+        "destination": "/guides/money/emi-calculator-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/finance/loans",
+        "destination": "/guides/money/emi-calculator-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/finance/fd",
+        "destination": "/guides/money/fd-vs-rd-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/finance/rd",
+        "destination": "/guides/money/fd-vs-rd-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/ifsc-code-finder-india-guide",
+        "destination": "/guides/money/ifsc-code-finder-india-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/gst-basics-freelancers-sole-proprietors-india",
+        "destination": "/guides/money/gst-calculator-india-freelancers-guide",
+        "permanent": true
+      },
+      {
+        "source": "/blog/pincode-finder-india-postal-guide",
+        "destination": "/tools/pincode-finder",
+        "permanent": true
+      },
+      {
+        "source": "/blog/rto-code-finder-india",
+        "destination": "/guides/money/used-car-rc-rto-vahan-india",
+        "permanent": true
+      },
+      {
+        "source": "/blog/fuel-price-today-india-explained",
+        "destination": "/guides/money/highway-fuel-fastag-trip-planner",
+        "permanent": true
+      },
+      {
+        "source": "/blog/upi-expense-tracking-india",
+        "destination": "/guides/money/track-upi-expenses-phonepe-gpay",
+        "permanent": true
+      },
+      {
+        "source": "/blog/bank-statement-analyzer-india",
+        "destination": "/guides/money/bank-statement-analysis-loan-india",
+        "permanent": true
+      },
+      {
+        "source": "/blog/sarkari-naukri-alert-guide",
+        "destination": "/guides/jobs/how-to-read-sarkari-job-notification",
+        "permanent": true
+      },
+      {
+        "source": "/blog/linkedin-profile-optimization-job-seekers-india",
+        "destination": "/blog/linkedin-profile-india-job-seekers-2026-checklist",
+        "permanent": true
+      },
+      {
+        "source": "/finance/credit-cards",
+        "destination": "/guides/money/credit-card-minimum-due-india",
+        "permanent": true
       }
     ]
   },
