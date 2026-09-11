@@ -166,7 +166,7 @@ export default async function HomePage() {
           href="/guides"
           cta="Open Guides"
           icon={BookOpen}
-          accentClassName="text-violet-300"
+          accentClassName="text-violet-600 dark:text-violet-300"
           items={GUIDE_SECTIONS.slice(0, 4).map((s) => ({
             title: s.shortTitle,
             href: guideSectionPath(s.slug),
@@ -206,7 +206,7 @@ export default async function HomePage() {
           href="/moneyverse"
           cta="Open MoneyVerse"
           icon={Wallet}
-          accentClassName="text-emerald-300"
+          accentClassName="text-emerald-600 dark:text-emerald-300"
           items={[
             {
               title: "Expense tracker",
@@ -247,7 +247,7 @@ export default async function HomePage() {
           href="/goldverse"
           cta="Open GoldVerse"
           icon={Gem}
-          accentClassName="text-amber-300"
+          accentClassName="text-amber-600 dark:text-amber-300"
           items={goldItems}
         />
       </Reveal>
@@ -266,7 +266,7 @@ export default async function HomePage() {
           href="/tools"
           cta="Open Tools"
           icon={Wrench}
-          accentClassName="text-teal-300"
+          accentClassName="text-teal-600 dark:text-teal-300"
           items={toolItems}
         />
       </Reveal>
@@ -284,7 +284,7 @@ export default async function HomePage() {
           href="/jobs"
           cta="Open Jobs"
           icon={Briefcase}
-          accentClassName="text-amber-400"
+          accentClassName="text-amber-600 dark:text-amber-400"
           items={jobItems}
         />
       </Reveal>
@@ -303,7 +303,7 @@ export default async function HomePage() {
           href="/cineverse"
           cta="Open CineVerse"
           icon={Clapperboard}
-          accentClassName="text-indigo-300"
+          accentClassName="text-indigo-600 dark:text-indigo-300"
           items={[
             { title: "Browse movies", href: "/cineverse", meta: "TMDB-powered search" },
             { title: "Watchlist", href: "/cineverse", meta: "Save for later" },

@@ -33,6 +33,7 @@
     --ring: 263 85% 60%;
 
     --radius: 0.75rem;
+    color-scheme: light;
 
     /* Reels strip styling */
     --reel-preview-w: 88px;
@@ -71,6 +72,7 @@
     --border: 240 6% 14%;
     --input: 240 6% 14%;
     --ring: 263 85% 65%;
+    color-scheme: dark;
   }
 }
 

@@ -15,24 +15,32 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "@/components/auth/use-session";
 import { useSignOut } from "@/components/auth/sign-out-button";
-import { getInitials } from "@/lib/utils";
+import { getInitials, cn } from "@/lib/utils";
 
-export function UserNav() {
+export function UserNav({ immersive = false }: { immersive?: boolean }) {
   const { user, loading } = useSession();
   const { signOut, loading: signingOut } = useSignOut();
 
   if (loading) {
     return (
-      <div className="h-9 w-24 rounded-lg bg-muted/50 animate-pulse" aria-hidden />
+      <div className="h-9 w-9 rounded-full bg-muted/50 animate-pulse shrink-0" aria-hidden />
     );
   }
 
   if (!user) {
     return (
       <Link href="/auth/sign-in">
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className={cn(
+            "gap-1.5 shrink-0",
+            immersive &&
+              "border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+          )}
+        >
           <LogIn className="h-4 w-4" />
-          Sign in
+          <span className="hidden sm:inline">Sign in</span>
         </Button>
       </Link>
     );
@@ -44,16 +52,20 @@ export function UserNav() {
   const isAdmin = isAdminRole(user.role);
 
   return (
-    <div className="flex items-center gap-1 shrink-0 min-w-0">
+    <div className="flex items-center gap-1 shrink-0">
       <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 pl-1.5 pr-2.5 max-w-[11rem] shrink-0"
+          className={cn(
+            "gap-2 pl-1 pr-1.5 2xl:pr-2.5 shrink-0",
+            immersive &&
+              "border-white/35 bg-white/15 text-white hover:bg-white/25 hover:text-white"
+          )}
           aria-label={displayName}
         >
-          <Avatar className="h-7 w-7 shrink-0">
+          <Avatar className="h-7 w-7 shrink-0 ring-1 ring-background/40">
             {user.image ? (
               <AvatarImage src={user.image} alt={displayName} />
             ) : null}
@@ -61,7 +73,7 @@ export function UserNav() {
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden md:inline truncate min-w-0 max-w-[7rem] lg:max-w-[9rem]">
+          <span className="hidden 2xl:inline truncate min-w-0 max-w-[8rem]">
             {displayName}
           </span>
         </Button>

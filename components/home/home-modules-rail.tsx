@@ -67,7 +67,7 @@ function ModulePill({ item }: { item: RailItem }) {
       className={cn(
         "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition",
         item.main
-          ? "border-white/15 bg-card shadow-sm hover:border-white/30"
+          ? "border-border/70 bg-card shadow-sm hover:border-foreground/25"
           : "border-border/50 bg-card/70 hover:border-foreground/25 hover:bg-card"
       )}
     >
