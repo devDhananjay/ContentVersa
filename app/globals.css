@@ -82,14 +82,22 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: auto;
-    overflow-x: clip;
+    width: 100%;
     max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
   }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    overflow-x: clip;
+    width: 100%;
     max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
+    position: relative;
   }
   ::selection {
     @apply bg-primary/30 text-foreground;
@@ -344,6 +352,7 @@ html.sr-reduce-motion .sitemap-tree-item::before {
 
 .animate-marquee {
   width: max-content;
+  max-width: none;
   animation: marquee 40s linear infinite;
 }
 

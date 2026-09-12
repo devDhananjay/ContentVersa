@@ -163,7 +163,7 @@ export function Hero({ categories, stats }: Props) {
             </motion.span>
             <motion.span
               className={cn(
-                "mt-2 flex flex-wrap items-baseline justify-center gap-x-[0.35em] gap-y-1 text-[0.55em] sm:text-[0.5em] md:text-[0.48em] font-bold leading-[1.25] min-h-[1.35em]",
+                "mt-2 flex flex-col items-center justify-center gap-y-1 text-[0.55em] sm:text-[0.5em] md:text-[0.48em] font-bold leading-[1.25] min-h-[1.35em] lg:flex-row lg:flex-wrap lg:gap-x-[0.35em]",
                 cinematic ? "text-white/90" : "text-foreground"
               )}
               initial={reduce ? false : { opacity: 0, y: 24 }}

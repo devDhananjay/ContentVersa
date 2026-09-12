@@ -12,7 +12,7 @@ export function HomeHeroShell({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={cn(
-        "relative isolate overflow-hidden",
+        "relative isolate overflow-hidden [clip-path:inset(0)]",
         cinematic && "min-h-[100svh] -mt-[var(--site-header-offset)]"
       )}
     >

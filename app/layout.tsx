@@ -69,7 +69,7 @@ export default function RootLayout({
         <AdSenseSiteScript />
       </head>
       <body
-        className={`${satoshi.variable} ${sourceSerif.variable} ${mono.variable} font-sans antialiased min-h-screen flex flex-col`}
+        className={`${satoshi.variable} ${sourceSerif.variable} ${mono.variable} font-sans antialiased min-h-screen min-w-0 flex flex-col`}
       >
         <ThemeProvider
           attribute="class"
@@ -80,7 +80,7 @@ export default function RootLayout({
           <SessionProvider>
           <BookmarkStatusProvider>
           <SkipToMainLink />
-          <div id="site-content" className="flex flex-1 flex-col min-h-0 max-w-full overflow-x-clip">
+          <div id="site-content" className="flex flex-1 flex-col min-h-0 min-w-0 w-full max-w-full overflow-x-hidden">
             <SiteHeader />
             <main
               id="main-content"

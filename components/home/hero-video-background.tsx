@@ -118,7 +118,13 @@ export function HeroVideoBackground({ className }: { className?: string }) {
   if (!enabled) return null;
 
   return (
-    <div className={cn("hero-video-active absolute inset-0 overflow-hidden", className)} aria-hidden>
+    <div
+      className={cn(
+        "hero-video-active absolute inset-0 overflow-hidden [clip-path:inset(0)] [contain:paint]",
+        className
+      )}
+      aria-hidden
+    >
       {src && !failed ? (
         <video
           ref={videoRef}
@@ -129,7 +135,7 @@ export function HeroVideoBackground({ className }: { className?: string }) {
           preload="none"
           disablePictureInPicture
           controls={false}
-          className="absolute left-1/2 top-1/2 h-full w-full min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover object-center scale-[1.35] sm:scale-[1.4] lg:scale-[1.45]"
+          className="absolute inset-0 h-full w-full object-cover object-center"
           onError={() => setFailed(true)}
         >
           <source src={src} type="video/mp4" />

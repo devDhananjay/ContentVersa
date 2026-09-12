@@ -73,17 +73,17 @@ export function Navbar({
   return (
     <header
       className={cn(
-        "overflow-x-clip",
+        "overflow-x-hidden",
         !embedded && "border-b border-border/50 bg-background/95 backdrop-blur-xl"
       )}
     >
-      <div className="container flex h-[3.75rem] w-full max-w-full min-w-0 items-center gap-2 xl:gap-3 flex-nowrap overflow-x-clip">
+      <div className="container flex h-[3.75rem] w-full max-w-full min-w-0 items-center gap-2 xl:gap-3 flex-nowrap overflow-x-hidden">
         <Logo src={logoSrc} size="sm" immersive={immersive} className="shrink-0" />
 
         {/* Nav links — fixed width cluster so Jobs never gets crushed */}
         <nav
-          className={cn(
-            "hidden lg:flex flex-1 items-center gap-0.5 min-w-0 ml-1 rounded-full border px-0.5 py-0.5 overflow-x-auto scrollbar-hide",
+      className={cn(
+        "hidden lg:flex flex-1 items-center gap-0.5 min-w-0 ml-1 rounded-full border px-0.5 py-0.5 overflow-x-auto scrollbar-hide overscroll-x-contain",
             immersive
               ? "border-white/10 bg-white/5 backdrop-blur-md"
               : "border-border/50 bg-muted/30 backdrop-blur-sm"

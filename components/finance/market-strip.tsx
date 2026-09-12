@@ -35,15 +35,17 @@ export function MarketStrip({ data, embedded }: MarketStripProps) {
           </Link>
         </div>
 
-        {/* Auto-scrolling gainers */}
-        <div className="flex-1 min-w-0 overflow-hidden relative">
+        {/* Auto-scrolling gainers — absolute so max-content width cannot expand the page */}
+        <div className="relative h-8 min-w-0 flex-1 overflow-hidden [contain:paint] [isolation:isolate]">
           <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-background/95 to-transparent z-[1] pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-background/95 to-transparent z-[1] pointer-events-none" />
 
-          <div className="flex items-center min-h-8 animate-marquee hover:[animation-play-state:paused] py-0.5">
-            {[...gainers, ...gainers].map((stock, i) => (
-              <GainerPill key={`${stock.symbol}-${i}`} stock={stock} />
-            ))}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="flex h-full items-center animate-marquee hover:[animation-play-state:paused]">
+              {[...gainers, ...gainers].map((stock, i) => (
+                <GainerPill key={`${stock.symbol}-${i}`} stock={stock} />
+              ))}
+            </div>
           </div>
         </div>
       </div>

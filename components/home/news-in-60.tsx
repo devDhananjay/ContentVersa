@@ -38,7 +38,7 @@ export function NewsIn60Section({ blogs }: { blogs: Blog[] }) {
         </div>
       </div>
 
-      <div className="flex gap-5 overflow-x-auto pb-4 px-4 md:px-[max(1rem,calc((100vw-1280px)/2+1rem))] snap-x snap-mandatory scrollbar-thin">
+      <div className="flex gap-5 overflow-x-auto pb-4 px-4 md:px-[max(1rem,calc((100%-1280px)/2+1rem))] snap-x snap-mandatory scrollbar-thin">
         {shorts.map((blog, i) => (
           <div
             key={blog.slug}

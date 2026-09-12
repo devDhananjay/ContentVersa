@@ -100,14 +100,16 @@ export function HomeModulesRail() {
           Modules
         </span>
 
-        <div className="relative min-w-0 flex-1 overflow-hidden">
+        <div className="relative h-9 min-w-0 flex-1 overflow-hidden [contain:paint] [isolation:isolate]">
           <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-6 bg-gradient-to-r from-background/95 to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-6 bg-gradient-to-l from-background/95 to-transparent" />
 
-          <div className="flex w-max items-center gap-2 animate-marquee hover:[animation-play-state:paused]">
-            {loop.map((item, index) => (
-              <ModulePill key={`${item.href}-${index}`} item={item} />
-            ))}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="flex h-full w-max items-center gap-2 animate-marquee hover:[animation-play-state:paused]">
+              {loop.map((item, index) => (
+                <ModulePill key={`${item.href}-${index}`} item={item} />
+              ))}
+            </div>
           </div>
         </div>
 

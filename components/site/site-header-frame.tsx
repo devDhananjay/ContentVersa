@@ -30,7 +30,7 @@ export function SiteHeaderFrame({
       id="site-header"
       data-immersive={immersive ? "true" : "false"}
       className={cn(
-        "fixed top-0 inset-x-0 z-50 overflow-x-hidden transition-[background-color,box-shadow,border-color] duration-500",
+        "fixed top-0 inset-x-0 z-50 w-full max-w-full overflow-x-hidden overflow-y-hidden transition-[background-color,box-shadow,border-color] duration-500",
         immersive
           ? "border-b border-white/10 bg-gradient-to-b from-black/70 via-black/35 to-transparent shadow-none"
           : "border-b border-border/50 bg-background/88 backdrop-blur-2xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.45)]"

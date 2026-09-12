@@ -56,11 +56,12 @@ export function CricketStrip() {
             Cricket
           </Link>
 
-          <div className="relative min-w-0 flex-1 overflow-hidden">
+          <div className="relative h-12 min-w-0 flex-1 overflow-hidden [contain:paint] [isolation:isolate]">
             <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-8 bg-gradient-to-r from-background to-transparent" />
             <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-8 bg-gradient-to-l from-background to-transparent" />
 
-            <div className="flex w-max items-center gap-3 animate-marquee-cricket hover:[animation-play-state:paused]">
+            <div className="absolute inset-0 overflow-hidden">
+            <div className="flex h-full w-max items-center gap-3 animate-marquee-cricket hover:[animation-play-state:paused]">
               {loop.map((m, i) => (
                 <Link
                   key={`${m.id}-${i}`}
@@ -84,6 +85,7 @@ export function CricketStrip() {
                   </span>
                 </Link>
               ))}
+            </div>
             </div>
           </div>
         </div>
