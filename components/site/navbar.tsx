@@ -73,17 +73,17 @@ export function Navbar({
   return (
     <header
       className={cn(
-        "overflow-x-hidden",
+        "overflow-x-clip",
         !embedded && "border-b border-border/50 bg-background/95 backdrop-blur-xl"
       )}
     >
-      <div className="container flex h-[3.75rem] w-full max-w-full min-w-0 items-center gap-2 xl:gap-3 flex-nowrap overflow-x-hidden">
+      <div className="container flex h-[3.75rem] items-center gap-2 xl:gap-3 flex-nowrap min-w-0">
         <Logo src={logoSrc} size="sm" immersive={immersive} className="shrink-0" />
 
         {/* Nav links — fixed width cluster so Jobs never gets crushed */}
         <nav
-      className={cn(
-        "hidden lg:flex flex-1 items-center gap-0.5 min-w-0 ml-1 rounded-full border px-0.5 py-0.5 overflow-x-auto scrollbar-hide overscroll-x-contain",
+          className={cn(
+            "hidden lg:flex items-center gap-0.5 shrink-0 ml-1 rounded-full border px-0.5 py-0.5",
             immersive
               ? "border-white/10 bg-white/5 backdrop-blur-md"
               : "border-border/50 bg-muted/30 backdrop-blur-sm"
@@ -120,7 +120,7 @@ export function Navbar({
         {/* Breathing room between Jobs and weather */}
         <div className="flex-1 min-w-4" aria-hidden />
 
-        <div className="ml-auto hidden md:flex items-center gap-2 shrink-0">
+        <div className="hidden md:flex items-center gap-2 shrink-0">
           <NavWeatherChip immersive={immersive} className="hidden lg:inline-flex" />
           {!isBlogsPage && (
             <div className="hidden 2xl:flex items-center relative w-36 shrink-0">
@@ -176,15 +176,7 @@ export function Navbar({
           <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
             <ThemeToggle />
           </div>
-          <div
-            className={cn(
-              "shrink-0",
-              immersive &&
-                "[&_button]:border-white/35 [&_button]:bg-white/10 [&_button]:text-white [&_button]:hover:bg-white/20 [&_button]:hover:text-white"
-            )}
-          >
-            <UserNav />
-          </div>
+          <UserNav />
         </div>
 
         <div className="flex items-center gap-1.5 md:hidden shrink-0">

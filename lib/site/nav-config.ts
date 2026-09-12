@@ -35,8 +35,6 @@ export type NavDropdown = {
 };
 
 export const NAV_TOP_LINKS: NavLinkItem[] = [
-  { href: "/guides", label: "Guides", icon: BookOpen },
-  { href: "/blogs", label: "Articles", icon: Compass },
   { href: "/trending", label: "Trending", icon: Flame },
   { href: "/sports", label: "Sports", icon: Medal },
   { href: "/finance", label: "Finance", icon: TrendingUp },
