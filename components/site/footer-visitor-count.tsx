@@ -10,14 +10,17 @@ export function FooterVisitorCount() {
   React.useEffect(() => {
     fetch("/api/site/stats", { credentials: "include" })
       .then((r) => r.json())
-      .then((data: { count?: number }) => setCount(data.count ?? 0))
+      .then((data: { count?: number }) => {
+        const next = typeof data?.count === "number" ? data.count : 0;
+        setCount(next);
+      })
       .catch(() => setCount(0));
   }, []);
 
   React.useEffect(() => {
     const onRecorded = (e: Event) => {
       const detail = (e as CustomEvent<{ uniqueVisitors?: number }>).detail;
-      if (typeof detail?.uniqueVisitors === "number") {
+      if (typeof detail?.uniqueVisitors === "number" && detail.uniqueVisitors > 0) {
         setCount(detail.uniqueVisitors);
       }
     };
@@ -25,7 +28,7 @@ export function FooterVisitorCount() {
     return () => window.removeEventListener("cv-site-visit", onRecorded);
   }, []);
 
-  if (count === null) return null;
+  if (count === null || count <= 0) return null;
 
   return (
     <div className="mt-8 flex justify-center">
@@ -35,7 +38,7 @@ export function FooterVisitorCount() {
           <span className="font-semibold text-foreground tabular-nums">
             {formatNumber(count)}
           </span>{" "}
-          website {count === 1 ? "visitor" : "visitors"} so far
+          {count === 1 ? "reader" : "readers"} so far
         </span>
       </p>
     </div>

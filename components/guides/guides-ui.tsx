@@ -35,7 +35,7 @@ export function GuideSectionCard({ section }: { section: GuideSection }) {
         {section.shortTitle}
       </h3>
       <p className="mt-1 text-xs font-medium text-muted-foreground">
-        {section.template}
+        {section.cardSubtext}
       </p>
       <p className="mt-2 flex-1 text-sm text-muted-foreground leading-relaxed">
         {section.description}

@@ -63,8 +63,8 @@ export const metadata: Metadata = buildMetadata({
 const HOME_SIDEBAR_SECTIONS = [
   { id: "home-top", label: "Home" },
   { id: "home-articles", label: "Articles" },
-  { id: "home-guides", label: "Guides" },
   { id: "home-latest", label: "Latest" },
+  { id: "home-guides", label: "Guides" },
   { id: "continue-reading", label: "Continue" },
   { id: "trending-topics", label: "Trending" },
   { id: "explore-modules", label: "Modules" },
@@ -153,6 +153,11 @@ export default async function HomePage() {
 
       <ContinueReadingStrip />
 
+      <TrendingSection blogs={data.trending} />
+      <Reveal>
+        <LatestSection blogs={data.latest} />
+      </Reveal>
+
       <Reveal>
         <HomeModuleSpotlight
           id="home-guides"
@@ -168,16 +173,12 @@ export default async function HomePage() {
           icon={BookOpen}
           accentClassName="text-violet-300"
           items={GUIDE_SECTIONS.slice(0, 4).map((s) => ({
-            title: s.shortTitle,
+            kicker: s.shortTitle,
+            title: s.cardTitle,
             href: guideSectionPath(s.slug),
-            meta: s.template,
+            meta: s.cardSubtext,
           }))}
         />
-      </Reveal>
-
-      <TrendingSection blogs={data.trending} />
-      <Reveal>
-        <LatestSection blogs={data.latest} />
       </Reveal>
 
       <TrendingStrip />
@@ -259,10 +260,10 @@ export default async function HomePage() {
           eyebrow="India Tools"
           title={
             <>
-              {TOOL_REGISTRY.length} free <span className="text-gradient">utilities</span>
+              Calculators that <span className="text-gradient">support the guides</span>
             </>
           }
-          description="IFSC, weather, EMI, nearby places and more — no signup needed to browse."
+          description="Supporting calculators for the guides — IFSC, EMI, weather and more."
           href="/tools"
           cta="Open Tools"
           icon={Wrench}

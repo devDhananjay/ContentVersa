@@ -51,7 +51,7 @@ export function guideSectionFaq(section: GuideSection) {
   return [
     {
       q: `What is the ${section.shortTitle} guide format?`,
-      a: `We use the template “${section.template}” so each page answers the search intent clearly with eligibility, steps, or key facts.`,
+      a: `Each ${section.shortTitle} page is a finished explainer with eligibility, steps, or key facts — not a placeholder. Always verify schemes and jobs on official portals before applying.`,
     },
     {
       q: "Is this an official government website?",

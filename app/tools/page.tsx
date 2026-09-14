@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ToolsHubGrid, ToolsHubIntro } from "@/components/tools/tools-hub-grid";
-import { HubAdSense } from "@/components/ads/hub-adsense";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
@@ -85,7 +84,6 @@ export default function ToolsHubPage() {
           .
         </p>
       </HubEditorialIntro>
-      <HubAdSense className="my-2" />
       <ToolsHubGrid />
       <TopicClustersHubStrip
         title="Topic clusters"

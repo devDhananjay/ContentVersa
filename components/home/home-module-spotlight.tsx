@@ -9,6 +9,7 @@ export type ModuleSpotlightItem = {
   title: string;
   href: string;
   meta?: string;
+  kicker?: string;
 };
 
 type HomeModuleSpotlightProps = {
@@ -67,6 +68,11 @@ export function HomeModuleSpotlight({
               href={item.href}
               className="rounded-2xl border border-border/60 bg-card/70 p-4 transition hover:border-foreground/20 hover:bg-card"
             >
+              {item.kicker ? (
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {item.kicker}
+                </p>
+              ) : null}
               <p className="font-semibold leading-snug">{item.title}</p>
               {item.meta ? (
                 <p className="mt-1 text-xs text-muted-foreground">{item.meta}</p>

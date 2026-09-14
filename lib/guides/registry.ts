@@ -44,7 +44,9 @@ export type GuideSection = {
   slug: GuideSectionSlug;
   title: string;
   shortTitle: string;
-  template: string;
+  /** Homepage / hub card headline — never use bracket placeholders. */
+  cardTitle: string;
+  cardSubtext: string;
   description: string;
   keywords: string[];
   badge: string;
@@ -56,7 +58,9 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     slug: "trending",
     title: "Why Is It Trending in India?",
     shortTitle: "Trending",
-    template: "[Trending Topic] — Why is it trending?",
+    cardTitle: "Daily Trend Radar — Why Topics Spike in India",
+    cardSubtext:
+      "Breakdown of trending discussions, viral debates, and search spikes.",
     description:
       "Clear explainers on why topics spike on Google Trends, social media, and news in India — context, timeline, and what to watch next.",
     keywords: [
@@ -70,8 +74,10 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   {
     slug: "cricket",
     title: "Cricket Match Guides — Live Updates & Key Moments",
-    shortTitle: "Cricket",
-    template: "[Cricket Match] — Live Updates & Key Moments",
+    shortTitle: "Sports / Cricket",
+    cardTitle: "Matchday Central — Live Analysis & Match Moments",
+    cardSubtext:
+      "Scorecard summaries, key player moments, and tournament breakdowns.",
     description:
       "How to follow India cricket match days: key moments, scorecard reading, and where to get live updates on ContentVerse India Sports.",
     keywords: [
@@ -86,7 +92,9 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     slug: "schemes",
     title: "Government Schemes — Eligibility & How to Apply",
     shortTitle: "Govt Schemes",
-    template: "[Government Scheme] — Eligibility & How to Apply",
+    cardTitle: "Indian Welfare Schemes — Eligibility & How to Apply",
+    cardSubtext:
+      "Step-by-step guides, required documents, and official application portals.",
     description:
       "India government scheme explainers: who is eligible, documents needed, and how to apply on official portals — with clear disclaimers.",
     keywords: [
@@ -99,8 +107,10 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   {
     slug: "jobs",
     title: "Job Notifications — Eligibility, Salary & Last Date",
-    shortTitle: "Job Alerts",
-    template: "[Job Notification] — Eligibility, Salary & Last Date",
+    shortTitle: "Jobs & Careers",
+    cardTitle: "Sarkari & Corporate Openings — Eligibility, Pay & Deadlines",
+    cardSubtext:
+      "Verified vacancy notifications, salary structures, and last dates.",
     description:
       "How to read sarkari and private job notifications: eligibility, pay scale, last date, and official apply links.",
     keywords: [
@@ -115,7 +125,8 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     slug: "ai-tools",
     title: "AI Tools — How to Use Them in India",
     shortTitle: "AI Tools",
-    template: "[AI Tool] — How to Use It",
+    cardTitle: "Practical AI How-tos for India",
+    cardSubtext: "Setup, prompts, privacy tips, and everyday use-cases.",
     description:
       "Practical how-tos for popular AI tools — setup, prompts, privacy tips, and use-cases for students and creators in India.",
     keywords: [
@@ -130,7 +141,8 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     slug: "movies",
     title: "Movies & Web Series — Release, Cast & Where to Watch",
     shortTitle: "Movies / OTT",
-    template: "[Movie/Web Series] — Release Date, Cast & Where to Watch",
+    cardTitle: "OTT & Cinema Guides for India",
+    cardSubtext: "Release dates, cast, and where to watch legally.",
     description:
       "India OTT and cinema guides: release dates, cast, and where to watch legally on Netflix, Prime, JioCinema, and more.",
     keywords: [
@@ -145,7 +157,8 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     slug: "money",
     title: "Money Guides — EMI, SIP, IFSC, Tax & GST",
     shortTitle: "Money",
-    template: "[Money Topic] — How It Works in India",
+    cardTitle: "Money Guides for India",
+    cardSubtext: "EMI, SIP, tax, IFSC and GST explained in plain language.",
     description:
       "Practical India money explainers: EMI and SIP maths, IFSC transfers, salary tax regimes, and GST on invoices — with free calculators and clear disclaimers.",
     keywords: [

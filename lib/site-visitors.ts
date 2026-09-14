@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { cookies } from "next/headers";
+import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 
 const SITE_VISITOR_COOKIE = "cv_site";
@@ -45,8 +46,20 @@ export async function recordSiteVisit(input: {
 
 export async function getSiteVisitorCount(): Promise<number> {
   if (!isDatabaseConfigured()) return 0;
+
   try {
-    return await prisma.siteVisitor.count();
+    const unique = await prisma.siteVisitor.count();
+    if (unique > 0) return unique;
+  } catch {
+    /* SiteVisitor table may not exist yet on older DBs */
+  }
+
+  try {
+    const views = await prisma.blog.aggregate({
+      where: { status: BlogStatus.PUBLISHED },
+      _sum: { views: true },
+    });
+    return views._sum.views ?? 0;
   } catch {
     return 0;
   }

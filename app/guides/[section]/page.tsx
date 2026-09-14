@@ -65,7 +65,6 @@ export default async function GuideSectionPage({ params }: Props) {
         <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
           {section.title}
         </h1>
-        <p className="text-sm font-medium text-primary">{section.template}</p>
         <p className="text-muted-foreground leading-relaxed">
           {section.description}
         </p>
@@ -77,10 +76,8 @@ export default async function GuideSectionPage({ params }: Props) {
 
       <HubEditorialIntro title={`About ${section.shortTitle} guides`}>
         <p>
-          Pages in this section follow the template{" "}
-          <strong>{section.template}</strong>. That structure matches common
-          India search queries and keeps answers scannable for readers and
-          crawlers.
+          Each page in this section is a finished explainer — eligibility, steps, or
+          key facts — written so Indian search queries can be answered in one scan.
         </p>
       </HubEditorialIntro>
 
