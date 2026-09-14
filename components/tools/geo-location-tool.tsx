@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export function GeoLocationTool() {
   const [lat, setLat] = React.useState("");
@@ -91,7 +92,9 @@ export function GeoLocationTool() {
             </div>
           ) : null}
           <p className="text-xs text-muted-foreground">
-            Browser GPS + OpenStreetMap Nominatim (free). No Google key needed for this tool.
+            {SHOW_THIRD_PARTY_CREDITS
+              ? "Browser GPS + OpenStreetMap Nominatim (free). No Google key needed for this tool."
+              : "Uses your browser GPS (with permission) to show latitude, longitude and address."}
           </p>
         </CardContent>
       </Card>

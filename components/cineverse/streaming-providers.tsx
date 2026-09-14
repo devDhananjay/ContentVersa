@@ -14,7 +14,7 @@ export function StreamingProviders({
   if (!providers.length) {
     return (
       <div className="rounded-xl border border-dashed border-border/60 bg-muted/20 p-4 text-sm text-muted-foreground">
-        No India streaming data from TMDB yet.{" "}
+        No India streaming links listed yet.{" "}
         <a
           href={justWatchSearchUrl(movieTitle)}
           target="_blank"

@@ -15,6 +15,7 @@ import { getCineverseHubDataCached } from "@/lib/cineverse/data";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { CINEVERSE_HUB_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export const dynamic = "force-dynamic";
 
@@ -55,8 +56,10 @@ export default async function CineverseHubPage() {
         <p>
           CineVerse is ContentVerse India&apos;s movie search companion for India — every film page
           covers release date, cast, trailer, story, ratings, OTT release date, where to watch,
-          and reviews. Metadata is powered by TMDB; editorial reviews and lists live in the
-          Movies category.
+          and reviews
+          {SHOW_THIRD_PARTY_CREDITS
+            ? ". Metadata is powered by TMDB; editorial reviews and lists live in the Movies category."
+            : ". Editorial reviews and lists live in the Movies category."}
         </p>
         <p>
           Search intents like &quot;Movie Name OTT Release Date&quot; or where to watch. Also see{" "}
@@ -102,18 +105,20 @@ export default async function CineverseHubPage() {
 
       <RelatedHubs current="cineverse" contained />
 
-      <p className="text-center text-[10px] text-muted-foreground">
-        Movie data provided by{" "}
-        <a
-          href="https://www.themoviedb.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-foreground"
-        >
-          TMDB
-        </a>
-        . ContentVerse India is not endorsed or certified by TMDB.
-      </p>
+      {SHOW_THIRD_PARTY_CREDITS ? (
+        <p className="text-center text-[10px] text-muted-foreground">
+          Movie data provided by{" "}
+          <a
+            href="https://www.themoviedb.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-foreground"
+          >
+            TMDB
+          </a>
+          . ContentVerse India is not endorsed or certified by TMDB.
+        </p>
+      ) : null}
     </div>
   );
 }

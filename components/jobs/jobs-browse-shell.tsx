@@ -4,6 +4,7 @@ import { ArrowRight, Building2, Landmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { JobsNav } from "@/components/jobs/jobs-nav";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1600";
@@ -30,7 +31,9 @@ export function JobsBrowseShell({ children }: { children: React.ReactNode }) {
             Jobs Hub
           </h1>
           <p className="mt-1.5 text-sm text-foreground/75 max-w-xl">
-            Government vacancies via Sarkari Result and curated private-sector openings.
+            {SHOW_THIRD_PARTY_CREDITS
+              ? "Government vacancies via Sarkari Result and curated private-sector openings."
+              : "Government vacancies and curated private-sector openings for India."}
           </p>
         </div>
       </section>
@@ -58,7 +61,8 @@ export function JobsHubCards() {
         <h2 className="font-display text-xl font-bold">Government Jobs</h2>
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
           Latest sarkari notifications — jobs, results, admit cards, answer keys, admissions and
-          syllabus from Sarkari Result.
+          syllabus
+          {SHOW_THIRD_PARTY_CREDITS ? " from Sarkari Result." : "."}
         </p>
         <Button variant="link" className="px-0 mt-3 gap-1 text-amber-600 dark:text-amber-400">
           Browse govt updates

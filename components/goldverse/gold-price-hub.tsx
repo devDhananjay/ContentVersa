@@ -22,6 +22,7 @@ import {
 } from "@/lib/goldverse/gold-utils";
 import type { GoldPriceSnapshot, GoldRateRow } from "@/lib/goldverse/types";
 import { cn } from "@/lib/utils";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 function formatInr(n: number) {
   return n.toLocaleString("en-IN");
@@ -94,7 +95,7 @@ export function GoldPriceHub({ initial }: { initial: GoldPriceSnapshot }) {
             </p>
             <p className="mt-1 text-[11px] text-muted-foreground">
               Per 10g · {updated}
-              {data.source !== "5paisa" ? (
+              {SHOW_THIRD_PARTY_CREDITS && data.source !== "5paisa" ? (
                 <>
                   {" · "}
                   <span
@@ -125,7 +126,7 @@ export function GoldPriceHub({ initial }: { initial: GoldPriceSnapshot }) {
           </button>
         </div>
 
-        {data.source !== "5paisa" ? (
+        {SHOW_THIRD_PARTY_CREDITS && data.source !== "5paisa" ? (
           <div className="mt-3 flex gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[11px] text-muted-foreground">
             <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
             <p>

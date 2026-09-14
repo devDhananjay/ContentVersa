@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { HELP_SUGGESTIONS, detectLocale } from "@/lib/help/chat-knowledge";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { AccessibilityHub } from "@/components/a11y/accessibility-hub";
 
 export const HELP_CHAT_OPEN_EVENT = "contentverse:help-chat-open";
@@ -41,7 +42,7 @@ const COPY = {
     thinking: "ContentVerse India AI is thinking…",
     poweredFaq: "Instant answer",
     poweredSearch: "From site search",
-    poweredAi: "Gemini AI",
+    poweredAi: SHOW_THIRD_PARTY_CREDITS ? "Gemini AI" : "AI",
     close: "Close help",
     open: "Open ContentVerse India AI",
     newsletterTitle: "Weekly newsletter",
@@ -58,7 +59,7 @@ const COPY = {
     thinking: "ContentVerse India AI सोच रहा है…",
     poweredFaq: "तुरंत जवाब",
     poweredSearch: "साइट खोज से",
-    poweredAi: "Gemini AI",
+    poweredAi: SHOW_THIRD_PARTY_CREDITS ? "Gemini AI" : "AI",
     close: "बंद करें",
     open: "ContentVerse India AI खोलें",
     newsletterTitle: "Weekly newsletter",

@@ -1,4 +1,5 @@
 import { callGeminiText, isGeminiConfigured } from "@/lib/ai/gemini";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { fetchCineverseHubData } from "./tmdb-hub";
 import type { CineMovie, CineRecommendResult } from "./types";
 
@@ -40,7 +41,9 @@ export async function recommendMovies(input: RecommendInput): Promise<CineRecomm
 
   if (!movies.length) {
     return {
-      blurb: "Add TMDB credentials to enable live recommendations.",
+      blurb: SHOW_THIRD_PARTY_CREDITS
+        ? "Add TMDB credentials to enable live recommendations."
+        : "Movie recommendations will appear when listings are available.",
       picks: [],
       source: "local",
     };

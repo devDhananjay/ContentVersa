@@ -305,7 +305,7 @@ export default async function HomePage() {
           icon={Clapperboard}
           accentClassName="text-indigo-300"
           items={[
-            { title: "Browse movies", href: "/cineverse", meta: "TMDB-powered search" },
+            { title: "Browse movies", href: "/cineverse", meta: "Search by title" },
             { title: "Watchlist", href: "/cineverse", meta: "Save for later" },
             { title: "AI picks", href: "/cineverse", meta: "What to watch tonight" },
             { title: "OTT India", href: "/cineverse", meta: "Popular across platforms" },

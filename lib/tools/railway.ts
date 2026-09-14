@@ -1,5 +1,7 @@
 /** Indian Railways helpers — format checks + official deep links. */
 
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
+
 export function isValidPnr(pnr: string): boolean {
   return /^\d{10}$/.test(pnr.trim());
 }
@@ -12,15 +14,17 @@ export function pnrCheckLinks(pnr: string) {
   const p = encodeURIComponent(pnr.trim());
   return [
     {
-      label: "ConfirmTkt PNR status",
+      label: SHOW_THIRD_PARTY_CREDITS ? "ConfirmTkt PNR status" : "PNR status check",
       href: `https://www.confirmtkt.com/pnr/${p}`,
     },
     {
-      label: "RailYatri PNR status",
+      label: SHOW_THIRD_PARTY_CREDITS ? "RailYatri PNR status" : "Alternate PNR check",
       href: `https://www.railyatri.in/pnr-status/${p}`,
     },
     {
-      label: "IRCTC (login may be required)",
+      label: SHOW_THIRD_PARTY_CREDITS
+        ? "IRCTC (login may be required)"
+        : "Official booking site",
       href: "https://www.irctc.co.in/nget/train-search",
     },
   ];
@@ -30,15 +34,15 @@ export function trainStatusLinks(trainNumber: string) {
   const t = encodeURIComponent(trainNumber.trim());
   return [
     {
-      label: "RailYatri live train status",
+      label: SHOW_THIRD_PARTY_CREDITS ? "RailYatri live train status" : "Live train status",
       href: `https://www.railyatri.in/live-train-status/${t}`,
     },
     {
-      label: "ConfirmTkt running status",
+      label: SHOW_THIRD_PARTY_CREDITS ? "ConfirmTkt running status" : "Running status",
       href: `https://www.confirmtkt.com/train-running-status/${t}`,
     },
     {
-      label: "NTES (official enquiry)",
+      label: SHOW_THIRD_PARTY_CREDITS ? "NTES (official enquiry)" : "Official enquiry",
       href: "https://enquiry.indianrail.gov.in/ntes/",
     },
   ];
@@ -101,7 +105,9 @@ export async function lookupPnr(pnr: string): Promise<PnrLookupResult> {
           journeyDate: String(data.doj || data.journeyDate || "") || undefined,
           chartPrepared: Boolean(data.chartPrepared ?? data.ChartPrepared),
           source: "confirmtkt",
-          message: "Live status fetched. Always reconfirm on IRCTC before travel.",
+          message: SHOW_THIRD_PARTY_CREDITS
+            ? "Live status fetched. Always reconfirm on IRCTC before travel."
+            : "Live status fetched. Always reconfirm on the official railway site before travel.",
         };
       }
     }
@@ -137,8 +143,9 @@ export function buildTrainStatusResult(trainNumber: string): TrainStatusResult {
   return {
     ok: true,
     trainNumber: clean,
-    message:
-      "Open a live status provider below. NTES is the official Indian Railways enquiry site.",
+    message: SHOW_THIRD_PARTY_CREDITS
+      ? "Open a live status provider below. NTES is the official Indian Railways enquiry site."
+      : "Open a live status link below. Always reconfirm on the official railway enquiry site before travel.",
     links: trainStatusLinks(clean),
   };
 }

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { CineMovie, CineRecommendResult } from "@/lib/cineverse/types";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 const MOODS = ["Bollywood weekend", "OTT binge", "South masala", "Family night", "Thriller"];
 
@@ -118,7 +119,7 @@ export function CineverseAiRecommend() {
       {searching && !searchResults ? (
         <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Searching TMDB…
+          Searching movies…
         </div>
       ) : null}
 
@@ -270,9 +271,11 @@ export function CineverseAiRecommend() {
                 </Link>
               ))}
             </div>
-            <p className="text-[10px] text-muted-foreground">
-              Powered by {result.source === "gemini" ? "Gemini AI" : "local picks"} · TMDB data
-            </p>
+            {SHOW_THIRD_PARTY_CREDITS ? (
+              <p className="text-[10px] text-muted-foreground">
+                Powered by {result.source === "gemini" ? "Gemini AI" : "local picks"} · TMDB data
+              </p>
+            ) : null}
           </div>
         ) : null}
       </div>

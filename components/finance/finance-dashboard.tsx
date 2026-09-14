@@ -6,6 +6,7 @@ import { StockTable } from "./stock-table";
 import { WatchlistPanel } from "./watchlist-panel";
 import { Badge } from "@/components/ui/badge";
 import { Activity } from "lucide-react";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 interface FinanceDashboardProps {
   data: FinanceHubData;
@@ -35,7 +36,8 @@ export function FinanceDashboard({ data }: FinanceDashboardProps) {
           <IndexCard index={data.nifty} compact className="sm:col-span-1" />
           <IndexCard index={data.sensex} compact className="sm:col-span-1" />
           <div className="col-span-2 hidden sm:flex items-center rounded-lg border border-dashed border-border/40 px-3 text-[10px] text-muted-foreground">
-            Indian markets · Nifty 50 constituents · Yahoo Finance data
+            Indian markets · Nifty 50 constituents
+            {SHOW_THIRD_PARTY_CREDITS ? " · Yahoo Finance data" : ""}
           </div>
         </div>
 

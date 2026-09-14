@@ -50,7 +50,7 @@ export async function CineverseBrowseShell({
           </div>
           <MovieGrid
             movies={hub.trending}
-            emptyMessage="Add TMDB_API_KEY or TMDB_READ_ACCESS_TOKEN to show live movie data."
+            emptyMessage="Movie listings will appear here when data is available."
           />
         </section>
 

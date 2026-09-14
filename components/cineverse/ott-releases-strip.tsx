@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Clapperboard, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { CineMovie } from "@/lib/cineverse/types";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 function formatRelease(date?: string) {
   if (!date) return "TBA";
@@ -28,7 +29,9 @@ export function OttReleasesStrip({ movies }: { movies: CineMovie[] }) {
             Coming <span className="text-gradient">Soon</span>
           </h2>
           <p className="text-sm text-muted-foreground">
-            Theatrical & OTT window dates via TMDB (India region)
+            {SHOW_THIRD_PARTY_CREDITS
+              ? "Theatrical & OTT window dates via TMDB (India region)"
+              : "Theatrical & OTT window dates for India"}
           </p>
         </div>
       </div>
@@ -64,7 +67,9 @@ export function OttReleasesStrip({ movies }: { movies: CineMovie[] }) {
         ))}
       </div>
       <p className="mt-2 text-[10px] text-muted-foreground">
-        India release dates via TMDB · Tap a title for streaming & trailers
+        {SHOW_THIRD_PARTY_CREDITS
+          ? "India release dates via TMDB · Tap a title for streaming & trailers"
+          : "Tap a title for streaming & trailers"}
       </p>
     </section>
   );

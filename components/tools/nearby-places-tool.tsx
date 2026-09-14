@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 type Place = {
   name: string;
@@ -195,8 +196,9 @@ export function NearbyPlacesTool({
         </Card>
       ) : null}
       <p className="text-xs text-muted-foreground">
-        Powered by Google Places. Distance is approximate straight-line distance from your selected
-        location; route distance can differ.
+        Distance is approximate straight-line distance from your selected location; route
+        distance can differ.
+        {SHOW_THIRD_PARTY_CREDITS ? " Powered by Google Places." : ""}
       </p>
     </div>
   );

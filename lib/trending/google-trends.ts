@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { callGeminiText, isGeminiConfigured } from "@/lib/ai/gemini";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export type TrendNewsItem = {
   title: string;
@@ -191,7 +192,7 @@ export function localTrendSummary(trend: {
   newsItems?: TrendNewsItem[];
 }): string {
   return [
-    `"${trend.title}" is currently among India's Google Trends searches${
+    `"${trend.title}" is currently among India's ${SHOW_THIRD_PARTY_CREDITS ? "Google Trends searches" : "trending searches"}${
       trend.traffic ? ` (~${trend.traffic} searches)` : ""
     }.`,
     trend.newsItems?.length
@@ -217,7 +218,9 @@ export function shortTrendBlurb(trend: {
     return source ? `${clipped} (${source})` : clipped;
   }
   if (trend.traffic) {
-    return `Spiking on Google Trends India with ~${trend.traffic} relative searches — open for a short briefing.`;
+    return SHOW_THIRD_PARTY_CREDITS
+      ? `Spiking on Google Trends India with ~${trend.traffic} relative searches — open for a short briefing.`
+      : `Spiking in India with ~${trend.traffic} relative searches — open for a short briefing.`;
   }
   return `Trending on Google search in India right now — open for context and related headlines.`;
 }
@@ -270,7 +273,7 @@ export async function summarizeTrend(trend: {
   const system = `You are ContentVerse India Trends editor for India.
 Write a clear, neutral briefing (3 short paragraphs, max 180 words) about why a topic is trending.
 Use ONLY the topic title, traffic estimate, and headlines provided — do not invent facts, scores, or quotes.
-Mention that figures come from Google Trends (India) and headlines are from public news sources.
+Mention that ${SHOW_THIRD_PARTY_CREDITS ? "figures come from Google Trends (India) and headlines are from public news sources" : "headlines are from public news sources"}.
 Write mostly in simple English; if the topic is clearly Hindi/regional India news, add one Hindi sentence at the end.
 No markdown headings. You may use **bold** sparingly.`;
 

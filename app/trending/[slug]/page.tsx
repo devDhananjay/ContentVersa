@@ -16,6 +16,7 @@ import {
   TrendBriefing,
   TrendBriefingFallback,
 } from "@/components/trending/trend-briefing";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: trendPath(slug),
     keywords: [
       title,
-      "Google Trends India",
+      ...(SHOW_THIRD_PARTY_CREDITS ? ["Google Trends India"] : []),
       "trending India today",
       "why trending",
     ],
@@ -129,7 +130,9 @@ export default async function TrendingTopicPage({ params }: Props) {
             )}
             {isNews && !isSpike
               ? "News · India"
-              : "Google Trends · India"}
+              : SHOW_THIRD_PARTY_CREDITS
+                ? "Google Trends · India"
+                : "Trending · India"}
           </Badge>
           {traffic ? (
             <Badge variant="secondary">{traffic} searches</Badge>

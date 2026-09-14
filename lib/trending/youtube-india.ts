@@ -4,6 +4,8 @@
  * 2) Public channel Atom feeds — always give real video IDs + thumbnails (no key)
  */
 
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
+
 export type HubYouTubeItem = {
   id: string;
   title: string;
@@ -120,7 +122,11 @@ async function fetchViaDataApi(limit: number): Promise<HubYouTubeItem[]> {
         href: `https://www.youtube.com/watch?v=${item.id}`,
         blurb: desc
           ? desc.slice(0, 120) + (desc.length > 120 ? "…" : "")
-          : `Popular on YouTube India${item.snippet.channelTitle ? ` · ${item.snippet.channelTitle}` : ""}`,
+          : SHOW_THIRD_PARTY_CREDITS
+            ? `Popular on YouTube India${item.snippet.channelTitle ? ` · ${item.snippet.channelTitle}` : ""}`
+            : item.snippet.channelTitle
+              ? `Popular video · ${item.snippet.channelTitle}`
+              : "Popular video",
         source: "youtube-api",
       });
     }
@@ -172,7 +178,11 @@ async function fetchChannelFeed(
         href: `https://www.youtube.com/watch?v=${id}`,
         blurb: desc
           ? desc.slice(0, 120) + (desc.length > 120 ? "…" : "")
-          : `Fresh upload on YouTube${channel ? ` · ${channel}` : ""}`,
+          : SHOW_THIRD_PARTY_CREDITS
+            ? `Fresh upload on YouTube${channel ? ` · ${channel}` : ""}`
+            : channel
+              ? `Fresh upload · ${channel}`
+              : "Fresh upload",
         source: "rss",
         publishedAt: Number.isFinite(publishedAt) ? publishedAt : Date.now(),
       });

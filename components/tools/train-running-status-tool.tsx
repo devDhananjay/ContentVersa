@@ -7,6 +7,7 @@ import {
   isValidTrainNumber,
   trainStatusLinks,
 } from "@/lib/tools/railway";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -60,7 +61,7 @@ export function TrainRunningStatusTool() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  NTES official
+                  {SHOW_THIRD_PARTY_CREDITS ? "NTES official" : "Official enquiry"}
                 </a>
               </Button>
             </div>

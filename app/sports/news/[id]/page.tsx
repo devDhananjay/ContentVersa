@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { getCricketNewsDetail } from "@/lib/sports/data";
 import { buildMetadata } from "@/lib/seo";
 import { timeAgo } from "@/lib/utils";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +63,7 @@ export default async function CricketNewsPage({
 
       <p className="mt-3 text-sm text-muted-foreground">
         {timeAgo(article.publishedAt)}
-        {article.source ? ` · ${article.source}` : ""}
+        {SHOW_THIRD_PARTY_CREDITS && article.source ? ` · ${article.source}` : ""}
       </p>
 
       {article.imageUrl && (
@@ -88,8 +89,8 @@ export default async function CricketNewsPage({
       </div>
 
       <p className="mt-10 pt-6 border-t text-xs text-muted-foreground">
-        Source: Cricbuzz via RapidAPI. For editorial opinion and community
-        discussion,{" "}
+        {SHOW_THIRD_PARTY_CREDITS ? "Source: Cricbuzz via RapidAPI. " : ""}
+        For editorial opinion and community discussion,{" "}
         <Link href="/category/sports" className="underline hover:text-foreground">
           read sports blogs on ContentVerse India
         </Link>

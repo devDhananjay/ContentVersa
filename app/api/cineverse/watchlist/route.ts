@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 
     const [movie] = await fetchTmdbMoviesByIds([tmdbId]);
     if (!movie) {
-      return NextResponse.json({ error: "Movie not found on TMDB" }, { status: 404 });
+      return NextResponse.json({ error: "Movie not found" }, { status: 404 });
     }
 
     const ids = await addToMovieWatchlist(userId, tmdbId);

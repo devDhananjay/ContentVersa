@@ -1,4 +1,5 @@
 import { CONTACT_EMAIL } from "@/lib/site-contact";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export type SiteMapItem = {
   label: string;
@@ -82,7 +83,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             href: "/finance",
             detail: "Nifty 50, Sensex & top gainers ticker",
             children: [
-              { label: "Live price refresh", detail: "Yahoo Finance + NSE data" },
+              { label: "Live price refresh", detail: SHOW_THIRD_PARTY_CREDITS ? "Yahoo Finance + NSE data" : "Live market data" },
               { label: "Tap to open Finance hub", href: "/finance" },
             ],
           },
@@ -114,7 +115,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
             href: "/cineverse",
             detail: "Movies, OTT & AI watchlist",
             children: [
-              { label: "TMDB movie search", detail: "Find films by title" },
+              { label: SHOW_THIRD_PARTY_CREDITS ? "TMDB movie search" : "Movie search", detail: "Find films by title" },
               { label: "Personal watchlist", detail: "Save films to watch later" },
               { label: "AI picks", detail: "Recommendations for you" },
             ],
@@ -442,7 +443,7 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
           {
             label: "Movie search",
             href: "/cineverse",
-            detail: "TMDB-powered lookup",
+            detail: SHOW_THIRD_PARTY_CREDITS ? "TMDB-powered lookup" : "Search by title",
             children: [
               { label: "Search by title", detail: "Find any film instantly" },
               {
@@ -461,9 +462,9 @@ export const SITE_MAP_MODULES: SiteMapModule[] = [
         items: [
           { label: "Release Date", href: "/cineverse", detail: "Theatrical window India" },
           { label: "Cast", href: "/cineverse", detail: "Actors & characters" },
-          { label: "Trailer", href: "/cineverse", detail: "YouTube official trailers" },
+          { label: "Trailer", href: "/cineverse", detail: SHOW_THIRD_PARTY_CREDITS ? "YouTube official trailers" : "Official trailers" },
           { label: "Story", href: "/cineverse", detail: "Plot synopsis" },
-          { label: "Rating", href: "/cineverse", detail: "TMDB score + IMDb link" },
+          { label: "Rating", href: "/cineverse", detail: SHOW_THIRD_PARTY_CREDITS ? "TMDB score + IMDb link" : "Viewer score" },
           { label: "OTT Release", href: "/cineverse", detail: "Digital release date India" },
           { label: "Where to Watch", href: "/cineverse", detail: "Streaming / rent / buy India" },
           { label: "Reviews", href: "/cineverse", detail: "Public reviews when available" },
@@ -811,7 +812,7 @@ export const SITE_MAP_ADMIN: SiteMapModule = {
         {
           label: "AI articles",
           href: "/admin/ai-articles",
-          detail: "Gemini-powered SEO content generation",
+          detail: SHOW_THIRD_PARTY_CREDITS ? "Gemini-powered SEO content generation" : "AI SEO content generation",
           children: [
             {
               label: "AI publishing pipeline",

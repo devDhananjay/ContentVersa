@@ -14,6 +14,7 @@ import { getGovtJobsCached } from "@/lib/jobs/data";
 import { PRIVATE_JOBS } from "@/lib/jobs/private-jobs";
 import { hubSeoJsonLdBlocks, JOBS_HUB_SEO } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export const dynamic = "force-dynamic";
 
@@ -76,17 +77,25 @@ export default async function JobsHubPage() {
           <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
           <p className="text-muted-foreground">
             {govtPreview.error?.includes("not subscribed") ? (
-              <>
-                Subscribe to <strong className="text-foreground">Sarkari Result</strong> on RapidAPI
-                with your <code className="rounded bg-muted px-1 text-xs">RAPIDAPI_KEY</code>.
-              </>
+              SHOW_THIRD_PARTY_CREDITS ? (
+                <>
+                  Subscribe to <strong className="text-foreground">Sarkari Result</strong> on RapidAPI
+                  with your <code className="rounded bg-muted px-1 text-xs">RAPIDAPI_KEY</code>.
+                </>
+              ) : (
+                <>Government listings are updating. Check back shortly.</>
+              )
             ) : govtPreview.error ? (
-              govtPreview.error
-            ) : (
+              SHOW_THIRD_PARTY_CREDITS || !/rapidapi|sarkari/i.test(govtPreview.error)
+                ? govtPreview.error
+                : "Government listings are updating. Check back shortly."
+            ) : SHOW_THIRD_PARTY_CREDITS ? (
               <>
                 Add <code className="rounded bg-muted px-1 text-xs">RAPIDAPI_KEY</code> to enable
                 live government listings.
               </>
+            ) : (
+              <>Government listings are updating. Check back shortly.</>
             )}
           </p>
         </div>
@@ -100,7 +109,11 @@ export default async function JobsHubPage() {
             eyebrow="Sarkari"
             title="Latest"
             highlight="Govt Jobs"
-            description="Fresh notifications from Sarkari Result — tap any card for official details."
+            description={
+              SHOW_THIRD_PARTY_CREDITS
+                ? "Fresh notifications from Sarkari Result — tap any card for official details."
+                : "Fresh government notifications — tap any card for official details."
+            }
             className="mb-0"
           />
           <Button asChild variant="outline" size="sm" className="shrink-0 hidden sm:inline-flex gap-1.5">

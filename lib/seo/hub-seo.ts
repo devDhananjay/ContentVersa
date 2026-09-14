@@ -1,4 +1,5 @@
 import { SITE } from "@/lib/seo";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export type HubFaq = { question: string; answer: string };
 
@@ -148,9 +149,12 @@ export const CINEVERSE_HUB_SEO: HubSeoConfig = {
         "It is when a title is expected or listed to stream on platforms like Netflix, Prime Video, JioCinema or others in India — separate from theatrical release.",
     },
     {
-      question: "Is CineVerse affiliated with Netflix or TMDB?",
-      answer:
-        "No. Movie metadata is powered by TMDB. ContentVerse India is not endorsed by Netflix, Prime Video, or TMDB.",
+      question: SHOW_THIRD_PARTY_CREDITS
+        ? "Is CineVerse affiliated with Netflix or TMDB?"
+        : "Is CineVerse affiliated with Netflix or Prime Video?",
+      answer: SHOW_THIRD_PARTY_CREDITS
+        ? "No. Movie metadata is powered by TMDB. ContentVerse India is not endorsed by Netflix, Prime Video, or TMDB."
+        : "No. ContentVerse India is not endorsed by Netflix, Prime Video, or other streaming platforms.",
     },
   ],
 };
@@ -270,19 +274,26 @@ export const RESULTS_HUB_SEO: HubSeoConfig = {
 
 export const TRENDING_HUB_SEO: HubSeoConfig = {
   path: "/trending",
-  name: "Trending Now India — Google Trends & News",
-  description:
-    "Trending Now in India: Google Trends, news, cricket, entertainment, AI & tech, jobs and finance — auto-updated on ContentVerse India.",
+  name: SHOW_THIRD_PARTY_CREDITS
+    ? "Trending Now India — Google Trends & News"
+    : "Trending Now India — Search Trends & News",
+  description: SHOW_THIRD_PARTY_CREDITS
+    ? "Trending Now in India: Google Trends, news, cricket, entertainment, AI & tech, jobs and finance — auto-updated on ContentVerse India."
+    : "Trending Now in India: search spikes, news, cricket, entertainment, AI & tech, jobs and finance — auto-updated on ContentVerse India.",
   faqs: [
     {
       question: "How often does Trending Now update?",
-      answer:
-        "The hub refreshes about every 15 minutes with Google Trends spikes, news and topic lanes relevant to India.",
+      answer: SHOW_THIRD_PARTY_CREDITS
+        ? "The hub refreshes about every 15 minutes with Google Trends spikes, news and topic lanes relevant to India."
+        : "The hub refreshes about every 15 minutes with search spikes, news and topic lanes relevant to India.",
     },
     {
-      question: "Is this the same as Google Trends?",
-      answer:
-        "We surface India-focused trend signals and headlines in one place. For the official Google Trends UI, visit Google’s own Trends product.",
+      question: SHOW_THIRD_PARTY_CREDITS
+        ? "Is this the same as Google Trends?"
+        : "Where do these trending topics come from?",
+      answer: SHOW_THIRD_PARTY_CREDITS
+        ? "We surface India-focused trend signals and headlines in one place. For the official Google Trends UI, visit Google’s own Trends product."
+        : "We surface India-focused search spikes and headlines in one place so you can skim fast on ContentVerse India.",
     },
     {
       question: "Can I read explainers for why something is trending?",

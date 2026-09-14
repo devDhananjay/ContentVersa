@@ -1,3 +1,5 @@
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
+
 export type ToolSlug =
   | "ifsc-finder"
   | "pincode-finder"
@@ -53,8 +55,9 @@ export const TOOL_REGISTRY: ToolDef[] = [
     slug: "ifsc-finder",
     title: "IFSC Code Finder — Bank Branch Details India",
     shortTitle: "IFSC Finder",
-    description:
-      "Find bank name, branch address, MICR, and payment modes (NEFT, RTGS, IMPS, UPI) from any Indian IFSC code. Free lookup powered by Razorpay open data.",
+    description: SHOW_THIRD_PARTY_CREDITS
+      ? "Find bank name, branch address, MICR, and payment modes (NEFT, RTGS, IMPS, UPI) from any Indian IFSC code. Free lookup powered by Razorpay open data."
+      : "Find bank name, branch address, MICR, and payment modes (NEFT, RTGS, IMPS, UPI) from any Indian IFSC code. Free lookup.",
     keywords: ["ifsc code finder", "ifsc lookup", "bank branch ifsc", "neft rtgs ifsc india"],
     badge: "Banking",
   },
@@ -62,8 +65,9 @@ export const TOOL_REGISTRY: ToolDef[] = [
     slug: "pincode-finder",
     title: "Pincode Finder — Post Office & Area Lookup India",
     shortTitle: "Pincode Finder",
-    description:
-      "Search any 6-digit Indian pincode to find post offices, district, state, and delivery status. Free India Post data.",
+    description: SHOW_THIRD_PARTY_CREDITS
+      ? "Search any 6-digit Indian pincode to find post offices, district, state, and delivery status. Free India Post data."
+      : "Search any 6-digit Indian pincode to find post offices, district, state, and delivery status.",
     keywords: ["pincode finder", "post office pincode", "area pincode india", "pin code search"],
     badge: "Address",
   },
@@ -165,8 +169,9 @@ export const TOOL_REGISTRY: ToolDef[] = [
     slug: "geo-location",
     title: "Geo Location Finder — Lat Long & Address",
     shortTitle: "Geo Location",
-    description:
-      "Detect your current location (with permission) or look up latitude/longitude and reverse address. Free browser + OpenStreetMap data.",
+    description: SHOW_THIRD_PARTY_CREDITS
+      ? "Detect your current location (with permission) or look up latitude/longitude and reverse address. Free browser + OpenStreetMap data."
+      : "Detect your current location (with permission) or look up latitude/longitude and reverse address.",
     keywords: ["geo location", "lat long finder", "my location address india"],
     badge: "Maps",
   },
@@ -174,8 +179,9 @@ export const TOOL_REGISTRY: ToolDef[] = [
     slug: "nearby-places",
     title: "Nearby Places Finder India",
     shortTitle: "Nearby Places",
-    description:
-      "Find hotels, restaurants, hospitals, schools, ATMs and more near you or any city using Google Places.",
+    description: SHOW_THIRD_PARTY_CREDITS
+      ? "Find hotels, restaurants, hospitals, schools, ATMs and more near you or any city using Google Places."
+      : "Find hotels, restaurants, hospitals, schools, ATMs and more near you or any city.",
     keywords: ["nearby places", "places near me india", "find nearby hotel hospital atm"],
     badge: "Maps",
   },
@@ -347,8 +353,9 @@ export const TOOL_REGISTRY: ToolDef[] = [
     slug: "pnr-status",
     title: "PNR Status Check — Indian Railways",
     shortTitle: "PNR Status",
-    description:
-      "Check Indian Railways PNR status with 10-digit PNR. Quick lookup plus official ConfirmTkt, RailYatri and IRCTC links.",
+    description: SHOW_THIRD_PARTY_CREDITS
+      ? "Check Indian Railways PNR status with 10-digit PNR. Quick lookup plus official ConfirmTkt, RailYatri and IRCTC links."
+      : "Check Indian Railways PNR status with 10-digit PNR. Quick lookup plus official enquiry links.",
     keywords: ["pnr status", "pnr status check", "irctc pnr status", "railway pnr"],
     badge: "Travel",
   },
@@ -356,8 +363,9 @@ export const TOOL_REGISTRY: ToolDef[] = [
     slug: "train-running-status",
     title: "Train Running Status — Live Indian Railways",
     shortTitle: "Train Status",
-    description:
-      "Get live train running status by train number. Links to RailYatri, ConfirmTkt and official NTES enquiry.",
+    description: SHOW_THIRD_PARTY_CREDITS
+      ? "Get live train running status by train number. Links to RailYatri, ConfirmTkt and official NTES enquiry."
+      : "Get live train running status by train number. Links to official railway enquiry sites.",
     keywords: [
       "train running status",
       "live train status",

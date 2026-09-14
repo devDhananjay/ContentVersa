@@ -1,6 +1,7 @@
 import { SITE } from "@/lib/seo";
 import { TOOL_REGISTRY, TOOLS_HUB_PATH, type ToolDef } from "./registry";
 import { LOCATION_CATEGORIES, LOCATION_CITIES } from "./places";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export function toolsHubUrl() {
   return `${SITE.url}${TOOLS_HUB_PATH}`;
@@ -105,7 +106,9 @@ export function toolFaq(tool: ToolDef) {
   if (tool.slug === "pnr-status" || tool.slug === "train-running-status") {
     base.push({
       q: "Is this an official IRCTC tool?",
-      a: "No. ContentVerse India helps you validate input and open trusted enquiry sites (ConfirmTkt, RailYatri, NTES). Always reconfirm on IRCTC before travel.",
+      a: SHOW_THIRD_PARTY_CREDITS
+        ? "No. ContentVerse India helps you validate input and open trusted enquiry sites (ConfirmTkt, RailYatri, NTES). Always reconfirm on IRCTC before travel."
+        : "No. ContentVerse India helps you validate input and open trusted railway enquiry sites. Always reconfirm on the official railway site before travel.",
     });
   }
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getAppUrl } from "@/lib/app-url";
 import { PRODUCTION_SITE_URL } from "@/lib/site-config";
 import { DEFAULT_FAVICON_ICONS } from "@/lib/branding/favicon";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 function siteUrl() {
   try {
@@ -53,7 +54,9 @@ export const SITE_NAV_HUBS = [
   {
     name: "Trending India",
     path: "/trending",
-    description: "Google Trends India topics with on-site briefings and chat",
+    description: SHOW_THIRD_PARTY_CREDITS
+      ? "Google Trends India topics with on-site briefings and chat"
+      : "Trending India topics with on-site briefings and chat",
   },
   {
     name: "Govt Schemes Guides",

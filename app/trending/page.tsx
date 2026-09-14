@@ -10,17 +10,20 @@ import { RelatedHubs } from "@/components/seo/related-hubs";
 import { Badge } from "@/components/ui/badge";
 import { TrendingHub } from "@/components/trending/trending-hub";
 import { hubSeoJsonLdBlocks, TRENDING_HUB_SEO } from "@/lib/seo/hub-seo";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 900;
 
 export const metadata: Metadata = buildMetadata({
-  title: "Trending Now India — Google Trends, News & Topics",
+  title: SHOW_THIRD_PARTY_CREDITS
+    ? "Trending Now India — Google Trends, News & Topics"
+    : "Trending Now India — News & Topics",
   description: TRENDING_HUB_SEO.description,
   path: "/trending",
   keywords: [
     "Trending Now India",
-    "Google Trends India",
+    ...(SHOW_THIRD_PARTY_CREDITS ? ["Google Trends India"] : []),
     "what's trending in India",
     "today trending India",
     "viral topics India",
@@ -64,15 +67,15 @@ export default async function TrendingHubPage() {
           Trending <span className="text-gradient">Now</span>
         </h1>
         <p className="max-w-2xl text-muted-foreground leading-relaxed">
-          Automatically updated: Google Trends, Trending News, Cricket,
+          Automatically updated: {SHOW_THIRD_PARTY_CREDITS ? "Google Trends, " : ""}Trending News, Cricket,
           Entertainment, AI &amp; Tech, Jobs, and Finance — each with a short
           description so you can skim fast on ContentVerse India.
         </p>
         <p className="text-xs text-muted-foreground">
-          {spikes.length} Google Trends
+          {spikes.length} search trends
           {news.length ? ` · ${news.length} news` : ""}
           {laneCount ? ` · ${laneCount} topic headlines` : ""}
-          {youtube.length ? ` · ${youtube.length} YouTube` : ""} · refreshes
+          {youtube.length ? ` · ${youtube.length} videos` : ""} · refreshes
           about every 15 minutes
         </p>
       </header>

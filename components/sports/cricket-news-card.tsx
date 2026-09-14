@@ -4,6 +4,7 @@ import { timeAgo } from "@/lib/utils";
 import type { CricketNewsItem } from "@/lib/sports/types";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 interface CricketNewsCardProps {
   item: CricketNewsItem;
@@ -93,7 +94,7 @@ export function CricketNewsCard({ item, variant = "default" }: CricketNewsCardPr
         </p>
         <p className="mt-3 text-xs text-muted-foreground">
           {timeAgo(item.publishedAt)}
-          {item.source ? ` · ${item.source}` : ""}
+          {SHOW_THIRD_PARTY_CREDITS && item.source ? ` · ${item.source}` : ""}
         </p>
       </div>
     </Link>

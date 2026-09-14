@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 const CURRENCIES = ["INR", "USD", "EUR", "GBP", "AED", "JPY", "AUD", "CAD", "SGD", "CHF"] as const;
 
@@ -108,7 +109,9 @@ export function CurrencyConverterTool() {
         </CardContent>
       </Card>
       <p className="text-xs text-muted-foreground">
-        Mid-market rates via Frankfurter (ECB). Not for banking settlement.
+        {SHOW_THIRD_PARTY_CREDITS
+          ? "Mid-market rates via Frankfurter (ECB). Not for banking settlement."
+          : "Mid-market rates for planning only. Not for banking settlement."}
       </p>
     </div>
   );

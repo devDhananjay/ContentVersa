@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 const WMO: Record<number, string> = {
   0: "Clear sky",
@@ -145,7 +146,11 @@ export function WeatherTool() {
           </Card>
         </>
       ) : null}
-      <p className="text-xs text-muted-foreground">Data via Open-Meteo (free public weather API).</p>
+      {SHOW_THIRD_PARTY_CREDITS ? (
+        <p className="text-xs text-muted-foreground">Data via Open-Meteo (free public weather API).</p>
+      ) : (
+        <p className="text-xs text-muted-foreground">Forecast is indicative — confirm locally for travel plans.</p>
+      )}
     </div>
   );
 }

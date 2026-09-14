@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { CityFuelPrice } from "@/lib/tools/fuel-price";
 
@@ -168,9 +169,9 @@ export function FuelPriceTool() {
               </div>
             ))}
           </CardContent>
-          {selected.source || selected.date ? (
+          {selected.date || (SHOW_THIRD_PARTY_CREDITS && selected.source) ? (
             <p className="px-6 pb-4 text-xs text-muted-foreground">
-              {selected.source ? `${selected.source}. ` : ""}
+              {SHOW_THIRD_PARTY_CREDITS && selected.source ? `${selected.source}. ` : ""}
               {selected.date ? `As of ${selected.date}. ` : ""}
               Prices vary by outlet — confirm locally before purchase.
             </p>

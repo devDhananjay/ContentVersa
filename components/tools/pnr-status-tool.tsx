@@ -7,6 +7,7 @@ import {
   pnrCheckLinks,
   type PnrLookupResult,
 } from "@/lib/tools/railway";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,9 @@ export function PnrStatusTool() {
         ok: false,
         pnr: pnr.trim(),
         message:
-          "Could not load a live feed right now. Use ConfirmTkt / RailYatri below — they open with your PNR.",
+          SHOW_THIRD_PARTY_CREDITS
+            ? "Could not load a live feed right now. Use ConfirmTkt / RailYatri below — they open with your PNR."
+            : "Could not load a live feed right now. Use the enquiry links below — they open with your PNR.",
       });
     } finally {
       setLoading(false);
@@ -87,7 +90,7 @@ export function PnrStatusTool() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Open ConfirmTkt
+                  {SHOW_THIRD_PARTY_CREDITS ? "Open ConfirmTkt" : "Open PNR check"}
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </Button>
@@ -153,8 +156,9 @@ export function PnrStatusTool() {
               </a>
             ))}
             <p className="text-xs text-muted-foreground pt-2">
-              Indian Railways has no stable free public PNR API. ConfirmTkt /
-              RailYatri / IRCTC are the reliable way to see berth status.
+              {SHOW_THIRD_PARTY_CREDITS
+                ? "Indian Railways has no stable free public PNR API. ConfirmTkt / RailYatri / IRCTC are the reliable way to see berth status."
+                : "Use the official enquiry links below to confirm berth status before travel."}
             </p>
           </CardContent>
         </Card>

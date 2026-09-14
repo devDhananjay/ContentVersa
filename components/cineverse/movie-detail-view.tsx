@@ -7,6 +7,7 @@ import { StreamingProviders } from "@/components/cineverse/streaming-providers";
 import { TrailerNotifyToggle } from "@/components/cineverse/trailer-notify-toggle";
 import { TrailerPlayer } from "@/components/cineverse/trailer-player";
 import { SponsoredOttBanner } from "@/components/cineverse/sponsored-ott-banner";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import {
   movieBreadcrumbJsonLd,
   movieFaqJsonLd,
@@ -112,7 +113,7 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
               {movie.rating ? (
                 <span className="inline-flex items-center gap-1 font-semibold text-amber-400">
                   <Star className="h-4 w-4 fill-amber-400" />
-                  {movie.rating}/10 TMDB
+                  {movie.rating}/10{SHOW_THIRD_PARTY_CREDITS ? " TMDB" : ""}
                   {movie.voteCount ? (
                     <span className="font-normal text-muted-foreground">
                       ({movie.voteCount.toLocaleString("en-IN")} votes)
@@ -256,7 +257,7 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
           <Section id="rating" title={`${movie.title} Rating`}>
             <p className="text-sm text-muted-foreground">
               {movie.rating
-                ? `TMDB community rating: ${movie.rating}/10${
+                ? `${SHOW_THIRD_PARTY_CREDITS ? "TMDB community rating" : "Community rating"}: ${movie.rating}/10${
                     movie.voteCount
                       ? ` from ${movie.voteCount.toLocaleString("en-IN")} votes`
                       : ""
@@ -292,7 +293,7 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
             <p className="mb-3 text-sm text-muted-foreground">
               {streamNames.length
                 ? `Currently linked for India streaming: ${streamNames.join(", ")}. Availability changes — confirm on the platform.`
-                : `Where to watch ${movie.title} in India — streaming links appear when TMDB lists India providers.`}
+                : `Where to watch ${movie.title} in India — streaming links appear when India platforms are listed.`}
             </p>
             <StreamingProviders providers={movie.providers} movieTitle={movie.title} />
           </Section>
@@ -341,10 +342,16 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
             )}
           </Section>
 
-          <p className="text-center text-[10px] text-muted-foreground">
-            Data from TMDB · Streaming links are search/affiliate deep links for India · Not
-            affiliated with IMDb
-          </p>
+          {SHOW_THIRD_PARTY_CREDITS ? (
+            <p className="text-center text-[10px] text-muted-foreground">
+              Data from TMDB · Streaming links are search/affiliate deep links for India · Not
+              affiliated with IMDb
+            </p>
+          ) : (
+            <p className="text-center text-[10px] text-muted-foreground">
+              Streaming links are search/affiliate deep links for India.
+            </p>
+          )}
         </div>
       </div>
     </article>

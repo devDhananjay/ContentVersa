@@ -6,6 +6,7 @@ import { JobsSectionHeader } from "@/components/jobs/jobs-section-header";
 import { GOVT_CATEGORIES } from "@/lib/jobs/constants";
 import { getGovtJobsCached, parseGovtCategory } from "@/lib/jobs/data";
 import { buildMetadata } from "@/lib/seo";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export const dynamic = "force-dynamic";
 
@@ -55,21 +56,29 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
           <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
           <p className="text-muted-foreground">
             {data.error?.includes("not subscribed") ? (
-              <>
-                Your RapidAPI key needs an active <strong className="text-foreground">Sarkari Result</strong>{" "}
-                subscription to load live data.
-              </>
+              SHOW_THIRD_PARTY_CREDITS ? (
+                <>
+                  Your RapidAPI key needs an active <strong className="text-foreground">Sarkari Result</strong>{" "}
+                  subscription to load live data.
+                </>
+              ) : (
+                <>Government listings are updating. Check back shortly.</>
+              )
             ) : data.error ? (
-              data.error
-            ) : (
+              SHOW_THIRD_PARTY_CREDITS || !/rapidapi|sarkari/i.test(data.error)
+                ? data.error
+                : "Government listings are updating. Check back shortly."
+            ) : SHOW_THIRD_PARTY_CREDITS ? (
               <>Set <code className="rounded bg-muted px-1 text-xs">RAPIDAPI_KEY</code> on the server.</>
+            ) : (
+              <>Government listings are updating. Check back shortly.</>
             )}
           </p>
         </div>
       )}
 
       <JobsSectionHeader
-        eyebrow="Sarkari Result"
+        eyebrow={SHOW_THIRD_PARTY_CREDITS ? "Sarkari Result" : "Sarkari"}
         title={meta.label}
         highlight="Updates"
         description={meta.description}
@@ -81,7 +90,7 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
         {data.count > 0 ? (
           <>
             <span className="font-medium text-foreground">{data.count}</span> listings · Opens official
-            Sarkari Result pages in a new tab
+            {SHOW_THIRD_PARTY_CREDITS ? " Sarkari Result pages" : " notification pages"} in a new tab
           </>
         ) : (
           "Listings refresh every 30 minutes"

@@ -1,4 +1,5 @@
 import { SITE } from "@/lib/seo";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import type { CineMovieDetail } from "./types";
 
 export function movieJsonLd(movie: CineMovieDetail) {
@@ -105,7 +106,9 @@ export function movieFaqJsonLd(movie: CineMovieDetail) {
     .join(", ");
   const ott =
     movie.ottReleaseDate ||
-    "OTT / digital date for India is listed when TMDB publishes a digital release.";
+    (SHOW_THIRD_PARTY_CREDITS
+      ? "OTT / digital date for India is listed when TMDB publishes a digital release."
+      : "OTT / digital date for India is listed when a digital release is published.");
 
   return {
     "@context": "https://schema.org",

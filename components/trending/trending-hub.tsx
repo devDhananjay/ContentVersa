@@ -22,6 +22,7 @@ import type {
 import { Badge } from "@/components/ui/badge";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { TrendThumb } from "@/components/trending/trend-thumb";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 const LANE_ICONS: Record<string, LucideIcon> = {
   cricket: Medal,
@@ -231,13 +232,19 @@ export function TrendingHub({
         className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
         aria-label="Trending sections"
       >
-        <SectionJump id="google-trends" label="Google Trends" />
+        <SectionJump
+          id="google-trends"
+          label={SHOW_THIRD_PARTY_CREDITS ? "Google Trends" : "Search Trends"}
+        />
         <SectionJump id="trending-news" label="Trending News" />
         {filledLanes.map((l) => (
           <SectionJump key={l.id} id={l.id} label={l.title} />
         ))}
         {youtube.length > 0 ? (
-          <SectionJump id="youtube-india" label="YouTube" />
+          <SectionJump
+            id="youtube-india"
+            label={SHOW_THIRD_PARTY_CREDITS ? "YouTube" : "Videos"}
+          />
         ) : null}
       </nav>
 
@@ -245,12 +252,13 @@ export function TrendingHub({
         <div className="flex items-center gap-2">
           <Search className="h-4 w-4 text-orange-400" />
           <h2 className="font-display text-xl font-bold tracking-tight">
-            Google Trends
+            {SHOW_THIRD_PARTY_CREDITS ? "Google Trends" : "Search Trends"}
           </h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          Live search spikes from Google Trends India — what people are
-          searching right now.
+          {SHOW_THIRD_PARTY_CREDITS
+            ? "Live search spikes from Google Trends India — what people are searching right now."
+            : "Live search spikes in India — what people are searching right now."}
         </p>
         {hero.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-3">
@@ -270,7 +278,9 @@ export function TrendingHub({
         ) : null}
         {spikes.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Google Trends feed is refreshing…
+            {SHOW_THIRD_PARTY_CREDITS
+              ? "Google Trends feed is refreshing…"
+              : "Search trends are refreshing…"}
           </p>
         ) : null}
       </section>
@@ -331,11 +341,13 @@ export function TrendingHub({
           <div className="flex items-center gap-2">
             <Play className="h-4 w-4 text-red-400" />
             <h2 className="font-display text-xl font-bold tracking-tight">
-              YouTube India
+              {SHOW_THIRD_PARTY_CREDITS ? "YouTube India" : "Popular Videos"}
             </h2>
           </div>
           <p className="text-sm text-muted-foreground">
-            Fresh uploads from top India channels — watch on YouTube.
+            {SHOW_THIRD_PARTY_CREDITS
+              ? "Fresh uploads from top India channels — watch on YouTube."
+              : "Fresh uploads from top India channels."}
           </p>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {youtube.map((item) => (

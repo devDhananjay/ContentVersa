@@ -6,6 +6,7 @@ import type { SilverPriceSnapshot } from "@/lib/goldverse/silver-price";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function fmt(n: number) {
@@ -60,7 +61,9 @@ export function SilverRateTool({ initial }: { initial?: SilverPriceSnapshot }) {
           )}
           {data ? (
             <p className="mt-3 text-xs text-muted-foreground">
-              Source: {data.source === "yahoo" ? "International spot (SI=F) × USD/INR" : "Indicative fallback"} ·{" "}
+              {SHOW_THIRD_PARTY_CREDITS
+                ? `Source: ${data.source === "yahoo" ? "International spot (SI=F) × USD/INR" : "Indicative fallback"} · `
+                : ""}
               Updated {new Date(data.updatedAt).toLocaleString("en-IN")}
             </p>
           ) : null}

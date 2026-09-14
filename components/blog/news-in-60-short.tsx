@@ -12,6 +12,7 @@ import {
 } from "@/lib/utils";
 import Image from "next/image";
 import { shouldSkipImageOptimization } from "@/lib/upload";
+import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 type Props = {
   blogSlug: string;
@@ -159,7 +160,11 @@ export function NewsIn60Short({
                   · {wordCount} word digest
                   {wordCount < targetMin ? " (loading more detail…)" : ""}
                   {articleWords != null ? ` · article ${articleWords}w` : ""}
-                  {source === "gemini" ? " · Gemini" : source ? ` · ${source}` : ""}
+                  {SHOW_THIRD_PARTY_CREDITS && source === "gemini"
+                    ? " · Gemini"
+                    : SHOW_THIRD_PARTY_CREDITS && source
+                      ? ` · ${source}`
+                      : ""}
                 </span>
               )}
             </p>
