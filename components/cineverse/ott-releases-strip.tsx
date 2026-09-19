@@ -6,7 +6,7 @@ import type { CineMovie } from "@/lib/cineverse/types";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 function formatRelease(date?: string) {
-  if (!date) return "TBA";
+  if (!date) return "Date TBC";
   const d = new Date(date);
   if (Number.isNaN(d.getTime())) return date;
   return d.toLocaleDateString("en-IN", {
@@ -26,7 +26,7 @@ export function OttReleasesStrip({ movies }: { movies: CineMovie[] }) {
             <Calendar className="h-3 w-3" /> India releases
           </Badge>
           <h2 className="font-display text-xl font-bold tracking-tight md:text-2xl">
-            Coming <span className="text-gradient">Soon</span>
+            Upcoming <span className="text-gradient">India releases</span>
           </h2>
           <p className="text-sm text-muted-foreground">
             {SHOW_THIRD_PARTY_CREDITS

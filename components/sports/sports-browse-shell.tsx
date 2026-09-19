@@ -51,8 +51,8 @@ export async function SportsBrowseShell({
           <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
             <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
             <p className="text-muted-foreground">
-              Add <code className="rounded bg-muted px-1 text-xs">RAPIDAPI_KEY</code> to
-              enable live cricket data.
+              Live cricket scores are temporarily unavailable. Browse sports blogs and
+              match guides meanwhile, or check back shortly.
             </p>
           </div>
         </div>

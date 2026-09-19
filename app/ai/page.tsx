@@ -25,6 +25,8 @@ export const metadata: Metadata = buildMetadata({
   path: CV_AI_PATH,
   keywords: [...CV_AI_KEYWORDS],
   image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1600",
+  // Form-heavy chatbot surface — keep out of Google index until AdSense is approved.
+  noIndex: true,
 });
 
 export default function ContentVerseAiPage() {

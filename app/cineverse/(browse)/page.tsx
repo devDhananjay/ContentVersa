@@ -80,8 +80,6 @@ export default async function CineverseHubPage() {
 
       <MovieWatchlistSection />
 
-      <GoogleAdSense slotKey="hub" format="horizontal" />
-
       <CineverseAiRecommend />
 
       <SponsoredOttBanner />
@@ -99,9 +97,10 @@ export default async function CineverseHubPage() {
 
       <OttReleasesStrip movies={hub.upcoming} />
 
-      <GoogleAdSense slotKey="hub" format="horizontal" />
-
       <CineverseBlogSection blogs={blogs} />
+
+      {/* Ads only after editorial blogs — not beside AI recommend / newsletter forms. */}
+      <GoogleAdSense slotKey="hub" format="horizontal" />
 
       <RelatedHubs current="cineverse" contained />
 

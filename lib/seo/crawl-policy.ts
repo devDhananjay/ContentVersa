@@ -58,6 +58,29 @@ export function isAdEligibleByQuality(input: {
   return isIndexableArticle(input);
 }
 
+/**
+ * Tools with long-form how-to guides stay indexable.
+ * Form-only utilities stay crawlable but noindex (AdSense thin-content risk).
+ */
+export const INDEXABLE_TOOL_SLUGS = new Set([
+  "ifsc-finder",
+  "pincode-finder",
+  "emi-calculator",
+  "sip-calculator",
+  "salary-tax-calculator",
+  "gst-calculator",
+  "fuel-price",
+  "rto-finder",
+  "currency-converter",
+  "fd-calculator",
+  "ppf-calculator",
+  "election-info",
+]);
+
+export function isIndexableTool(slug: string): boolean {
+  return INDEXABLE_TOOL_SLUGS.has(slug);
+}
+
 export function isIndexableProfile(publishedArticleCount: number): boolean {
   return publishedArticleCount >= MIN_PROFILE_ARTICLES;
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Mail, MessageSquare, MapPin, Clock, Phone } from "lucide-react";
+import { DisableAutoAds } from "@/components/ads/disable-auto-ads";
 import { ContactForm } from "@/components/site/contact-form";
 import { buildMetadata } from "@/lib/seo";
 import {
@@ -18,6 +19,7 @@ export const metadata: Metadata = buildMetadata({
 export default function ContactPage() {
   return (
     <div className="container py-12 md:py-16 max-w-5xl">
+      <DisableAutoAds />
       <div className="max-w-2xl mb-12">
         <p className="text-sm font-semibold uppercase tracking-widest text-neon-purple mb-2">
           Contact

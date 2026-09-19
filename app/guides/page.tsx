@@ -99,10 +99,11 @@ export default function GuidesHubPage() {
 
       <HubEditorialIntro title="Why these guide formats?">
         <p>
-          Indian search traffic clusters around a few repeating templates: “Why
-          is X trending?”, scheme eligibility, job last dates, match updates, AI
-          how-tos, and “where to watch”. ContentVerse India Guides mirrors those
-          templates so pages stay useful and easy to crawl.
+          Indian readers keep asking the same practical questions: why a topic
+          is spiking, who qualifies for a scheme, when a job closes, what
+          happened in a match, how to use an AI tool, and where to watch a film.
+          ContentVerse India Guides answers those with finished explainers —
+          one strong page per topic.
         </p>
         <p>
           Scheme and job pages are educational only. Always verify fees,

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock, ExternalLink, Star, Tv } from "lucide-react";
-import { GoogleAdSense } from "@/components/ads/google-adsense";
 import { AddToMovieWatchlistButton } from "@/components/cineverse/add-to-movie-watchlist-button";
 import { StreamingProviders } from "@/components/cineverse/streaming-providers";
 import { TrailerNotifyToggle } from "@/components/cineverse/trailer-notify-toggle";
@@ -293,12 +292,10 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
             <p className="mb-3 text-sm text-muted-foreground">
               {streamNames.length
                 ? `Currently linked for India streaming: ${streamNames.join(", ")}. Availability changes — confirm on the platform.`
-                : `Where to watch ${movie.title} in India — streaming links appear when India platforms are listed.`}
+                : `Where to watch ${movie.title} in India — streaming links appear when platforms are listed.`}
             </p>
             <StreamingProviders providers={movie.providers} movieTitle={movie.title} />
           </Section>
-
-          <GoogleAdSense slotKey="horizontal" format="horizontal" />
 
           <SponsoredOttBanner />
 

@@ -557,7 +557,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       {
         heading: "Minimum useful facts",
         paragraphs: [
-          "Readers searching “[Title] cast” or “[Title] OTT” want structured answers. Cover: official release date (India), primary cast, director, language, age rating if announced, and confirmed streaming or theatrical status.",
+          "Readers searching for a film’s cast or OTT window want structured answers. Cover: official release date (India), primary cast, director, language, age rating if announced, and confirmed streaming or theatrical status.",
         ],
         bullets: [
           "Release date (India) + format (theatre / OTT / both)",
@@ -567,9 +567,9 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
-        heading: "Template we use on ContentVerse India",
+        heading: "How ContentVerse India structures movie pages",
         paragraphs: [
-          "Our Movies / OTT guides follow “[Title] — Release Date, Cast & Where to Watch”. That matches how people search and keeps pages useful even after the premiere week.",
+          "Our Movies / OTT guides lead with release date, cast, and where to watch in India. That matches how people search and keeps pages useful even after the premiere week.",
         ],
       },
     ],

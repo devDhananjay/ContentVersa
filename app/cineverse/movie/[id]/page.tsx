@@ -27,6 +27,8 @@ export async function generateMetadata({
       `${movie.title} cast, trailer, story, rating, OTT release date and where to watch in India on ContentVerse India CineVerse.`,
     path: `/cineverse/movie/${id}`,
     image: movie.backdropUrl ?? movie.posterUrl,
+    // TMDB-scraped detail pages are thin for AdSense — hub + original guides stay indexable.
+    noIndex: true,
     keywords: [
       `${movie.title} OTT release date`,
       `${movie.title} cast`,

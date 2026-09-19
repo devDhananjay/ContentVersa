@@ -38,6 +38,7 @@ import { TOOL_REGISTRY, toolPath } from "@/lib/tools/registry";
 import { GUIDE_SECTIONS, guideSectionPath } from "@/lib/guides/registry";
 import { SiteJsonLd } from "@/components/seo/site-json-ld";
 import { Reveal } from "@/components/home/motion";
+import { HomeEditorialSection } from "@/components/home/home-editorial-section";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -180,6 +181,8 @@ export default async function HomePage() {
           }))}
         />
       </Reveal>
+
+      <HomeEditorialSection />
 
       <TrendingStrip />
       <CricketStrip />

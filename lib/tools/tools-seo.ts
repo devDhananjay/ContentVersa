@@ -1,4 +1,5 @@
 import { SITE } from "@/lib/seo";
+import { isIndexableTool } from "@/lib/seo/crawl-policy";
 import { TOOL_REGISTRY, TOOLS_HUB_PATH, type ToolDef } from "./registry";
 import { LOCATION_CATEGORIES, LOCATION_CITIES } from "./places";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
@@ -200,6 +201,7 @@ export function getToolMetadata(tool: ToolDef) {
     description: tool.description,
     path: `${TOOLS_HUB_PATH}/${tool.slug}`,
     keywords: tool.keywords,
+    noIndex: !isIndexableTool(tool.slug),
   };
 }
 

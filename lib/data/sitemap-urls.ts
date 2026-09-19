@@ -6,11 +6,11 @@ import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { SITE } from "@/lib/seo";
 import {
   isIndexableArticle,
+  isIndexableTool,
   MIN_INDEXABLE_READING_MINUTES,
 } from "@/lib/seo/crawl-policy";
 import { TOOL_REGISTRY, TOOLS_HUB_PATH } from "@/lib/tools/registry";
 import { guideSitemapEntries } from "@/lib/guides/registry";
-import { getCineverseHubDataCached } from "@/lib/cineverse/data";
 import { MONEY_TOPIC_SLUGS } from "@/lib/finance/money-topics";
 import { isRedirectedPath, isNoindexFinanceTopic } from "@/lib/seo/content-redirects";
 
@@ -55,18 +55,14 @@ const STATIC_PAGES: Array<{
   })),
   { path: "/jobs", changeFrequency: "daily", priority: 0.8 },
   { path: "/results", changeFrequency: "daily", priority: 0.88 },
-  { path: "/reels", changeFrequency: "daily", priority: 0.75 },
   { path: "/cineverse", changeFrequency: "hourly", priority: 0.82 },
-  { path: "/ai", changeFrequency: "weekly", priority: 0.9 },
   { path: "/goldverse", changeFrequency: "hourly", priority: 0.84 },
   { path: "/moneyverse", changeFrequency: "daily", priority: 0.86 },
-  { path: "/moneyverse/screenshot-scan", changeFrequency: "weekly", priority: 0.88 },
-  { path: "/moneyverse/bank-statement-analyzer", changeFrequency: "weekly", priority: 0.9 },
   { path: "/huid-verification", changeFrequency: "daily", priority: 0.9 },
   { path: "/tools", changeFrequency: "daily", priority: 0.92 },
   { path: "/trending", changeFrequency: "hourly", priority: 0.86 },
   ...guideSitemapEntries(),
-  ...TOOL_REGISTRY.map((t) => ({
+  ...TOOL_REGISTRY.filter((t) => isIndexableTool(t.slug)).map((t) => ({
     path: `${TOOLS_HUB_PATH}/${t.slug}`,
     changeFrequency: "weekly" as SitemapFreq,
     priority:
@@ -77,6 +73,9 @@ const STATIC_PAGES: Array<{
           : 0.87,
   })),
   // Location matrix pages are noindex (thin templates) — keep out of sitemap.
+  // /reels is Disallow'd in robots — keep out of sitemap.
+  // TMDB movie detail pages are noindex scrapes — keep out of sitemap.
+  // /ai + MoneyVerse OCR analyzers stay live but unsitemap'd (form-heavy / thin for AdSense).
   { path: "/jobs/govt", changeFrequency: "hourly", priority: 0.78 },
   { path: "/jobs/private", changeFrequency: "daily", priority: 0.72 },
 ];
@@ -167,32 +166,6 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
   return [...blogEntries, ...profileEntries];
 }
 
-async function cineverseMovieEntries(
-  now: Date
-): Promise<MetadataRoute.Sitemap> {
-  try {
-    const hub = await getCineverseHubDataCached();
-    const movies = [...hub.trending, ...hub.nowPlaying, ...hub.upcoming];
-    const seen = new Set<string>();
-    const out: MetadataRoute.Sitemap = [];
-    for (const m of movies) {
-      if (!m.id || seen.has(m.id)) continue;
-      seen.add(m.id);
-      out.push(
-        entry(`/cineverse/movie/${m.id}`, {
-          lastModified: now,
-          changeFrequency: "weekly",
-          priority: 0.55,
-        })
-      );
-      if (out.length >= 120) break;
-    }
-    return out;
-  } catch {
-    return [];
-  }
-}
-
 function dedupeSitemap(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
   const byUrl = new Map<string, MetadataRoute.Sitemap[0]>();
   for (const item of entries) {
@@ -229,17 +202,11 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   );
 
   let dbEntries: MetadataRoute.Sitemap = [];
-  let movieEntries: MetadataRoute.Sitemap = [];
   let trendEntries: MetadataRoute.Sitemap = [];
   try {
     dbEntries = await dynamicDbEntries(now);
   } catch {
     // Sitemap must not 500 when DB is briefly unavailable.
-  }
-  try {
-    movieEntries = await cineverseMovieEntries(now);
-  } catch {
-    /* TMDB optional */
   }
   try {
     const { fetchIndiaTrends } = await import("@/lib/trending/google-trends");
@@ -255,12 +222,11 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     /* Trends RSS optional */
   }
 
-  if (dbEntries.length > 0 || movieEntries.length > 0 || trendEntries.length > 0) {
+  if (dbEntries.length > 0 || trendEntries.length > 0) {
     return dedupeSitemap([
       ...staticEntries,
       ...categoryEntries,
       ...dbEntries,
-      ...movieEntries,
       ...trendEntries,
     ]);
   }
