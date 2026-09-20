@@ -1,0 +1,14 @@
+# ContentVerse — blog publish crons (EC2)
+# Install on server:
+#   chmod +x ~/ContentVersa/scripts/cron-publish-*.sh
+#   crontab -e  → paste lines below (paths assume repo at ~/ContentVersa)
+#
+# Times are UTC. IST = UTC+5:30
+#   04:30 UTC = 10:00 IST  (draft drip)
+#   */15      = every 15 min (creator schedules)
+
+# Creator / admin scheduledFor → publish when due
+*/15 * * * * /home/ec2-user/ContentVersa/scripts/cron-publish-scheduled.sh >> /home/ec2-user/logs/publish-scheduled.log 2>&1
+
+# AdSense-safe DRAFT drip: max 2 unique quality posts/day (no duplicates vs live)
+30 4 * * * /home/ec2-user/ContentVersa/scripts/cron-publish-adsense-drafts.sh >> /home/ec2-user/logs/publish-adsense-drafts.log 2>&1
