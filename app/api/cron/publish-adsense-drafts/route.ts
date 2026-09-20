@@ -22,9 +22,12 @@ export async function GET(req: Request) {
 
   try {
     const url = new URL(req.url);
-    const raw = Number(url.searchParams.get("limit") || "");
+    const hasLimit = url.searchParams.has("limit");
+    const raw = Number(url.searchParams.get("limit"));
     const envLimit = Number(process.env.ADSENSE_DRAFT_PUBLISH_LIMIT || "2");
-    const limit = Number.isFinite(raw) && raw > 0 ? raw : envLimit;
+    const limit = hasLimit
+      ? Math.max(0, Math.min(5, Number.isFinite(raw) ? raw : 0))
+      : Math.max(1, Math.min(5, Number.isFinite(envLimit) ? envLimit : 2));
 
     const result = await publishAdsenseSafeDrafts(limit);
     return NextResponse.json({ ok: true, ...result });

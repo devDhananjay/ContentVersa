@@ -41,7 +41,7 @@ const YMYL_CATS = new Set([
 
 /** Ephemeral / thin news patterns — skip for AdSense drip. */
 const SKIP_TITLE =
-  /live streaming|this weekend|this week|outbreak|stunned|leaks|admit card out|long weekend ott|what to know today/i;
+  /live streaming|this weekend|this week|outbreak|stunned|leaks|admit card out|long weekend|what to know today/i;
 
 function significantTokens(title: string): string[] {
   const stop = new Set(
@@ -116,7 +116,11 @@ export async function publishAdsenseSafeDrafts(
     return out;
   }
 
-  const max = Math.max(1, Math.min(5, limit));
+  const max = Math.max(0, Math.min(5, Math.floor(limit)));
+  if (max === 0) {
+    out.reasons.push("limit=0 — no publish this run");
+    return out;
+  }
 
   const published = await prisma.blog.findMany({
     where: { status: BlogStatus.PUBLISHED },
