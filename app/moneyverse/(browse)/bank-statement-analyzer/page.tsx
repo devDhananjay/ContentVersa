@@ -22,6 +22,8 @@ export const metadata: Metadata = buildMetadata({
     "cash flow analysis India",
     "recurring payment detector",
   ],
+  // Upload / AI form utility — noindex until AdSense approval.
+  noIndex: true,
 });
 
 export default function BankStatementAnalyzerPage() {

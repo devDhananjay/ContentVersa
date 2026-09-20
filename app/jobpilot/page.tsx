@@ -3,11 +3,6 @@ import { Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JobPilotHomeClient } from "@/components/jobpilot/home-client";
 
-export const metadata = {
-  title: "ContentVerse HirePilot",
-  description: "Find jobs. Understand jobs. Apply smarter.",
-};
-
 export default function JobPilotHomePage() {
   return (
     <div className="container max-w-3xl py-10 space-y-8">

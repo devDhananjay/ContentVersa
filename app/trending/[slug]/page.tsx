@@ -9,7 +9,6 @@ import {
   trendPath,
 } from "@/lib/trending/google-trends";
 import { getTrendingHub, resolveTrendingTopic } from "@/lib/trending/hub";
-import { HubAdSense } from "@/components/ads/hub-adsense";
 import { Badge } from "@/components/ui/badge";
 import { AskAboutTrend } from "@/components/trending/ask-about-trend";
 import {
@@ -46,7 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "why trending",
     ],
     type: "article",
-    noIndex: !live,
+    // Thin topic pages — keep out of Google index until AdSense approval / richer editorial.
+    noIndex: true,
   });
 }
 
@@ -167,8 +167,6 @@ export default async function TrendingTopicPage({ params }: Props) {
         </div>
       ) : null}
 
-      <HubAdSense className="my-2" />
-
       <Suspense fallback={<TrendBriefingFallback trend={briefingInput} />}>
         <TrendBriefing trend={briefingInput} />
       </Suspense>
@@ -208,8 +206,6 @@ export default async function TrendingTopicPage({ params }: Props) {
           </p>
         </section>
       ) : null}
-
-      <HubAdSense className="my-2" />
 
       <section className="rounded-2xl border border-border/50 bg-gradient-to-br from-orange-500/10 to-pink-500/5 p-5 space-y-3">
         <h2 className="font-display text-lg font-bold">Have a doubt?</h2>

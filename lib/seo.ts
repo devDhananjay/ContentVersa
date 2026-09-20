@@ -15,37 +15,25 @@ function siteUrl() {
 /** Square logo for Google Organization / Knowledge Graph (min ~112px). */
 export const SITE_LOGO_URL = "/icon-192.png";
 
-/** Main hub modules — prioritized for sitelinks & internal linking. */
+/** Main hub modules — prioritized for sitelinks & internal linking (editorial-first for AdSense). */
 export const SITE_NAV_HUBS = [
   { name: "India Guides", path: "/guides", description: "Original explainers — schemes, money, jobs, cricket, AI tools, OTT" },
   { name: "Blogs", path: "/blogs", description: "Long-form articles and stories from Indian writers" },
-  { name: "ContentVerse India AI", path: "/ai", description: "Ask, summarise, resume, bank PDF & screenshot OCR India" },
+  {
+    name: "Govt Schemes Guides",
+    path: "/guides/schemes",
+    description: "Government scheme eligibility and how to apply India",
+  },
+  { name: "SIP India", path: "/guides/money/sip-calculator-india-beginners-guide", description: "SIP mutual fund investing explained with free calculator" },
   { name: "Sports", path: "/sports", description: "Live cricket scores, fixtures and sports news" },
   { name: "Finance", path: "/finance", description: "Nifty, Sensex, and links to money guides" },
-  { name: "CineVerse", path: "/cineverse", description: "Movies — OTT release, cast, where to watch & watchlist India" },
-  { name: "GoldVerse", path: "/goldverse", description: "HUID verify, gold & silver rates and BIS hallmark tools" },
-  { name: "MoneyVerse", path: "/moneyverse", description: "Expense tracker, budget planner, UPI spending & screenshot OCR scan India" },
-  { name: "Gold Price Today", path: "/goldverse", description: "Gold price today India 22K 24K rates and HUID tips" },
-  { name: "SIP India", path: "/guides/money/sip-calculator-india-beginners-guide", description: "SIP mutual fund investing explained with free calculator" },
-  { name: "Silver Rate", path: "/tools/silver-rate", description: "Silver rate today India per gram and kg" },
-  { name: "Screenshot Scan (OCR)", path: "/moneyverse/screenshot-scan", description: "UPI payment screenshot OCR — auto-fill expenses from PhonePe, GPay, Paytm" },
-  { name: "Bank Statement Analyzer", path: "/moneyverse/bank-statement-analyzer", description: "AI bank statement PDF analysis — credits, debits, expenses and CSV India" },
-  { name: "HUID Verification", path: "/huid-verification", description: "Verify BIS gold hallmark HUID online India" },
   { name: "Jobs", path: "/jobs", description: "Sarkari naukri, government jobs and private careers India" },
   { name: "Sarkari Result", path: "/results", description: "Official exam and board result portals India" },
-  { name: "India Tools", path: "/tools", description: "Free PNR, translator, weather, salary tax, PDF, IFSC, EMI, FD, GST tools India" },
+  { name: "CineVerse", path: "/cineverse", description: "Movies — OTT release, cast, where to watch & watchlist India" },
+  { name: "GoldVerse", path: "/goldverse", description: "Gold & silver rates and BIS hallmark tips" },
+  { name: "MoneyVerse", path: "/moneyverse", description: "Expense tracker and budget planner India" },
+  { name: "India Tools", path: "/tools", description: "Free calculators and utility tools India" },
   { name: "PNR Status", path: "/tools/pnr-status", description: "Indian Railways PNR status check" },
-  { name: "EN ↔ HI Translator", path: "/tools/english-hindi-translator", description: "English to Hindi and Hindi to English translator free" },
-  { name: "Merge PDF", path: "/tools/merge-pdf", description: "Combine PDF files free in browser India" },
-  { name: "Compress PDF", path: "/tools/compress-pdf", description: "Reduce PDF size free online India" },
-  { name: "Weather India", path: "/tools/weather", description: "Free weather forecast by city India" },
-  { name: "Nearby Places", path: "/tools/nearby-places", description: "Find hotels, restaurants, hospitals, schools, ATMs near you India" },
-  { name: "IFSC Finder", path: "/tools/ifsc-finder", description: "Find Indian bank IFSC branch details free" },
-  { name: "RTO Finder", path: "/tools/rto-finder", description: "Find RTO code and office address by city India" },
-  { name: "Fuel Price", path: "/tools/fuel-price", description: "Petrol and diesel price by city India today" },
-  { name: "EMI Calculator", path: "/tools/emi-calculator", description: "Home and car loan EMI calculator India" },
-  { name: "FD Calculator", path: "/tools/fd-calculator", description: "Fixed deposit maturity calculator India" },
-  { name: "GST Calculator", path: "/tools/gst-calculator", description: "Add or remove GST calculator India" },
   {
     name: "Salary Tax Calculator",
     path: "/tools/salary-tax-calculator",
@@ -58,12 +46,6 @@ export const SITE_NAV_HUBS = [
       ? "Google Trends India topics with on-site briefings and chat"
       : "Trending India topics with on-site briefings and chat",
   },
-  {
-    name: "Govt Schemes Guides",
-    path: "/guides/schemes",
-    description: "Government scheme eligibility and how to apply India",
-  },
-  { name: "Reels", path: "/reels", description: "Short-form videos from Indian creators" },
 ] as const;
 
 /** Main site sections — helps Google understand navigation (sitelinks). */

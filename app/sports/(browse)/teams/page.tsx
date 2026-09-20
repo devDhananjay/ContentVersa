@@ -9,6 +9,8 @@ export const metadata: Metadata = buildMetadata({
   title: "Cricket Teams",
   description: "Browse international cricket teams, squads, schedules and results.",
   path: "/sports/teams",
+  // Thin directory hub — keep out of Google index until original team explainers exist.
+  noIndex: true,
 });
 
 export default async function TeamsPage() {

@@ -19,6 +19,8 @@ export const metadata: Metadata = buildMetadata({
   path: MONEYVERSE_SCREENSHOT_SCAN_PATH,
   keywords: [...SCREENSHOT_SCAN_OCR_KEYWORDS],
   image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1600",
+  // Form / upload utility — noindex until AdSense approval.
+  noIndex: true,
 });
 
 export default function ScreenshotScanOcrPage() {

@@ -42,8 +42,7 @@ const STATIC_PAGES: Array<{
   { path: "/premium", changeFrequency: "monthly", priority: 0.5 },
   { path: "/site-map", changeFrequency: "monthly", priority: 0.45 },
   { path: "/sports", changeFrequency: "hourly", priority: 0.85 },
-  { path: "/sports/teams", changeFrequency: "daily", priority: 0.75 },
-  { path: "/sports/players", changeFrequency: "daily", priority: 0.75 },
+  // /sports/teams + /sports/players are noindex directory hubs — keep out of sitemap.
   { path: "/finance", changeFrequency: "hourly", priority: 0.85 },
   ...MONEY_TOPIC_SLUGS.filter(
     (slug) =>

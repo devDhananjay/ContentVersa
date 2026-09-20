@@ -52,8 +52,8 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
   return (
     <div className="space-y-6">
       {( !data.configured || data.error) && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
-          <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+        <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/40 p-3 text-sm">
+          <AlertCircle className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
           <p className="text-muted-foreground">
             {data.error?.includes("not subscribed") ? (
               SHOW_THIRD_PARTY_CREDITS ? (
@@ -104,7 +104,7 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-amber-500/30 bg-amber-500/5 p-10 text-center">
+        <div className="rounded-2xl border border-dashed border-border/60 bg-muted/30 p-10 text-center">
           <p className="text-sm text-muted-foreground">
             No {meta.label.toLowerCase()} available at the moment. Check back soon or try another
             category above.

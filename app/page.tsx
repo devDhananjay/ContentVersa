@@ -13,7 +13,6 @@ import { HomeModulesRail } from "@/components/home/home-modules-rail";
 import { HomeStickySidebar } from "@/components/home/home-sticky-sidebar";
 import { HomeModuleSpotlight } from "@/components/home/home-module-spotlight";
 import { PlatformModulesStrip } from "@/components/home/platform-modules-strip";
-import { ReelsStripSection } from "@/components/reels/reels-strip-section";
 import { Newsletter } from "@/components/home/newsletter";
 import { SportsTeaser } from "@/components/home/sports-teaser";
 import { FinanceTeaser } from "@/components/home/finance-teaser";
@@ -317,7 +316,6 @@ export default async function HomePage() {
         />
       </Reveal>
 
-      <ReelsStripSection />
       <Newsletter />
       </div>
     </>

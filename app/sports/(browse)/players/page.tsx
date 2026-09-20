@@ -8,6 +8,8 @@ export const metadata: Metadata = buildMetadata({
   title: "Find Player",
   description: "Search cricket players and view profiles, career stats and more.",
   path: "/sports/players",
+  // Search-only utility — noindex for AdSense / crawl quality.
+  noIndex: true,
 });
 
 export default async function PlayersSearchPage({

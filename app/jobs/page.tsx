@@ -73,8 +73,8 @@ export default async function JobsHubPage() {
       <HubAdSense />
 
       {showWarning && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
-          <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+        <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/40 p-3 text-sm">
+          <AlertCircle className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
           <p className="text-muted-foreground">
             {govtPreview.error?.includes("not subscribed") ? (
               SHOW_THIRD_PARTY_CREDITS ? (
