@@ -932,12 +932,6 @@
       "namedRegex": "^/admin/users(?:/)?$"
     },
     {
-      "page": "/ads.txt",
-      "regex": "^/ads\\.txt(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/ads\\.txt(?:/)?$"
-    },
-    {
       "page": "/ai",
       "regex": "^/ai(?:/)?$",
       "routeKeys": {},

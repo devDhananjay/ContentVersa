@@ -3,6 +3,7 @@
   "functions": {
     "/api/auth/google/login": {},
     "/api/auth/google/callback": {},
+    "/api/auth/firebase": {},
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
@@ -10,7 +11,6 @@
     "/api/moneyverse/bank-statement/quota": {},
     "/api/reels/upload": {},
     "/api/upload": {},
-    "/api/auth/firebase": {},
     "/uploads/[filename]": {}
   }
 }
