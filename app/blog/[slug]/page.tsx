@@ -461,7 +461,11 @@ export default async function BlogPage({
             </div>
           </div>
 
-          <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto overscroll-y-contain scrollbar-hide space-y-6">
+          {/*
+            Do not use overscroll-y-contain here — it traps wheel/trackpad scroll in the
+            sticky TOC column so readers get stuck mid-article on desktop.
+          */}
+          <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto scrollbar-hide space-y-6">
             <TableOfContents items={toc} />
             {showAds && adSlots.sidebar ? (
               <GoogleAdSense

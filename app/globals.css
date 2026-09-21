@@ -78,14 +78,20 @@
   * {
     @apply border-border;
   }
+  /*
+    Single document scrollport on html only.
+    overflow-y:auto on BOTH html and body creates nested scrollports and can
+    trap mid-page scroll (esp. mobile Safari / Chrome). Use overflow-x:clip
+    (not hidden) so we do not force a second vertical scroller.
+  */
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: auto;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow-x: clip;
+    overflow-y: scroll;
     overscroll-behavior-x: none;
   }
   body {
@@ -94,8 +100,8 @@
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow-x: clip;
+    overflow-y: visible;
     overscroll-behavior-x: none;
     position: relative;
   }

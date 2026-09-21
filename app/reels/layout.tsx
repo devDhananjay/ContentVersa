@@ -22,9 +22,11 @@ export default function ReelsLayout({ children }: { children: React.ReactNode })
     if (footer) footer.style.display = "none";
 
     return () => {
-      document.body.style.overflow = prev.bodyOverflow;
+      // Always clear locks — empty string restores stylesheet control even if
+      // prev was also "hidden" from a stale navigation.
+      document.body.style.overflow = "";
       if (main) {
-        main.style.overflow = prev.mainOverflow;
+        main.style.overflow = "";
         main.style.paddingBottom = prev.mainPb;
       }
       if (footer) footer.style.display = prev.footerDisplay;
