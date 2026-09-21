@@ -80,12 +80,17 @@ export default function RootLayout({
           <SessionProvider>
           <BookmarkStatusProvider>
           <SkipToMainLink />
-          <div id="site-content" className="flex flex-1 flex-col min-h-0 min-w-0 w-full max-w-full overflow-x-hidden">
+          {/*
+            Do not put overflow-x-hidden / min-h-0 on this flex middle wrapper —
+            that creates a nested vertical scrollport and clips long blog articles
+            before comments/footer. Horizontal overflow is already clipped on html/body.
+          */}
+          <div id="site-content" className="flex flex-1 flex-col min-w-0 w-full max-w-full">
             <SiteHeader />
             <main
               id="main-content"
               tabIndex={-1}
-              className="flex-1 pt-[var(--site-header-offset)] pb-24 md:pb-8 outline-none"
+              className="pt-[var(--site-header-offset)] pb-24 md:pb-8 outline-none"
             >
               {children}
             </main>
