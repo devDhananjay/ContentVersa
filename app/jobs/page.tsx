@@ -53,7 +53,7 @@ export default async function JobsHubPage() {
           openings for Indian readers. Listings link to official sources — ContentVerse India does not
           charge applicants. For exam and board results, use our{" "}
           <Link href="/results" className="text-primary hover:underline">
-            Sarkari Result hub
+            Exam Results hub
           </Link>
           .
         </p>

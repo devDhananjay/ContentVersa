@@ -50,7 +50,7 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
         description: "Schemes, jobs, trends, OTT",
         icon: BookOpen,
       },
-      { href: "/results", label: "Sarkari Result", description: "Official exam & board results", icon: FileSearch },
+      { href: "/results", label: "Exam Results", description: "Official exam & board result portals", icon: FileSearch },
       { href: "/categories", label: "Categories", description: "21+ topics to follow", icon: LayoutDashboard },
       { href: "/bookmarks", label: "Bookmarks", description: "Your saved reads", icon: Bookmark },
       { href: "/site-map", label: "Site map", description: "Every page at a glance", icon: Map },

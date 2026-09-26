@@ -231,9 +231,9 @@ export const JOBS_HUB_SEO: HubSeoConfig = {
         "No. We aggregate listings and link to official sources. Never pay anyone on ContentVerse India to apply for a government job.",
     },
     {
-      question: "Where are Sarkari Results?",
+      question: "Where do I check exam results?",
       answer:
-        "Use the Sarkari Result hub for official exam and board result portals. Jobs Hub focuses on notifications, vacancies and career listings.",
+        "Use the ContentVerse India Results hub for official exam and board result portals. Jobs Hub focuses on notifications, vacancies and career listings.",
     },
     {
       question: "Do you list private jobs too?",
@@ -250,9 +250,9 @@ export const JOBS_HUB_SEO: HubSeoConfig = {
 
 export const RESULTS_HUB_SEO: HubSeoConfig = {
   path: "/results",
-  name: "Sarkari Result — Exam & Board Results India",
+  name: "Exam & Board Results India — Official Portals",
   description:
-    "Official Sarkari Result links for SSC, UPSC, CBSE, IBPS, RRB, NTA, NEET, JEE and more — ContentVerse India links only to government portals.",
+    "Official exam and board result portals for SSC, UPSC, CBSE, IBPS, RRB, NTA, NEET, JEE and more — curated on ContentVerse India, linking only to government sites.",
   faqs: [
     {
       question: "Does ContentVerse India publish marksheets?",
@@ -267,7 +267,7 @@ export const RESULTS_HUB_SEO: HubSeoConfig = {
     {
       question: "Where do I find job notifications?",
       answer:
-        "Open the Jobs Hub for sarkari naukri and private openings. Results Hub is specifically for official result portals.",
+        "Open the Jobs Hub for government and private openings. The Results hub is specifically for official result portals.",
     },
   ],
 };

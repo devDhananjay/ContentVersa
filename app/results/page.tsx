@@ -9,7 +9,7 @@ import { hubSeoJsonLdBlocks, RESULTS_HUB_SEO } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Sarkari Result — Official Exam & Board Results India",
+  title: "Exam & Board Results India — Official Portals | ContentVerse",
   description: RESULTS_HUB_SEO.description,
   path: "/results",
   keywords: [
@@ -33,12 +33,12 @@ export default function ResultsPage() {
   return (
     <div className="container max-w-5xl space-y-8 py-8 md:py-10">
       <HubJsonLd blocks={hubSeoJsonLdBlocks(RESULTS_HUB_SEO)} />
-      <HubEditorialIntro title="Official Sarkari Result portals only">
+      <HubEditorialIntro title="Official exam & board result portals">
         <p>
-          India searches for exam and board results every day. This hub collects{" "}
-          <strong>official</strong> portals for central exams, boards, banking,
-          railways and defence — so you open the right site without spam or fake
-          marksheets.
+          ContentVerse India links you to{" "}
+          <strong>official</strong> government and board result sites — SSC, UPSC,
+          CBSE, IBPS, RRB, NTA and more — so you open the right portal without spam
+          or fake marksheets.
         </p>
         <p>
           Also explore{" "}

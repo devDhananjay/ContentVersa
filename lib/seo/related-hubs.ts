@@ -28,7 +28,7 @@ export const RELATED_HUB_CATALOG: Record<RelatedHubId, RelatedHubLink> = {
   goldverse: { id: "goldverse", href: "/goldverse", label: "GoldVerse" },
   moneyverse: { id: "moneyverse", href: "/moneyverse", label: "MoneyVerse" },
   jobs: { id: "jobs", href: "/jobs", label: "Jobs" },
-  results: { id: "results", href: "/results", label: "Sarkari Result" },
+  results: { id: "results", href: "/results", label: "Exam Results" },
   tools: { id: "tools", href: "/tools", label: "India Tools" },
   trending: { id: "trending", href: "/trending", label: "Trending Now" },
   guides: { id: "guides", href: "/guides", label: "India Guides" },

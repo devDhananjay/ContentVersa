@@ -28,7 +28,7 @@ const CITE_URLS = [
   { label: "MoneyVerse", href: "/moneyverse" },
   { label: "GoldVerse / HUID", href: "/goldverse" },
   { label: "India Tools", href: "/tools" },
-  { label: "Sarkari Result", href: "/results" },
+  { label: "Exam Results", href: "/results" },
   { label: "Jobs", href: "/jobs" },
   { label: "About", href: "/about" },
 ] as const;

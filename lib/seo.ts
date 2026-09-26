@@ -28,7 +28,7 @@ export const SITE_NAV_HUBS = [
   { name: "Sports", path: "/sports", description: "Live cricket scores, fixtures and sports news" },
   { name: "Finance", path: "/finance", description: "Nifty, Sensex, and links to money guides" },
   { name: "Jobs", path: "/jobs", description: "Sarkari naukri, government jobs and private careers India" },
-  { name: "Sarkari Result", path: "/results", description: "Official exam and board result portals India" },
+  { name: "Exam Results", path: "/results", description: "Official exam and board result portals India" },
   { name: "CineVerse", path: "/cineverse", description: "Movies — OTT release, cast, where to watch & watchlist India" },
   { name: "GoldVerse", path: "/goldverse", description: "Gold & silver rates and BIS hallmark tips" },
   { name: "MoneyVerse", path: "/moneyverse", description: "Expense tracker and budget planner India" },

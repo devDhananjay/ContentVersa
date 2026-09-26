@@ -38,7 +38,7 @@ export const SITE_MAP_NAV = {
     { label: "GoldVerse", href: "/goldverse" },
     { label: "MoneyVerse", href: "/moneyverse" },
     { label: "Jobs", href: "/jobs" },
-    { label: "Sarkari Result", href: "/results" },
+    { label: "Exam Results", href: "/results" },
   ],
   actions: [
     { label: "Sign In", href: "/auth/sign-in" },

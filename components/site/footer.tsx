@@ -29,7 +29,7 @@ const EXPLORE = [
   { label: "GoldVerse", href: "/goldverse" },
   { label: "MoneyVerse", href: "/moneyverse" },
   { label: "Jobs", href: "/jobs" },
-  { label: "Sarkari Result", href: "/results" },
+  { label: "Exam Results", href: "/results" },
   { label: "Reels", href: "/reels" },
   { label: "Categories", href: "/categories" },
 ] as const;
