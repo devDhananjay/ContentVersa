@@ -11,11 +11,15 @@ import { BlogStatus } from "@prisma/client";
 import { countAiSmellMarkers, listAiSmellHits } from "../lib/seo/ai-smell";
 import { humanizeArticle } from "../lib/seo/humanize-article";
 import { wordCount } from "../lib/seo/article-quality";
-import { readingTime } from "../lib/utils";
 import { prisma, isDatabaseConfigured } from "../lib/prisma";
 import { loadScriptEnv } from "./load-script-env";
 
 loadScriptEnv();
+
+function readingTime(content: string): number {
+  const words = content.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 220));
+}
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
