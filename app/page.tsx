@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { HomeHeroShell } from "@/components/home/home-hero-shell";
 import { Hero } from "@/components/home/hero";
-import { HomeModulesRail } from "@/components/home/home-modules-rail";
 import { HomeStickySidebar } from "@/components/home/home-sticky-sidebar";
 import { HomeModuleSpotlight } from "@/components/home/home-module-spotlight";
 import { PlatformModulesStrip } from "@/components/home/platform-modules-strip";
@@ -19,14 +18,6 @@ import { FinanceTeaser } from "@/components/home/finance-teaser";
 import { TrendingSection } from "@/components/home/trending";
 import { LatestSection } from "@/components/home/latest-section";
 import { ContinueReadingStrip } from "@/components/home/continue-reading-strip";
-import { TrendingStrip } from "@/components/home/trending-strip";
-import { CricketStrip } from "@/components/home/cricket-strip";
-import {
-  GoldPriceStrip,
-  SilverPriceStrip,
-  FuelPriceStrip,
-  MoviesPriceStrip,
-} from "@/components/home/info-strips";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { getFinanceTickerDataCached } from "@/lib/finance/data";
@@ -56,25 +47,23 @@ export const metadata: Metadata = buildMetadata({
     "HUID verification",
     "government schemes India",
     "free India tools",
-    "ContentVerse India AI",
   ],
 });
 
+/** Editorial-first order for AdSense / quality review. */
 const HOME_SIDEBAR_SECTIONS = [
   { id: "home-top", label: "Home" },
+  { id: "home-guides", label: "Guides" },
+  { id: "about-contentverse-heading", label: "About" },
   { id: "home-articles", label: "Articles" },
   { id: "home-latest", label: "Latest" },
-  { id: "home-guides", label: "Guides" },
-  { id: "continue-reading", label: "Continue" },
-  { id: "trending-topics", label: "Trending" },
-  { id: "explore-modules", label: "Modules" },
-  { id: "home-tools", label: "Tools" },
+  { id: "home-jobs", label: "Jobs" },
   { id: "home-sports", label: "Sports" },
   { id: "home-finance", label: "Finance" },
   { id: "home-money", label: "Money" },
   { id: "home-gold", label: "Gold" },
-  { id: "home-jobs", label: "Jobs" },
-  { id: "home-cine", label: "Cine" },
+  { id: "home-tools", label: "Tools" },
+  { id: "explore-modules", label: "More" },
   { id: "newsletter", label: "Newsletter" },
 ];
 
@@ -96,9 +85,9 @@ export default async function HomePage() {
       meta: job.last_date ? `Last date · ${job.last_date}` : "Government update",
     })) ?? [
       { title: "Sarkari jobs", href: "/jobs", meta: "Latest notifications" },
-      { title: "Results", href: "/jobs?category=results", meta: "Exam results" },
-      { title: "Admit cards", href: "/jobs?category=admit-cards", meta: "Download hall tickets" },
-      { title: "Private roles", href: "/jobs", meta: "Curated openings" },
+      { title: "Exam results", href: "/results", meta: "Official portals" },
+      { title: "Admit cards", href: "/jobs?category=admit-cards", meta: "Hall tickets" },
+      { title: "Job guides", href: "/guides/jobs", meta: "How to read notifications" },
     ];
 
   const goldCity =
@@ -116,27 +105,31 @@ export default async function HomePage() {
           meta: `₹${goldCity.gold24k.toLocaleString("en-IN")} / 10g`,
         },
         {
-          title: "HUID Check",
-          href: "/huid-verification",
-          meta: "Verify BIS hallmark",
+          title: "HUID buying guide",
+          href: "/guides/money/huid-hallmark-gold-buying-india",
+          meta: "Hallmark checklist",
         },
         {
           title: "City rates",
           href: "/goldverse",
-          meta: "316+ cities",
+          meta: "Live prices",
         },
       ]
     : [
         { title: "Live gold rates", href: "/goldverse", meta: "City-wise 22K / 24K" },
-        { title: "HUID Check", href: "/huid-verification", meta: "Verify BIS hallmark" },
-        { title: "Hallmark guide", href: "/goldverse", meta: "Buy smarter jewellery" },
-        { title: "Jeweller tools", href: "/goldverse", meta: "For shops & buyers" },
+        {
+          title: "HUID buying guide",
+          href: "/guides/money/huid-hallmark-gold-buying-india",
+          meta: "Hallmark checklist",
+        },
+        { title: "Gold loan vs personal", href: "/guides/money/gold-loan-vs-personal-loan-india", meta: "When each fits" },
+        { title: "Money guides", href: "/guides/money", meta: "SIP, tax, EMI" },
       ];
 
   const toolItems = TOOL_REGISTRY.slice(0, 4).map((tool) => ({
     title: tool.shortTitle,
     href: toolPath(tool.slug),
-    meta: tool.badge || "Free tool",
+    meta: tool.badge || "Supports guides",
   }));
 
   return (
@@ -145,178 +138,178 @@ export default async function HomePage() {
       <HomeStickySidebar sections={HOME_SIDEBAR_SECTIONS} />
 
       <div className="xl:[&_.container]:pl-16 2xl:[&_.container]:pl-20">
-      <div id="home-top" className="scroll-mt-0">
-        <HomeHeroShell>
-          <Hero stats={data.stats} categories={data.categories} />
-        </HomeHeroShell>
-      </div>
+        <div id="home-top" className="scroll-mt-0">
+          <HomeHeroShell>
+            <Hero stats={data.stats} categories={data.categories} />
+          </HomeHeroShell>
+        </div>
 
-      <ContinueReadingStrip />
+        <Reveal>
+          <HomeModuleSpotlight
+            id="home-guides"
+            eyebrow="India Guides"
+            title={
+              <>
+                Original explainers for{" "}
+                <span className="text-gradient">Indian readers</span>
+              </>
+            }
+            description="Schemes, money, jobs, and how-tos — one strong page per topic, written for people who need clear steps."
+            href="/guides"
+            cta="Open Guides"
+            icon={BookOpen}
+            accentClassName="text-violet-300"
+            items={GUIDE_SECTIONS.slice(0, 4).map((s) => ({
+              kicker: s.shortTitle,
+              title: s.cardTitle,
+              href: guideSectionPath(s.slug),
+              meta: s.cardSubtext,
+            }))}
+          />
+        </Reveal>
 
-      <TrendingSection blogs={data.trending} />
-      <Reveal>
-        <LatestSection blogs={data.latest} />
-      </Reveal>
+        <HomeEditorialSection />
 
-      <Reveal>
-        <HomeModuleSpotlight
-          id="home-guides"
-          eyebrow="India Guides"
-          title={
-            <>
-              Original explainers for <span className="text-gradient">Indian readers</span>
-            </>
-          }
-          description="Schemes, money, jobs, and how-tos — one strong page per topic, not a dozen clones."
-          href="/guides"
-          cta="Open Guides"
-          icon={BookOpen}
-          accentClassName="text-violet-300"
-          items={GUIDE_SECTIONS.slice(0, 4).map((s) => ({
-            kicker: s.shortTitle,
-            title: s.cardTitle,
-            href: guideSectionPath(s.slug),
-            meta: s.cardSubtext,
-          }))}
-        />
-      </Reveal>
+        <ContinueReadingStrip />
 
-      <HomeEditorialSection />
+        <div id="home-articles" className="scroll-mt-24">
+          <TrendingSection blogs={data.trending} />
+        </div>
+        <Reveal>
+          <LatestSection blogs={data.latest} />
+        </Reveal>
 
-      <TrendingStrip />
-      <CricketStrip />
+        <Reveal>
+          <HomeModuleSpotlight
+            id="home-jobs"
+            eyebrow="Jobs & results"
+            title={
+              <>
+                Sarkari careers &{" "}
+                <span className="text-gradient">official portals</span>
+              </>
+            }
+            description="Notifications, result portals, and guides on how to read them — not spam marksheets."
+            href="/jobs"
+            cta="Open Jobs"
+            icon={Briefcase}
+            accentClassName="text-amber-400"
+            items={jobItems}
+          />
+        </Reveal>
 
-      <HomeModulesRail />
-      <PlatformModulesStrip previews={modulePreviews} />
+        <Reveal>
+          <SportsTeaser data={sportsTeaser} />
+        </Reveal>
+        <Reveal delay={0.04}>
+          <FinanceTeaser data={financeTicker} />
+        </Reveal>
 
-      <Reveal>
-        <SportsTeaser data={sportsTeaser} />
-      </Reveal>
-      <Reveal delay={0.04}>
-        <FinanceTeaser data={financeTicker} />
-      </Reveal>
+        <Reveal>
+          <HomeModuleSpotlight
+            id="home-money"
+            eyebrow="Money Guides"
+            title={
+              <>
+                SIP, tax, credit &{" "}
+                <span className="text-gradient">everyday money</span>
+              </>
+            }
+            description="Plain-language India money explainers. Calculators and trackers sit underneath the guides."
+            href="/guides/money"
+            cta="Open Money Guides"
+            icon={Wallet}
+            accentClassName="text-emerald-300"
+            items={[
+              {
+                title: "SIP for beginners",
+                href: "/guides/money/sip-calculator-india-beginners-guide",
+                meta: "Systematic investing",
+              },
+              {
+                title: "CIBIL / credit score",
+                href: "/guides/money/credit-score-cibil-india-guide",
+                meta: "What actually moves it",
+              },
+              {
+                title: "Salary tax regimes",
+                href: "/guides/money/salary-tax-calculator-india-guide",
+                meta: "New vs old",
+              },
+              {
+                title: "UPI fraud checklist",
+                href: "/guides/schemes/upi-fraud-otp-scam-india",
+                meta: "OTP scams & freeze steps",
+              },
+            ]}
+          />
+        </Reveal>
 
-      <Reveal>
-        <HomeModuleSpotlight
-          id="home-money"
-          eyebrow="MoneyVerse"
-          title={
-            <>
-              Expenses, OCR & <span className="text-gradient">bank statements</span>
-            </>
-          }
-          description="Track UPI spends, scan payment screenshots, and analyse bank PDFs."
-          href="/moneyverse"
-          cta="Open MoneyVerse"
-          icon={Wallet}
-          accentClassName="text-emerald-300"
-          items={[
-            {
-              title: "Expense tracker",
-              href: "/moneyverse",
-              meta: "Budgets & SIP reminders",
-            },
-            {
-              title: "Screenshot Scan",
-              href: "/moneyverse/screenshot-scan",
-              meta: "UPI → auto expense",
-            },
-            {
-              title: "Bank Statement",
-              href: "/moneyverse/bank-statement-analyzer",
-              meta: "PDF → transactions",
-            },
-            {
-              title: "Privacy-first",
-              href: "/moneyverse",
-              meta: "Statements are not stored",
-            },
-          ]}
-        />
-      </Reveal>
+        <Reveal>
+          <HomeModuleSpotlight
+            id="home-gold"
+            eyebrow="Gold & hallmark"
+            title={
+              <>
+                Rates plus{" "}
+                <span className="text-gradient">how to buy safely</span>
+              </>
+            }
+            description="Live city rates with guides on HUID, hallmark, and invoices — not just a ticker."
+            href="/goldverse"
+            cta="Open GoldVerse"
+            icon={Gem}
+            accentClassName="text-amber-300"
+            items={goldItems}
+          />
+        </Reveal>
 
-      <GoldPriceStrip />
-      <SilverPriceStrip />
-      <Reveal>
-        <HomeModuleSpotlight
-          id="home-gold"
-          eyebrow="GoldVerse"
-          title={
-            <>
-              Gold rates & <span className="text-gradient">HUID</span>
-            </>
-          }
-          description="City gold prices and hallmark verification in one place."
-          href="/goldverse"
-          cta="Open GoldVerse"
-          icon={Gem}
-          accentClassName="text-amber-300"
-          items={goldItems}
-        />
-      </Reveal>
+        <Reveal>
+          <HomeModuleSpotlight
+            id="home-tools"
+            eyebrow="Supporting tools"
+            title={
+              <>
+                Calculators that{" "}
+                <span className="text-gradient">back the guides</span>
+              </>
+            }
+            description="EMI, IFSC, tax estimates and more — utilities for readers who finished an explainer."
+            href="/tools"
+            cta="Open Tools"
+            icon={Wrench}
+            accentClassName="text-teal-300"
+            items={toolItems}
+          />
+        </Reveal>
 
-      <FuelPriceStrip />
-      <Reveal>
-        <HomeModuleSpotlight
-          id="home-tools"
-          eyebrow="India Tools"
-          title={
-            <>
-              Calculators that <span className="text-gradient">support the guides</span>
-            </>
-          }
-          description="Supporting calculators for the guides — IFSC, EMI, weather and more."
-          href="/tools"
-          cta="Open Tools"
-          icon={Wrench}
-          accentClassName="text-teal-300"
-          items={toolItems}
-        />
-      </Reveal>
+        <Reveal>
+          <HomeModuleSpotlight
+            id="home-cine"
+            eyebrow="CineVerse"
+            title={
+              <>
+                Movies, OTT &{" "}
+                <span className="text-gradient">watch guides</span>
+              </>
+            }
+            description="Where to watch and what to know — paired with our movie guides."
+            href="/cineverse"
+            cta="Open CineVerse"
+            icon={Clapperboard}
+            accentClassName="text-indigo-300"
+            items={[
+              { title: "OTT India guide", href: "/guides/movies/where-to-watch-ott-india", meta: "Where to watch" },
+              { title: "Browse movies", href: "/cineverse", meta: "Search by title" },
+              { title: "Watchlist", href: "/cineverse", meta: "Save for later" },
+              { title: "Movie checklist", href: "/guides/movies/movie-release-cast-watch-checklist", meta: "Release & cast" },
+            ]}
+          />
+        </Reveal>
 
-      <Reveal>
-        <HomeModuleSpotlight
-          id="home-jobs"
-          eyebrow="Jobs Hub"
-          title={
-            <>
-              Sarkari & private <span className="text-gradient">careers</span>
-            </>
-          }
-          description="Government notifications and curated private openings."
-          href="/jobs"
-          cta="Open Jobs"
-          icon={Briefcase}
-          accentClassName="text-amber-400"
-          items={jobItems}
-        />
-      </Reveal>
+        <PlatformModulesStrip previews={modulePreviews} />
 
-      <MoviesPriceStrip />
-      <Reveal>
-        <HomeModuleSpotlight
-          id="home-cine"
-          eyebrow="CineVerse"
-          title={
-            <>
-              Movies, OTT & <span className="text-gradient">watchlists</span>
-            </>
-          }
-          description="Discover films, save what to watch next, and get smart picks."
-          href="/cineverse"
-          cta="Open CineVerse"
-          icon={Clapperboard}
-          accentClassName="text-indigo-300"
-          items={[
-            { title: "Browse movies", href: "/cineverse", meta: "Search by title" },
-            { title: "Watchlist", href: "/cineverse", meta: "Save for later" },
-            { title: "AI picks", href: "/cineverse", meta: "What to watch tonight" },
-            { title: "OTT India", href: "/cineverse", meta: "Popular across platforms" },
-          ]}
-        />
-      </Reveal>
-
-      <Newsletter />
+        <Newsletter />
       </div>
     </>
   );

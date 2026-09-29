@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Search, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, Search, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -264,19 +264,19 @@ export function Hero({ categories, stats }: Props) {
             transition={{ delay: 0.7, duration: 0.55 }}
           >
             <motion.div whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.98 }}>
-              <Link href="/ai">
+              <Link href="/guides">
                 <Button
                   variant="gradient"
                   size="xl"
                   className="gap-2 shadow-xl shadow-neon-purple/25"
                 >
-                  <Sparkles className="h-5 w-5" />
-                  Try ContentVerse India AI
+                  <BookOpen className="h-5 w-5" />
+                  Read India Guides
                 </Button>
               </Link>
             </motion.div>
             <motion.div whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.98 }}>
-              <Link href="/dashboard/create">
+              <Link href="/blogs">
                 <Button
                   variant="outline"
                   size="xl"
@@ -285,7 +285,7 @@ export function Hero({ categories, stats }: Props) {
                     cinematic ? "border-white/25 bg-white/10 text-white hover:bg-white/15" : "bg-card/40"
                   )}
                 >
-                  Start Writing
+                  Browse articles
                   <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>

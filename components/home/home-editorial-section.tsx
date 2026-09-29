@@ -81,6 +81,24 @@ export function HomeEditorialSection() {
             explainers, and reporting that readers bookmark and share.
           </p>
           <p>
+            Start with our{" "}
+            <Link
+              href="/guides"
+              className="font-medium text-foreground underline underline-offset-4 hover:text-neon-purple"
+            >
+              India Guides
+            </Link>{" "}
+            on money, government schemes, jobs, and everyday how-tos — then read{" "}
+            <Link
+              href="/blogs"
+              className="font-medium text-foreground underline underline-offset-4 hover:text-neon-purple"
+            >
+              original articles
+            </Link>{" "}
+            from the community. Live scores, market strips, and calculators exist to support that
+            reading; they are not the product we ask advertisers or search engines to judge us by.
+          </p>
+          <p>
             Our editorial team and community moderators review submissions before they go live. We
             remove plagiarism, spam, and low-effort AI dumps. Creators who meet our quality bar can
             join the{" "}
@@ -101,16 +119,7 @@ export function HomeEditorialSection() {
             .
           </p>
           <p>
-            Browse{" "}
-            <Link
-              href="/blogs"
-              className="font-medium text-foreground underline underline-offset-4 hover:text-neon-purple"
-            >
-              original articles
-            </Link>{" "}
-            across technology, finance, lifestyle, sports, and careers. Live cricket scores, market
-            data, and job listings complement our writing — they are utilities for readers, not
-            standalone pages we ask search engines to rank. Our{" "}
+            Our{" "}
             <Link
               href="/policy"
               className="font-medium text-foreground underline underline-offset-4 hover:text-neon-purple"
@@ -118,12 +127,8 @@ export function HomeEditorialSection() {
               Content Policy
             </Link>{" "}
             explains what we publish and what we do not, in line with Indian law and Google AdSense
-            publisher standards.
-          </p>
-          <p>
-            We process personal data under India&apos;s Digital Personal Data Protection Act, 2023
-            (DPDP Act) and operate as an intermediary under the Information Technology Act, 2000 and
-            the IT (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021. Read our{" "}
+            publisher standards. We process personal data under India&apos;s Digital Personal Data
+            Protection Act, 2023 (DPDP Act). Read our{" "}
             <Link
               href="/privacy"
               className="font-medium text-foreground underline underline-offset-4 hover:text-neon-purple"

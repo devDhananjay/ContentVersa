@@ -31,10 +31,10 @@ export type NavDropdown = {
 };
 
 export const NAV_TOP_LINKS: NavLinkItem[] = [
-  { href: "/trending", label: "Trending", icon: Flame },
-  { href: "/sports", label: "Sports", icon: Medal },
-  { href: "/finance", label: "Finance", icon: TrendingUp },
+  { href: "/guides", label: "Guides", icon: BookOpen },
+  { href: "/blogs", label: "Articles", icon: Compass },
   { href: "/jobs", label: "Jobs", icon: Briefcase },
+  { href: "/results", label: "Results", icon: FileSearch },
 ];
 
 export const NAV_DROPDOWNS: NavDropdown[] = [
@@ -43,36 +43,38 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
     label: "Explore",
     icon: Compass,
     items: [
-      { href: "/blogs", label: "Articles", description: "Discover stories & ideas", icon: Compass },
       {
         href: "/guides",
         label: "India Guides",
-        description: "Schemes, jobs, trends, OTT",
+        description: "Schemes, money, jobs, cricket",
         icon: BookOpen,
       },
-      { href: "/results", label: "Exam Results", description: "Official exam & board result portals", icon: FileSearch },
-      { href: "/categories", label: "Categories", description: "21+ topics to follow", icon: LayoutDashboard },
+      { href: "/blogs", label: "Articles", description: "Long-form stories & explainers", icon: Compass },
+      { href: "/results", label: "Exam Results", description: "Official exam & board portals", icon: FileSearch },
+      { href: "/categories", label: "Categories", description: "Topics to follow", icon: LayoutDashboard },
+      { href: "/sports", label: "Sports", description: "Live cricket scores", icon: Medal },
+      { href: "/finance", label: "Finance", description: "Markets & money links", icon: TrendingUp },
+      { href: "/trending", label: "Trending", description: "What India is searching", icon: Flame },
       { href: "/bookmarks", label: "Bookmarks", description: "Your saved reads", icon: Bookmark },
       { href: "/site-map", label: "Site map", description: "Every page at a glance", icon: Map },
     ],
   },
   {
     id: "verse",
-    label: "Verse",
+    label: "More",
     icon: Gem,
     items: [
-      { href: "/cineverse", label: "CineVerse", description: "Movies, OTT & watchlist", icon: Clapperboard },
-      { href: "/goldverse", label: "GoldVerse", description: "Gold & silver rates, hallmark", icon: Gem },
-      { href: "/moneyverse", label: "MoneyVerse", description: "Expense tracker India", icon: Wallet },
       {
         href: "/guides/money",
         label: "Money Guides",
         description: "SIP, CIBIL, 80C, EMI & tax",
         icon: TrendingUp,
       },
-      { href: "/tools", label: "India Tools", description: "IFSC, PNR, translator & more", icon: Wrench },
-      { href: "/tools/pnr-status", label: "PNR Status", description: "Indian Railways PNR check", icon: Wrench },
-      { href: "/tools/salary-tax-calculator", label: "Salary Tax", description: "In-hand salary & tax India", icon: Wrench },
+      { href: "/guides/schemes", label: "Scheme Guides", description: "Eligibility & how to apply", icon: BookOpen },
+      { href: "/cineverse", label: "CineVerse", description: "Movies, OTT & watchlist", icon: Clapperboard },
+      { href: "/goldverse", label: "GoldVerse", description: "Gold rates & hallmark tips", icon: Gem },
+      { href: "/moneyverse", label: "MoneyVerse", description: "Expense tracker India", icon: Wallet },
+      { href: "/tools", label: "India Tools", description: "Calculators that support guides", icon: Wrench },
     ],
   },
 ];
