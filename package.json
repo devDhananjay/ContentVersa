@@ -34,6 +34,7 @@
     "db:adsense-audit": "tsx scripts/adsense-content-audit.ts",
     "db:adsense-apply": "tsx scripts/apply-adsense-merges.ts",
     "db:archive-ai-smell": "tsx scripts/archive-ai-smell-blogs.ts",
+    "db:humanize-blogs": "tsx scripts/humanize-published-blogs.ts",
     "db:regen-covers": "tsx scripts/regenerate-article-covers.ts",
     "db:expand-articles": "tsx scripts/expand-short-articles.ts",
     "db:daily-ai": "tsx scripts/daily-ai-articles.ts",
