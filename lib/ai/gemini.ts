@@ -89,14 +89,25 @@ async function geminiGenerate(
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
 
   const post = async () => {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-      cache: "no-store",
-    });
-    const text = await res.text().catch(() => "");
-    return { res, text };
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        cache: "no-store",
+      });
+      const text = await res.text().catch(() => "");
+      return { res, text };
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Gemini network request failed";
+      return {
+        res: { ok: false, status: 503 } as Response,
+        text: JSON.stringify({
+          error: { message, status: "UNAVAILABLE" },
+        }),
+      };
+    }
   };
 
   let { res, text } = await post();

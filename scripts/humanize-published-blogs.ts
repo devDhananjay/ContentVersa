@@ -93,22 +93,41 @@ async function main() {
     const b = r.blog;
     console.log(`\n→ ${b.slug} (before m${r.markers}, ${r.words}w)`);
 
-    let result = await humanizeArticle({
-      title: b.title,
-      category: b.category?.name ?? "General",
-      content: b.content,
-      excerpt: b.excerpt,
-    });
-
-    if (!result.article && result.reason !== "quota") {
-      console.log("  retrying after Gemini blip…");
-      await sleep(8000);
+    let result;
+    try {
       result = await humanizeArticle({
         title: b.title,
         category: b.category?.name ?? "General",
         content: b.content,
         excerpt: b.excerpt,
       });
+    } catch (err) {
+      console.error(
+        `  ✗ exception: ${err instanceof Error ? err.message : String(err)}`
+      );
+      failed++;
+      await sleep(5000);
+      continue;
+    }
+
+    if (!result.article && result.reason !== "quota") {
+      console.log("  retrying after Gemini blip…");
+      await sleep(8000);
+      try {
+        result = await humanizeArticle({
+          title: b.title,
+          category: b.category?.name ?? "General",
+          content: b.content,
+          excerpt: b.excerpt,
+        });
+      } catch (err) {
+        console.error(
+          `  ✗ retry exception: ${err instanceof Error ? err.message : String(err)}`
+        );
+        failed++;
+        await sleep(5000);
+        continue;
+      }
     }
 
     if (!result.article) {
