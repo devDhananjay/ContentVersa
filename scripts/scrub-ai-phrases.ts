@@ -17,6 +17,9 @@ loadScriptEnv();
 const REPLACEMENTS: Array<[RegExp, string]> = [
   [/In today's (?:digital|fast-paced|ever-evolving|competitive) (?:world|age|landscape|environment),?\s*/gi, ""],
   [/in today's (?:digital|fast-paced|ever-evolving|competitive) (?:world|age|landscape|environment),?\s*/gi, ""],
+  [/In today's competitive\s+/gi, "In a tough "],
+  [/in today's competitive\s+/gi, "in a tough "],
+  [/not only ([^,.\n]{3,120}) but also/gi, "both $1 and"],
   [/delve into/gi, "look at"],
   [/dive deep into/gi, "look closely at"],
   [/dive deep/gi, "go deeper"],
