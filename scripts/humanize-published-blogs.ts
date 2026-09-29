@@ -93,12 +93,23 @@ async function main() {
     const b = r.blog;
     console.log(`\n→ ${b.slug} (before m${r.markers}, ${r.words}w)`);
 
-    const result = await humanizeArticle({
+    let result = await humanizeArticle({
       title: b.title,
       category: b.category?.name ?? "General",
       content: b.content,
       excerpt: b.excerpt,
     });
+
+    if (!result.article && result.reason !== "quota") {
+      console.log("  retrying after Gemini blip…");
+      await sleep(8000);
+      result = await humanizeArticle({
+        title: b.title,
+        category: b.category?.name ?? "General",
+        content: b.content,
+        excerpt: b.excerpt,
+      });
+    }
 
     if (!result.article) {
       console.error(
@@ -111,7 +122,7 @@ async function main() {
         console.error("  Stopping — Gemini quota exceeded.");
         break;
       }
-      await sleep(3000);
+      await sleep(4000);
       continue;
     }
 

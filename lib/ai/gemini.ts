@@ -101,10 +101,13 @@ async function geminiGenerate(
 
   let { res, text } = await post();
 
-  if (res.status === 429) {
-    const retrySec = Number(text.match(/retry in ([\d.]+)s/i)?.[1] ?? 10);
+  if (res.status === 429 || res.status === 503) {
+    const retrySec =
+      res.status === 429
+        ? Number(text.match(/retry in ([\d.]+)s/i)?.[1] ?? 10)
+        : 8;
     await new Promise((r) =>
-      setTimeout(r, Math.min(retrySec * 1000, 20000))
+      setTimeout(r, Math.min(Math.max(retrySec, 5) * 1000, 25000))
     );
     ({ res, text } = await post());
   }
