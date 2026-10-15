@@ -21,6 +21,7 @@ const REPLACEMENTS: Array<[RegExp, string]> = [
   [/in today's competitive\s+/gi, "in a tough "],
   [/not only ([^,.\n]{3,120}) but also/gi, "both $1 and"],
   [/delve into/gi, "look at"],
+  [/\bdelve\b/gi, "look"],
   [/dive deep into/gi, "look closely at"],
   [/dive deep/gi, "go deeper"],
   [/it's (?:important|crucial|essential) to (?:note|understand|remember) that\s*/gi, ""],
@@ -150,7 +151,13 @@ async function main() {
       );
       return { b, before, after, title, excerpt, content, metaDescription };
     })
-    .filter((t) => t.before > 0 && (t.after < t.before || t.content !== t.b.content));
+    .filter(
+      (t) =>
+        t.content !== t.b.content ||
+        t.title !== t.b.title ||
+        (t.excerpt || "") !== (t.b.excerpt || "") ||
+        (t.metaDescription || "") !== (t.b.metaDescription || "")
+    );
 
   console.log(`Scrub candidates: ${targets.length}`);
   for (const t of targets.slice(0, 40)) {
