@@ -31,6 +31,22 @@ export const AI_SMELL_PATTERNS: RegExp[] = [
   /a plethora of/i,
   /shed light on/i,
   /play a (crucial|pivotal|vital) role/i,
+  /nestled (in|within|on|among)/i,
+  /a testament to/i,
+  /in an era where/i,
+  /it is worth noting/i,
+  /to summarize,/i,
+  /without further ado/i,
+  /embark on/i,
+  /myriad of/i,
+  /holistic approach/i,
+  /paradigm shift/i,
+  /firmly established itself/i,
+  /exploded onto the/i,
+  /living,? breathing/i,
+  /bustling (metropolis|city|market)/i,
+  /rich (cultural )?tapestry/i,
+  /stands as a (beacon|testament)/i,
 ];
 
 export function countAiSmellMarkers(text: string): number {
