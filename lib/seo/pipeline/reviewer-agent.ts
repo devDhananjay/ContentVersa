@@ -1,4 +1,6 @@
 import { callGeminiText, isGeminiConfigured } from "@/lib/ai/gemini";
+import { listAiSmellHits } from "@/lib/seo/ai-smell";
+import { scrubAiFreeText } from "@/lib/seo/ai-free-content";
 import {
   MIN_ARTICLE_WORDS,
   passesArticleQualityGate,
@@ -27,7 +29,21 @@ function localReview(article: PipelineArticle): ReviewReport {
     grammarNotes.push("Remove placeholder or AI-disclosure phrasing.");
   }
 
-  const passed = passesArticleQualityGate(article.content) && suggestions.length === 0;
+  const scrubbed = scrubAiFreeText(article.content);
+  const aiHits = listAiSmellHits(
+    `${article.title}\n${article.excerpt}\n${scrubbed}`
+  );
+  if (aiHits.length) {
+    suggestions.push(
+      `AI-free gate: remove leftover AI phrasing (${aiHits.slice(0, 4).join(", ")}).`
+    );
+    grammarNotes.push("Fails mandatory AI-free / Grammarly-style cleanup before publish.");
+  }
+
+  const passed =
+    passesArticleQualityGate(article.content) &&
+    suggestions.length === 0 &&
+    aiHits.length === 0;
   const score = Math.max(
     40,
     Math.min(
@@ -40,7 +56,7 @@ function localReview(article: PipelineArticle): ReviewReport {
   );
 
   return {
-    passed: passesArticleQualityGate(article.content),
+    passed,
     readability: words > 1400 ? "dense" : words > 900 ? "moderate" : "easy",
     grammarNotes,
     duplicationRisk: /what to know today|in today's fast-paced/i.test(article.content)

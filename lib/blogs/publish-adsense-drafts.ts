@@ -20,6 +20,10 @@ import {
 } from "@/lib/seo/article-quality";
 import { isIndexableArticle } from "@/lib/seo/crawl-policy";
 import { publicCanonicalUrl } from "@/lib/seo/content-redirects";
+import {
+  isAiFreePublishError,
+  prepareAiFreePublishFields,
+} from "@/lib/seo/ai-free-content";
 import { readingTime } from "@/lib/utils";
 
 const YMYL_BODY_NOTE = `
@@ -133,7 +137,9 @@ export async function publishAdsenseSafeDrafts(
       id: true,
       title: true,
       slug: true,
+      excerpt: true,
       content: true,
+      metaDescription: true,
       metaKeywords: true,
       coverImage: true,
       readingTime: true,
@@ -157,6 +163,30 @@ export async function publishAdsenseSafeDrafts(
     }
 
     let content = ensureYmylNote(draft.content, draft.category?.slug ?? null);
+    let title = draft.title;
+    let excerpt = draft.excerpt;
+    let metaDescription = draft.metaDescription;
+    try {
+      const cleaned = prepareAiFreePublishFields({
+        title,
+        excerpt,
+        content,
+        metaDescription,
+      });
+      title = cleaned.title;
+      excerpt = cleaned.excerpt;
+      content = cleaned.content;
+      metaDescription = cleaned.metaDescription;
+    } catch (err) {
+      out.skipped++;
+      out.reasons.push(
+        isAiFreePublishError(err)
+          ? `skip AI-free gate (${err.hits.slice(0, 3).join("|")}): ${draft.slug}`
+          : `skip AI-free gate: ${draft.slug}`
+      );
+      continue;
+    }
+
     const metaKeywords = stripAiDailyKeywords(draft.metaKeywords);
     const rt = readingTime(content);
     const words = wordCount(content);
@@ -179,14 +209,14 @@ export async function publishAdsenseSafeDrafts(
       continue;
     }
 
-    const clashLive = published.find((p) => overlapsTitle(draft.title, p.title));
+    const clashLive = published.find((p) => overlapsTitle(title, p.title));
     if (clashLive) {
       out.skipped++;
       out.reasons.push(`skip overlaps live ${clashLive.slug}: ${draft.slug}`);
       continue;
     }
 
-    if (pickedTitles.some((t) => overlapsTitle(draft.title, t))) {
+    if (pickedTitles.some((t) => overlapsTitle(title, t))) {
       out.skipped++;
       out.reasons.push(`skip overlaps batch: ${draft.slug}`);
       continue;
@@ -196,7 +226,10 @@ export async function publishAdsenseSafeDrafts(
     await prisma.blog.update({
       where: { id: draft.id },
       data: {
+        title,
+        excerpt,
         content,
+        metaDescription,
         readingTime: rt,
         metaKeywords,
         status: BlogStatus.PUBLISHED,
@@ -211,7 +244,7 @@ export async function publishAdsenseSafeDrafts(
       (d) =>
         d.id !== draft.id &&
         !pickedSlugs.includes(d.slug) &&
-        overlapsTitle(draft.title, d.title)
+        overlapsTitle(title, d.title)
     );
     for (const sib of siblings) {
       await prisma.blog.update({
@@ -232,9 +265,9 @@ export async function publishAdsenseSafeDrafts(
     out.published++;
     out.ids.push(draft.id);
     out.slugs.push(draft.slug);
-    pickedTitles.push(draft.title);
+    pickedTitles.push(title);
     pickedSlugs.push(draft.slug);
-    published.push({ title: draft.title, slug: draft.slug });
+    published.push({ title, slug: draft.slug });
     out.reasons.push(
       `published ${draft.slug} (${words}w, ${rt}m, cover=${Boolean(draft.coverImage)})`
     );

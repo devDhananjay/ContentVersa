@@ -7,6 +7,11 @@ import { dispatchBlogPublishedNotifications } from "@/lib/notifications/blog-pub
 import { isAdEligibleByQuality } from "@/lib/seo/crawl-policy";
 import { defaultAdEligibleOnApprove } from "@/lib/seo/creator-quality";
 import { getCreatorQualityForUser } from "@/lib/seo/creator-quality-db";
+import {
+  isAiFreePublishError,
+  prepareAiFreePublishFields,
+} from "@/lib/seo/ai-free-content";
+import { readingTime } from "@/lib/utils";
 
 /** POST /api/admin/blogs/[id]/publish — publish a draft AI article after admin preview */
 export async function POST(
@@ -26,6 +31,9 @@ export async function POST(
         id: true,
         slug: true,
         title: true,
+        excerpt: true,
+        content: true,
+        metaDescription: true,
         status: true,
         readingTime: true,
         authorId: true,
@@ -44,9 +52,32 @@ export async function POST(
       });
     }
 
+    let cleaned;
+    try {
+      cleaned = prepareAiFreePublishFields({
+        title: existing.title,
+        excerpt: existing.excerpt,
+        content: existing.content,
+        metaDescription: existing.metaDescription,
+      });
+    } catch (err) {
+      if (isAiFreePublishError(err)) {
+        return NextResponse.json(
+          {
+            error: err.message,
+            code: err.code,
+            hits: err.hits,
+          },
+          { status: 422 }
+        );
+      }
+      throw err;
+    }
+
+    const nextReadingTime = readingTime(cleaned.content);
     const qualityOk = isAdEligibleByQuality({
       slug: existing.slug,
-      readingTime: existing.readingTime,
+      readingTime: nextReadingTime,
     });
     const creator = await getCreatorQualityForUser(existing.authorId);
     const adEligible = defaultAdEligibleOnApprove({ qualityOk, creator });
@@ -54,6 +85,11 @@ export async function POST(
     const blog = await prisma.blog.update({
       where: { id },
       data: {
+        title: cleaned.title,
+        excerpt: cleaned.excerpt,
+        content: cleaned.content,
+        metaDescription: cleaned.metaDescription,
+        readingTime: nextReadingTime,
         status: BlogStatus.PUBLISHED,
         publishedAt: new Date(),
         adEligible,
@@ -75,7 +111,11 @@ export async function POST(
     revalidatePath("/admin/blogs");
     revalidatePath("/sitemap.xml");
 
-    return NextResponse.json({ ok: true, blog });
+    return NextResponse.json({
+      ok: true,
+      blog,
+      aiFree: { markersScrubbed: cleaned.markersBefore, changed: cleaned.changed },
+    });
   } catch (err) {
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

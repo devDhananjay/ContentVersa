@@ -9,6 +9,10 @@ import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
 import { isAdEligibleByQuality } from "@/lib/seo/crawl-policy";
 import { defaultAdEligibleOnApprove } from "@/lib/seo/creator-quality";
 import { getCreatorQualityForUser } from "@/lib/seo/creator-quality-db";
+import {
+  isAiFreePublishError,
+  prepareAiFreePublishFields,
+} from "@/lib/seo/ai-free-content";
 
 const coverImageSchema = z
   .string()
@@ -189,7 +193,41 @@ export async function PATCH(
     const coverImage = await normalizeCoverImageUrl(parsed.coverImage);
     const becomingPublished =
       status === BlogStatus.PUBLISHED && existing.status !== BlogStatus.PUBLISHED;
-    const nextReadingTime = readingTime(parsed.content);
+
+    let title = parsed.title;
+    let excerpt = parsed.excerpt || "";
+    let content = parsed.content;
+    let metaDescription = parsed.metaDescription;
+
+    // Mandatory AI-free gate whenever content is going (or staying) live.
+    if (status === BlogStatus.PUBLISHED) {
+      try {
+        const cleaned = prepareAiFreePublishFields({
+          title,
+          excerpt,
+          content,
+          metaDescription,
+        });
+        title = cleaned.title;
+        excerpt = cleaned.excerpt || "";
+        content = cleaned.content;
+        metaDescription = cleaned.metaDescription ?? metaDescription;
+      } catch (err) {
+        if (isAiFreePublishError(err)) {
+          return NextResponse.json(
+            {
+              error: err.message,
+              code: err.code,
+              hits: err.hits,
+            },
+            { status: 422 }
+          );
+        }
+        throw err;
+      }
+    }
+
+    const nextReadingTime = readingTime(content);
     const qualityOk = isAdEligibleByQuality({
       slug: existing.slug,
       readingTime: nextReadingTime,
@@ -213,15 +251,15 @@ export async function PATCH(
     const blog = await prisma.blog.update({
       where: { id },
       data: {
-        title: parsed.title,
-        excerpt: parsed.excerpt || "",
-        content: parsed.content,
+        title,
+        excerpt,
+        content,
         coverImage,
         readingTime: nextReadingTime,
         status,
         isPremium: parsed.premium ?? existing.isPremium,
         metaTitle: parsed.metaTitle,
-        metaDescription: parsed.metaDescription,
+        metaDescription,
         canonicalUrl:
           parsed.canonicalUrl !== undefined ? parsed.canonicalUrl || null : undefined,
         adEligible: nextAdEligible,

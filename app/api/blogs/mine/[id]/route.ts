@@ -7,6 +7,10 @@ import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { readingTime, slugify } from "@/lib/utils";
 import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
 import { notifyAdminsOfPendingBlog } from "@/lib/notifications/blog-pending-admin";
+import {
+  isAiFreePublishError,
+  prepareAiFreePublishFields,
+} from "@/lib/seo/ai-free-content";
 
 const coverImageSchema = z
   .string()
@@ -193,6 +197,39 @@ export async function PATCH(
 
     const coverImage = await normalizeCoverImageUrl(parsed.coverImage);
 
+    let title = parsed.title;
+    let excerpt = parsed.excerpt || "";
+    let content = parsed.content;
+    let metaDescription = parsed.metaDescription;
+
+    // Live posts cannot keep AI-smelling copy after edit.
+    if (status === "PUBLISHED") {
+      try {
+        const cleaned = prepareAiFreePublishFields({
+          title,
+          excerpt,
+          content,
+          metaDescription,
+        });
+        title = cleaned.title;
+        excerpt = cleaned.excerpt || "";
+        content = cleaned.content;
+        metaDescription = cleaned.metaDescription ?? metaDescription;
+      } catch (err) {
+        if (isAiFreePublishError(err)) {
+          return NextResponse.json(
+            {
+              error: err.message,
+              code: err.code,
+              hits: err.hits,
+            },
+            { status: 422 }
+          );
+        }
+        throw err;
+      }
+    }
+
     let scheduledFor: Date | null | undefined = undefined;
     if (parsed.scheduledFor !== undefined) {
       if (parsed.scheduledFor === null || parsed.scheduledFor === "") {
@@ -220,15 +257,15 @@ export async function PATCH(
     const blog = await prisma.blog.update({
       where: { id: existing.id },
       data: {
-        title: parsed.title,
-        excerpt: parsed.excerpt || "",
-        content: parsed.content,
+        title,
+        excerpt,
+        content,
         coverImage,
-        readingTime: readingTime(parsed.content),
+        readingTime: readingTime(content),
         status,
         isPremium: parsed.premium ?? existing.isPremium,
         metaTitle: parsed.metaTitle,
-        metaDescription: parsed.metaDescription,
+        metaDescription,
         ...(parsed.canonicalUrl !== undefined
           ? { canonicalUrl: parsed.canonicalUrl || null }
           : {}),

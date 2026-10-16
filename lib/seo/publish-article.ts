@@ -3,6 +3,7 @@ import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { CATEGORIES } from "@/lib/data/categories";
 import type { GeneratedArticle } from "@/lib/seo/article-generator";
 import { resolveArticleCoverImage } from "@/lib/seo/article-cover";
+import { prepareAiFreePublishFields } from "@/lib/seo/ai-free-content";
 import { readingTime, slugify } from "@/lib/utils";
 
 async function ensureCategory(slug: string) {
@@ -63,12 +64,37 @@ export async function publishGeneratedArticle(input: {
   }
 
   const category = await ensureCategory(input.categorySlug);
-  const content = input.article.content.trim();
+  const wantPublish = input.publish !== false;
+
+  // Live publish must pass AI-free gate. If it fails, force DRAFT instead of going live unclean.
+  let title = input.article.title;
+  let excerpt = input.article.excerpt;
+  let content = input.article.content.trim();
+  let metaDescription = input.article.metaDescription;
+  let status = wantPublish ? BlogStatus.PUBLISHED : BlogStatus.DRAFT;
+
+  if (wantPublish) {
+    try {
+      const cleaned = prepareAiFreePublishFields({
+        title,
+        excerpt,
+        content,
+        metaDescription,
+      });
+      title = cleaned.title;
+      excerpt = cleaned.excerpt || excerpt;
+      content = cleaned.content;
+      metaDescription = cleaned.metaDescription || metaDescription;
+    } catch {
+      status = BlogStatus.DRAFT;
+    }
+  }
+
   const tagIds = await upsertTags(input.article.tags);
 
   const baseSlug =
     input.slugHint?.trim() ||
-    slugify(input.article.title).slice(0, 72) ||
+    slugify(title).slice(0, 72) ||
     `article-${Date.now().toString(36)}`;
   const slug = await uniqueSlug(baseSlug);
 
@@ -77,8 +103,8 @@ export async function publishGeneratedArticle(input: {
     (await resolveArticleCoverImage(
       {
         categorySlug: input.categorySlug,
-        title: input.article.title,
-        excerpt: input.article.excerpt,
+        title,
+        excerpt,
         tags: input.article.tags,
         coverKeywords: input.article.coverKeywords,
         coverImagePrompt: input.article.coverImagePrompt,
@@ -89,19 +115,17 @@ export async function publishGeneratedArticle(input: {
       { preferAi: true, retries: 2 }
     ));
 
-  const status = input.publish !== false ? BlogStatus.PUBLISHED : BlogStatus.DRAFT;
-
   const blog = await prisma.blog.create({
     data: {
-      title: input.article.title,
+      title,
       slug,
-      excerpt: input.article.excerpt,
+      excerpt,
       content,
       coverImage,
       readingTime: readingTime(content),
       status,
-      metaTitle: input.article.title,
-      metaDescription: input.article.metaDescription,
+      metaTitle: title,
+      metaDescription,
       metaKeywords: input.article.metaKeywords ?? input.article.tags.join(", "),
       publishedAt: status === BlogStatus.PUBLISHED ? new Date() : null,
       authorId: input.authorId,

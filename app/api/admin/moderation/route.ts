@@ -9,6 +9,11 @@ import { dispatchBlogPublishedNotifications } from "@/lib/notifications/blog-pub
 import { isAdEligibleByQuality } from "@/lib/seo/crawl-policy";
 import { defaultAdEligibleOnApprove } from "@/lib/seo/creator-quality";
 import { getCreatorQualityForUser } from "@/lib/seo/creator-quality-db";
+import {
+  isAiFreePublishError,
+  prepareAiFreePublishFields,
+} from "@/lib/seo/ai-free-content";
+import { readingTime } from "@/lib/utils";
 
 const Schema = z.object({
   blogId: z.string(),
@@ -102,9 +107,32 @@ export async function POST(req: Request) {
     }
 
     if (decision === "APPROVED") {
+      let cleaned;
+      try {
+        cleaned = prepareAiFreePublishFields({
+          title: blog.title,
+          excerpt: blog.excerpt,
+          content: blog.content,
+          metaDescription: blog.metaDescription,
+        });
+      } catch (err) {
+        if (isAiFreePublishError(err)) {
+          return NextResponse.json(
+            {
+              error: err.message,
+              code: err.code,
+              hits: err.hits,
+            },
+            { status: 422 }
+          );
+        }
+        throw err;
+      }
+
+      const nextReadingTime = readingTime(cleaned.content);
       const qualityOk = isAdEligibleByQuality({
         slug: blog.slug,
-        readingTime: blog.readingTime,
+        readingTime: nextReadingTime,
       });
       const creator = await getCreatorQualityForUser(blog.authorId);
       const qualify = defaultAdEligibleOnApprove({
@@ -116,6 +144,11 @@ export async function POST(req: Request) {
         prisma.blog.update({
           where: { id: blogId },
           data: {
+            title: cleaned.title,
+            excerpt: cleaned.excerpt,
+            content: cleaned.content,
+            metaDescription: cleaned.metaDescription,
+            readingTime: nextReadingTime,
             status: "PUBLISHED",
             publishedAt: new Date(),
             rejectionNote: null,
