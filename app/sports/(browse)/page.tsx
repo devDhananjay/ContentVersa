@@ -9,7 +9,6 @@ import Link from "next/link";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
-import { HubAdSense } from "@/components/ads/hub-adsense";
 import { CricketAlertSubscribe } from "@/components/sports/cricket-alert-subscribe";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getSportsHubDataCached } from "@/lib/sports/data";
@@ -23,6 +22,8 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Live cricket score India today, IPL fixtures, match results, Team India updates, T20 scorecards and original sports blogs on ContentVerse India.",
   path: "/sports",
+  // Live score widgets are thin for AdSense indexing — keep crawlable, not indexed.
+  noIndex: true,
   keywords: [
     "live cricket score India",
     "IPL live score",
@@ -74,7 +75,6 @@ export default async function SportsHubPage() {
         </p>
       </HubEditorialIntro>
 
-      <HubAdSense />
       <CricketAlertSubscribe />
 
       <section>

@@ -41,7 +41,7 @@ const STATIC_PAGES: Array<{
   { path: "/creator-program", changeFrequency: "monthly", priority: 0.55 },
   { path: "/premium", changeFrequency: "monthly", priority: 0.5 },
   { path: "/site-map", changeFrequency: "monthly", priority: 0.45 },
-  { path: "/sports", changeFrequency: "hourly", priority: 0.85 },
+  // /sports, /trending, /results stay live for users but noindex — out of sitemap (AdSense).
   // /sports/teams + /sports/players are noindex directory hubs — keep out of sitemap.
   { path: "/finance", changeFrequency: "hourly", priority: 0.85 },
   ...MONEY_TOPIC_SLUGS.filter(
@@ -53,13 +53,11 @@ const STATIC_PAGES: Array<{
     priority: 0.8,
   })),
   { path: "/jobs", changeFrequency: "daily", priority: 0.8 },
-  { path: "/results", changeFrequency: "daily", priority: 0.88 },
   { path: "/cineverse", changeFrequency: "hourly", priority: 0.82 },
   { path: "/goldverse", changeFrequency: "hourly", priority: 0.84 },
   { path: "/moneyverse", changeFrequency: "daily", priority: 0.86 },
   { path: "/huid-verification", changeFrequency: "daily", priority: 0.9 },
   { path: "/tools", changeFrequency: "daily", priority: 0.92 },
-  { path: "/trending", changeFrequency: "hourly", priority: 0.86 },
   ...guideSitemapEntries(),
   ...TOOL_REGISTRY.filter((t) => isIndexableTool(t.slug)).map((t) => ({
     path: `${TOOLS_HUB_PATH}/${t.slug}`,
@@ -201,32 +199,17 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   );
 
   let dbEntries: MetadataRoute.Sitemap = [];
-  let trendEntries: MetadataRoute.Sitemap = [];
   try {
     dbEntries = await dynamicDbEntries(now);
   } catch {
     // Sitemap must not 500 when DB is briefly unavailable.
   }
-  try {
-    const { fetchIndiaTrends } = await import("@/lib/trending/google-trends");
-    const trends = await fetchIndiaTrends();
-    trendEntries = trends.slice(0, 20).map((t) =>
-      entry(t.href, {
-        lastModified: now,
-        changeFrequency: "hourly",
-        priority: 0.72,
-      })
-    );
-  } catch {
-    /* Trends RSS optional */
-  }
 
-  if (dbEntries.length > 0 || trendEntries.length > 0) {
+  if (dbEntries.length > 0) {
     return dedupeSitemap([
       ...staticEntries,
       ...categoryEntries,
       ...dbEntries,
-      ...trendEntries,
     ]);
   }
 
@@ -244,6 +227,5 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     ...staticEntries,
     ...categoryEntries,
     ...fallbackBlogs,
-    ...trendEntries,
   ]);
 }

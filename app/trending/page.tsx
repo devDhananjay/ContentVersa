@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Flame } from "lucide-react";
 import { buildMetadata, SITE } from "@/lib/seo";
 import { getTrendingHub } from "@/lib/trending/hub";
-import { HubAdSense } from "@/components/ads/hub-adsense";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
@@ -21,6 +20,8 @@ export const metadata: Metadata = buildMetadata({
     : "Trending Now India — News & Topics",
   description: TRENDING_HUB_SEO.description,
   path: "/trending",
+  // Trends aggregator hub — noindex for AdSense low-value risk.
+  noIndex: true,
   keywords: [
     "Trending Now India",
     ...(SHOW_THIRD_PARTY_CREDITS ? ["Google Trends India"] : []),
@@ -109,8 +110,6 @@ export default async function TrendingHubPage() {
           .
         </p>
       </HubEditorialIntro>
-
-      <HubAdSense className="my-2" />
 
       <TrendingHub
         spikes={spikes}

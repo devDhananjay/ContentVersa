@@ -7,6 +7,7 @@ export const metadata = buildMetadata({
   description:
     "Watch short-form videos and creator reels on ContentVerse India. Discover trending clips from writers and creators.",
   path: "/reels",
+  noIndex: true,
 });
 
 export default async function ReelsPage() {
