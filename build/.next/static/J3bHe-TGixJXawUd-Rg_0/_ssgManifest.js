@@ -1,1 +1,0 @@
-self.__SSG_MANIFEST=new Set(["\u002Ffinance\u002F[topic]","\u002Fguides\u002F[section]\u002F[slug]","\u002Ftools\u002F[slug]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
