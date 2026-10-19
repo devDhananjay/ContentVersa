@@ -7,10 +7,11 @@ import { requireUserId } from "@/lib/auth/resolve-user-id";
 import { readingTime, slugify } from "@/lib/utils";
 import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
 import { notifyAdminsOfPendingBlog } from "@/lib/notifications/blog-pending-admin";
+import { isAiFreePublishError } from "@/lib/seo/ai-free-content";
 import {
-  isAiFreePublishError,
-  prepareAiFreePublishFields,
-} from "@/lib/seo/ai-free-content";
+  isRefinePublishError,
+  refineForPublish,
+} from "@/lib/seo/refine-for-publish";
 
 const coverImageSchema = z
   .string()
@@ -202,14 +203,15 @@ export async function PATCH(
     let content = parsed.content;
     let metaDescription = parsed.metaDescription;
 
-    // Live posts cannot keep AI-smelling copy after edit.
+    // Live posts: expand thin copy, humanize AI tone, scrub, then hard gate.
     if (status === "PUBLISHED") {
       try {
-        const cleaned = prepareAiFreePublishFields({
+        const cleaned = await refineForPublish({
           title,
           excerpt,
           content,
           metaDescription,
+          categorySlug: parsed.category || undefined,
         });
         title = cleaned.title;
         excerpt = cleaned.excerpt || "";
@@ -223,6 +225,12 @@ export async function PATCH(
               code: err.code,
               hits: err.hits,
             },
+            { status: 422 }
+          );
+        }
+        if (isRefinePublishError(err)) {
+          return NextResponse.json(
+            { error: err.message, code: err.code, reason: err.reason },
             { status: 422 }
           );
         }

@@ -16,17 +16,25 @@ export function MarketStrip({ data, embedded }: MarketStripProps) {
   const gainers = data.topGainers;
 
   const row = (
-    <div className={cn("flex items-center h-9 py-1 min-w-0 overflow-hidden", embedded ? "px-5" : "")}>
+    <div
+      className={cn(
+        "flex items-center h-12 py-1.5 min-w-0 overflow-hidden",
+        embedded ? "px-5" : ""
+      )}
+    >
         {/* Fixed indices — never scroll */}
-        <div className="shrink-0 flex items-center gap-4 pr-4 border-r border-border/40 bg-background/95 z-10">
-          <Link href="/finance" className="hover:opacity-80 transition-opacity">
+        <div className="z-10 flex shrink-0 items-center gap-2 pr-3">
+          <Link href="/finance" className="transition-transform hover:-translate-y-px">
             <IndexPill
               label="Nifty 50"
               price={data.nifty.price}
               changePercent={data.nifty.changePercent}
             />
           </Link>
-          <Link href="/finance" className="hover:opacity-80 transition-opacity">
+          <Link
+            href="/finance"
+            className="hidden transition-transform hover:-translate-y-px sm:block"
+          >
             <IndexPill
               label="Sensex"
               price={data.sensex.price}
@@ -36,9 +44,9 @@ export function MarketStrip({ data, embedded }: MarketStripProps) {
         </div>
 
         {/* Auto-scrolling gainers — absolute so max-content width cannot expand the page */}
-        <div className="relative h-8 min-w-0 flex-1 overflow-hidden [contain:paint] [isolation:isolate]">
-          <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-background/95 to-transparent z-[1] pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-background/95 to-transparent z-[1] pointer-events-none" />
+        <div className="relative h-9 min-w-0 flex-1 overflow-hidden [contain:paint] [isolation:isolate]">
+          <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-[1] w-6 bg-gradient-to-r from-background to-transparent" />
+          <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-[1] w-6 bg-gradient-to-l from-background to-transparent" />
 
           <div className="absolute inset-0 overflow-hidden">
             <div className="flex h-full items-center animate-marquee hover:[animation-play-state:paused]">
@@ -52,7 +60,7 @@ export function MarketStrip({ data, embedded }: MarketStripProps) {
   );
 
   return (
-    <div className="border-t border-border/40 bg-muted/20 overflow-x-hidden">
+    <div className="overflow-x-hidden border-t border-border/50 bg-background">
       {embedded ? row : <div className="container min-w-0 overflow-hidden">{row}</div>}
     </div>
   );
@@ -64,8 +72,8 @@ function GainerPill({ stock }: { stock: StockQuote }) {
       href={`/finance/stock/${displaySymbol(stock.symbol)}`}
       className={cn(
         "shrink-0 inline-flex items-center gap-2 mx-2",
-        "rounded-md border border-border/50 bg-muted/30 px-2.5 py-1",
-        "text-[10px] hover:border-emerald-500/30 transition-colors"
+        "rounded-full border border-border/70 bg-card px-3 py-1 shadow-sm",
+        "text-[10px] hover:border-primary/40 transition-colors"
       )}
     >
       <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/80">
@@ -90,13 +98,20 @@ function IndexPill({
   price: number;
   changePercent: number;
 }) {
+  const up = changePercent >= 0;
   return (
-    <div className="shrink-0">
-      <p className="text-[9px] font-medium text-muted-foreground uppercase leading-none">
+    <div
+      className={cn(
+        "shrink-0 rounded-full border px-2.5 py-1 shadow-sm sm:px-3.5 sm:py-1.5",
+        "bg-card",
+        up ? "border-emerald-500/30" : "border-red-500/30"
+      )}
+    >
+      <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground leading-none">
         {label}
       </p>
-      <div className="flex items-center gap-1 mt-0.5">
-        <span className="text-[11px] font-semibold tabular-nums leading-none">
+      <div className="mt-1 flex items-center gap-1.5">
+        <span className="text-[12px] font-semibold tabular-nums leading-none">
           {price.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
         </span>
         <ChangeBadge change={0} changePercent={changePercent} size="xs" />

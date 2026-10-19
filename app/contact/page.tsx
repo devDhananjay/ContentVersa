@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { Mail, MessageSquare, MapPin, Clock, Phone } from "lucide-react";
+import Link from "next/link";
+import { Mail, MessageSquare, MapPin, Clock, Phone, Megaphone } from "lucide-react";
 import { DisableAutoAds } from "@/components/ads/disable-auto-ads";
 import { ContactForm } from "@/components/site/contact-form";
+import { PageBack } from "@/components/site/page-back";
+import { Button } from "@/components/ui/button";
 import { buildMetadata } from "@/lib/seo";
 import {
   CONTACT_EMAIL,
@@ -20,6 +23,7 @@ export default function ContactPage() {
   return (
     <div className="container py-12 md:py-16 max-w-5xl">
       <DisableAutoAds />
+      <PageBack href="/" label="Home" className="mb-6" />
       <div className="max-w-2xl mb-12">
         <p className="text-sm font-semibold uppercase tracking-widest text-neon-purple mb-2">
           Contact
@@ -57,6 +61,23 @@ export default function ContactPage() {
               For publishing enquiries, creator support, bugs, or partnerships — write or call us
               anytime.
             </p>
+          </div>
+
+          <div className="rounded-2xl border border-neon-purple/25 bg-gradient-to-br from-neon-purple/10 to-neon-blue/5 p-6 space-y-3">
+            <div className="flex items-start gap-3">
+              <Megaphone className="h-5 w-5 text-neon-purple shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-foreground">Want to run ads?</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Brands and agencies can request display, sponsored stories, or hub sponsorships.
+                </p>
+                <Link href="/advertise" className="mt-3 inline-block">
+                  <Button size="sm" variant="gradient">
+                    Advertising form
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
 
           <div className="rounded-2xl border bg-card p-6 space-y-3 text-sm text-muted-foreground">

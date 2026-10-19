@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Gem } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { PageBack } from "@/components/site/page-back";
 import { GoldPriceHub } from "./gold-price-hub";
 import { SilverRateTool } from "@/components/tools/silver-rate-tool";
 import { getGoldPriceSnapshot } from "@/lib/goldverse/gold-price";
@@ -34,6 +35,7 @@ export async function GoldVerseBrowseShell({
         <div className="absolute inset-0 bg-gradient-to-br from-amber-950/80 via-background/90 to-background/70" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.15),transparent_55%)]" />
         <div className="container relative flex h-full flex-col justify-end pb-6">
+          <PageBack href="/" label="Home" tone="onDark" className="mb-3" />
           <Badge
             variant="outline"
             className="mb-2 h-5 w-fit gap-1 border-amber-500/40 text-[10px] text-amber-200"

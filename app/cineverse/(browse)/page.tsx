@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { GoogleAdSense } from "@/components/ads/google-adsense";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { MrecAd } from "@/components/ads/mrec-ad";
+import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { CineverseAiRecommend } from "@/components/cineverse/cineverse-ai-recommend";
 import { CineverseBlogSection } from "@/components/cineverse/cineverse-blog-section";
 import { CineverseNewsletter } from "@/components/cineverse/cineverse-newsletter";
@@ -97,10 +100,20 @@ export default async function CineverseHubPage() {
 
       <OttReleasesStrip movies={hub.upcoming} />
 
+      <BandAd slotKey="horizontal" />
+
       <CineverseBlogSection blogs={blogs} />
 
-      {/* Ads only after editorial blogs — not beside AI recommend / newsletter forms. */}
-      <GoogleAdSense slotKey="hub" format="horizontal" />
+      {/* Ads after editorial blogs — not beside AI recommend / newsletter forms. */}
+      <div className="flex flex-col items-center gap-8 xl:flex-row xl:items-start xl:justify-center">
+        <StickyRailAd slotKey="sidebar" sticky={false} label="Sponsored left" />
+        <div className="flex w-full max-w-3xl flex-col items-center gap-6">
+          <MrecAd slotKey="hub" />
+          <HubAdSense />
+          <BandAd slotKey="horizontal" />
+        </div>
+        <StickyRailAd slotKey="hub" sticky label="Sponsored right" />
+      </div>
 
       <RelatedHubs current="cineverse" contained />
 

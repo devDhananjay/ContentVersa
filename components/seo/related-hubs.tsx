@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { MultiplexAd } from "@/components/ads/multiplex-ad";
 import { cn } from "@/lib/utils";
 import {
   getRelatedHubLinks,
@@ -12,6 +13,8 @@ type Props = {
   className?: string;
   /** Wrap in site container (for hub pages without their own container). */
   contained?: boolean;
+  /** Show a Multiplex (recommended-style) ad under the links. */
+  multiplex?: boolean;
 };
 
 /** Crawlable cross-hub links — strengthens internal PageRank between modules. */
@@ -20,6 +23,7 @@ export function RelatedHubs({
   title = "Also explore on ContentVerse India",
   className,
   contained = false,
+  multiplex = true,
 }: Props) {
   const links = getRelatedHubLinks(current);
   if (links.length === 0) return null;
@@ -48,9 +52,21 @@ export function RelatedHubs({
     </nav>
   );
 
+  const ad = multiplex ? <MultiplexAd /> : null;
+
   if (contained) {
-    return <div className="container mt-10">{nav}</div>;
+    return (
+      <div className="container mt-10">
+        {nav}
+        {ad}
+      </div>
+    );
   }
 
-  return <div className="mt-10">{nav}</div>;
+  return (
+    <div className="mt-10">
+      {nav}
+      {ad}
+    </div>
+  );
 }

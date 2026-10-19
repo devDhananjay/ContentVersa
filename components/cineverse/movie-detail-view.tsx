@@ -1,11 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, ExternalLink, Star, Tv } from "lucide-react";
+import { Calendar, Clock, ExternalLink, Star, Tv } from "lucide-react";
+import { PageBack } from "@/components/site/page-back";
+import { BandAd } from "@/components/ads/band-ad";
+import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { AddToMovieWatchlistButton } from "@/components/cineverse/add-to-movie-watchlist-button";
 import { StreamingProviders } from "@/components/cineverse/streaming-providers";
 import { TrailerNotifyToggle } from "@/components/cineverse/trailer-notify-toggle";
 import { TrailerPlayer } from "@/components/cineverse/trailer-player";
 import { SponsoredOttBanner } from "@/components/cineverse/sponsored-ott-banner";
+import { movieAdSlots } from "@/lib/ads/density";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import {
   movieBreadcrumbJsonLd,
@@ -50,6 +54,7 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
   const streamNames = movie.providers
     .filter((p) => p.type === "stream")
     .map((p) => p.name);
+  const ads = movieAdSlots();
 
   const jsonBlocks = [movieJsonLd(movie), movieFaqJsonLd(movie), movieBreadcrumbJsonLd(movie)];
 
@@ -77,16 +82,11 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40" />
       </div>
 
-      <div className="container relative -mt-24 max-w-4xl pb-16">
-        <Link
-          href="/cineverse"
-          className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to CineVerse
-        </Link>
+      <div className="container relative -mt-24 max-w-7xl pb-16">
+        <PageBack href="/cineverse" label="CineVerse" className="mb-6" />
 
-        <div className="flex flex-col gap-6 md:flex-row">
+        {/* Hero stays ad-free (watchlist / trailer CTAs). */}
+        <div className="mx-auto flex max-w-4xl flex-col gap-6 md:flex-row">
           {movie.posterUrl ? (
             <div className="relative mx-auto aspect-[2/3] w-40 shrink-0 overflow-hidden rounded-2xl border border-border/60 shadow-2xl md:mx-0 md:w-48">
               <Image
@@ -192,163 +192,187 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
           </div>
         </div>
 
-        <div className="mt-10 space-y-10">
-          <Section id="release-date" title={`${movie.title} Release Date`}>
-            <p className="text-sm text-muted-foreground">
-              {release
-                ? `Theatrical / primary release: ${release}.`
-                : "Release date not listed yet."}
-              {ott ? ` India OTT / digital release: ${ott}.` : null}
-            </p>
-          </Section>
+        {/* Detail body: sticky left + right rails on xl; hero CTAs stay clear. */}
+        <div className="mt-10 flex items-start justify-center gap-6 lg:gap-8">
+          {ads.leftRail ? (
+            <StickyRailAd
+              slotKey="sidebar"
+              sticky={false}
+              label="Sponsored left"
+            />
+          ) : null}
 
-          <Section id="cast" title={`${movie.title} Cast`}>
-            {movie.cast.length ? (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {movie.cast.map((c) => (
-                  <div
-                    key={c.id}
-                    className="overflow-hidden rounded-xl border border-border/50 bg-muted/20"
-                  >
-                    <div className="relative aspect-[2/3] bg-muted/40">
-                      {c.profileUrl ? (
-                        <Image
-                          src={c.profileUrl}
-                          alt={c.name}
-                          fill
-                          sizes="160px"
-                          className="object-cover"
-                        />
-                      ) : null}
-                    </div>
-                    <div className="p-2.5">
-                      <p className="text-xs font-semibold leading-tight">{c.name}</p>
-                      {c.character ? (
-                        <p className="mt-0.5 text-[11px] text-muted-foreground line-clamp-2">
-                          as {c.character}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Cast details will appear when available.</p>
-            )}
-          </Section>
-
-          <Section id="trailer" title={`${movie.title} Trailer`}>
-            {movie.trailers.length > 0 ? (
-              <TrailerPlayer trailers={movie.trailers} />
-            ) : (
+          <div className="min-w-0 w-full max-w-4xl space-y-10">
+            <Section id="release-date" title={`${movie.title} Release Date`}>
               <p className="text-sm text-muted-foreground">
-                Official trailer not available yet — turn on trailer alerts from the buttons above.
+                {release
+                  ? `Theatrical / primary release: ${release}.`
+                  : "Release date not listed yet."}
+                {ott ? ` India OTT / digital release: ${ott}.` : null}
+              </p>
+            </Section>
+
+            <Section id="cast" title={`${movie.title} Cast`}>
+              {movie.cast.length ? (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  {movie.cast.map((c) => (
+                    <div
+                      key={c.id}
+                      className="overflow-hidden rounded-xl border border-border/50 bg-muted/20"
+                    >
+                      <div className="relative aspect-[2/3] bg-muted/40">
+                        {c.profileUrl ? (
+                          <Image
+                            src={c.profileUrl}
+                            alt={c.name}
+                            fill
+                            sizes="160px"
+                            className="object-cover"
+                          />
+                        ) : null}
+                      </div>
+                      <div className="p-2.5">
+                        <p className="text-xs font-semibold leading-tight">{c.name}</p>
+                        {c.character ? (
+                          <p className="mt-0.5 text-[11px] text-muted-foreground line-clamp-2">
+                            as {c.character}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Cast details will appear when available.</p>
+              )}
+            </Section>
+
+            {/* Natural break after cast — before trailer (not beside CTAs) */}
+            {ads.afterCast ? <BandAd slotKey="horizontal" /> : null}
+
+            <Section id="trailer" title={`${movie.title} Trailer`}>
+              {movie.trailers.length > 0 ? (
+                <TrailerPlayer trailers={movie.trailers} />
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Official trailer not available yet — turn on trailer alerts from the buttons above.
+                </p>
+              )}
+            </Section>
+
+            {ads.midMobile && !ads.afterCast ? (
+              <div className="xl:hidden">
+                <BandAd slotKey="hub" />
+              </div>
+            ) : null}
+
+            <Section id="story" title={`${movie.title} Story`}>
+              <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
+                {movie.overview || "Plot synopsis will appear when published."}
+              </p>
+            </Section>
+
+            <Section id="rating" title={`${movie.title} Rating`}>
+              <p className="text-sm text-muted-foreground">
+                {movie.rating
+                  ? `${SHOW_THIRD_PARTY_CREDITS ? "TMDB community rating" : "Community rating"}: ${movie.rating}/10${
+                      movie.voteCount
+                        ? ` from ${movie.voteCount.toLocaleString("en-IN")} votes`
+                        : ""
+                    }.`
+                  : "Rating not available yet."}
+                {movie.imdbId ? (
+                  <>
+                    {" "}
+                    Open the{" "}
+                    <a
+                      href={`https://www.imdb.com/title/${movie.imdbId}/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-300 hover:underline"
+                    >
+                      IMDb page for {movie.title}
+                    </a>{" "}
+                    for IMDb score and user reviews.
+                  </>
+                ) : null}
+              </p>
+            </Section>
+
+            <Section id="ott-release" title={`${movie.title} OTT Release Date`}>
+              <p className="text-sm text-muted-foreground">
+                {ott
+                  ? `${movie.title} OTT / digital release date (India): ${ott}.`
+                  : `${movie.title} OTT release date for India is not listed yet. Check Where to Watch when platforms go live.`}
+              </p>
+            </Section>
+
+            <Section id="where-to-watch" title={`${movie.title} Where to Watch`}>
+              <p className="mb-3 text-sm text-muted-foreground">
+                {streamNames.length
+                  ? `Currently linked for India streaming: ${streamNames.join(", ")}. Availability changes — confirm on the platform.`
+                  : `Where to watch ${movie.title} in India — streaming links appear when platforms are listed.`}
+              </p>
+              <StreamingProviders providers={movie.providers} movieTitle={movie.title} />
+            </Section>
+
+            <SponsoredOttBanner />
+
+            <Section id="reviews" title={`${movie.title} Reviews`}>
+              {movie.reviews.length ? (
+                <div className="space-y-4">
+                  {movie.reviews.map((r) => (
+                    <blockquote
+                      key={r.id}
+                      className="rounded-xl border border-border/50 bg-muted/15 px-4 py-3"
+                    >
+                      <p className="text-sm font-semibold">
+                        {r.author}
+                        {r.rating != null ? (
+                          <span className="ml-2 font-normal text-amber-400">
+                            {r.rating}/10
+                          </span>
+                        ) : null}
+                      </p>
+                      <p className="mt-2 line-clamp-6 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                        {r.content}
+                      </p>
+                      {r.url ? (
+                        <a
+                          href={r.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-2 inline-flex text-xs text-violet-300 hover:underline"
+                        >
+                          Read full review
+                        </a>
+                      ) : null}
+                    </blockquote>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Public reviews will show here when available. Add {movie.title} to your watchlist
+                  and share your take after watching.
+                </p>
+              )}
+            </Section>
+
+            {SHOW_THIRD_PARTY_CREDITS ? (
+              <p className="text-center text-[10px] text-muted-foreground">
+                Data from TMDB · Streaming links are search/affiliate deep links for India · Not
+                affiliated with IMDb
+              </p>
+            ) : (
+              <p className="text-center text-[10px] text-muted-foreground">
+                Streaming links are search/affiliate deep links for India.
               </p>
             )}
-          </Section>
+          </div>
 
-          <Section id="story" title={`${movie.title} Story`}>
-            <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
-              {movie.overview || "Plot synopsis will appear when published."}
-            </p>
-          </Section>
-
-          <Section id="rating" title={`${movie.title} Rating`}>
-            <p className="text-sm text-muted-foreground">
-              {movie.rating
-                ? `${SHOW_THIRD_PARTY_CREDITS ? "TMDB community rating" : "Community rating"}: ${movie.rating}/10${
-                    movie.voteCount
-                      ? ` from ${movie.voteCount.toLocaleString("en-IN")} votes`
-                      : ""
-                  }.`
-                : "Rating not available yet."}
-              {movie.imdbId ? (
-                <>
-                  {" "}
-                  Open the{" "}
-                  <a
-                    href={`https://www.imdb.com/title/${movie.imdbId}/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-amber-300 hover:underline"
-                  >
-                    IMDb page for {movie.title}
-                  </a>{" "}
-                  for IMDb score and user reviews.
-                </>
-              ) : null}
-            </p>
-          </Section>
-
-          <Section id="ott-release" title={`${movie.title} OTT Release Date`}>
-            <p className="text-sm text-muted-foreground">
-              {ott
-                ? `${movie.title} OTT / digital release date (India): ${ott}.`
-                : `${movie.title} OTT release date for India is not listed yet. Check Where to Watch when platforms go live.`}
-            </p>
-          </Section>
-
-          <Section id="where-to-watch" title={`${movie.title} Where to Watch`}>
-            <p className="mb-3 text-sm text-muted-foreground">
-              {streamNames.length
-                ? `Currently linked for India streaming: ${streamNames.join(", ")}. Availability changes — confirm on the platform.`
-                : `Where to watch ${movie.title} in India — streaming links appear when platforms are listed.`}
-            </p>
-            <StreamingProviders providers={movie.providers} movieTitle={movie.title} />
-          </Section>
-
-          <SponsoredOttBanner />
-
-          <Section id="reviews" title={`${movie.title} Reviews`}>
-            {movie.reviews.length ? (
-              <div className="space-y-4">
-                {movie.reviews.map((r) => (
-                  <blockquote
-                    key={r.id}
-                    className="rounded-xl border border-border/50 bg-muted/15 px-4 py-3"
-                  >
-                    <p className="text-sm font-semibold">
-                      {r.author}
-                      {r.rating != null ? (
-                        <span className="ml-2 font-normal text-amber-400">
-                          {r.rating}/10
-                        </span>
-                      ) : null}
-                    </p>
-                    <p className="mt-2 line-clamp-6 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
-                      {r.content}
-                    </p>
-                    {r.url ? (
-                      <a
-                        href={r.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-2 inline-flex text-xs text-violet-300 hover:underline"
-                      >
-                        Read full review
-                      </a>
-                    ) : null}
-                  </blockquote>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Public reviews will show here when available. Add {movie.title} to your watchlist
-                and share your take after watching.
-              </p>
-            )}
-          </Section>
-
-          {SHOW_THIRD_PARTY_CREDITS ? (
-            <p className="text-center text-[10px] text-muted-foreground">
-              Data from TMDB · Streaming links are search/affiliate deep links for India · Not
-              affiliated with IMDb
-            </p>
-          ) : (
-            <p className="text-center text-[10px] text-muted-foreground">
-              Streaming links are search/affiliate deep links for India.
-            </p>
-          )}
+          {ads.rightRail ? (
+            <StickyRailAd slotKey="hub" sticky label="Sponsored right" />
+          ) : null}
         </div>
       </div>
     </article>

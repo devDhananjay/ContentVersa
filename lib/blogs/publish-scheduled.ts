@@ -1,17 +1,18 @@
 import { BlogStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { dispatchBlogPublishedNotifications } from "@/lib/notifications/blog-published";
+import { isAiFreePublishError } from "@/lib/seo/ai-free-content";
 import {
-  isAiFreePublishError,
-  prepareAiFreePublishFields,
-} from "@/lib/seo/ai-free-content";
+  isRefinePublishError,
+  refineForPublish,
+} from "@/lib/seo/refine-for-publish";
 import { readingTime } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 
 /**
  * Publish blogs whose scheduledFor time has arrived.
  * Only DRAFT (or REJECTED re-scheduled) posts with a due scheduledFor go live.
- * Every post must pass the mandatory AI-free cleanup gate first.
+ * Every post must pass refine + AI-free cleanup gate first.
  */
 export async function publishDueScheduledBlogs(limit = 50) {
   if (!isDatabaseConfigured()) {
@@ -32,6 +33,8 @@ export async function publishDueScheduledBlogs(limit = 50) {
       excerpt: true,
       content: true,
       metaDescription: true,
+      metaKeywords: true,
+      category: { select: { name: true, slug: true } },
     },
     orderBy: { scheduledFor: "asc" },
     take: limit,
@@ -43,17 +46,24 @@ export async function publishDueScheduledBlogs(limit = 50) {
   for (const row of due) {
     let cleaned;
     try {
-      cleaned = prepareAiFreePublishFields({
+      cleaned = await refineForPublish({
         title: row.title,
         excerpt: row.excerpt,
         content: row.content,
         metaDescription: row.metaDescription,
+        categoryName: row.category?.name,
+        categorySlug: row.category?.slug,
+        searchIntent: row.metaKeywords,
       });
     } catch (err) {
       blocked++;
       if (isAiFreePublishError(err)) {
         console.warn(
           `[publish-scheduled] AI-free blocked ${row.slug}: ${err.hits.join(", ")}`
+        );
+      } else if (isRefinePublishError(err)) {
+        console.warn(
+          `[publish-scheduled] refine blocked ${row.slug}: ${err.reason} — ${err.message}`
         );
       }
       continue;
@@ -70,6 +80,7 @@ export async function publishDueScheduledBlogs(limit = 50) {
         status: BlogStatus.PUBLISHED,
         publishedAt: now,
         scheduledFor: null,
+        adEligible: cleaned.words >= 1000,
       },
     });
     ids.push(row.id);

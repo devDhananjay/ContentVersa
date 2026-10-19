@@ -56,6 +56,7 @@ const COMPANY = [
   { label: "Careers", href: "/careers" },
   { label: "Press", href: "/press" },
   { label: "Press Kit", href: "/press-kit" },
+  { label: "Advertise", href: "/advertise" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
@@ -108,8 +109,8 @@ export async function Footer() {
   const logoSrc = await getSiteLogoUrl();
 
   return (
-    <footer className="relative mt-24 border-t border-border/50 bg-background">
-      <div className="absolute inset-x-0 top-0 mx-auto h-px max-w-7xl -translate-y-1/2 bg-gradient-to-r from-transparent via-neon-purple/40 to-transparent" />
+    <footer className="relative mt-24 border-t border-border bg-card/60">
+      <div className="absolute inset-x-0 top-0 mx-auto h-px max-w-7xl -translate-y-1/2 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
       <div className="container py-12 md:py-14">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)] lg:gap-14">
@@ -127,7 +128,7 @@ export async function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 text-muted-foreground transition-colors hover:border-neon-purple/60 hover:text-foreground"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground"
                 >
                   <Icon className="h-4 w-4" />
                 </a>

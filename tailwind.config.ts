@@ -22,7 +22,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)", "Satoshi", "system-ui", "sans-serif"],
-        display: ["var(--font-display)", "Source Serif 4", "Georgia", "serif"],
+        display: ["var(--font-display)", "\"Source Serif 4\"", "Georgia", "serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       colors: {
@@ -83,8 +83,8 @@ const config: Config = {
           "linear-gradient(135deg, rgba(59,130,246,0.15), rgba(168,85,247,0.15), rgba(236,72,153,0.15))",
       },
       boxShadow: {
-        neon: "0 0 30px -5px rgba(168, 85, 247, 0.45), 0 0 60px -25px rgba(59, 130, 246, 0.45)",
-        glow: "0 8px 32px 0 rgba(31, 38, 135, 0.18)",
+        neon: "0 10px 30px -12px hsl(var(--primary) / 0.55)",
+        glow: "var(--v2-shadow-md)",
       },
       keyframes: {
         "accordion-down": {

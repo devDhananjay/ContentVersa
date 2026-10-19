@@ -13,8 +13,10 @@
  * Programmatic IFSC/pincode tools remain indexable hub utilities, not doorway matrices.
  */
 
-/** Minimum reading minutes for blog posts in sitemap / Google index */
-export const MIN_INDEXABLE_READING_MINUTES = 4;
+/** Minimum reading minutes for blog posts in sitemap / Google index.
+ *  Raised to 5 (~1100 words) for AdSense low-value recovery — short posts
+ *  stay published but drop from sitemap until expanded. */
+export const MIN_INDEXABLE_READING_MINUTES = 5;
 
 /** Minimum published articles before a creator profile is indexable */
 export const MIN_PROFILE_ARTICLES = 2;

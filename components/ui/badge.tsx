@@ -15,8 +15,9 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-destructive-foreground",
         outline: "text-foreground",
         gradient:
-          "border-transparent bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink text-white",
-        neon: "border-neon-cyan/40 bg-neon-cyan/10 text-neon-cyan",
+          "border-transparent bg-gradient-to-r from-primary to-[hsl(var(--saffron))] text-primary-foreground",
+        chip: "border-border bg-card text-muted-foreground",
+        neon: "border-primary/30 bg-primary/10 text-primary",
         pink: "border-neon-pink/40 bg-neon-pink/10 text-neon-pink",
         orange: "border-neon-orange/40 bg-neon-orange/10 text-neon-orange",
         success: "border-green-500/40 bg-green-500/10 text-green-500",

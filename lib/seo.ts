@@ -53,6 +53,7 @@ export const SITE_NAV_SECTIONS = [
   ...SITE_NAV_HUBS,
   { name: "Categories", path: "/categories", description: "Browse topics" },
   { name: "About", path: "/about", description: "About ContentVerse India" },
+  { name: "Advertise", path: "/advertise", description: "Run ads on ContentVerse India" },
   { name: "Contact", path: "/contact", description: "Get in touch" },
   { name: "Creator Program", path: "/creator-program", description: "Monetize your writing" },
 ] as const;

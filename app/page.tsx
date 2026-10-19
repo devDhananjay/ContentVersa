@@ -18,6 +18,10 @@ import { FinanceTeaser } from "@/components/home/finance-teaser";
 import { TrendingSection } from "@/components/home/trending";
 import { LatestSection } from "@/components/home/latest-section";
 import { ContinueReadingStrip } from "@/components/home/continue-reading-strip";
+import { EditorPick } from "@/components/home/editor-pick";
+import { FeaturedCreators } from "@/components/home/featured-creators";
+import { StayEngagedStrip } from "@/components/home/stay-engaged-strip";
+import { ReelsStripSection } from "@/components/reels/reels-strip-section";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { getFinanceTickerDataCached } from "@/lib/finance/data";
@@ -27,8 +31,10 @@ import { getGoldPriceSnapshot } from "@/lib/goldverse/gold-price";
 import { TOOL_REGISTRY, toolPath } from "@/lib/tools/registry";
 import { GUIDE_SECTIONS, guideSectionPath } from "@/lib/guides/registry";
 import { SiteJsonLd } from "@/components/seo/site-json-ld";
-import { Reveal } from "@/components/home/motion";
+import { Reveal, ScrollProgress } from "@/components/home/motion";
 import { HomeEditorialSection } from "@/components/home/home-editorial-section";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { BandAd } from "@/components/ads/band-ad";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -53,9 +59,12 @@ export const metadata: Metadata = buildMetadata({
 /** Editorial-first order for AdSense / quality review. */
 const HOME_SIDEBAR_SECTIONS = [
   { id: "home-top", label: "Home" },
+  { id: "home-reels", label: "Reels" },
   { id: "home-guides", label: "Guides" },
   { id: "about-contentverse-heading", label: "About" },
+  { id: "continue-reading", label: "Continue" },
   { id: "home-articles", label: "Articles" },
+  { id: "editor-picks", label: "Picks" },
   { id: "home-latest", label: "Latest" },
   { id: "home-jobs", label: "Jobs" },
   { id: "home-sports", label: "Sports" },
@@ -63,7 +72,10 @@ const HOME_SIDEBAR_SECTIONS = [
   { id: "home-money", label: "Money" },
   { id: "home-gold", label: "Gold" },
   { id: "home-tools", label: "Tools" },
+  { id: "home-cine", label: "Cine" },
   { id: "explore-modules", label: "More" },
+  { id: "featured-creators", label: "Creators" },
+  { id: "stay-engaged", label: "Engage" },
   { id: "newsletter", label: "Newsletter" },
 ];
 
@@ -135,6 +147,7 @@ export default async function HomePage() {
   return (
     <>
       <SiteJsonLd />
+      <ScrollProgress />
       <HomeStickySidebar sections={HOME_SIDEBAR_SECTIONS} />
 
       <div className="xl:[&_.container]:pl-16 2xl:[&_.container]:pl-20">
@@ -142,6 +155,10 @@ export default async function HomePage() {
           <HomeHeroShell>
             <Hero stats={data.stats} categories={data.categories} />
           </HomeHeroShell>
+        </div>
+
+        <div id="home-reels" className="scroll-mt-[calc(var(--site-header-offset)+1rem)]">
+          <ReelsStripSection />
         </div>
 
         <Reveal>
@@ -168,6 +185,9 @@ export default async function HomePage() {
           />
         </Reveal>
 
+        {/* Wide strip — long ads like before */}
+        <BandAd slotKey="horizontal" />
+
         <HomeEditorialSection />
 
         <ContinueReadingStrip />
@@ -175,13 +195,31 @@ export default async function HomePage() {
         <div id="home-articles" className="scroll-mt-24">
           <TrendingSection blogs={data.trending} />
         </div>
+
+        <Reveal>
+          <EditorPick
+            blogs={
+              data.editorPicks.length > 0
+                ? data.editorPicks.slice(0, 3)
+                : data.featured.length > 0
+                  ? data.featured.slice(0, 3)
+                  : data.latest.slice(0, 3)
+            }
+          />
+        </Reveal>
+
+        <BandAd slotKey="hub" />
+
         <Reveal>
           <LatestSection blogs={data.latest} />
         </Reveal>
 
+        <HubAdSense />
+
         <Reveal>
           <HomeModuleSpotlight
             id="home-jobs"
+            tint
             eyebrow="Jobs & results"
             title={
               <>
@@ -198,12 +236,11 @@ export default async function HomePage() {
           />
         </Reveal>
 
-        <Reveal>
-          <SportsTeaser data={sportsTeaser} />
-        </Reveal>
-        <Reveal delay={0.04}>
-          <FinanceTeaser data={financeTicker} />
-        </Reveal>
+        <SportsTeaser data={sportsTeaser} />
+
+        <BandAd slotKey="horizontal" />
+
+        <FinanceTeaser data={financeTicker} />
 
         <Reveal>
           <HomeModuleSpotlight
@@ -248,6 +285,7 @@ export default async function HomePage() {
         <Reveal>
           <HomeModuleSpotlight
             id="home-gold"
+            tint
             eyebrow="Gold & hallmark"
             title={
               <>
@@ -286,6 +324,7 @@ export default async function HomePage() {
         <Reveal>
           <HomeModuleSpotlight
             id="home-cine"
+            tint
             eyebrow="CineVerse"
             title={
               <>
@@ -308,6 +347,14 @@ export default async function HomePage() {
         </Reveal>
 
         <PlatformModulesStrip previews={modulePreviews} />
+
+        <Reveal>
+          <FeaturedCreators creators={data.creators} />
+        </Reveal>
+
+        <StayEngagedStrip />
+
+        <BandAd slotKey="horizontal" />
 
         <Newsletter />
       </div>

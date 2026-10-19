@@ -3,13 +3,18 @@ import { Metadata } from "next";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
 import { BlogPagination } from "@/components/blog/blog-pagination";
-import { CategoryLiveFeedGrid } from "@/components/feeds/category-live-feed-grid";
 import type { Blog } from "@/lib/data/blogs";
 import { getPublishedBlogsLiteHybrid } from "@/lib/data/blog-db";
-import { getCategoryFeed } from "@/lib/feeds/data";
-import { hasCategoryFeed } from "@/lib/feeds/constants";
+import { CATEGORIES } from "@/lib/data/categories";
 import { parseBlogPageSize } from "@/lib/blogs/list-params";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { PageBack } from "@/components/site/page-back";
 import { buildMetadata, SITE } from "@/lib/seo";
+
+const CATEGORY_SLUGS = new Set(CATEGORIES.map((c) => c.slug));
+const CATEGORY_BY_NAME = new Map(
+  CATEGORIES.map((c) => [c.name.toLowerCase(), c.slug])
+);
 
 export const metadata: Metadata = buildMetadata({
   title: "Explore articles",
@@ -28,6 +33,13 @@ export const metadata: Metadata = buildMetadata({
   ],
 });
 
+function resolveCategorySlug(raw?: string): string | undefined {
+  if (!raw?.trim()) return undefined;
+  const key = raw.trim().toLowerCase();
+  if (CATEGORY_SLUGS.has(key)) return key;
+  return CATEGORY_BY_NAME.get(key);
+}
+
 function applyFilters(
   all: Blog[],
   input: {
@@ -38,6 +50,8 @@ function applyFilters(
   }
 ) {
   let list = [...all];
+  const categorySlug = resolveCategorySlug(input.category);
+
   if (input.q) {
     const term = input.q.trim().toLowerCase();
     if (term) {
@@ -46,15 +60,28 @@ function applyFilters(
           b.title.toLowerCase().includes(term) ||
           b.excerpt.toLowerCase().includes(term) ||
           b.tags.some((t) => t.toLowerCase().includes(term)) ||
-          b.author.name.toLowerCase().includes(term)
+          b.author.name.toLowerCase().includes(term) ||
+          b.author.username.toLowerCase().includes(term) ||
+          b.category.toLowerCase().includes(term)
       );
     }
   }
-  if (input.category) list = list.filter((b) => b.category === input.category);
-  if (input.tag) list = list.filter((b) => b.tags.includes(input.tag!));
+
+  // Strict category match — never fall back to unfiltered list
+  if (categorySlug) {
+    list = list.filter((b) => b.category === categorySlug);
+  }
+  if (input.tag) {
+    const tag = input.tag.trim().toLowerCase();
+    list = list.filter((b) =>
+      b.tags.some((t) => t.toLowerCase() === tag || t.toLowerCase().includes(tag))
+    );
+  }
+
   const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
+  const scoped = [...list];
 
   switch (input.sort) {
     case "latest":
@@ -71,29 +98,26 @@ function applyFilters(
       break;
     case "most_read_today": {
       const today = todayStart.getTime();
-      list = list.filter((b) => +new Date(b.publishedAt) >= today);
-      list.sort((a, b) => b.views - a.views);
-      if (list.length < 3) {
-        list = [...all].sort((a, b) => b.views - a.views).slice(0, 12);
-      }
+      const todays = list.filter((b) => +new Date(b.publishedAt) >= today);
+      list = (todays.length >= 1 ? todays : scoped).sort(
+        (a, b) => b.views - a.views
+      );
       break;
     }
     case "trending_week": {
-      list = list.filter((b) => +new Date(b.publishedAt) >= weekAgo);
-      list.sort(
+      const week = list.filter((b) => +new Date(b.publishedAt) >= weekAgo);
+      list = (week.length >= 1 ? week : scoped).sort(
         (a, b) =>
           Number(!!b.trending) - Number(!!a.trending) ||
           b.views + b.likes - (a.views + a.likes)
       );
-      if (list.length < 3) {
-        list = [...all]
-          .filter((b) => b.trending || +new Date(b.publishedAt) >= weekAgo)
-          .sort((a, b) => b.views - a.views);
-      }
       break;
     }
     default:
-      list.sort((a, b) => Number(!!b.trending) - Number(!!a.trending) || b.views - a.views);
+      list.sort(
+        (a, b) =>
+          Number(!!b.trending) - Number(!!a.trending) || b.views - a.views
+      );
   }
   return list;
 }
@@ -104,9 +128,13 @@ export default async function BlogsPage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const spRaw = await searchParams;
+  const categorySlug = resolveCategorySlug(spRaw.category);
   const sp: Record<string, string | undefined> = {
     ...spRaw,
     q: spRaw.q?.trim() || undefined,
+    category: categorySlug,
+    sort: spRaw.sort?.trim() || undefined,
+    tag: spRaw.tag?.trim() || undefined,
   };
   const pageSize = parseBlogPageSize(sp.limit);
   const all = await getPublishedBlogsLiteHybrid();
@@ -118,9 +146,6 @@ export default async function BlogsPage({
   );
   const start = (page - 1) * pageSize;
   const pageItems = list.slice(start, start + pageSize);
-  const category = sp.category;
-  const feed =
-    category && hasCategoryFeed(category) ? await getCategoryFeed(category) : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -139,6 +164,7 @@ export default async function BlogsPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <PageBack href="/" label="Home" className="mb-6" />
       <Suspense fallback={<div className="h-20 rounded-2xl bg-muted/40 animate-pulse mb-6" />}>
         <BlogFilters
           defaultQuery={sp.q}
@@ -147,12 +173,12 @@ export default async function BlogsPage({
         />
       </Suspense>
 
-      {feed ? <CategoryLiveFeedGrid feed={feed} /> : null}
-
       {list.length === 0 ? (
         <div className="rounded-3xl border bg-card p-16 text-center">
           <p className="text-2xl font-display font-bold mb-2">No matches yet</p>
-          <p className="text-muted-foreground">Try a different keyword or remove filters.</p>
+          <p className="text-muted-foreground">
+            Try a different keyword, category, or clear filters.
+          </p>
         </div>
       ) : (
         <>
@@ -160,6 +186,9 @@ export default async function BlogsPage({
             {pageItems.map((b, i) => (
               <BlogCard key={b.id} blog={b} index={i} eager={i < 6} />
             ))}
+          </div>
+          <div className="mt-8 flex justify-center">
+            <HubAdSense className="!px-0 w-auto" />
           </div>
           <BlogPagination
             page={page}

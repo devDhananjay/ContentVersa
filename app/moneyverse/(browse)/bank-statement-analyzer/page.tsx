@@ -3,7 +3,11 @@ import Link from "next/link";
 import { FileSearch } from "lucide-react";
 import { BankStatementAnalyzer } from "@/components/moneyverse/bank-statement-analyzer";
 import { BankStatementGuide } from "@/components/moneyverse/bank-statement-guide";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { MoneyverseBankStatementJsonLd } from "@/components/seo/moneyverse-bank-statement-json-ld";
+import { RelatedHubs } from "@/components/seo/related-hubs";
+import { PageBack } from "@/components/site/page-back";
 import {
   BANK_STATEMENT_EDITORIAL,
   BANK_STATEMENT_KEYWORDS,
@@ -29,6 +33,8 @@ export default function BankStatementAnalyzerPage() {
   return (
     <div className="space-y-10">
       <MoneyverseBankStatementJsonLd />
+
+      <PageBack href="/moneyverse" label="MoneyVerse" />
 
       <header className="max-w-3xl space-y-4">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
@@ -67,12 +73,16 @@ export default function BankStatementAnalyzerPage() {
         </h2>
         <p className="max-w-2xl text-sm text-muted-foreground">
           5 analyses per signed-in user · Admin unlimited · Informational only — not tax, loan or
-          financial advice. Ads stay off on this upload surface.
+          financial advice.
         </p>
         <BankStatementAnalyzer />
       </section>
 
       <BankStatementGuide />
+
+      <BandAd slotKey="horizontal" />
+      <HubAdSense />
+      <RelatedHubs current="moneyverse" />
     </div>
   );
 }

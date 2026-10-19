@@ -107,7 +107,7 @@ export function Navbar({
                     layoutId="nav-indicator"
                     className={cn(
                       "absolute inset-0 -z-10 rounded-full",
-                      immersive ? "bg-white/15" : "bg-neon-purple/10"
+                      immersive ? "bg-white/15" : "bg-primary/10"
                     )}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
@@ -161,7 +161,7 @@ export function Navbar({
             <Button
               variant="gradient"
               size="sm"
-              className="gap-1.5 shrink-0 rounded-full shadow-lg shadow-neon-purple/20"
+              className="gap-1.5 shrink-0 rounded-full"
             >
               <PenSquare className="h-4 w-4" />
               <span className="hidden xl:inline">Write</span>
@@ -182,6 +182,9 @@ export function Navbar({
         <div className="flex items-center gap-1.5 md:hidden shrink-0">
           <NavWeatherChip immersive={immersive} />
           <StreakBadge />
+          <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
+            <ThemeToggle />
+          </div>
         </div>
 
         <Button

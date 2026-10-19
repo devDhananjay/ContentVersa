@@ -14,6 +14,7 @@ import { Toaster } from "sonner";
 import { buildMetadata } from "@/lib/seo";
 import { BrandingHead } from "@/components/site/branding-head";
 import { AdSenseSiteScript } from "@/components/ads/adsense-site-script";
+import { PageLevelAds } from "@/components/ads/page-level-ads";
 import { GoogleAdsTag } from "@/components/ads/google-ads-tag";
 
 /** Body / UI — Fontshare Satoshi (self-hosted). */
@@ -50,8 +51,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0f" },
+    { media: "(prefers-color-scheme: light)", color: "#faf8f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0b12" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -67,6 +68,8 @@ export default function RootLayout({
         <BrandingHead />
         <GoogleAdsTag />
         <AdSenseSiteScript />
+        {/* Official Anchor + vignette; utility routes call DisableAutoAds */}
+        <PageLevelAds />
       </head>
       <body
         className={`${satoshi.variable} ${sourceSerif.variable} ${mono.variable} font-sans antialiased min-h-screen min-w-0 flex flex-col`}

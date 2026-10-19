@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ToolsHubGrid, ToolsHubIntro } from "@/components/tools/tools-hub-grid";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { BandAd } from "@/components/ads/band-ad";
+import { MrecAd } from "@/components/ads/mrec-ad";
+import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
 import { TopicClustersHubStrip } from "@/components/seo/topic-cluster-links";
+import { PageBack } from "@/components/site/page-back";
 import {
   hubBreadcrumbJsonLd,
   hubFaqJsonLd,
@@ -49,6 +54,7 @@ export default function ToolsHubPage() {
   return (
     <div className="container space-y-10 py-8 md:py-10">
       <HubJsonLd blocks={blocks} />
+      <PageBack href="/" label="Home" />
       <ToolsHubIntro />
       <HubEditorialIntro title="Free calculators & utilities built for India">
         <p>
@@ -84,46 +90,69 @@ export default function ToolsHubPage() {
           .
         </p>
       </HubEditorialIntro>
-      <ToolsHubGrid />
-      <TopicClustersHubStrip
-        title="Topic clusters"
-        subtitle="EMI, SIP, tax, IFSC, FASTag and more — pillar pages with related tools and guides."
-      />
-      <section className="max-w-3xl rounded-xl border border-border/60 bg-muted/20 p-5 text-sm text-muted-foreground">
-        <p className="font-medium text-foreground">Official government portals</p>
-        <p className="mt-2">
-          For live vehicle RC, challan, or DL records use official MoRTH services:{" "}
-          <a
-            href="https://vahan.parivahan.gov.in"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            Vahan
-          </a>
-          ,{" "}
-          <a
-            href="https://echallan.parivahan.gov.in"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            e-Challan
-          </a>
-          , and{" "}
-          <a
-            href="https://parivahan.gov.in"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            Parivahan Sewa
-          </a>
-          . ContentVerse India tools use free public data and format checks only.
-        </p>
-      </section>
 
-      <RelatedHubs current="tools" />
+      {/* Horizontal band ATF */}
+      <BandAd slotKey="horizontal" />
+
+      <div className="flex flex-col gap-8 xl:flex-row xl:items-start">
+        <div className="min-w-0 flex-1 space-y-10">
+          <ToolsHubGrid />
+
+          {/* Rectangle MREC after grid */}
+          <div className="flex justify-center">
+            <MrecAd slotKey="hub" />
+          </div>
+
+          <TopicClustersHubStrip
+            title="Topic clusters"
+            subtitle="EMI, SIP, tax, IFSC, FASTag and more — pillar pages with related tools and guides."
+          />
+
+          <HubAdSense />
+
+          <section className="max-w-3xl rounded-xl border border-border/60 bg-muted/20 p-5 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Official government portals</p>
+            <p className="mt-2">
+              For live vehicle RC, challan, or DL records use official MoRTH services:{" "}
+              <a
+                href="https://vahan.parivahan.gov.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Vahan
+              </a>
+              ,{" "}
+              <a
+                href="https://echallan.parivahan.gov.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                e-Challan
+              </a>
+              , and{" "}
+              <a
+                href="https://parivahan.gov.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Parivahan Sewa
+              </a>
+              . ContentVerse India tools use free public data and format checks only.
+            </p>
+          </section>
+
+          <RelatedHubs current="tools" />
+        </div>
+
+        {/* Vertical side rail on hub */}
+        <StickyRailAd slotKey="sidebar" sticky label="Sponsored on tools hub" />
+      </div>
+
+      {/* Closing wide band */}
+      <BandAd slotKey="horizontal" />
     </div>
   );
 }

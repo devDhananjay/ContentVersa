@@ -1,6 +1,7 @@
 import { SITE } from "@/lib/seo";
 import { isIndexableTool } from "@/lib/seo/crawl-policy";
 import { TOOL_REGISTRY, TOOLS_HUB_PATH, type ToolDef } from "./registry";
+import { getToolGuide } from "./tool-guides";
 import { LOCATION_CATEGORIES, LOCATION_CITIES } from "./places";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
@@ -127,7 +128,9 @@ export function toolFaq(tool: ToolDef) {
     });
   }
 
-  return base;
+  const extra = getToolGuide(tool.slug)?.faqs ?? [];
+  const seen = new Set(base.map((f) => f.q));
+  return [...base, ...extra.filter((f) => !seen.has(f.q))];
 }
 
 export function toolWebAppJsonLd(tool: ToolDef) {

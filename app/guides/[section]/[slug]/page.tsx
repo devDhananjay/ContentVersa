@@ -10,7 +10,10 @@ import {
   guideSectionPath,
 } from "@/lib/guides/registry";
 import { guideArticleJsonLd } from "@/lib/guides/guides-seo";
+import { AdSlot } from "@/components/ads/ad-slot";
+import { GoogleAdSense } from "@/components/ads/google-adsense";
 import { HubAdSense } from "@/components/ads/hub-adsense";
+import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +21,7 @@ import { ArrowRight } from "lucide-react";
 import { getTopicCluster } from "@/lib/seo/topic-clusters";
 import { TopicClusterLinks } from "@/components/seo/topic-cluster-links";
 import { YmylDisclaimer } from "@/components/seo/ymyl-disclaimer";
+import { PageTrail } from "@/components/site/page-back";
 
 type Props = { params: Promise<{ section: string; slug: string }> };
 
@@ -73,7 +77,7 @@ export default async function GuideArticlePage({ params }: Props) {
           : "schemes";
 
   return (
-    <article className="container max-w-3xl space-y-8 py-8 md:py-10">
+    <article className="container py-8 md:py-10">
       {Array.isArray(jsonLd) ? (
         jsonLd.map((block, i) => (
           <script
@@ -89,122 +93,142 @@ export default async function GuideArticlePage({ params }: Props) {
         />
       )}
 
-      <nav className="text-sm text-muted-foreground">
-        <Link href={GUIDES_HUB_PATH} className="hover:text-foreground">
-          India Guides
-        </Link>
-        <span className="mx-2">/</span>
-        <Link
-          href={guideSectionPath(section.slug)}
-          className="hover:text-foreground"
-        >
-          {section.shortTitle}
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-foreground">{article.shortTitle}</span>
-      </nav>
+      {/* Body + one right sticky rail (TOI article money column) */}
+      <div className="flex items-start justify-center gap-6 lg:gap-8">
+        <div className="min-w-0 w-full max-w-3xl space-y-8">
+          <PageTrail
+            back={{
+              href: guideSectionPath(section.slug),
+              label: section.shortTitle,
+            }}
+            crumbs={[
+              { href: GUIDES_HUB_PATH, label: "India Guides" },
+              {
+                href: guideSectionPath(section.slug),
+                label: section.shortTitle,
+              },
+              { label: article.shortTitle },
+            ]}
+          />
 
-      <header className="space-y-3">
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="neon">{section.badge}</Badge>
-          <Badge variant="secondary">{article.readingMinutes} min read</Badge>
-          <span className="text-xs text-muted-foreground self-center">
-            Updated {article.updatedLabel}
-          </span>
-        </div>
-        <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
-          {article.title}
-        </h1>
-        <p className="text-muted-foreground leading-relaxed">
-          {article.description}
-        </p>
-      </header>
+          <header className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="neon">{section.badge}</Badge>
+              <Badge variant="secondary">{article.readingMinutes} min read</Badge>
+              <span className="text-xs text-muted-foreground self-center">
+                Updated {article.updatedLabel}
+              </span>
+            </div>
+            <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
+              {article.title}
+            </h1>
+            <p className="text-muted-foreground leading-relaxed">
+              {article.description}
+            </p>
+          </header>
 
-      <HubAdSense className="my-2" />
+          {/* ATF — compact MREC after title */}
+          <AdSlot className="my-0" variant="mrec">
+            <GoogleAdSense slotKey="horizontal" width={300} height={250} />
+          </AdSlot>
 
-      {showYmyl ? <YmylDisclaimer kind={ymylKind} /> : null}
+          {showYmyl ? <YmylDisclaimer kind={ymylKind} /> : null}
 
-      <div className="space-y-8">
-        {article.blocks.map((block) => (
-          <section key={block.heading} className="space-y-3">
-            <h2 className="font-display text-xl font-bold tracking-tight">
-              {block.heading}
-            </h2>
-            {block.paragraphs.map((p) => (
-              <p key={p.slice(0, 40)} className="text-muted-foreground leading-relaxed">
-                {p}
-              </p>
-            ))}
-            {block.bullets?.length ? (
-              <ul className="list-disc space-y-1.5 pl-5 text-sm text-muted-foreground">
-                {block.bullets.map((b) => (
-                  <li key={b}>{b}</li>
+          <div className="space-y-8">
+            {article.blocks.map((block, i) => (
+              <section key={block.heading} className="space-y-3">
+                <h2 className="font-display text-xl font-bold tracking-tight">
+                  {block.heading}
+                </h2>
+                {block.paragraphs.map((p) => (
+                  <p
+                    key={p.slice(0, 40)}
+                    className="text-muted-foreground leading-relaxed"
+                  >
+                    {p}
+                  </p>
                 ))}
-              </ul>
-            ) : null}
-          </section>
-        ))}
-      </div>
-
-      {article.faqs?.length ? (
-        <section className="space-y-4">
-          <h2 className="font-display text-xl font-bold tracking-tight">
-            Frequently asked questions
-          </h2>
-          <div className="space-y-3">
-            {article.faqs.map((item) => (
-              <Card key={item.q}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{item.q}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground leading-relaxed">
-                  {item.a}
-                </CardContent>
-              </Card>
+                {block.bullets?.length ? (
+                  <ul className="list-disc space-y-1.5 pl-5 text-sm text-muted-foreground">
+                    {block.bullets.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+                ) : null}
+                {/* Mid-guide after first section */}
+                {i === 0 && article.blocks.length > 1 ? (
+                  <HubAdSense className="!px-0" />
+                ) : null}
+              </section>
             ))}
           </div>
-        </section>
-      ) : null}
 
-      {(article.relatedHref || section.relatedHub) && (
-        <div className="rounded-2xl border border-border/60 bg-card/50 p-5">
-          <p className="text-sm font-semibold">Continue</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {article.relatedHref ? (
-              <Link href={article.relatedHref}>
-                <Button size="sm" className="gap-2">
-                  {article.relatedLabel || "Related hub"}{" "}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            ) : null}
-            {section.relatedHub ? (
-              <Link href={section.relatedHub.href}>
-                <Button size="sm" variant="outline" className="gap-2">
-                  {section.relatedHub.label} <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            ) : null}
-            <Link href={guideSectionPath(section.slug)}>
-              <Button size="sm" variant="ghost">
-                More {section.shortTitle} guides
-              </Button>
-            </Link>
-          </div>
+          {article.faqs?.length ? (
+            <section className="space-y-4">
+              <h2 className="font-display text-xl font-bold tracking-tight">
+                Frequently asked questions
+              </h2>
+              <div className="space-y-3">
+                {article.faqs.map((item) => (
+                  <Card key={item.q}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base">{item.q}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                      {item.a}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {/* End unit before related links */}
+          <HubAdSense className="!px-0" />
+
+          {(article.relatedHref || section.relatedHub) && (
+            <div className="rounded-2xl border border-border/60 bg-card/50 p-5">
+              <p className="text-sm font-semibold">Continue</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {article.relatedHref ? (
+                  <Link href={article.relatedHref}>
+                    <Button size="sm" className="gap-2">
+                      {article.relatedLabel || "Related hub"}{" "}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                ) : null}
+                {section.relatedHub ? (
+                  <Link href={section.relatedHub.href}>
+                    <Button size="sm" variant="outline" className="gap-2">
+                      {section.relatedHub.label} <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                ) : null}
+                <Link href={guideSectionPath(section.slug)}>
+                  <Button size="sm" variant="ghost">
+                    More {section.shortTitle} guides
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {cluster ? (
+            <TopicClusterLinks
+              cluster={cluster}
+              currentHref={`${GUIDES_HUB_PATH}/${article.section}/${article.slug}`}
+            />
+          ) : null}
+
+          <p className="text-xs text-muted-foreground">
+            Educational guide only. For government schemes, tax, and banking decisions,
+            confirm details on official portals or with qualified professionals.
+          </p>
         </div>
-      )}
 
-      {cluster ? (
-        <TopicClusterLinks
-          cluster={cluster}
-          currentHref={`${GUIDES_HUB_PATH}/${article.section}/${article.slug}`}
-        />
-      ) : null}
-
-      <p className="text-xs text-muted-foreground">
-        Educational guide only. For government schemes, tax, and banking decisions,
-        confirm details on official portals or with qualified professionals.
-      </p>
+        <StickyRailAd slotKey="sidebar" label="Sponsored beside guide" />
+      </div>
     </article>
   );
 }

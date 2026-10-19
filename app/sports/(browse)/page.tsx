@@ -6,6 +6,10 @@ import { SeriesCarousel } from "@/components/sports/series-carousel";
 import { ScheduleBlock } from "@/components/sports/schedule-block";
 import { SportsSectionHeader } from "@/components/sports/sports-section-header";
 import Link from "next/link";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { MrecAd } from "@/components/ads/mrec-ad";
+import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
@@ -106,6 +110,18 @@ export default async function SportsHubPage() {
       )}
 
       <SportsBlogSection blogs={blogs.slice(0, 6)} />
+
+      {/* After editorial blogs — not beside live score widgets or alert CTA */}
+      <div className="flex flex-col items-center gap-8 xl:flex-row xl:items-start xl:justify-center">
+        <StickyRailAd slotKey="sidebar" sticky={false} label="Sponsored left" />
+        <div className="flex w-full max-w-3xl flex-col items-center gap-6">
+          <BandAd slotKey="horizontal" />
+          <MrecAd slotKey="hub" />
+          <HubAdSense />
+        </div>
+        <StickyRailAd slotKey="hub" sticky label="Sponsored right" />
+      </div>
+
       <RelatedHubs current="sports" contained />
     </div>
   );

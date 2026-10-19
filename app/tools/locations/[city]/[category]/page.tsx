@@ -11,6 +11,10 @@ import {
 } from "@/lib/tools/places";
 import { buildMetadata } from "@/lib/seo";
 import { TOOLS_HUB_PATH } from "@/lib/tools/registry";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { MrecAd } from "@/components/ads/mrec-ad";
+import { PageBack } from "@/components/site/page-back";
 
 type Props = { params: Promise<{ city: string; category: string }> };
 
@@ -57,6 +61,7 @@ export default async function LocationPlacesPage({ params }: Props) {
 
   return (
     <div className="container space-y-6 py-8 md:py-10">
+      <PageBack href={`${TOOLS_HUB_PATH}/nearby-${category}`} label={`${label} finder`} />
       <header className="max-w-3xl space-y-2">
         <p className="text-xs font-bold uppercase tracking-wider text-primary">India Tools · Locations</p>
         <h1 className="font-display text-3xl font-bold tracking-tight">
@@ -77,6 +82,13 @@ export default async function LocationPlacesPage({ params }: Props) {
         </p>
       </header>
       <NearbyPlacesTool defaultCategory={cat} defaultCity={cityDef.name} autoSearch />
+
+      {/* Ads below the search UI — horizontal + rectangle */}
+      <BandAd slotKey="horizontal" />
+      <div className="flex justify-center">
+        <MrecAd slotKey="hub" />
+      </div>
+
       <section className="max-w-3xl text-sm text-muted-foreground">
         <p className="font-medium text-foreground">More cities</p>
         <ul className="mt-2 flex flex-wrap gap-2">
@@ -92,6 +104,9 @@ export default async function LocationPlacesPage({ params }: Props) {
           ))}
         </ul>
       </section>
+
+      <HubAdSense />
+      <BandAd slotKey="horizontal" />
     </div>
   );
 }

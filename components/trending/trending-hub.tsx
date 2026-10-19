@@ -285,8 +285,6 @@ export function TrendingHub({
         ) : null}
       </section>
 
-      <HubAdSense className="my-2" />
-
       <section id="trending-news" className="scroll-mt-24 space-y-4">
         <div className="flex items-center gap-2">
           <Newspaper className="h-4 w-4 text-sky-400" />
@@ -365,7 +363,8 @@ export function TrendingHub({
         </p>
       ) : null}
 
-      <HubAdSense className="my-2" />
+      {/* Single hub unit at end of editorial lanes — avoids double-stacking */}
+      <HubAdSense />
     </div>
   );
 }

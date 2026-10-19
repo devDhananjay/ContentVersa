@@ -932,6 +932,12 @@
       "namedRegex": "^/admin/users(?:/)?$"
     },
     {
+      "page": "/advertise",
+      "regex": "^/advertise(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/advertise(?:/)?$"
+    },
+    {
       "page": "/ai",
       "regex": "^/ai(?:/)?$",
       "routeKeys": {},
@@ -1260,6 +1266,12 @@
       "regex": "^/terms(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/terms(?:/)?$"
+    },
+    {
+      "page": "/theme-preview",
+      "regex": "^/theme\\-preview(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/theme\\-preview(?:/)?$"
     },
     {
       "page": "/tools",

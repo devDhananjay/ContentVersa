@@ -4,6 +4,7 @@ import { ArrowRight, Building2, Landmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { JobsNav } from "@/components/jobs/jobs-nav";
+import { PageBack } from "@/components/site/page-back";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 const HERO_IMAGE =
@@ -24,6 +25,7 @@ export function JobsBrowseShell({ children }: { children: React.ReactNode }) {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/50" />
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/15 via-orange-500/5 to-neon-purple/10 mix-blend-overlay" />
         <div className="container relative h-full flex flex-col justify-end pb-8">
+          <PageBack href="/" label="Home" tone="onDark" className="mb-3" />
           <Badge variant="gradient" className="w-fit mb-2 text-xs">
             Careers · India
           </Badge>

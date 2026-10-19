@@ -1,13 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useSpring, type Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
 export const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 36 },
+  hidden: { opacity: 0, y: 22 },
   show: {
     opacity: 1,
     y: 0,
@@ -32,35 +32,59 @@ export const scaleIn: Variants = {
 export const staggerContainer: Variants = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.06 },
+    transition: { staggerChildren: 0.07, delayChildren: 0.04 },
   },
 };
 
-/** Scroll-triggered reveal for homepage sections. */
+/** Scroll-triggered reveal for homepage sections (calm 20px rise by default). */
 export function Reveal({
   children,
   className,
   delay = 0,
-  y = 40,
+  y = 20,
+  variant = "up",
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
   y?: number;
+  variant?: "up" | "fade" | "scale";
 }) {
   const reduce = useReducedMotion();
   if (reduce) return <div className={className}>{children}</div>;
 
+  const initial =
+    variant === "fade"
+      ? { opacity: 0 }
+      : variant === "scale"
+        ? { opacity: 0, scale: 0.97, y: y / 2 }
+        : { opacity: 0, y };
+
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.75, delay, ease: easeOut }}
+      initial={initial}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.6, delay, ease: easeOut }}
     >
       {children}
     </motion.div>
+  );
+}
+
+/** Thin accent bar showing how far the page has been scrolled. */
+export function ScrollProgress() {
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 28, mass: 0.2 });
+  if (reduce) return null;
+  return (
+    <motion.div
+      aria-hidden
+      className="pointer-events-none fixed inset-x-0 top-0 z-[55] h-[2px] origin-left bg-gradient-to-r from-primary to-[hsl(var(--saffron))]"
+      style={{ scaleX }}
+    />
   );
 }
 

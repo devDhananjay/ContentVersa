@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { LiveMatchTicker } from "@/components/sports/live-match-ticker";
 import { SportsNav } from "@/components/sports/sports-nav";
 import { SportsSidebar } from "@/components/sports/sports-sidebar";
+import { PageBack } from "@/components/site/page-back";
 import { getSportsHubDataCached } from "@/lib/sports/data";
 
 const HERO_IMAGE =
@@ -32,6 +33,7 @@ export async function SportsBrowseShell({
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/75 to-background/45" />
         <div className="absolute inset-0 bg-gradient-to-br from-lime-500/15 via-green-500/5 to-neon-cyan/15 mix-blend-overlay" />
         <div className="container relative h-full flex flex-col justify-end pb-8">
+          <PageBack href="/" label="Home" tone="onDark" className="mb-3" />
           <Badge variant="gradient" className="w-fit mb-2 text-xs">
             Cricket · Live
           </Badge>

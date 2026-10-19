@@ -25,12 +25,22 @@ function IndexTile({
 }) {
   const up = changePercent >= 0;
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
+    <div
+      className={`v2-raised overflow-hidden rounded-3xl p-5 ${
+        up
+          ? "border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-card"
+          : "border-red-500/20 bg-gradient-to-br from-red-500/10 to-card"
+      }`}
+    >
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{name}</p>
-      <p className="mt-1 font-display text-2xl font-extrabold tabular-nums">
-        {price.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+      <p className="mt-2 font-display text-3xl font-bold tabular-nums tracking-tight">
+        {price.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
       </p>
-      <p className={`mt-1 text-sm font-semibold tabular-nums ${up ? "text-emerald-400" : "text-red-400"}`}>
+      <p
+        className={`mt-1.5 text-sm font-semibold tabular-nums ${
+          up ? "text-[hsl(var(--positive))]" : "text-[hsl(var(--negative))]"
+        }`}
+      >
         {formatSignedPercent(changePercent)}
       </p>
     </div>
@@ -64,74 +74,77 @@ export function FinanceTeaser({ data }: FinanceTeaserProps) {
         </Link>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <IndexTile
-            name={data.nifty.name}
-            price={data.nifty.price}
-            changePercent={data.nifty.changePercent}
-          />
-          <IndexTile
-            name={data.sensex.name}
-            price={data.sensex.price}
-            changePercent={data.sensex.changePercent}
-          />
-          {gainers.length ? (
-            <div className="rounded-2xl border border-border/60 bg-card/80 p-4 sm:col-span-2">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Top movers
-              </p>
-              <ul className="grid gap-2 sm:grid-cols-3">
-                {gainers.map((stock) => (
-                  <li
-                    key={stock.symbol}
-                    className="flex items-center justify-between gap-2 rounded-xl border border-border/50 bg-background/40 px-3 py-2 text-sm"
-                  >
-                    <span className="truncate font-semibold">{stock.symbol}</span>
-                    <span
-                      className={`shrink-0 tabular-nums font-semibold ${
-                        stock.changePercent >= 0 ? "text-emerald-400" : "text-red-400"
-                      }`}
+      <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
+        <div className="min-w-0 flex-1 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <IndexTile
+              name={data.nifty.name}
+              price={data.nifty.price}
+              changePercent={data.nifty.changePercent}
+            />
+            <IndexTile
+              name={data.sensex.name}
+              price={data.sensex.price}
+              changePercent={data.sensex.changePercent}
+            />
+            {gainers.length ? (
+              <div className="rounded-2xl border border-border/60 bg-card/80 p-4 sm:col-span-2">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Top movers
+                </p>
+                <ul className="grid gap-2 sm:grid-cols-3">
+                  {gainers.map((stock) => (
+                    <li
+                      key={stock.symbol}
+                      className="flex items-center justify-between gap-2 rounded-xl border border-border/50 bg-background/40 px-3 py-2 text-sm"
                     >
-                      {formatSignedPercent(stock.changePercent)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+                      <span className="truncate font-semibold">{stock.symbol}</span>
+                      <span
+                        className={`shrink-0 tabular-nums font-semibold ${
+                          stock.changePercent >= 0 ? "text-emerald-400" : "text-red-400"
+                        }`}
+                      >
+                        {formatSignedPercent(stock.changePercent)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="grid gap-3">
+            <Link
+              href="/moneyverse"
+              className="flex items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-4 transition hover:bg-emerald-500/15"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-300">
+                <Wallet className="h-5 w-5" />
+              </span>
+              <span>
+                <span className="block font-display font-bold">MoneyVerse</span>
+                <span className="mt-0.5 block text-sm text-muted-foreground">
+                  Expenses, Screenshot Scan and bank statement analyzer
+                </span>
+              </span>
+            </Link>
+            <Link
+              href="/tools"
+              className="flex items-start gap-3 rounded-2xl border border-teal-500/25 bg-teal-500/10 p-4 transition hover:bg-teal-500/15"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500/20 text-teal-300">
+                <Wrench className="h-5 w-5" />
+              </span>
+              <span>
+                <span className="block font-display font-bold">India Tools</span>
+                <span className="mt-0.5 block text-sm text-muted-foreground">
+                  {toolsCount} free utilities — IFSC, weather, EMI, nearby places
+                </span>
+              </span>
+            </Link>
+          </div>
         </div>
 
-        <div className="grid gap-3">
-          <Link
-            href="/moneyverse"
-            className="flex items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-4 transition hover:bg-emerald-500/15"
-          >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-300">
-              <Wallet className="h-5 w-5" />
-            </span>
-            <span>
-              <span className="block font-display font-bold">MoneyVerse</span>
-              <span className="mt-0.5 block text-sm text-muted-foreground">
-                Expenses, Screenshot Scan and bank statement analyzer
-              </span>
-            </span>
-          </Link>
-          <Link
-            href="/tools"
-            className="flex items-start gap-3 rounded-2xl border border-teal-500/25 bg-teal-500/10 p-4 transition hover:bg-teal-500/15"
-          >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500/20 text-teal-300">
-              <Wrench className="h-5 w-5" />
-            </span>
-            <span>
-              <span className="block font-display font-bold">India Tools</span>
-              <span className="mt-0.5 block text-sm text-muted-foreground">
-                {toolsCount} free utilities — IFSC, weather, EMI, nearby places
-              </span>
-            </span>
-          </Link>
-        </div>
       </div>
 
       <div className="mt-6 md:hidden">

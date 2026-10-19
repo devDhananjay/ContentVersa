@@ -22,8 +22,11 @@ import { isIndexableArticle } from "@/lib/seo/crawl-policy";
 import { publicCanonicalUrl } from "@/lib/seo/content-redirects";
 import {
   isAiFreePublishError,
-  prepareAiFreePublishFields,
 } from "@/lib/seo/ai-free-content";
+import {
+  isRefinePublishError,
+  refineForPublish,
+} from "@/lib/seo/refine-for-publish";
 import { readingTime } from "@/lib/utils";
 
 const YMYL_BODY_NOTE = `
@@ -144,7 +147,7 @@ export async function publishAdsenseSafeDrafts(
       coverImage: true,
       readingTime: true,
       createdAt: true,
-      category: { select: { slug: true } },
+      category: { select: { name: true, slug: true } },
     },
     orderBy: [{ readingTime: "desc" }, { createdAt: "asc" }],
     take: 80,
@@ -167,11 +170,14 @@ export async function publishAdsenseSafeDrafts(
     let excerpt = draft.excerpt;
     let metaDescription = draft.metaDescription;
     try {
-      const cleaned = prepareAiFreePublishFields({
+      const cleaned = await refineForPublish({
         title,
         excerpt,
         content,
         metaDescription,
+        categoryName: draft.category?.name,
+        categorySlug: draft.category?.slug,
+        searchIntent: draft.metaKeywords,
       });
       title = cleaned.title;
       excerpt = cleaned.excerpt;
@@ -182,7 +188,9 @@ export async function publishAdsenseSafeDrafts(
       out.reasons.push(
         isAiFreePublishError(err)
           ? `skip AI-free gate (${err.hits.slice(0, 3).join("|")}): ${draft.slug}`
-          : `skip AI-free gate: ${draft.slug}`
+          : isRefinePublishError(err)
+            ? `skip refine (${err.reason}): ${draft.slug}`
+            : `skip AI-free gate: ${draft.slug}`
       );
       continue;
     }

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import type { CategoryWithCount } from "@/lib/data/home-data";
 import { categoryPageHref } from "@/lib/data/categories";
 import { isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
-import { AnimatedGrid, FloatingOrbs } from "@/components/home/motion";
+import { VisitorCountBadge } from "@/components/site/visitor-count";
 import { cn } from "@/lib/utils";
 
 const ROTATING_WORDS = ["Read", "Create", "Grow", "Earn", "Build"];
@@ -108,13 +108,6 @@ export function Hero({ categories, stats }: Props) {
 
   return (
     <section className="relative overflow-hidden">
-      {!cinematic ? (
-        <>
-          <FloatingOrbs />
-          <AnimatedGrid />
-        </>
-      ) : null}
-
       <div className="container relative pt-8 md:pt-16 pb-20 md:pb-28">
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 28 }}
@@ -130,10 +123,8 @@ export function Hero({ categories, stats }: Props) {
             <Badge
               variant="neon"
               className={cn(
-                "mb-6 py-1.5 px-4 text-xs gap-1.5",
-                cinematic
-                  ? "border-white/20 bg-white/10 text-white shadow-[0_0_24px_-6px_rgba(255,255,255,0.25)]"
-                  : "border-neon-cyan/30 bg-neon-cyan/10 shadow-[0_0_24px_-6px] shadow-neon-cyan/40"
+                "mb-6 gap-1.5 border-border bg-card/80 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur",
+                cinematic && "dark:border-white/20 dark:bg-white/10 dark:text-white"
               )}
             >
               <motion.span
@@ -141,7 +132,7 @@ export function Hero({ categories, stats }: Props) {
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                 className="inline-flex"
               >
-                <Sparkles className="h-3 w-3" />
+                <Sparkles className="h-3 w-3 text-accent" />
               </motion.span>
               India&apos;s original guides, explainers and stories
             </Badge>
@@ -149,8 +140,8 @@ export function Hero({ categories, stats }: Props) {
 
           <h1
             className={cn(
-              "font-display font-extrabold tracking-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] max-w-5xl",
-              cinematic && "drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+              "font-display font-bold tracking-[-0.02em] text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[1.04] max-w-5xl",
+              cinematic && "dark:text-white dark:drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
             )}
           >
             <motion.span
@@ -163,8 +154,9 @@ export function Hero({ categories, stats }: Props) {
             </motion.span>
             <motion.span
               className={cn(
-                "mt-2 flex flex-col items-center justify-center gap-y-1 text-[0.55em] sm:text-[0.5em] md:text-[0.48em] font-bold leading-[1.25] min-h-[1.35em] lg:flex-row lg:flex-wrap lg:gap-x-[0.35em]",
-                cinematic ? "text-white/90" : "text-foreground"
+                "mt-3 flex flex-col items-center justify-center gap-y-1 text-[0.5em] sm:text-[0.45em] md:text-[0.4em] font-semibold leading-[1.25] min-h-[1.35em] lg:flex-row lg:flex-wrap lg:gap-x-[0.35em]",
+                "text-foreground/90",
+                cinematic && "dark:text-white/90"
               )}
               initial={reduce ? false : { opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -179,8 +171,8 @@ export function Hero({ categories, stats }: Props) {
 
           <motion.p
             className={cn(
-              "mt-6 text-lg md:text-xl max-w-2xl leading-relaxed",
-              cinematic ? "text-white/75" : "text-muted-foreground"
+              "mt-6 text-lg md:text-xl max-w-2xl leading-relaxed text-muted-foreground",
+              cinematic && "dark:text-white/75"
             )}
             initial={reduce ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -197,25 +189,24 @@ export function Hero({ categories, stats }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.55 }}
           >
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-neon-blue/40 via-neon-purple/40 to-neon-pink/40 opacity-0 blur-lg transition-opacity duration-500 group-focus-within:opacity-70" />
+            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/40 to-[hsl(var(--saffron)/0.4)] opacity-0 blur-lg transition-opacity duration-500 group-focus-within:opacity-70" />
             <div className="relative">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground sm:left-5" />
               <Input
                 name="q"
-                placeholder="Search ‘SIP’, ‘CIBIL’, ‘HUID’, ‘PM-Kisan’…"
+                placeholder="Search ‘SIP’, ‘CIBIL’, ‘HUID’…"
                 className={cn(
-                  "h-16 pl-14 pr-32 text-base rounded-2xl shadow-glow backdrop-blur focus-visible:ring-neon-purple/40",
-                  cinematic
-                    ? "bg-white/10 border-white/20 text-white placeholder:text-white/45"
-                    : "bg-card/90 border-border/80"
+                  "h-12 rounded-2xl border-border bg-card pl-12 pr-[5.5rem] text-base shadow-glow backdrop-blur sm:h-16 sm:pl-14 sm:pr-32",
+                  cinematic &&
+                    "dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder:text-white/45"
                 )}
               />
               <Button
                 variant="gradient"
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-12 rounded-xl shadow-lg shadow-neon-purple/20"
+                className="absolute right-1.5 top-1/2 h-9 -translate-y-1/2 rounded-xl px-3 text-sm sm:right-2 sm:h-12 sm:px-4 sm:text-base"
               >
                 Search
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="hidden h-4 w-4 sm:inline" />
               </Button>
             </div>
           </motion.form>
@@ -245,10 +236,9 @@ export function Hero({ categories, stats }: Props) {
                 <Link
                   href={categoryPageHref(cat.slug)}
                   className={cn(
-                    "text-xs rounded-full border px-3 py-1.5 transition-colors backdrop-blur",
-                    cinematic
-                      ? "border-white/20 text-white/80 hover:border-white/40 hover:bg-white/10 hover:text-white"
-                      : "border-border/60 hover:border-neon-purple/60 hover:bg-neon-purple/5 hover:text-foreground text-muted-foreground"
+                    "v2-chip backdrop-blur",
+                    cinematic &&
+                      "dark:border-white/20 dark:bg-transparent dark:text-white/80 dark:hover:border-white/40 dark:hover:bg-white/10 dark:hover:text-white"
                   )}
                 >
                   #{cat.name}
@@ -258,7 +248,7 @@ export function Hero({ categories, stats }: Props) {
           </motion.div>
 
           <motion.div
-            className="mt-12 flex flex-col sm:flex-row items-center gap-4"
+            className="mt-10 flex w-full max-w-md flex-col items-stretch gap-3 sm:mt-12 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-4"
             initial={reduce ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.55 }}
@@ -268,7 +258,7 @@ export function Hero({ categories, stats }: Props) {
                 <Button
                   variant="gradient"
                   size="xl"
-                  className="gap-2 shadow-xl shadow-neon-purple/25"
+                  className="h-12 w-full gap-2 sm:h-14 sm:w-auto"
                 >
                   <BookOpen className="h-5 w-5" />
                   Read India Guides
@@ -281,8 +271,9 @@ export function Hero({ categories, stats }: Props) {
                   variant="outline"
                   size="xl"
                   className={cn(
-                    "gap-2 backdrop-blur",
-                    cinematic ? "border-white/25 bg-white/10 text-white hover:bg-white/15" : "bg-card/40"
+                    "h-12 w-full gap-2 backdrop-blur sm:h-14 sm:w-auto",
+                    cinematic &&
+                      "dark:border-white/25 dark:bg-white/10 dark:text-white dark:hover:bg-white/15 dark:hover:text-white"
                   )}
                 >
                   Browse articles
@@ -292,34 +283,42 @@ export function Hero({ categories, stats }: Props) {
             </motion.div>
           </motion.div>
 
+          <motion.div
+            className="mt-10"
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.78, duration: 0.5 }}
+          >
+            <VisitorCountBadge />
+          </motion.div>
+
           {visibleStats.length > 0 ? (
-            <motion.div
-              className="mt-16 grid grid-cols-3 gap-8 md:gap-16"
+            <motion.dl
+              className={cn(
+                "mt-14 grid w-full max-w-xl grid-cols-3 divide-x divide-border rounded-2xl border border-border bg-card/70 py-4 backdrop-blur",
+                cinematic && "dark:divide-white/15 dark:border-white/15 dark:bg-black/25"
+              )}
               initial="hidden"
               animate="show"
               variants={{
                 hidden: {},
-                show: { transition: { staggerChildren: 0.12, delayChildren: 0.85 } },
+                show: { transition: { staggerChildren: 0.1, delayChildren: 0.85 } },
               }}
             >
               {visibleStats.map((stat) => (
                 <motion.div
                   key={stat.label}
-                  className="text-center"
+                  className="px-3 text-center"
                   variants={{
-                    hidden: { opacity: 0, y: 20 },
+                    hidden: { opacity: 0, y: 14 },
                     show: { opacity: 1, y: 0 },
                   }}
                 >
-                  <div className="font-display font-extrabold text-2xl md:text-4xl text-gradient">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs md:text-sm text-muted-foreground mt-1">
-                    {stat.label}
-                  </div>
+                  <dt className="font-display text-2xl font-bold md:text-3xl">{stat.value}</dt>
+                  <dd className="mt-0.5 text-xs text-muted-foreground md:text-sm">{stat.label}</dd>
                 </motion.div>
               ))}
-            </motion.div>
+            </motion.dl>
           ) : null}
         </motion.div>
       </div>
@@ -327,7 +326,8 @@ export function Hero({ categories, stats }: Props) {
       <div
         className={cn(
           "pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t to-transparent",
-          cinematic ? "from-background via-background/80" : "from-background"
+          "from-background",
+          cinematic && "dark:via-background/80"
         )}
       />
     </section>

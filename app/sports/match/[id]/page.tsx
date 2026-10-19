@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { PageBack } from "@/components/site/page-back";
 import type { Metadata } from "next";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/blog-card";
 import { MatchDetailTabs } from "@/components/sports/match-detail-tabs";
 import { getMatchScoreSummary, cricbuzzImageUrl } from "@/lib/sports/transformers";
@@ -57,11 +59,7 @@ export default async function MatchDetailPage({
 
   return (
     <div className="container py-8 md:py-12">
-      <Link href="/sports">
-        <Button variant="ghost" size="sm" className="gap-2 mb-6 -ml-2">
-          <ArrowLeft className="h-4 w-4" /> Back to Sports Hub
-        </Button>
-      </Link>
+      <PageBack href="/sports" label="Sports Hub" className="mb-6" />
 
       <div className="rounded-3xl border bg-card overflow-hidden">
         <div className="p-6 md:p-8 border-b bg-gradient-to-br from-lime-500/10 to-green-500/5">
@@ -114,6 +112,9 @@ export default async function MatchDetailPage({
           initialCommentary={commentary}
         />
       </div>
+
+      <BandAd slotKey="horizontal" className="mt-8" />
+      <HubAdSense className="!px-0" />
 
       {blogs.length > 0 && (
         <section className="mt-12">

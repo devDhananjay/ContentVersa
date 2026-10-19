@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Clapperboard, Film } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { PageBack } from "@/components/site/page-back";
 import { getCineverseHubDataCached } from "@/lib/cineverse/data";
 import { MovieGrid } from "./movie-grid";
 
@@ -27,6 +28,7 @@ export async function CineverseBrowseShell({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/50" />
         <div className="container relative flex h-full flex-col justify-end pb-6">
+          <PageBack href="/" label="Home" tone="onDark" className="mb-3" />
           <Badge variant="outline" className="mb-2 h-5 w-fit gap-1 text-[10px]">
             <Clapperboard className="h-2.5 w-2.5" /> AI Movie & OTT Companion
           </Badge>

@@ -7,10 +7,11 @@ import { dispatchBlogPublishedNotifications } from "@/lib/notifications/blog-pub
 import { isAdEligibleByQuality } from "@/lib/seo/crawl-policy";
 import { defaultAdEligibleOnApprove } from "@/lib/seo/creator-quality";
 import { getCreatorQualityForUser } from "@/lib/seo/creator-quality-db";
+import { isAiFreePublishError } from "@/lib/seo/ai-free-content";
 import {
-  isAiFreePublishError,
-  prepareAiFreePublishFields,
-} from "@/lib/seo/ai-free-content";
+  isRefinePublishError,
+  refineForPublish,
+} from "@/lib/seo/refine-for-publish";
 import { readingTime } from "@/lib/utils";
 
 /** POST /api/admin/blogs/[id]/publish — publish a draft AI article after admin preview */
@@ -34,9 +35,11 @@ export async function POST(
         excerpt: true,
         content: true,
         metaDescription: true,
+        metaKeywords: true,
         status: true,
         readingTime: true,
         authorId: true,
+        category: { select: { name: true, slug: true } },
       },
     });
 
@@ -54,11 +57,14 @@ export async function POST(
 
     let cleaned;
     try {
-      cleaned = prepareAiFreePublishFields({
+      cleaned = await refineForPublish({
         title: existing.title,
         excerpt: existing.excerpt,
         content: existing.content,
         metaDescription: existing.metaDescription,
+        categoryName: existing.category?.name,
+        categorySlug: existing.category?.slug,
+        searchIntent: existing.metaKeywords,
       });
     } catch (err) {
       if (isAiFreePublishError(err)) {
@@ -68,6 +74,12 @@ export async function POST(
             code: err.code,
             hits: err.hits,
           },
+          { status: 422 }
+        );
+      }
+      if (isRefinePublishError(err)) {
+        return NextResponse.json(
+          { error: err.message, code: err.code, reason: err.reason },
           { status: 422 }
         );
       }
@@ -114,7 +126,13 @@ export async function POST(
     return NextResponse.json({
       ok: true,
       blog,
-      aiFree: { markersScrubbed: cleaned.markersBefore, changed: cleaned.changed },
+      aiFree: {
+        markersScrubbed: cleaned.markersBefore,
+        changed: cleaned.changed,
+        expanded: cleaned.expanded,
+        humanized: cleaned.humanized,
+        words: cleaned.words,
+      },
     });
   } catch (err) {
     if (err instanceof Error && err.message === "FORBIDDEN") {

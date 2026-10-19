@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { MultiplexAd } from "@/components/ads/multiplex-ad";
+import { PageBack } from "@/components/site/page-back";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCategoryBySlug } from "@/lib/data/categories";
@@ -33,13 +35,11 @@ export function FeedDetailView({
   return (
     <article>
       <div className="container py-6 max-w-4xl">
-        <Link
+        <PageBack
           href={`/blogs?category=${item.category}`}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to {category?.name ?? item.category}
-        </Link>
+          label={category?.name ?? item.category}
+          className="mb-6"
+        />
 
         {hasImage ? (
           <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border bg-muted mb-8">
@@ -128,6 +128,9 @@ export function FeedDetailView({
             initialComments={initialComments}
             initialUserReaction={initialUserReaction}
           />
+
+          <HubAdSense className="!px-0" />
+          <MultiplexAd />
 
           <div className="mt-10">
             <Link href={`/blogs?category=${item.category}`}>

@@ -34,6 +34,9 @@ export function BlogModerationActions({
   const decide = async (decision: "APPROVED" | "REJECTED") => {
     setLoading(decision === "APPROVED" ? "approve" : "reject");
     try {
+      if (decision === "APPROVED") {
+        toast.loading("Checking AI content & cleaning…", { id: "ai-publish" });
+      }
       const res = await fetch("/api/admin/moderation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -44,13 +47,38 @@ export function BlogModerationActions({
           ...(decision === "APPROVED" ? { adEligible: adEligibleOnApprove } : {}),
         }),
       });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Action failed");
+        const hits =
+          Array.isArray(data.hits) && data.hits.length
+            ? ` (${data.hits.slice(0, 4).join(", ")})`
+            : "";
+        throw new Error((data.error || "Action failed") + hits);
+      }
+      if (decision === "APPROVED") {
+        const ai = data.aiFree as
+          | {
+              markersScrubbed?: number;
+              humanized?: boolean;
+              expanded?: boolean;
+              words?: number;
+            }
+          | undefined;
+        const bits = [
+          ai?.markersScrubbed
+            ? `scrubbed ${ai.markersScrubbed} AI marker(s)`
+            : "AI-free check passed",
+          ai?.humanized ? "humanized" : null,
+          ai?.expanded ? "expanded" : null,
+          ai?.words ? `${ai.words} words` : null,
+        ].filter(Boolean);
+        toast.success(`Published — ${bits.join(" · ")}`, { id: "ai-publish" });
       }
       router.refresh();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed");
+      toast.error(err instanceof Error ? err.message : "Failed", {
+        id: "ai-publish",
+      });
     } finally {
       setLoading(null);
     }
@@ -59,16 +87,41 @@ export function BlogModerationActions({
   const publishDraft = async () => {
     setLoading("publish");
     try {
+      toast.loading("Checking AI content & cleaning…", { id: "ai-publish" });
       const res = await fetch(`/api/admin/blogs/${blogId}/publish`, {
         method: "POST",
         credentials: "include",
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || "Publish failed");
-      toast.success("Published to site");
+      if (!res.ok) {
+        const hits =
+          Array.isArray(data.hits) && data.hits.length
+            ? ` (${data.hits.slice(0, 4).join(", ")})`
+            : "";
+        throw new Error((data.error || "Publish failed") + hits);
+      }
+      const ai = data.aiFree as
+        | {
+            markersScrubbed?: number;
+            humanized?: boolean;
+            expanded?: boolean;
+            words?: number;
+          }
+        | undefined;
+      const bits = [
+        ai?.markersScrubbed
+          ? `scrubbed ${ai.markersScrubbed} AI marker(s)`
+          : "AI-free check passed",
+        ai?.humanized ? "humanized" : null,
+        ai?.expanded ? "expanded" : null,
+        ai?.words ? `${ai.words} words` : null,
+      ].filter(Boolean);
+      toast.success(`Published — ${bits.join(" · ")}`, { id: "ai-publish" });
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Publish failed");
+      toast.error(err instanceof Error ? err.message : "Publish failed", {
+        id: "ai-publish",
+      });
     } finally {
       setLoading(null);
     }
@@ -133,8 +186,8 @@ export function BlogModerationActions({
           {status === "DRAFT" ? "Draft — review before publishing" : `${status} — edit or publish`}
         </h3>
         <p className="text-sm text-muted-foreground">
-          Edit title, cover, or content if needed, then publish when ready. Ads follow the quality
-          gate on publish.
+          On publish we scan for AI filler, clean it, and block go-live if it still sounds
+          machine-written. Ads follow the quality gate.
         </p>
         <div className="flex flex-wrap gap-2">
           <Link href={editHref}>
@@ -153,7 +206,7 @@ export function BlogModerationActions({
             ) : (
               <Check className="h-4 w-4" />
             )}
-            Publish now
+            {loading === "publish" ? "Cleaning AI…" : "Publish now"}
           </Button>
         </div>
       </div>
@@ -165,6 +218,10 @@ export function BlogModerationActions({
   return (
     <div className="rounded-2xl border border-orange-500/30 bg-orange-500/5 p-5 space-y-4">
       <h3 className="font-display font-bold">Moderation actions</h3>
+      <p className="text-sm text-muted-foreground">
+        Approve &amp; Publish runs an AI check first — filler is filtered, then the post goes live
+        only if it passes the AI-free gate.
+      </p>
       <Textarea
         placeholder="Optional feedback for the author…"
         value={feedback}
@@ -208,7 +265,7 @@ export function BlogModerationActions({
           onClick={() => decide("APPROVED")}
         >
           {loading === "approve" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-          Approve & Publish
+          {loading === "approve" ? "Cleaning AI…" : "Approve & Publish"}
         </Button>
       </div>
     </div>

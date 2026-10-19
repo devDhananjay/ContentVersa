@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { homeHeroVideoUrl, isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 type ConnectionLike = {
@@ -81,9 +82,11 @@ export function HeroVideoBackground({ className }: { className?: string }) {
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = React.useState(false);
   const [src, setSrc] = React.useState<string | null>(null);
+  const { resolvedTheme } = useTheme();
+  const isLight = resolvedTheme === "light";
 
   React.useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || isLight) return;
     if (!shouldLoadHeroVideo()) return;
 
     let cancelled = false;
@@ -111,7 +114,7 @@ export function HeroVideoBackground({ className }: { className?: string }) {
       if (idleId != null) win.cancelIdleCallback?.(idleId);
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [enabled, url]);
+  }, [enabled, url, isLight]);
 
   usePersistentVideoPlayback(videoRef, Boolean(src) && !failed);
 

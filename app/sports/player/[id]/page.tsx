@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
+import { PageBack } from "@/components/site/page-back";
 import type { Metadata } from "next";
-import { ArrowLeft } from "lucide-react";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { PlayerStatsTableView } from "@/components/sports/player-stats-table";
 import { CricketNewsCard } from "@/components/sports/cricket-news-card";
 import {
@@ -58,11 +58,7 @@ export default async function PlayerPage({
 
   return (
     <div className="container py-8 md:py-12 max-w-4xl">
-      <Link href="/sports/players">
-        <Button variant="ghost" size="sm" className="gap-2 mb-6 -ml-2">
-          <ArrowLeft className="h-4 w-4" /> Search Players
-        </Button>
-      </Link>
+      <PageBack href="/sports/players" label="Players" className="mb-6" />
 
       <div className="rounded-3xl border bg-card overflow-hidden mb-8">
         <div className="p-6 md:p-8 flex flex-col sm:flex-row gap-6 items-start bg-gradient-to-br from-neon-purple/10 to-neon-cyan/5">
@@ -135,6 +131,9 @@ export default async function PlayerPage({
         <PlayerStatsTableView title="Batting Statistics" stats={batting} />
         <PlayerStatsTableView title="Bowling Statistics" stats={bowling} />
       </div>
+
+      <BandAd slotKey="horizontal" className="mt-8" />
+      <HubAdSense className="!px-0" />
 
       {news.length > 0 && (
         <section className="mt-12">

@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { PageBack } from "@/components/site/page-back";
 import type { Metadata } from "next";
-import { ArrowLeft, CalendarDays } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CalendarDays } from "lucide-react";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { SportsNav } from "@/components/sports/sports-nav";
 import { SeriesDetailTabs } from "@/components/sports/series-detail-tabs";
 import { getSeriesDetailData } from "@/lib/sports/data";
@@ -40,11 +41,7 @@ export default async function SeriesPage({
 
   return (
     <div className="container py-8 md:py-12">
-      <Link href="/sports">
-        <Button variant="ghost" size="sm" className="gap-2 mb-4 -ml-2">
-          <ArrowLeft className="h-4 w-4" /> Sports Hub
-        </Button>
-      </Link>
+      <PageBack href="/sports" label="Sports Hub" className="mb-6" />
 
       <SportsNav />
 
@@ -68,6 +65,9 @@ export default async function SeriesPage({
         news={series.news}
         seriesName={series.name}
       />
+
+      <BandAd slotKey="horizontal" className="mt-8" />
+      <HubAdSense className="!px-0" />
     </div>
   );
 }

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Trophy } from "lucide-react";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { LeaderboardView } from "@/components/leaderboard/leaderboard-view";
+import { PageBack } from "@/components/site/page-back";
 import { getLeaderboardCached } from "@/lib/data/leaderboard";
 import { buildMetadata } from "@/lib/seo";
 
@@ -18,6 +21,7 @@ export default async function LeaderboardPage() {
 
   return (
     <div className="container py-12 max-w-4xl">
+      <PageBack href="/" label="Home" className="mb-6" />
       <div className="text-center mb-10">
         <div className="flex items-center justify-center gap-2 text-neon-orange mb-2">
           <Trophy className="h-5 w-5" />
@@ -34,6 +38,8 @@ export default async function LeaderboardPage() {
       </div>
 
       <LeaderboardView creators={creators} />
+      <BandAd slotKey="horizontal" className="mt-8" />
+      <HubAdSense className="!px-0" />
     </div>
   );
 }

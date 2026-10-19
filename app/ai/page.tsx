@@ -3,7 +3,10 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Sparkles } from "lucide-react";
 import { ContentVerseAiHub } from "@/components/ai/contentverse-ai-hub";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { BandAd } from "@/components/ads/band-ad";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { PageBack } from "@/components/site/page-back";
 import { RelatedHubs } from "@/components/seo/related-hubs";
 import {
   CV_AI_KEYWORDS,
@@ -41,6 +44,8 @@ export default function ContentVerseAiPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(block) }}
         />
       ))}
+
+      <PageBack href="/" label="Home" />
 
       <header className="space-y-3">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-violet-300">
@@ -85,6 +90,8 @@ export default function ContentVerseAiPage() {
         </p>
       </HubEditorialIntro>
 
+      <BandAd slotKey="horizontal" />
+
       <Suspense
         fallback={
           <div className="rounded-3xl border border-border/50 bg-muted/10 p-10 text-sm text-muted-foreground">
@@ -95,6 +102,7 @@ export default function ContentVerseAiPage() {
         <ContentVerseAiHub />
       </Suspense>
 
+      <HubAdSense />
       <RelatedHubs current="ai" />
     </div>
   );

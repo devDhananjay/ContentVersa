@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildMetadata } from "@/lib/seo";
 import {
@@ -12,8 +11,11 @@ import {
   GuideArticleList,
   GuideRelatedHub,
 } from "@/components/guides/guides-ui";
+import { BandAd } from "@/components/ads/band-ad";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubAdSense } from "@/components/ads/hub-adsense";
+import { RelatedHubs } from "@/components/seo/related-hubs";
+import { PageTrail } from "@/components/site/page-back";
 import { Badge } from "@/components/ui/badge";
 
 type Props = { params: Promise<{ section: string }> };
@@ -52,13 +54,13 @@ export default async function GuideSectionPage({ params }: Props) {
         />
       ))}
 
-      <nav className="text-sm text-muted-foreground">
-        <Link href={GUIDES_HUB_PATH} className="hover:text-foreground">
-          India Guides
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-foreground">{section.shortTitle}</span>
-      </nav>
+      <PageTrail
+        back={{ href: GUIDES_HUB_PATH, label: "India Guides" }}
+        crumbs={[
+          { href: GUIDES_HUB_PATH, label: "India Guides" },
+          { label: section.shortTitle },
+        ]}
+      />
 
       <header className="max-w-3xl space-y-3">
         <Badge variant="neon">{section.badge}</Badge>
@@ -70,9 +72,10 @@ export default async function GuideSectionPage({ params }: Props) {
         </p>
       </header>
 
-      <HubAdSense className="my-2" />
       <GuideRelatedHub section={section} />
       <GuideArticleList section={section} />
+
+      <BandAd slotKey="horizontal" />
 
       <HubEditorialIntro title={`About ${section.shortTitle} guides`}>
         <p>
@@ -80,6 +83,8 @@ export default async function GuideSectionPage({ params }: Props) {
           key facts — written so Indian search queries can be answered in one scan.
         </p>
       </HubEditorialIntro>
+
+      <HubAdSense />
 
       <section className="max-w-3xl space-y-4">
         <h2 className="font-display text-xl font-bold">FAQ</h2>
@@ -95,6 +100,8 @@ export default async function GuideSectionPage({ params }: Props) {
           ))}
         </div>
       </section>
+
+      <RelatedHubs current="guides" />
     </div>
   );
 }

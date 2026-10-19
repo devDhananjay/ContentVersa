@@ -3,7 +3,11 @@ import Link from "next/link";
 import { ScanLine } from "lucide-react";
 import { ScreenshotScanGuide } from "@/components/moneyverse/screenshot-scan-guide";
 import { ScreenshotScanOcrTool } from "@/components/moneyverse/screenshot-scan-ocr-tool";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { MoneyverseScreenshotScanJsonLd } from "@/components/seo/moneyverse-screenshot-scan-json-ld";
+import { RelatedHubs } from "@/components/seo/related-hubs";
+import { PageBack } from "@/components/site/page-back";
 import {
   MONEYVERSE_SCREENSHOT_SCAN_PATH,
   SCREENSHOT_SCAN_EDITORIAL,
@@ -30,6 +34,8 @@ export default function ScreenshotScanOcrPage() {
   return (
     <div className="space-y-10">
       <MoneyverseScreenshotScanJsonLd />
+
+      <PageBack href="/moneyverse" label="MoneyVerse" />
 
       <header className="max-w-3xl space-y-4">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-violet-300">
@@ -68,12 +74,16 @@ export default function ScreenshotScanOcrPage() {
         </h2>
         <p className="max-w-2xl text-sm text-muted-foreground">
           Sign in, upload a clear payment success screenshot, then review every field before
-          saving. Ads stay off on this MoneyVerse tool surface.
+          saving.
         </p>
         <ScreenshotScanOcrTool />
       </section>
 
       <ScreenshotScanGuide />
+
+      <BandAd slotKey="horizontal" />
+      <HubAdSense />
+      <RelatedHubs current="moneyverse" />
     </div>
   );
 }

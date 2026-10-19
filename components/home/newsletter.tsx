@@ -1,13 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
-import { Mail, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { BookOpen, CheckCircle2, Loader2, Mail, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function Newsletter() {
+  const reduce = useReducedMotion();
   const [email, setEmail] = React.useState("");
   const [submitted, setSubmitted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -46,75 +46,99 @@ export function Newsletter() {
 
   return (
     <section id="newsletter" className="container py-12 md:py-20 scroll-mt-24">
-      <div className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-neon-blue/10 via-neon-purple/10 to-neon-pink/10 p-8 md:p-16 text-center">
+      <div className="grid gap-5 md:grid-cols-2">
         <motion.div
-          className="absolute -top-32 -left-32 w-96 h-96 bg-neon-blue/25 rounded-full blur-3xl"
-          animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -bottom-32 -right-32 w-96 h-96 bg-neon-pink/25 rounded-full blur-3xl"
-          animate={{ scale: [1.1, 1, 1.1], opacity: [0.5, 0.75, 0.5] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        />
-
-        <motion.div
-          initial={{ opacity: 0, y: 28, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          initial={reduce ? false : { opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="relative max-w-2xl mx-auto"
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="v2-surface flex flex-col justify-between p-7 md:p-8"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/40 backdrop-blur border border-border/40 text-xs mb-6">
-            <Sparkles className="h-3 w-3 text-neon-cyan" />
-            <span className="text-foreground/80">The Verse · Weekly</span>
+          <div>
+            <p className="v2-eyebrow">What you get</p>
+            <h2 className="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">
+              One card. One explainer. Every Friday.
+            </h2>
+            <ul className="mt-6 space-y-4 text-sm text-muted-foreground">
+              {[
+                "A useful India guide — SIP, schemes, jobs or gold.",
+                "What changed this week, in plain language.",
+                "No dumps, no promo blasts. Unsubscribe anytime.",
+              ].map((line) => (
+                <li key={line} className="flex gap-3">
+                  <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+                    <BookOpen className="h-3.5 w-3.5" />
+                  </span>
+                  <span className="leading-relaxed">{line}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-extrabold tracking-tight">
-            The best of <span className="text-gradient">ContentVerse India</span>,
-            <br /> straight to your inbox.
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            One newsletter every Friday. The top 5 reads, 1 creator spotlight, and where the next wave is forming. 0 spam, ever.
+          <p className="mt-8 text-xs text-muted-foreground">
+            Weekly digest · made for Indian readers
           </p>
+        </motion.div>
 
-          {submitted ? (
-            <div className="mt-8 flex items-center justify-center gap-2 text-neon-green">
-              <CheckCircle2 className="h-5 w-5" />
-              <span className="font-medium">You&apos;re in. Welcome to The Verse.</span>
-            </div>
-          ) : (
-            <form
-              onSubmit={onSubmit}
-              className="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-            >
-              <div className="relative flex-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="email"
-                  required
-                  placeholder="you@yourbrand.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-9 h-12 rounded-xl bg-background/80 backdrop-blur"
-                  disabled={loading}
-                />
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+          className="v2-raised relative overflow-hidden p-7 md:p-8"
+        >
+          <div className="v2-aurora opacity-70" aria-hidden />
+          <div
+            className="v2-dots pointer-events-none absolute inset-0 opacity-50 [mask-image:radial-gradient(70%_60%_at_80%_0%,#000,transparent)]"
+            aria-hidden
+          />
+          <div className="relative">
+            <p className="v2-eyebrow inline-flex items-center gap-1.5">
+              <Mail className="h-3.5 w-3.5" /> Newsletter
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight md:text-4xl">
+              One useful India explainer,{" "}
+              <span className="v2-gradient-text italic">every week.</span>
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground md:text-base">
+              No spam. Unsubscribe anytime.
+            </p>
+
+            {submitted ? (
+              <div className="mt-8 flex items-center gap-2 text-[hsl(var(--positive))]">
+                <CheckCircle2 className="h-5 w-5" />
+                <span className="font-medium">You&apos;re in. See you Friday.</span>
               </div>
-              <Button variant="gradient" size="lg" type="submit" disabled={loading}>
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Subscribing…
-                  </>
-                ) : (
-                  "Subscribe"
-                )}
-              </Button>
-            </form>
-          )}
-
-          <p className="mt-3 text-xs text-muted-foreground">
-            Weekly digest + trending alerts · Unsubscribe anytime
-          </p>
+            ) : (
+              <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <div className="relative min-w-0 flex-1">
+                  <Sparkles className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="email"
+                    required
+                    placeholder="you@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-12 rounded-xl bg-background pl-10"
+                    disabled={loading}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="v2-btn-primary inline-flex h-12 shrink-0 items-center justify-center rounded-xl px-6 text-sm font-semibold disabled:opacity-60"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Subscribing…
+                    </>
+                  ) : (
+                    "Subscribe"
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
         </motion.div>
       </div>
     </section>

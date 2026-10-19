@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Download, ExternalLink, Mail } from "lucide-react";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { RelatedHubs } from "@/components/seo/related-hubs";
+import { PageBack } from "@/components/site/page-back";
 import { getSiteLogoUrl } from "@/lib/branding/site-logo";
 import { CONTACT_EMAIL } from "@/lib/site-contact";
 import { buildMetadata, SITE, SITE_LOGO_URL } from "@/lib/seo";
@@ -45,6 +47,7 @@ export default async function PressKitPage() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-neon-purple/10 via-neon-blue/5 to-transparent" />
 
       <div className="container relative max-w-3xl space-y-10 py-12 md:py-16">
+        <PageBack href="/" label="Home" />
         <header className="space-y-3">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neon-purple">
             Press kit
@@ -190,15 +193,25 @@ export default async function PressKitPage() {
               . Response within 2 business days.
             </span>
           </p>
-          <Link
-            href="/press"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-neon-purple hover:underline"
-          >
-            Full press page
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-          </Link>
+          <div className="flex flex-wrap gap-4">
+            <Link
+              href="/press"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-neon-purple hover:underline"
+            >
+              Full press page
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            </Link>
+            <Link
+              href="/advertise"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-neon-purple hover:underline"
+            >
+              Advertise with us
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            </Link>
+          </div>
         </section>
 
+        <HubAdSense className="!px-0" />
         <RelatedHubs current="blogs" title="Explore the product" />
       </div>
     </div>

@@ -116,13 +116,13 @@ export function HomeStickySidebar({ sections }: HomeStickySidebarProps) {
     >
       <nav
         className={cn(
-          "pointer-events-auto relative mx-auto flex w-11 flex-col items-center gap-0.5 rounded-2xl border border-white/12 bg-background/85 py-2 shadow-[0_12px_40px_-18px_rgba(0,0,0,0.6)] backdrop-blur-xl",
+          "pointer-events-auto relative mx-auto flex w-11 flex-col items-center gap-0.5 rounded-2xl border border-border bg-card/90 py-2 shadow-[var(--v2-shadow-md)] backdrop-blur-xl",
           !pastModules && "pointer-events-none"
         )}
       >
         <span
           aria-hidden
-          className="pointer-events-none absolute bottom-3 left-1/2 top-3 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-white/25 to-transparent"
+          className="pointer-events-none absolute bottom-3 left-1/2 top-3 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent"
         />
 
         {sections.map((section) => {
@@ -138,8 +138,8 @@ export function HomeStickySidebar({ sections }: HomeStickySidebarProps) {
                 className={cn(
                   "relative z-[1] flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
                   active
-                    ? "bg-neon-cyan/15 text-neon-cyan"
-                    : "text-muted-foreground hover:bg-white/8 hover:text-foreground"
+                    ? "bg-primary/12 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
                 aria-label={section.label}
                 aria-current={active ? "true" : undefined}
@@ -148,14 +148,14 @@ export function HomeStickySidebar({ sections }: HomeStickySidebarProps) {
                 <Icon
                   className={cn(
                     "h-3.5 w-3.5 transition-transform duration-200",
-                    active && "scale-110 drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]"
+                    active && "scale-110"
                   )}
                 />
               </button>
 
               <span
                 className={cn(
-                  "pointer-events-none absolute left-[calc(100%+0.35rem)] top-1/2 z-10 flex -translate-y-1/2 items-center gap-2 rounded-lg border border-white/10 bg-background/95 px-2.5 py-1.5 shadow-lg backdrop-blur-md transition-all duration-200",
+                  "pointer-events-none absolute left-[calc(100%+0.35rem)] top-1/2 z-10 flex -translate-y-1/2 items-center gap-2 rounded-lg border border-border bg-popover px-2.5 py-1.5 shadow-lg backdrop-blur-md transition-all duration-200",
                   active
                     ? "translate-x-0 opacity-100"
                     : "-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
@@ -164,7 +164,7 @@ export function HomeStickySidebar({ sections }: HomeStickySidebarProps) {
                 <Icon
                   className={cn(
                     "h-3.5 w-3.5 shrink-0",
-                    active ? "text-neon-cyan" : "text-muted-foreground"
+                    active ? "text-primary" : "text-muted-foreground"
                   )}
                 />
                 <span

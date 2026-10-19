@@ -21,7 +21,6 @@ import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { AccessibilityHub } from "@/components/a11y/accessibility-hub";
 
 export const HELP_CHAT_OPEN_EVENT = "contentverse:help-chat-open";
-const WELCOME_SESSION_KEY = "cv-help-welcome-v1";
 
 type ChatMessage = {
   id: string;
@@ -233,20 +232,7 @@ export function HelpChatWidget() {
     }
   }, [pathname]);
 
-  React.useEffect(() => {
-    if (hidden) return;
-    if (sessionStorage.getItem(WELCOME_SESSION_KEY)) return;
-    // Auto-open welcome chat on desktop only — mobile users open via the button.
-    if (window.matchMedia("(max-width: 767px)").matches) return;
-
-    const timer = window.setTimeout(() => {
-      sessionStorage.setItem(WELCOME_SESSION_KEY, "1");
-      setOpen(true);
-      void loadWelcome();
-    }, 2200);
-
-    return () => window.clearTimeout(timer);
-  }, [hidden, loadWelcome]);
+  // The assistant stays closed until the visitor opens it (no auto-open over page content).
 
   React.useEffect(() => {
     if (open && messages.length === 0 && !welcomeDone && !loading) {

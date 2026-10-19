@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MoneyVerseHub } from "@/components/moneyverse/moneyverse-hub";
 import { MoneyTopicsGrid } from "@/components/finance/money-topics-grid";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
@@ -67,6 +68,8 @@ export default function MoneyVersePage() {
       </HubEditorialIntro>
       <MoneyVerseHub />
       <MoneyTopicsGrid title="Strengthen your money knowledge" />
+      {/* After money guides grid — not inside expense/OCR tool UI */}
+      <HubAdSense />
       <RelatedHubs current="moneyverse" contained />
     </div>
   );

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PrivateJobsBoard } from "@/components/jobs/private-jobs-board";
 import { JobsSectionHeader } from "@/components/jobs/jobs-section-header";
 import { PRIVATE_JOBS } from "@/lib/jobs/private-jobs";
@@ -33,6 +34,7 @@ export default function PrivateJobsPage() {
       />
 
       <PrivateJobsBoard jobs={PRIVATE_JOBS} />
+      <HubAdSense />
     </div>
   );
 }

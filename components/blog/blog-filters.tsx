@@ -38,14 +38,22 @@ export function BlogFilters({
   const sp = useSearchParams();
   const [q, setQ] = React.useState(defaultQuery);
 
-  const setParam = React.useCallback(
-    (key: string, value?: string) => {
+  // Keep search box in sync when URL changes (back/forward, chip clears)
+  React.useEffect(() => {
+    setQ(defaultQuery);
+  }, [defaultQuery]);
+
+  const setParams = React.useCallback(
+    (patch: Record<string, string | undefined>) => {
       const next = new URLSearchParams(sp?.toString() || "");
-      if (value) next.set(key, value);
-      else next.delete(key);
-      // Keep `limit`; reset page when filters change
-      if (key !== "page" && key !== "limit") next.delete("page");
-      router.push(`/blogs?${next.toString()}`);
+      for (const [key, value] of Object.entries(patch)) {
+        if (value) next.set(key, value);
+        else next.delete(key);
+      }
+      // Reset page when filters change (keep limit)
+      if (!("page" in patch)) next.delete("page");
+      const qs = next.toString();
+      router.push(qs ? `/blogs?${qs}` : "/blogs");
     },
     [router, sp]
   );
@@ -54,10 +62,11 @@ export function BlogFilters({
     e.preventDefault();
     const trimmed = q.trim();
     setQ(trimmed);
-    setParam("q", trimmed || undefined);
+    setParams({ q: trimmed || undefined });
   };
 
   const activeCategory = defaultCategory;
+  const activeSort = defaultSort || "trending";
 
   return (
     <div className="mb-6 space-y-4">
@@ -73,25 +82,26 @@ export function BlogFilters({
             placeholder="Search articles, creators, tags…"
             className="pl-9 h-9 text-sm"
           />
-          {q && (
+          {q ? (
             <button
               type="button"
               onClick={() => {
                 setQ("");
-                setParam("q", undefined);
+                setParams({ q: undefined });
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2"
+              aria-label="Clear search"
             >
               <X className="h-4 w-4 text-muted-foreground" />
             </button>
-          )}
+          ) : null}
         </div>
         <div className="flex gap-2 shrink-0">
           <Select
-            defaultValue={defaultSort}
-            onValueChange={(v) => setParam("sort", v)}
+            value={activeSort}
+            onValueChange={(v) => setParams({ sort: v === "trending" ? undefined : v })}
           >
-            <SelectTrigger className="w-full sm:w-36 h-9 text-sm">
+            <SelectTrigger className="w-full sm:w-44 h-9 text-sm">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -111,7 +121,7 @@ export function BlogFilters({
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
         <button
           type="button"
-          onClick={() => setParam("category", undefined)}
+          onClick={() => setParams({ category: undefined })}
           className={cn(
             "shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors",
             !activeCategory
@@ -127,11 +137,14 @@ export function BlogFilters({
             <button
               key={c.slug}
               type="button"
-              onClick={() => setParam("category", active ? undefined : c.slug)}
+              onClick={() =>
+                setParams({ category: active ? undefined : c.slug })
+              }
               className={cn(
                 "shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border transition-all",
                 active
-                  ? "bg-gradient-to-r text-white border-transparent shadow-neon " + c.color
+                  ? "bg-gradient-to-r text-white border-transparent shadow-neon " +
+                    c.color
                   : "bg-card hover:border-foreground/40"
               )}
             >
@@ -140,6 +153,37 @@ export function BlogFilters({
           );
         })}
       </div>
+
+      {(activeCategory || defaultQuery || (activeSort && activeSort !== "trending")) && (
+        <p className="text-xs text-muted-foreground">
+          Filters:
+          {activeCategory ? (
+            <span className="ml-1 font-medium text-foreground">
+              {CATEGORIES.find((c) => c.slug === activeCategory)?.name || activeCategory}
+            </span>
+          ) : null}
+          {defaultQuery ? (
+            <span className="ml-1 font-medium text-foreground">
+              · “{defaultQuery}”
+            </span>
+          ) : null}
+          {activeSort && activeSort !== "trending" ? (
+            <span className="ml-1 font-medium text-foreground">
+              · {SORTS.find((s) => s.value === activeSort)?.label || activeSort}
+            </span>
+          ) : null}
+          <button
+            type="button"
+            className="ml-2 underline underline-offset-2 hover:text-foreground"
+            onClick={() => {
+              setQ("");
+              router.push("/blogs");
+            }}
+          >
+            Clear all
+          </button>
+        </p>
+      )}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { BandAd } from "@/components/ads/band-ad";
+import { PageBack } from "@/components/site/page-back";
 import { StockChart } from "@/components/finance/stock-chart";
 import { getStockDetailCached } from "@/lib/finance/data";
 import { displaySymbol } from "@/lib/finance/transformers";
@@ -36,12 +37,7 @@ export default async function StockDetailPage({ params }: PageProps) {
 
   return (
     <div className="container py-8 max-w-4xl">
-      <Link
-        href="/finance"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6"
-      >
-        <ArrowLeft className="h-4 w-4" /> Back to Finance Hub
-      </Link>
+      <PageBack href="/finance" label="Finance Hub" className="mb-6" />
 
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
@@ -72,6 +68,9 @@ export default async function StockDetailPage({ params }: PageProps) {
           format="compact"
         />
       </div>
+
+      <BandAd slotKey="horizontal" className="mt-8" />
+      <HubAdSense className="!px-0" />
     </div>
   );
 }

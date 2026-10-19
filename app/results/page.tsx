@@ -4,7 +4,8 @@ import { SarkariResultsHub } from "@/components/results/sarkari-results-hub";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
-import { DisableAutoAds } from "@/components/ads/disable-auto-ads";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { PageBack } from "@/components/site/page-back";
 import { hubSeoJsonLdBlocks, RESULTS_HUB_SEO } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
 
@@ -34,8 +35,8 @@ export const metadata: Metadata = buildMetadata({
 export default function ResultsPage() {
   return (
     <div className="container max-w-5xl space-y-8 py-8 md:py-10">
-      <DisableAutoAds />
       <HubJsonLd blocks={hubSeoJsonLdBlocks(RESULTS_HUB_SEO)} />
+      <PageBack href="/" label="Home" />
       <HubEditorialIntro title="Official exam & board result portals">
         <p>
           ContentVerse India links you to{" "}
@@ -61,7 +62,7 @@ export default function ResultsPage() {
       </HubEditorialIntro>
 
       <SarkariResultsHub />
-
+      <HubAdSense />
       <RelatedHubs current="results" />
     </div>
   );

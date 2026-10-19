@@ -3,8 +3,11 @@ import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { HuidVerificationGuide } from "@/components/goldverse/huid-verification-guide";
 import { HuidVerifyPanel } from "@/components/goldverse/huid-verify-panel";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { HuidVerificationJsonLd } from "@/components/seo/huid-verification-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
+import { PageBack } from "@/components/site/page-back";
 import { HUID_SEO_KEYWORDS, HUID_VERIFICATION_PATH } from "@/lib/goldverse/huid-seo";
 import { buildMetadata } from "@/lib/seo";
 
@@ -24,6 +27,8 @@ export default function HuidVerificationPage() {
   return (
     <div className="container space-y-10 py-8 md:py-10">
       <HuidVerificationJsonLd />
+
+      <PageBack href="/goldverse" label="GoldVerse" />
 
       <header className="max-w-3xl space-y-3">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-400">
@@ -57,6 +62,8 @@ export default function HuidVerificationPage() {
 
       <HuidVerificationGuide />
 
+      <BandAd slotKey="horizontal" />
+      <HubAdSense />
       <RelatedHubs current="goldverse" />
     </div>
   );

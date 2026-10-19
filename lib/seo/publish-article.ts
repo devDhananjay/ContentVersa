@@ -3,7 +3,7 @@ import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { CATEGORIES } from "@/lib/data/categories";
 import type { GeneratedArticle } from "@/lib/seo/article-generator";
 import { resolveArticleCoverImage } from "@/lib/seo/article-cover";
-import { prepareAiFreePublishFields } from "@/lib/seo/ai-free-content";
+import { refineForPublish } from "@/lib/seo/refine-for-publish";
 import { readingTime, slugify } from "@/lib/utils";
 
 async function ensureCategory(slug: string) {
@@ -75,11 +75,13 @@ export async function publishGeneratedArticle(input: {
 
   if (wantPublish) {
     try {
-      const cleaned = prepareAiFreePublishFields({
+      const cleaned = await refineForPublish({
         title,
         excerpt,
         content,
         metaDescription,
+        categorySlug: input.categorySlug,
+        searchIntent: input.searchIntent,
       });
       title = cleaned.title;
       excerpt = cleaned.excerpt || excerpt;

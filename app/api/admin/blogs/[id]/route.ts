@@ -9,10 +9,11 @@ import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
 import { isAdEligibleByQuality } from "@/lib/seo/crawl-policy";
 import { defaultAdEligibleOnApprove } from "@/lib/seo/creator-quality";
 import { getCreatorQualityForUser } from "@/lib/seo/creator-quality-db";
+import { isAiFreePublishError } from "@/lib/seo/ai-free-content";
 import {
-  isAiFreePublishError,
-  prepareAiFreePublishFields,
-} from "@/lib/seo/ai-free-content";
+  isRefinePublishError,
+  refineForPublish,
+} from "@/lib/seo/refine-for-publish";
 
 const coverImageSchema = z
   .string()
@@ -149,7 +150,10 @@ export async function PATCH(
     }
 
     const { id } = await ctx.params;
-    const existing = await prisma.blog.findUnique({ where: { id } });
+    const existing = await prisma.blog.findUnique({
+      where: { id },
+      include: { category: { select: { name: true, slug: true } } },
+    });
     if (!existing) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
@@ -178,15 +182,21 @@ export async function PATCH(
     }
 
     let categoryId: string | null | undefined = undefined;
+    let categoryName = existing.category?.name ?? null;
+    let categorySlug = existing.category?.slug ?? null;
     if (parsed.category !== undefined) {
       if (parsed.category) {
         const cat = await prisma.category.findUnique({
           where: { slug: parsed.category },
-          select: { id: true },
+          select: { id: true, name: true, slug: true },
         });
         categoryId = cat?.id ?? null;
+        categoryName = cat?.name ?? null;
+        categorySlug = cat?.slug ?? parsed.category;
       } else {
         categoryId = null;
+        categoryName = null;
+        categorySlug = null;
       }
     }
 
@@ -199,14 +209,17 @@ export async function PATCH(
     let content = parsed.content;
     let metaDescription = parsed.metaDescription;
 
-    // Mandatory AI-free gate whenever content is going (or staying) live.
+    // Mandatory refine + AI-free gate whenever content is going (or staying) live.
     if (status === BlogStatus.PUBLISHED) {
       try {
-        const cleaned = prepareAiFreePublishFields({
+        const cleaned = await refineForPublish({
           title,
           excerpt,
           content,
           metaDescription,
+          categoryName,
+          categorySlug,
+          searchIntent: existing.metaKeywords,
         });
         title = cleaned.title;
         excerpt = cleaned.excerpt || "";
@@ -220,6 +233,12 @@ export async function PATCH(
               code: err.code,
               hits: err.hits,
             },
+            { status: 422 }
+          );
+        }
+        if (isRefinePublishError(err)) {
+          return NextResponse.json(
+            { error: err.message, code: err.code, reason: err.reason },
             { status: 422 }
           );
         }

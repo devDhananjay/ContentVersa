@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, FileSearch, ScanLine, Wallet } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { PageBack } from "@/components/site/page-back";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1600";
@@ -32,6 +33,7 @@ export function MoneyVerseBrowseShell({ children }: { children: React.ReactNode 
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/80 via-background/90 to-background/70" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(52,211,153,0.12),transparent_55%)]" />
         <div className="container relative flex h-full flex-col justify-end pb-6">
+          <PageBack href="/" label="Home" tone="onDark" className="mb-3" />
           <Badge
             variant="outline"
             className="mb-2 h-5 w-fit gap-1 border-emerald-500/40 text-[10px] text-emerald-200"

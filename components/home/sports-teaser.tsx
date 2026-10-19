@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Medal } from "lucide-react";
+import { MrecAd } from "@/components/ads/mrec-ad";
 import { MatchCard } from "@/components/sports/match-card";
 import { CricketNewsCard } from "@/components/sports/cricket-news-card";
 import { Button } from "@/components/ui/button";
@@ -37,22 +38,31 @@ export function SportsTeaser({ data }: SportsTeaserProps) {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {featuredMatches.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start auto-rows-min">
-            {featuredMatches.map((match) => (
-              <MatchCard key={match.id} match={match} compact />
-            ))}
-          </div>
-        )}
+      {/* Score cards with two MRECs stacked underneath; news on the right */}
+      <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
+        <div className="min-w-0 flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          {featuredMatches.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start auto-rows-min">
+                {featuredMatches.map((match) => (
+                  <MatchCard key={match.id} match={match} compact />
+                ))}
+              </div>
+              <MrecAd slotKey="hub" />
+              <div className="hidden xl:block">
+                <MrecAd slotKey="inArticle" />
+              </div>
+            </div>
+          )}
 
-        {data.news.length > 0 && (
-          <div className="grid grid-cols-1 gap-4 items-start">
-            {data.news.slice(0, 2).map((item) => (
-              <CricketNewsCard key={item.id} item={item} />
-            ))}
-          </div>
-        )}
+          {data.news.length > 0 && (
+            <div className="grid grid-cols-1 gap-4 items-start">
+              {data.news.slice(0, 2).map((item) => (
+                <CricketNewsCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mt-6 md:hidden">

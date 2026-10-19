@@ -15,6 +15,10 @@ import {
   TrendBriefing,
   TrendBriefingFallback,
 } from "@/components/trending/trend-briefing";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { MultiplexAd } from "@/components/ads/multiplex-ad";
+import { PageTrail } from "@/components/site/page-back";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -108,17 +112,14 @@ export default async function TrendingTopicPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       ) : null}
-      <nav className="text-sm text-muted-foreground">
-        <Link href="/" className="hover:text-foreground">
-          Home
-        </Link>
-        <span className="mx-2">/</span>
-        <Link href="/trending" className="hover:text-foreground">
-          Trending
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-foreground line-clamp-1">{title}</span>
-      </nav>
+      <PageTrail
+        back={{ href: "/trending", label: "Trending" }}
+        crumbs={[
+          { href: "/", label: "Home" },
+          { href: "/trending", label: "Trending" },
+          { label: title },
+        ]}
+      />
 
       <header className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -206,6 +207,10 @@ export default async function TrendingTopicPage({ params }: Props) {
           </p>
         </section>
       ) : null}
+
+      <BandAd slotKey="horizontal" />
+      <HubAdSense className="!px-0" />
+      <MultiplexAd />
 
       <section className="rounded-2xl border border-border/50 bg-gradient-to-br from-orange-500/10 to-pink-500/5 p-5 space-y-3">
         <h2 className="font-display text-lg font-bold">Have a doubt?</h2>

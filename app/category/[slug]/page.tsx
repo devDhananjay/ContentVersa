@@ -12,6 +12,9 @@ import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getTopWritersForCategoryCached } from "@/lib/data/top-writers";
 import { getCategoryFeed } from "@/lib/feeds/data";
 import { CategorySubscribeButton } from "@/components/category/category-subscribe-button";
+import { GoogleAdSense } from "@/components/ads/google-adsense";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { PageBack } from "@/components/site/page-back";
 import { buildMetadata, SITE } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -93,6 +96,7 @@ export default async function CategoryPage({
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/40" />
         <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/20 via-neon-purple/20 to-neon-pink/20 mix-blend-overlay" />
         <div className="container relative h-full flex flex-col justify-end pb-10 sm:pb-12">
+          <PageBack href="/blogs" label="Blogs" tone="onDark" className="mb-3" />
           <Badge variant="gradient" className="w-fit mb-3">
             Category
           </Badge>
@@ -146,12 +150,21 @@ export default async function CategoryPage({
               </Link>
             </div>
           )}
+
+          {blogs.length > 0 ? <HubAdSense /> : null}
         </div>
 
         <aside className="space-y-6">
           <div className="rounded-2xl border bg-card p-5">
             <h3 className="font-display font-semibold mb-4">Top writers</h3>
             <TopWritersPanel writers={topWriters} />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground/70">
+              Advertisement
+            </p>
+            <GoogleAdSense slotKey="sidebar" width={300} height={250} />
           </div>
 
           <div className="rounded-2xl border bg-card p-5">

@@ -974,6 +974,7 @@ export const SITE_MAP_FOOTER = {
         { label: "Careers", href: "/careers" },
         { label: "Press", href: "/press" },
         { label: "Press Kit", href: "/press-kit" },
+        { label: "Advertise", href: "/advertise" },
         { label: "Contact", href: "/contact" },
       ],
     },

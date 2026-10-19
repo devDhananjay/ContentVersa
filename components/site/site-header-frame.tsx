@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import { isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
 import { Navbar } from "./navbar";
 import { HeaderHeightSync } from "./header-height-sync";
 import { cn } from "@/lib/utils";
@@ -16,7 +18,11 @@ export function SiteHeaderFrame({
   const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const isHome = pathname === "/";
-  const immersive = isHome && !scrolled;
+  const { resolvedTheme } = useTheme();
+  // Immersive (white-on-video) header only exists in dark mode with the hero
+  // video enabled. Light mode keeps the normal paper header over the aurora.
+  const immersive =
+    isHome && !scrolled && isHomeHeroVideoEnabled() && resolvedTheme !== "light";
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 56);
@@ -33,7 +39,7 @@ export function SiteHeaderFrame({
         "fixed top-0 inset-x-0 z-50 overflow-x-hidden transition-[background-color,box-shadow,border-color] duration-500",
         immersive
           ? "border-b border-white/10 bg-gradient-to-b from-black/70 via-black/35 to-transparent shadow-none"
-          : "border-b border-border/50 bg-background/88 backdrop-blur-2xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.45)]"
+          : "border-b border-border/70 bg-background shadow-[0_8px_30px_-14px_hsl(235_30%_20%/0.18)] dark:shadow-[0_10px_40px_-12px_rgba(0,0,0,0.65)]"
       )}
     >
       <HeaderHeightSync />

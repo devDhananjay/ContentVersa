@@ -9,6 +9,8 @@ import { FollowButton } from "@/components/profile/follow-button";
 import { AUTHORS, BLOGS, type Author, type Blog } from "@/lib/data/blogs";
 import { getBlogsForProfile } from "@/lib/data/blog-db";
 import { formatNumber, getInitials } from "@/lib/utils";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { PageBack } from "@/components/site/page-back";
 import { buildMetadata } from "@/lib/seo";
 import { isIndexableProfile } from "@/lib/seo/crawl-policy";
 
@@ -66,6 +68,7 @@ export default async function ProfilePage({
         <div className="absolute inset-0 grid-noise opacity-30" />
       </div>
       <div className="container -mt-20 relative">
+        <PageBack href="/blogs" label="Blogs" className="mb-4" />
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div className="flex items-end gap-5">
             <div className="relative">
@@ -140,6 +143,7 @@ export default async function ProfilePage({
               </p>
             )}
           </div>
+          <HubAdSense className="!px-0" />
         </div>
       </div>
     </div>

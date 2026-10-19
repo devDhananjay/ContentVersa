@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { PageBack } from "@/components/site/page-back";
 import { VisualSitemap } from "@/components/site/visual-sitemap";
 import { buildMetadata } from "@/lib/seo";
 
@@ -12,6 +14,7 @@ export const metadata: Metadata = buildMetadata({
 export default function SiteMapPage() {
   return (
     <div className="container py-12 md:py-16 max-w-7xl">
+      <PageBack href="/" label="Home" className="mb-6" />
       <header className="mb-10">
         <p className="text-sm font-semibold uppercase tracking-widest text-neon-purple mb-2">
           Navigation
@@ -24,6 +27,7 @@ export default function SiteMapPage() {
         </p>
       </header>
       <VisualSitemap />
+      <HubAdSense className="!px-0 mt-10" />
     </div>
   );
 }

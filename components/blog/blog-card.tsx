@@ -39,7 +39,7 @@ export function BlogCard({
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.65, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
         whileHover={{ y: -4 }}
-        className="group relative col-span-2 row-span-2 overflow-hidden rounded-3xl border bg-card hover:shadow-neon transition-shadow duration-500"
+        className="group relative col-span-1 overflow-hidden rounded-3xl border bg-card transition-shadow duration-500 hover:shadow-neon md:col-span-2 md:row-span-2"
       >
         <Link href={`/blog/${blog.slug}`} className="block">
           <div className="relative aspect-[16/10] overflow-hidden">

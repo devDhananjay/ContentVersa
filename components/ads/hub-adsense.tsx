@@ -1,17 +1,28 @@
-import { GoogleAdSense } from "@/components/ads/google-adsense";
+import { MrecAd } from "@/components/ads/mrec-ad";
+import { BandAd } from "@/components/ads/band-ad";
+import { cn } from "@/lib/utils";
 
 /**
- * Hub placements only — under editorial intros, never beside nav, CTAs,
- * calculator forms, or tool inputs (AdSense UX / invalid click risk).
+ * Hub placements — MREC or wide horizontal band.
+ * Both collapse when AdSense returns no creative.
  */
-export function HubAdSense({ className }: { className?: string }) {
+export function HubAdSense({
+  className,
+  variant = "mrec",
+}: {
+  className?: string;
+  variant?: "mrec" | "band";
+}) {
+  if (variant === "band") {
+    return <BandAd slotKey="horizontal" className={className} />;
+  }
+
   return (
-    <div className={className ?? "container my-8"} data-cv-ad-zone="hub-editorial">
-      <GoogleAdSense
-        slotKey="hub"
-        format="horizontal"
-        className="mx-auto max-w-3xl"
-      />
+    <div
+      className={cn("container flex justify-center py-4", className)}
+      data-cv-ad-zone="hub-editorial"
+    >
+      <MrecAd slotKey="hub" />
     </div>
   );
 }

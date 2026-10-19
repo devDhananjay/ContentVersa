@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PlayerSearch } from "@/components/sports/player-search";
 import { buildMetadata } from "@/lib/seo";
 
@@ -30,6 +31,7 @@ export default async function PlayersSearchPage({
         </p>
       </div>
       <PlayerSearch autoFocus initialQuery={q ?? ""} />
+      <HubAdSense className="!px-0 mt-8" />
     </div>
   );
 }

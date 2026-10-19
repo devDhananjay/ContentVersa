@@ -19,6 +19,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Reveal } from "@/components/home/motion";
+import { MrecAd } from "@/components/ads/mrec-ad";
 import type { HomeModulePreviews } from "@/lib/home/module-previews";
 import { TOOL_REGISTRY } from "@/lib/tools/registry";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,10 @@ type ModuleCard = {
 };
 
 const TOOLS_COUNT = TOOL_REGISTRY.length;
+
+/** Theme-safe text colour: blends the module hue toward the foreground. */
+const textTone = (hex: string) =>
+  `color-mix(in srgb, ${hex} 62%, hsl(var(--foreground)))`;
 
 const MODULES: ModuleCard[] = [
   {
@@ -215,6 +220,7 @@ function ModuleCardView({
   preview?: string | null;
 }) {
   const Icon = module.icon;
+  const tone = textTone(module.color);
 
   return (
     <motion.article
@@ -224,11 +230,11 @@ function ModuleCardView({
       transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.25), ease: [0.22, 1, 0.36, 1] }}
       whileHover={reduce ? undefined : { y: -4, transition: { type: "spring", stiffness: 380, damping: 22 } }}
       className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-card/90 p-5 shadow-lg backdrop-blur-sm md:p-6",
+        "group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card p-5 md:p-6",
         module.group === "tools" && "sm:col-span-2 lg:col-span-3"
       )}
       style={{
-        boxShadow: `0 0 0 1px ${module.color}22, 0 18px 40px -20px ${module.glow}`,
+        boxShadow: `var(--v2-shadow-md), 0 18px 40px -22px ${module.glow}`,
       }}
     >
       <div
@@ -238,16 +244,16 @@ function ModuleCardView({
         }}
       />
       <div
-        className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-30 blur-3xl transition duration-500 group-hover:opacity-60"
+        className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-3xl transition duration-500 group-hover:opacity-45"
         style={{ background: module.color }}
       />
 
       <Link href={module.href} className="relative flex flex-1 flex-col">
         <div className="flex items-start justify-between gap-3">
           <span
-            className="flex h-12 w-12 items-center justify-center rounded-2xl ring-1 ring-white/10 transition duration-300 group-hover:scale-105"
+            className="flex h-12 w-12 items-center justify-center rounded-2xl ring-1 ring-border transition duration-300 group-hover:scale-105"
             style={{
-              color: module.color,
+              color: tone,
               background: `linear-gradient(135deg, ${module.color}33, ${module.color}0d)`,
             }}
           >
@@ -258,7 +264,7 @@ function ModuleCardView({
               <span
                 className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
                 style={{
-                  color: module.color,
+                  color: tone,
                   borderColor: `${module.color}55`,
                   background: `${module.color}18`,
                 }}
@@ -273,7 +279,7 @@ function ModuleCardView({
               <span
                 className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
                 style={{
-                  color: module.color,
+                  color: tone,
                   borderColor: `${module.color}44`,
                   background: `${module.color}14`,
                 }}
@@ -284,7 +290,7 @@ function ModuleCardView({
           </div>
         </div>
 
-        <h3 className="mt-4 font-display text-xl font-extrabold tracking-tight md:text-2xl">
+        <h3 className="mt-4 font-display text-xl font-bold tracking-tight md:text-2xl">
           {module.name}
         </h3>
         <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
@@ -295,7 +301,7 @@ function ModuleCardView({
           <p
             className="mt-3 rounded-lg border px-2.5 py-1.5 text-xs font-semibold tabular-nums"
             style={{
-              color: module.color,
+              color: tone,
               borderColor: `${module.color}33`,
               background: `${module.color}10`,
             }}
@@ -306,7 +312,7 @@ function ModuleCardView({
 
         <span
           className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold"
-          style={{ color: module.color }}
+          style={{ color: tone }}
         >
           Open {module.name}
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -316,7 +322,7 @@ function ModuleCardView({
       {module.links?.length ? (
         <div
           className={cn(
-            "relative mt-4 flex flex-wrap gap-2 border-t border-white/5 pt-4",
+            "relative mt-4 flex flex-wrap gap-2 border-t border-border/60 pt-4",
             module.group === "tools" && "sm:flex-nowrap"
           )}
         >
@@ -324,7 +330,7 @@ function ModuleCardView({
             <Link
               key={link.href}
               href={link.href}
-              className="inline-flex items-center rounded-lg border border-white/10 bg-background/50 px-2.5 py-1.5 text-xs font-medium text-foreground/85 transition hover:border-white/25 hover:bg-background/80 hover:text-foreground"
+              className="inline-flex items-center rounded-full border border-border bg-background/60 px-3 py-1.5 text-xs font-medium text-foreground/85 transition hover:border-primary/40 hover:bg-background hover:text-foreground"
             >
               {link.label}
             </Link>
@@ -346,22 +352,22 @@ export function PlatformModulesStrip({
   return (
     <section
       id="explore-modules"
-      className="relative overflow-hidden border-y border-border/40"
+      className="relative overflow-hidden border-y border-border/60 bg-muted/40"
       aria-labelledby="platform-modules-heading"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_0%,rgba(59,130,246,0.12),transparent_55%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_35%_at_85%_80%,rgba(52,211,153,0.08),transparent_50%)]" />
-      <div className="pointer-events-none absolute inset-0 grid-noise opacity-[0.12]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_0%,hsl(var(--primary)/0.12),transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_35%_at_85%_80%,hsl(var(--saffron)/0.1),transparent_50%)]" />
+      <div className="v2-dots pointer-events-none absolute inset-0 opacity-60 [mask-image:linear-gradient(to_bottom,#000,transparent_70%)]" />
 
       <div className="container relative py-14 md:py-20">
         <Reveal>
           <header className="mx-auto mb-8 max-w-2xl text-center md:mb-10">
-            <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-card/70 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
+            <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
               All modules
             </p>
             <h2
               id="platform-modules-heading"
-              className="font-display text-3xl font-extrabold tracking-tight md:text-4xl lg:text-5xl"
+              className="font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl lg:text-5xl"
             >
               Everything on <span className="text-gradient">ContentVerse India</span>
             </h2>
@@ -380,7 +386,7 @@ export function PlatformModulesStrip({
               <a
                 key={group.id}
                 href={`#modules-${group.id}`}
-                className="inline-flex shrink-0 items-center rounded-full border border-white/10 bg-card/80 px-3.5 py-2 text-xs font-semibold backdrop-blur transition hover:border-white/25 hover:bg-card"
+                className="inline-flex shrink-0 items-center rounded-full border border-border bg-card px-3.5 py-2 text-xs font-semibold shadow-sm transition hover:border-primary/40"
               >
                 {group.title}
               </a>
@@ -391,6 +397,9 @@ export function PlatformModulesStrip({
         <div className="space-y-12">
           {GROUPS.map((group) => {
             const cards = MODULES.filter((module) => module.group === group.id);
+            // Empty cells in the last row on desktop (tools cards are full-width)
+            const emptyCells =
+              group.id === "tools" ? 0 : (3 - (cards.length % 3)) % 3;
             return (
               <div key={group.id} id={`modules-${group.id}`} className="scroll-mt-24">
                 <div className="mb-4 flex items-end justify-between gap-3">
@@ -398,7 +407,7 @@ export function PlatformModulesStrip({
                     <h3 className="font-display text-lg font-bold md:text-xl">{group.title}</h3>
                     <p className="text-sm text-muted-foreground">{group.subtitle}</p>
                   </div>
-                  <span className="hidden h-px flex-1 bg-gradient-to-r from-white/15 to-transparent sm:block" />
+                  <span className="hidden h-px flex-1 bg-gradient-to-r from-border to-transparent sm:block" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {cards.map((module, index) => (
@@ -410,6 +419,16 @@ export function PlatformModulesStrip({
                       preview={module.previewKey ? previews?.[module.previewKey] : null}
                     />
                   ))}
+                  {emptyCells > 0 ? (
+                    <div
+                      className={cn(
+                        "hidden items-center justify-center lg:flex",
+                        emptyCells === 2 ? "lg:col-span-2" : "lg:col-span-1"
+                      )}
+                    >
+                      <MrecAd slotKey="hub" />
+                    </div>
+                  ) : null}
                 </div>
               </div>
             );
@@ -417,9 +436,9 @@ export function PlatformModulesStrip({
         </div>
 
         <Reveal delay={0.1}>
-          <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-2xl border border-white/10 bg-card/80 px-6 py-5 backdrop-blur sm:flex-row sm:items-center">
+          <div className="mt-10 flex flex-col items-start justify-between gap-4 v2-raised px-6 py-5 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-neon-blue via-neon-purple to-neon-pink text-white">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                 <PenLine className="h-5 w-5" />
               </span>
               <div>
@@ -431,7 +450,7 @@ export function PlatformModulesStrip({
             </div>
             <Link
               href="/dashboard/create"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-neon-purple/25 transition hover:brightness-110"
+              className="inline-flex items-center gap-2 v2-btn-primary rounded-full px-5 py-2.5 text-sm font-bold transition"
             >
               Start writing
               <ArrowRight className="h-4 w-4" />

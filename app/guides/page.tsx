@@ -11,6 +11,7 @@ import { RelatedHubs } from "@/components/seo/related-hubs";
 import { TopicClustersHubStrip } from "@/components/seo/topic-cluster-links";
 import { YmylDisclaimer } from "@/components/seo/ymyl-disclaimer";
 import { HubAdSense } from "@/components/ads/hub-adsense";
+import { PageBack } from "@/components/site/page-back";
 import { Badge } from "@/components/ui/badge";
 import {
   GUIDES_HUB_FAQS,
@@ -53,6 +54,8 @@ export default function GuidesHubPage() {
     <div className="container space-y-10 py-8 md:py-10">
       <HubJsonLd blocks={blocks} />
 
+      <PageBack href="/" label="Home" />
+
       <header className="max-w-3xl space-y-3">
         <Badge variant="neon" className="gap-1">
           <BookOpen className="h-3 w-3" />
@@ -84,8 +87,6 @@ export default function GuidesHubPage() {
         </p>
       </header>
 
-      <HubAdSense className="my-2" />
-
       <GuidesSectionGrid />
 
       <TopThirtyGuidesGrid />
@@ -111,6 +112,8 @@ export default function GuidesHubPage() {
           apply or pay anyone.
         </p>
       </HubEditorialIntro>
+
+      <HubAdSense />
 
       <RelatedHubs current="guides" />
     </div>

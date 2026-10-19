@@ -11,12 +11,13 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
         gradient:
-          "bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink text-white shadow-neon hover:shadow-lg hover:brightness-110",
+          "bg-gradient-to-b from-primary/90 to-primary text-primary-foreground shadow-neon hover:brightness-110",
         outline:
-          "border border-input bg-background hover:bg-accent/10 hover:text-accent",
+          "border border-input bg-card hover:bg-muted hover:text-foreground shadow-sm",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent/10 hover:text-accent",
+        ghost: "hover:bg-muted hover:text-foreground",
+        soft: "bg-primary/10 text-primary hover:bg-primary/15",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         link: "text-primary underline-offset-4 hover:underline",

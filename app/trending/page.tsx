@@ -3,7 +3,9 @@ import Link from "next/link";
 import { Flame } from "lucide-react";
 import { buildMetadata, SITE } from "@/lib/seo";
 import { getTrendingHub } from "@/lib/trending/hub";
+import { BandAd } from "@/components/ads/band-ad";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { PageBack } from "@/components/site/page-back";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +61,8 @@ export default async function TrendingHubPage() {
     <div className="container max-w-5xl space-y-8 py-8 md:py-10">
       <HubJsonLd blocks={blocks} />
 
+      <PageBack href="/" label="Home" />
+
       <header className="space-y-3">
         <Badge variant="neon" className="gap-1">
           <Flame className="h-3 w-3" />
@@ -110,6 +114,8 @@ export default async function TrendingHubPage() {
           .
         </p>
       </HubEditorialIntro>
+
+      <BandAd slotKey="horizontal" />
 
       <TrendingHub
         spikes={spikes}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { PageBack } from "@/components/site/page-back";
 import { FinanceHubLive } from "./finance-hub-live";
 import { getFinanceHubDataCached } from "@/lib/finance/data";
 
@@ -27,6 +28,7 @@ export async function FinanceBrowseShell({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/60" />
         <div className="container relative h-full flex flex-col justify-end pb-6">
+          <PageBack href="/" label="Home" tone="onDark" className="mb-3" />
           <Badge variant="outline" className="w-fit mb-2 text-[10px] gap-1 h-5">
             <TrendingUp className="h-2.5 w-2.5" /> Indian Markets
           </Badge>

@@ -3,6 +3,10 @@ import Image from "next/image";
 import { Metadata } from "next";
 import { CATEGORIES, categoryPageHref } from "@/lib/data/categories";
 import { getCategoriesWithCountsHybrid } from "@/lib/data/blog-db";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { MultiplexAd } from "@/components/ads/multiplex-ad";
+import { PageBack } from "@/components/site/page-back";
 import { buildMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +25,7 @@ export default async function CategoriesIndex() {
 
   return (
     <div className="container py-12 md:py-20">
+      <PageBack href="/" label="Home" className="mb-6" />
       <div className="text-center max-w-3xl mx-auto mb-12">
         <span className="text-sm font-semibold uppercase tracking-widest text-neon-cyan">
           Explore
@@ -32,6 +37,9 @@ export default async function CategoriesIndex() {
           Twenty-one hand-curated spaces. Each with its own banner, top writers and trending takes.
         </p>
       </div>
+
+      <BandAd slotKey="horizontal" />
+      <HubAdSense className="!px-0" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {CATEGORIES.map((cat) => {
@@ -64,6 +72,9 @@ export default async function CategoriesIndex() {
           );
         })}
       </div>
+
+      <HubAdSense className="!px-0 mt-10" />
+      <MultiplexAd />
     </div>
   );
 }

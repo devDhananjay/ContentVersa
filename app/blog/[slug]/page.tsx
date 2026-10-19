@@ -20,6 +20,7 @@ import { FloatingActions } from "@/components/blog/floating-actions";
 import { NewsIn60Short } from "@/components/blog/news-in-60-short";
 import { ArticleFeedback } from "@/components/blog/article-feedback";
 import { RecommendedBlogs } from "@/components/blog/recommended-blogs";
+import { MultiplexAd } from "@/components/ads/multiplex-ad";
 import { TrackBlogRead } from "@/components/blog/track-reading";
 import { renderMarkdown, extractTOC } from "@/components/blog/markdown";
 import { getBlogBySlugForViewer } from "@/lib/data/blog-db";
@@ -36,6 +37,7 @@ import { redirectTargetFromCanonical } from "@/lib/seo/content-redirects";
 import { CATEGORIES } from "@/lib/data/categories";
 import { resolveBlogCoverImage } from "@/lib/upload";
 import { SeriesNav } from "@/components/blog/series-nav";
+import { AdSlot } from "@/components/ads/ad-slot";
 import { GoogleAdSense } from "@/components/ads/google-adsense";
 import { StickyWhatsAppShare } from "@/components/blog/sticky-whatsapp-share";
 import {
@@ -44,6 +46,7 @@ import {
 } from "@/components/seo/ymyl-disclaimer";
 import { blogAdSlots, getAdDensity } from "@/lib/ads/density";
 import { getBlogSeriesMeta } from "@/lib/data/series";
+import { PageBack } from "@/components/site/page-back";
 
 export const dynamic = "force-dynamic";
 
@@ -169,6 +172,11 @@ export default async function BlogPage({
       ) : null}
 
       <article className="container max-w-5xl py-8 md:py-12">
+        <PageBack
+          href={category ? `/category/${category.slug}` : "/blogs"}
+          label={category?.name ?? "Blogs"}
+          className="mb-6"
+        />
         {!isPublic ? (
           <div className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
@@ -329,14 +337,12 @@ export default async function BlogPage({
         )}
 
         {showAds && adSlots.afterCover ? (
-          <GoogleAdSense
-            slotKey="inArticle"
-            format="horizontal"
-            className="mb-8"
-          />
+          <AdSlot className="mb-2 mt-0" variant="mrec">
+            <GoogleAdSense slotKey="inArticle" width={300} height={250} />
+          </AdSlot>
         ) : null}
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-10 xl:gap-12 items-start">
           <div>
             {ymylKind ? (
               <YmylDisclaimer kind={ymylKind} className="mb-6 rounded-2xl border border-amber-500/25 bg-amber-500/5 p-4 text-sm text-muted-foreground" />
@@ -344,31 +350,22 @@ export default async function BlogPage({
             <h2 className="font-display text-2xl font-bold mb-6">Full story</h2>
             {(() => {
               const parts = blog.content.split(/\n\n+/);
-              const mid = Math.max(2, Math.floor(parts.length / 2));
+              // Mid-article ~40% — TOI-style after early value, before fatigue
+              const mid = Math.max(3, Math.floor(parts.length * 0.4));
               const first = parts.slice(0, mid).join("\n\n");
               const second = parts.slice(mid).join("\n\n");
               return (
                 <>
                   {renderMarkdown(first || blog.content)}
                   {showAds && adSlots.midArticle && second ? (
-                    <GoogleAdSense
-                      slotKey="inArticle"
-                      format="horizontal"
-                      className="my-8"
-                    />
+                    <AdSlot variant="mrec">
+                      <GoogleAdSense slotKey="inArticle" width={300} height={250} />
+                    </AdSlot>
                   ) : null}
                   {second ? renderMarkdown(second) : null}
                 </>
               );
             })()}
-
-            {showAds && adSlots.afterContent ? (
-              <GoogleAdSense
-                slotKey="horizontal"
-                format="horizontal"
-                className="mt-10"
-              />
-            ) : null}
 
             <div className="mt-10 flex flex-wrap gap-2">
               {blog.tags.map((tag) => (
@@ -389,6 +386,13 @@ export default async function BlogPage({
                 initialUserReaction={engagement?.userReaction}
               />
             </div>
+
+            {/* End-of-article unit — after engagement, before tip/comments */}
+            {showAds && adSlots.afterContent ? (
+              <AdSlot variant="mrec">
+                <GoogleAdSense slotKey="horizontal" width={300} height={250} />
+              </AdSlot>
+            ) : null}
 
             <div className="mt-8">
               <ArticleFeedback blogSlug={slug} />
@@ -465,14 +469,16 @@ export default async function BlogPage({
             Do not use overscroll-y-contain here — it traps wheel/trackpad scroll in the
             sticky TOC column so readers get stuck mid-article on desktop.
           */}
-          <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto scrollbar-hide space-y-6">
+          <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto scrollbar-hide space-y-5">
             <TableOfContents items={toc} />
             {showAds && adSlots.sidebar ? (
-              <GoogleAdSense
-                slotKey="sidebar"
-                format="rectangle"
-                className="rounded-xl overflow-hidden"
-              />
+              <div className="space-y-2 pt-2">
+                <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground/70">
+                  Advertisement
+                </p>
+                {/* TOI-style tall rail — one sticky column (≤300px wide) */}
+                <GoogleAdSense slotKey="sidebar" width={160} height={600} />
+              </div>
             ) : null}
           </aside>
         </div>
@@ -484,6 +490,7 @@ export default async function BlogPage({
         <Suspense fallback={null}>
           <RecommendedBlogs slug={slug} />
         </Suspense>
+        {showAds ? <MultiplexAd /> : null}
       </article>
     </>
   );

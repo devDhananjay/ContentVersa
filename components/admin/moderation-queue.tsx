@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, X, Eye, MessageSquare, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -58,6 +59,9 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
       decision === "APPROVED" ? "approve" : decision === "REJECTED" ? "reject" : "changes"
     );
     try {
+      if (decision === "APPROVED") {
+        toast.loading("Checking AI content & cleaning…", { id: "ai-publish" });
+      }
       const res = await fetch("/api/admin/moderation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,14 +72,39 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
           ...(decision === "APPROVED" ? { adEligible } : {}),
         }),
       });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Action failed");
+        const hits =
+          Array.isArray(data.hits) && data.hits.length
+            ? ` (${data.hits.slice(0, 4).join(", ")})`
+            : "";
+        throw new Error((data.error || "Action failed") + hits);
+      }
+      if (decision === "APPROVED") {
+        const ai = data.aiFree as
+          | {
+              markersScrubbed?: number;
+              humanized?: boolean;
+              expanded?: boolean;
+              words?: number;
+            }
+          | undefined;
+        const bits = [
+          ai?.markersScrubbed
+            ? `scrubbed ${ai.markersScrubbed} AI marker(s)`
+            : "AI-free check passed",
+          ai?.humanized ? "humanized" : null,
+          ai?.expanded ? "expanded" : null,
+          ai?.words ? `${ai.words} words` : null,
+        ].filter(Boolean);
+        toast.success(`Published — ${bits.join(" · ")}`, { id: "ai-publish" });
       }
       router.refresh();
       setTimeout(() => window.location.reload(), 150);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed");
+      toast.error(err instanceof Error ? err.message : "Failed", {
+        id: "ai-publish",
+      });
     } finally {
       setLoading(null);
     }
@@ -194,7 +223,7 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
               ) : (
                 <Check className="h-4 w-4" />
               )}
-              Approve & Publish
+              {loading === "approve" ? "Cleaning AI…" : "Approve & Publish"}
             </Button>
           </div>
         </div>

@@ -6,6 +6,10 @@ import { AmbientPageBackground } from "@/components/site/ambient-page-background
 import { isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
 import { cn } from "@/lib/utils";
 
+/**
+ * Cinematic video is a dark-mode-only layer. Light mode (and dark without the
+ * video flag) uses the theme-aware aurora so both themes are first-class.
+ */
 export function HomeHeroShell({ children }: { children: React.ReactNode }) {
   const cinematic = isHomeHeroVideoEnabled();
 
@@ -13,22 +17,21 @@ export function HomeHeroShell({ children }: { children: React.ReactNode }) {
     <div
       className={cn(
         "relative isolate overflow-hidden [clip-path:inset(0)]",
-        cinematic && "min-h-[100svh] -mt-[var(--site-header-offset)]"
+        cinematic && "dark:min-h-[100svh] dark:-mt-[var(--site-header-offset)]"
       )}
     >
       {cinematic ? (
-        <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="pointer-events-none absolute inset-0 z-0 hidden dark:block">
           <HeroVideoBackground className="h-full w-full" />
         </div>
-      ) : (
-        <AmbientPageBackground />
-      )}
+      ) : null}
+      <AmbientPageBackground className={cn(cinematic && "dark:hidden")} />
       <div
         className={cn(
           "relative z-[1]",
           cinematic && [
-            "pt-[var(--site-header-offset)]",
-            "[&_[data-reels-strip]]:border-white/10 [&_[data-reels-strip]]:bg-black/30 [&_[data-reels-strip]]:backdrop-blur-md",
+            "dark:pt-[var(--site-header-offset)]",
+            "dark:[&_[data-reels-strip]]:border-white/10 dark:[&_[data-reels-strip]]:bg-black/30 dark:[&_[data-reels-strip]]:backdrop-blur-md",
           ]
         )}
       >

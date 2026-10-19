@@ -1,13 +1,15 @@
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { PageBack } from "@/components/site/page-back";
 import type { Metadata } from "next";
-import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { getCricketNewsDetail } from "@/lib/sports/data";
 import { buildMetadata } from "@/lib/seo";
 import { timeAgo } from "@/lib/utils";
+import { BandAd } from "@/components/ads/band-ad";
+import { MrecAd } from "@/components/ads/mrec-ad";
+import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export const dynamic = "force-dynamic";
@@ -43,59 +45,87 @@ export default async function CricketNewsPage({
   const article = await getCricketNewsDetail(newsId);
   if (!article) redirect("/sports");
 
+  const mid = Math.max(1, Math.floor(article.content.length / 2));
+
   return (
-    <article className="container py-8 md:py-12 max-w-3xl">
-      <Link href="/sports">
-        <Button variant="ghost" size="sm" className="gap-2 mb-6 -ml-2">
-          <ArrowLeft className="h-4 w-4" /> Back to Sports Hub
-        </Button>
-      </Link>
+    <div className="container py-8 md:py-12">
+      <div className="flex items-start justify-center gap-4 lg:gap-6 xl:gap-8">
+        {/* Left long-height skyscraper */}
+        <StickyRailAd
+          slotKey="sidebar"
+          sticky={false}
+          label="Sponsored left"
+        />
 
-      {article.context && (
-        <Badge variant="neon" className="mb-3">
-          {article.context}
-        </Badge>
-      )}
+        <article className="min-w-0 w-full max-w-3xl">
+          <PageBack href="/sports" label="Sports Hub" className="mb-6" />
 
-      <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
-        {article.headline}
-      </h1>
+          {article.context && (
+            <Badge variant="neon" className="mb-3">
+              {article.context}
+            </Badge>
+          )}
 
-      <p className="mt-3 text-sm text-muted-foreground">
-        {timeAgo(article.publishedAt)}
-        {SHOW_THIRD_PARTY_CREDITS && article.source ? ` · ${article.source}` : ""}
-      </p>
+          <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
+            {article.headline}
+          </h1>
 
-      {article.imageUrl && (
-        <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-2xl bg-muted">
-          <Image
-            src={article.imageUrl}
-            alt={article.headline}
-            fill
-            priority
-            sizes="(min-width: 768px) 768px, 100vw"
-            className="object-cover"
-            unoptimized
-          />
-        </div>
-      )}
-
-      <div className="prose prose-neutral dark:prose-invert max-w-none mt-8">
-        {article.content.map((para, i) => (
-          <p key={i} className="text-base leading-relaxed text-foreground/90 mb-4">
-            {para}
+          <p className="mt-3 text-sm text-muted-foreground">
+            {timeAgo(article.publishedAt)}
+            {SHOW_THIRD_PARTY_CREDITS && article.source
+              ? ` · ${article.source}`
+              : ""}
           </p>
-        ))}
-      </div>
 
-      <p className="mt-10 pt-6 border-t text-xs text-muted-foreground">
-        {SHOW_THIRD_PARTY_CREDITS ? "Source: Cricbuzz via RapidAPI. " : ""}
-        For editorial opinion and community discussion,{" "}
-        <Link href="/category/sports" className="underline hover:text-foreground">
-          read sports blogs on ContentVerse India
-        </Link>
-        .
-      </p>
-    </article>
+          {article.imageUrl && (
+            <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-2xl bg-muted">
+              <Image
+                src={article.imageUrl}
+                alt={article.headline}
+                fill
+                priority
+                sizes="(min-width: 768px) 768px, 100vw"
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+          )}
+
+          <BandAd slotKey="horizontal" />
+
+          <div className="prose prose-neutral dark:prose-invert max-w-none mt-8">
+            {article.content.map((para, i) => (
+              <div key={i}>
+                <p className="text-base leading-relaxed text-foreground/90 mb-4">
+                  {para}
+                </p>
+                {i === mid - 1 ? (
+                  <div className="not-prose my-6 flex justify-center">
+                    <MrecAd slotKey="inArticle" />
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+
+          <BandAd slotKey="hub" />
+
+          <p className="mt-10 pt-6 border-t text-xs text-muted-foreground">
+            {SHOW_THIRD_PARTY_CREDITS ? "Source: Cricbuzz via RapidAPI. " : ""}
+            For editorial opinion and community discussion,{" "}
+            <Link
+              href="/category/sports"
+              className="underline hover:text-foreground"
+            >
+              read sports blogs on ContentVerse India
+            </Link>
+            .
+          </p>
+        </article>
+
+        {/* Right long-height skyscraper (sticky) */}
+        <StickyRailAd slotKey="hub" sticky label="Sponsored right" />
+      </div>
+    </div>
   );
 }

@@ -1,8 +1,21 @@
 import Link from "next/link";
 import type { SitePageData } from "@/lib/data/site-pages";
+import { HubAdSense } from "@/components/ads/hub-adsense";
+import { MultiplexAd } from "@/components/ads/multiplex-ad";
 import { CONTACT_EMAIL, normalizeContactEmail } from "@/lib/site-contact";
 import { formatAdminDate } from "@/lib/admin/list-filters";
 import { ArrowRight, Mail } from "lucide-react";
+import { PageBack } from "@/components/site/page-back";
+
+/** Marketing/about pages only — skip legal + contact forms. */
+const SITE_PAGE_ADS = new Set([
+  "about",
+  "creator-program",
+  "careers",
+  "press",
+  "press-kit",
+  "premium",
+]);
 
 function TextWithEmail({ text }: { text: string }) {
   const normalized = normalizeContactEmail(text);
@@ -35,6 +48,7 @@ const RELATED_LINKS: { href: string; label: string }[] = [
   { href: "/careers", label: "Careers" },
   { href: "/press", label: "Press" },
   { href: "/press-kit", label: "Press Kit" },
+  { href: "/advertise", label: "Advertise" },
   { href: "/ai", label: "ContentVerse India AI" },
   { href: "/finance", label: "Finance" },
   { href: "/jobs", label: "Jobs" },
@@ -54,6 +68,7 @@ export function SitePageRenderer({ page }: { page: SitePageData }) {
       <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-neon-purple/10 via-neon-blue/5 to-transparent pointer-events-none" />
 
       <div className="container relative py-12 md:py-16 max-w-4xl">
+        <PageBack href="/" label="Home" className="mb-6" />
         <header className="mb-10 md:mb-14">
           {page.badge ? (
             <p className="inline-flex items-center rounded-full border border-neon-purple/30 bg-neon-purple/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-neon-purple mb-4">
@@ -152,6 +167,13 @@ export function SitePageRenderer({ page }: { page: SitePageData }) {
             </section>
           ))}
         </div>
+
+        {SITE_PAGE_ADS.has(page.slug) ? (
+          <>
+            <HubAdSense className="!px-0" />
+            <MultiplexAd />
+          </>
+        ) : null}
 
         <nav
           aria-label="Related pages"

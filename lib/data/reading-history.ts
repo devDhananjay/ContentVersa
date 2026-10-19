@@ -167,38 +167,42 @@ export async function getContinueReading(
   if (!isDatabaseConfigured()) return [];
   if (!reader.userId && !reader.visitorKey) return [];
 
-  const rows = await prisma.readingHistory.findMany({
-    where: {
-      ...(reader.userId
-        ? { userId: reader.userId }
-        : { visitorKey: reader.visitorKey! }),
-      progress: { gte: 5, lt: 85 },
-    },
-    orderBy: { updatedAt: "desc" },
-    take: limit,
-    select: {
-      progress: true,
-      blog: {
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          coverImage: true,
-          status: true,
+  try {
+    const rows = await prisma.readingHistory.findMany({
+      where: {
+        ...(reader.userId
+          ? { userId: reader.userId }
+          : { visitorKey: reader.visitorKey! }),
+        progress: { gte: 5, lt: 85 },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: limit,
+      select: {
+        progress: true,
+        blog: {
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            coverImage: true,
+            status: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  return rows
-    .filter((r) => r.blog.status === "PUBLISHED")
-    .map((r) => ({
-      blogId: r.blog.id,
-      slug: r.blog.slug,
-      title: r.blog.title,
-      coverImage: r.blog.coverImage,
-      progress: r.progress,
-    }));
+    return rows
+      .filter((r) => r.blog.status === "PUBLISHED")
+      .map((r) => ({
+        blogId: r.blog.id,
+        slug: r.blog.slug,
+        title: r.blog.title,
+        coverImage: r.blog.coverImage,
+        progress: r.progress,
+      }));
+  } catch {
+    return [];
+  }
 }
 
 export async function getBlogReadingForReader(

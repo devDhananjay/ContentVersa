@@ -5,8 +5,9 @@ const ADSENSE_ID = normalizeAdSenseClientId(
 );
 
 /**
- * Turns off AdSense Auto ads / overlays on utility pages (tools, HUID, MoneyVerse).
- * Keep ads on blogs, guides, and editorial hubs only.
+ * Turns off AdSense page-level Anchor / vignette on utility pages
+ * (tools, HUID, MoneyVerse forms, auth-adjacent). Editorial pages keep
+ * PageLevelAds from the root layout.
  */
 export function DisableAutoAds() {
   if (!ADSENSE_ID) return null;

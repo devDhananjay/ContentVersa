@@ -136,7 +136,7 @@ export async function getHomePageData(): Promise<HomePageData> {
     getEditorPicksHybrid(4),
     getFeaturedHybrid(3),
     getCategoriesWithCountsHybrid(),
-    getFeaturedCreatorsHybrid(6),
+    getFeaturedCreatorsHybrid(12),
     getPlatformStatsHybrid(),
     getPublishedBlogsLiteHybrid(50),
   ]);

@@ -4,6 +4,8 @@ import { FakeGoldChecklist } from "@/components/goldverse/fake-gold-checklist";
 import { HallmarkGuide } from "@/components/goldverse/hallmark-guide";
 import { HuidVerifyPanel } from "@/components/goldverse/huid-verify-panel";
 import { GoldVerseToolsStrip } from "@/components/goldverse/goldverse-tools-strip";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
@@ -71,6 +73,9 @@ export default function GoldVersePage() {
       <GoldVerseToolsStrip />
 
       <HallmarkGuide />
+      {/* After educational hallmark guide — never beside HUID verify form */}
+      <BandAd slotKey="horizontal" />
+      <HubAdSense />
       <RelatedHubs current="goldverse" contained />
     </div>
   );

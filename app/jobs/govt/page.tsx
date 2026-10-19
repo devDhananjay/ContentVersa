@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AlertCircle } from "lucide-react";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { GovtCategoryTabs } from "@/components/jobs/govt-category-tabs";
 import { GovtJobCard } from "@/components/jobs/govt-job-card";
 import { JobsSectionHeader } from "@/components/jobs/jobs-section-header";
@@ -111,6 +112,8 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
           </p>
         </div>
       )}
+
+      <HubAdSense />
     </div>
   );
 }

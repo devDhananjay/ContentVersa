@@ -8,6 +8,8 @@ import {
   moneyTopicPath,
   moneyTopicWebPageJsonLd,
 } from "@/lib/finance/money-topics";
+import { BandAd } from "@/components/ads/band-ad";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { YmylDisclaimer } from "@/components/seo/ymyl-disclaimer";
 import { RelatedHubs } from "@/components/seo/related-hubs";
 
@@ -66,6 +68,9 @@ export function MoneyTopicView({ topic }: { topic: MoneyTopic }) {
           </li>
         ))}
       </ul>
+
+      <BandAd slotKey="horizontal" />
+      <HubAdSense />
 
       <section className="space-y-3">
         <h2 className="font-display text-xl font-semibold tracking-tight">

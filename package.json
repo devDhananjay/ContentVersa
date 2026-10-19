@@ -38,6 +38,8 @@
     "db:scrub-ai-phrases": "tsx scripts/scrub-ai-phrases.ts",
     "db:regen-covers": "tsx scripts/regenerate-article-covers.ts",
     "db:expand-articles": "tsx scripts/expand-short-articles.ts",
+    "db:audit-weak": "tsx scripts/audit-weak-published.ts",
+    "db:strengthen-weak": "tsx scripts/strengthen-weak-published.ts",
     "db:daily-ai": "tsx scripts/daily-ai-articles.ts",
     "db:welcome-users": "tsx scripts/welcome-recent-users.ts",
     "db:promote-admin": "tsx prisma/promote-owner-admin.ts",

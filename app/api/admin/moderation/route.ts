@@ -9,10 +9,11 @@ import { dispatchBlogPublishedNotifications } from "@/lib/notifications/blog-pub
 import { isAdEligibleByQuality } from "@/lib/seo/crawl-policy";
 import { defaultAdEligibleOnApprove } from "@/lib/seo/creator-quality";
 import { getCreatorQualityForUser } from "@/lib/seo/creator-quality-db";
+import { isAiFreePublishError } from "@/lib/seo/ai-free-content";
 import {
-  isAiFreePublishError,
-  prepareAiFreePublishFields,
-} from "@/lib/seo/ai-free-content";
+  isRefinePublishError,
+  refineForPublish,
+} from "@/lib/seo/refine-for-publish";
 import { readingTime } from "@/lib/utils";
 
 const Schema = z.object({
@@ -99,7 +100,11 @@ export async function POST(req: Request) {
 
     const blog = await prisma.blog.findUnique({
       where: { id: blogId },
-      include: { submission: true, author: true },
+      include: {
+        submission: true,
+        author: true,
+        category: { select: { name: true, slug: true } },
+      },
     });
 
     if (!blog) {
@@ -109,11 +114,14 @@ export async function POST(req: Request) {
     if (decision === "APPROVED") {
       let cleaned;
       try {
-        cleaned = prepareAiFreePublishFields({
+        cleaned = await refineForPublish({
           title: blog.title,
           excerpt: blog.excerpt,
           content: blog.content,
           metaDescription: blog.metaDescription,
+          categoryName: blog.category?.name,
+          categorySlug: blog.category?.slug,
+          searchIntent: blog.metaKeywords,
         });
       } catch (err) {
         if (isAiFreePublishError(err)) {
@@ -123,6 +131,12 @@ export async function POST(req: Request) {
               code: err.code,
               hits: err.hits,
             },
+            { status: 422 }
+          );
+        }
+        if (isRefinePublishError(err)) {
+          return NextResponse.json(
+            { error: err.message, code: err.code, reason: err.reason },
             { status: 422 }
           );
         }
@@ -166,6 +180,25 @@ export async function POST(req: Request) {
         }),
       ]);
       void dispatchBlogPublishedNotifications(blogId);
+      revalidatePath("/admin/moderation");
+      revalidatePath("/dashboard/blogs");
+      revalidatePath("/");
+      revalidatePath("/blogs");
+      revalidatePath(`/blog/${blog.slug}`);
+      revalidatePath("/sitemap.xml");
+
+      return NextResponse.json({
+        ok: true,
+        blogId,
+        decision,
+        aiFree: {
+          markersScrubbed: cleaned.markersBefore,
+          changed: cleaned.changed,
+          expanded: cleaned.expanded,
+          humanized: cleaned.humanized,
+          words: cleaned.words,
+        },
+      });
     } else if (decision === "REJECTED") {
       await prisma.$transaction([
         prisma.blog.update({

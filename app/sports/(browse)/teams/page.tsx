@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HubAdSense } from "@/components/ads/hub-adsense";
 import { TeamsGrid } from "@/components/sports/teams-grid";
 import { getInternationalTeams } from "@/lib/sports/data";
 import { buildMetadata } from "@/lib/seo";
@@ -27,6 +28,7 @@ export default async function TeamsPage() {
         </p>
       </div>
       <TeamsGrid teams={teams} />
+      <HubAdSense className="!px-0 mt-8" />
     </div>
   );
 }

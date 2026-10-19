@@ -6,7 +6,7 @@ export const metadata: Metadata = buildMetadata({
   title: "ContentVerse HirePilot",
   description: "Find jobs. Understand jobs. Apply smarter.",
   path: "/jobpilot",
-  // Resume / apply tool — noindex + no auto ads until AdSense approval.
+  // Resume / apply tool — noindex, no ads (AdSense policy: no ads on tool/app screens).
   noIndex: true,
 });
 
