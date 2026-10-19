@@ -19,6 +19,12 @@ export const REEL_DEFAULT_VIDEO_DURATION_SEC = 15;
 /** Max auto-play duration cap (seconds). */
 export const REEL_MAX_PLAY_DURATION_SEC = 90;
 
+/**
+ * Home strip + /reels discovery feed only show reels newer than this.
+ * Older published reels remain on the author's profile.
+ */
+export const REEL_DISCOVERY_TTL_MS = 24 * 60 * 60 * 1000;
+
 export const REEL_VIDEO_TYPES = new Set([
   "video/mp4",
   "video/webm",

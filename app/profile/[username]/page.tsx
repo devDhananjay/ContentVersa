@@ -6,8 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/blog-card";
 import { FollowButton } from "@/components/profile/follow-button";
+import { ProfileReelsSection } from "@/components/profile/profile-reels-section";
 import { AUTHORS, BLOGS, type Author, type Blog } from "@/lib/data/blogs";
 import { getBlogsForProfile } from "@/lib/data/blog-db";
+import { getPublishedReelsForAuthor } from "@/lib/reels/data";
 import { formatNumber, getInitials } from "@/lib/utils";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PageBack } from "@/components/site/page-back";
@@ -61,6 +63,9 @@ export default async function ProfilePage({
 
   const blogCount = blogs.length;
   const totalViews = blogs.reduce((s, b) => s + b.views, 0);
+  const profileReels = targetUserId
+    ? await getPublishedReelsForAuthor(targetUserId, 24)
+    : [];
 
   return (
     <div>
@@ -129,6 +134,11 @@ export default async function ProfilePage({
             <Globe className="h-3 w-3" /> {user.username}.dev
           </Badge>
         </div>
+
+        <ProfileReelsSection
+          reels={profileReels}
+          authorFirstName={user.name.split(" ")[0] || user.name}
+        />
 
         <div className="mt-12">
           <h2 className="font-display text-2xl font-extrabold tracking-tight mb-6">

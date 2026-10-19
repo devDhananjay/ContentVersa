@@ -1,6 +1,7 @@
 import { cache } from "react";
 import type { ReelMediaType, ReelStatus } from "@prisma/client";
 import { prisma, isDatabaseConfigured, safeDbQuery } from "@/lib/prisma";
+import { REEL_DISCOVERY_TTL_MS } from "@/lib/reels/constants";
 import type { ReelDashboardRow, ReelItem } from "@/lib/reels/types";
 
 const EMPTY_STATS = {
@@ -110,16 +111,34 @@ export async function getPublishedReels(opts?: {
   limit?: number;
   cursor?: string;
   authorId?: string;
+  /**
+   * Discovery surfaces (home strip, /reels): only last 24h.
+   * Defaults to true when no authorId; profile fetches pass authorId and skip the window.
+   */
+  discoveryOnly?: boolean;
 }): Promise<{ reels: ReelItem[]; nextCursor: string | null }> {
   if (!isDatabaseConfigured()) return { reels: [], nextCursor: null };
 
   return safeReelQuery({ reels: [], nextCursor: null }, async () => {
     const limit = Math.min(opts?.limit ?? 20, 50);
+    const discoveryOnly = opts?.discoveryOnly ?? !opts?.authorId;
+    const since = discoveryOnly
+      ? new Date(Date.now() - REEL_DISCOVERY_TTL_MS)
+      : null;
+
     const rows = await prisma.reel.findMany({
       where: {
         status: "PUBLISHED",
         ...(opts?.authorId ? { authorId: opts.authorId } : {}),
         ...(opts?.cursor ? { createdAt: { lt: new Date(opts.cursor) } } : {}),
+        ...(since
+          ? {
+              OR: [
+                { publishedAt: { gte: since } },
+                { publishedAt: null, createdAt: { gte: since } },
+              ],
+            }
+          : {}),
       },
       orderBy: { publishedAt: "desc" },
       take: limit + 1,
@@ -136,6 +155,19 @@ export async function getPublishedReels(opts?: {
 
     return { reels: slice.map(mapReel), nextCursor };
   });
+}
+
+/** All published reels for a profile (no 24h discovery window). */
+export async function getPublishedReelsForAuthor(
+  authorId: string,
+  limit = 24
+): Promise<ReelItem[]> {
+  const { reels } = await getPublishedReels({
+    authorId,
+    limit,
+    discoveryOnly: false,
+  });
+  return reels;
 }
 
 export async function getReelById(id: string): Promise<ReelItem | null> {
@@ -159,11 +191,15 @@ export async function getReelById(id: string): Promise<ReelItem | null> {
 /** Dedupes metadata + page fetches within one request. */
 export const getReelByIdCached = cache(getReelById);
 
-/** Header strip — cached per request (shared with pages that use the same limit). */
-export const getPublishedReelsStripCached = cache(() => getPublishedReels({ limit: 16 }));
+/** Header strip — last 24h only. */
+export const getPublishedReelsStripCached = cache(() =>
+  getPublishedReels({ limit: 16, discoveryOnly: true })
+);
 
-/** Full reels feed page — cached per request. */
-export const getPublishedReelsFeedCached = cache(() => getPublishedReels({ limit: 30 }));
+/** Full reels feed page — last 24h only. */
+export const getPublishedReelsFeedCached = cache(() =>
+  getPublishedReels({ limit: 30, discoveryOnly: true })
+);
 
 export async function getUserReelById(
   reelId: string,

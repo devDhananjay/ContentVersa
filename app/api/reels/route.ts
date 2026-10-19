@@ -34,7 +34,13 @@ export async function GET(req: Request) {
   const cursor = searchParams.get("cursor") || undefined;
   const authorId = searchParams.get("authorId") || undefined;
 
-  const { reels, nextCursor } = await getPublishedReels({ limit, cursor, authorId });
+  const { reels, nextCursor } = await getPublishedReels({
+    limit,
+    cursor,
+    authorId,
+    // Global feed = last 24h; profile (?authorId=) keeps the full archive.
+    discoveryOnly: !authorId,
+  });
   return NextResponse.json({ reels, nextCursor });
 }
 
@@ -101,6 +107,7 @@ export async function POST(req: Request) {
       select: { id: true, status: true },
     });
 
+    revalidatePath("/");
     revalidatePath("/reels");
     revalidatePath("/dashboard/reels");
 

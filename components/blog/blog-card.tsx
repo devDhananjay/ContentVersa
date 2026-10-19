@@ -39,46 +39,44 @@ export function BlogCard({
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.65, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
         whileHover={{ y: -4 }}
-        className="group relative col-span-1 overflow-hidden rounded-3xl border bg-card transition-shadow duration-500 hover:shadow-neon md:col-span-2 md:row-span-2"
+        className="group relative col-span-1 h-full min-h-[280px] overflow-hidden rounded-3xl border bg-card transition-shadow duration-500 hover:shadow-neon md:col-span-2 md:row-span-2 md:min-h-0"
       >
-        <Link href={`/blog/${blog.slug}`} className="block">
-          <div className="relative aspect-[16/10] overflow-hidden">
-            <Image
-              src={coverSrc}
-              alt={blog.title}
-              fill
-              priority
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-              unoptimized={coverUnoptimized}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-            <div className="absolute top-4 left-4 flex gap-2">
-              <Badge variant="gradient" className="shadow-lg">Featured</Badge>
-              {category && (
-                <Badge variant="neon" className="bg-black/40 backdrop-blur">
-                  {category.name}
-                </Badge>
-              )}
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
-              <h2 className="font-display text-2xl md:text-4xl font-semibold leading-[1.2] tracking-[-0.01em] mb-3 group-hover:text-gradient transition-all duration-300">
-                {blog.title}
-              </h2>
-              <p className="text-sm md:text-base text-white/80 line-clamp-2 max-w-2xl mb-5">
-                {blog.excerpt}
-              </p>
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10 border-2 border-white/20">
-                  <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
-                  <AvatarFallback>{getInitials(blog.author.name)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-sm font-medium">{blog.author.name}</p>
-                  <p className="text-xs text-white/60 flex items-center gap-2">
-                    <Clock className="h-3 w-3" /> {blog.readingTime} min read · {timeAgo(blog.publishedAt)}
-                  </p>
-                </div>
+        <Link href={`/blog/${blog.slug}`} className="absolute inset-0 block">
+          <Image
+            src={coverSrc}
+            alt={blog.title}
+            fill
+            priority
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            unoptimized={coverUnoptimized}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/10" />
+          <div className="absolute top-4 left-4 flex gap-2">
+            <Badge variant="gradient" className="shadow-lg">Featured</Badge>
+            {category && (
+              <Badge variant="neon" className="bg-black/40 backdrop-blur">
+                {category.name}
+              </Badge>
+            )}
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 text-white">
+            <h2 className="font-display text-xl md:text-3xl font-semibold leading-[1.2] tracking-[-0.01em] mb-2 line-clamp-3 group-hover:text-gradient transition-all duration-300">
+              {blog.title}
+            </h2>
+            <p className="text-sm text-white/80 line-clamp-2 max-w-2xl mb-4">
+              {blog.excerpt}
+            </p>
+            <div className="flex items-center gap-3">
+              <Avatar className="h-9 w-9 border-2 border-white/20">
+                <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
+                <AvatarFallback>{getInitials(blog.author.name)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-medium">{blog.author.name}</p>
+                <p className="text-xs text-white/60 flex items-center gap-2">
+                  <Clock className="h-3 w-3" /> {blog.readingTime} min read · {timeAgo(blog.publishedAt)}
+                </p>
               </div>
             </div>
           </div>
