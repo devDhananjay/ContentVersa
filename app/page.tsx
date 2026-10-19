@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import {
   BookOpen,
-  Briefcase,
   Clapperboard,
   Gem,
   Wallet,
@@ -21,6 +20,10 @@ import { ContinueReadingStrip } from "@/components/home/continue-reading-strip";
 import { EditorPick } from "@/components/home/editor-pick";
 import { FeaturedCreators } from "@/components/home/featured-creators";
 import { StayEngagedStrip } from "@/components/home/stay-engaged-strip";
+import {
+  JobsResultsSection,
+  type JobsResultCard,
+} from "@/components/home/jobs-results-section";
 import { ReelsStripSection } from "@/components/reels/reels-strip-section";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getSportsTeaserData } from "@/lib/sports/data";
@@ -80,27 +83,68 @@ const HOME_SIDEBAR_SECTIONS = [
 ];
 
 export default async function HomePage() {
-  const [data, sportsTeaser, financeTicker, modulePreviews, jobs, gold] =
+  const [data, sportsTeaser, financeTicker, modulePreviews, jobs, results, gold] =
     await Promise.all([
       getHomePageData(),
       getSportsTeaserData(),
       getFinanceTickerDataCached().catch(() => null),
       getHomeModulePreviews(),
       getGovtJobsCached("jobs").catch(() => null),
+      getGovtJobsCached("results").catch(() => null),
       getGoldPriceSnapshot().catch(() => null),
     ]);
 
-  const jobItems =
-    jobs?.listings?.slice(0, 4).map((job) => ({
+  const jobCards: JobsResultCard[] = [];
+  for (const job of jobs?.listings?.slice(0, 3) ?? []) {
+    jobCards.push({
       title: job.title,
       href: job.link || "/jobs",
-      meta: job.last_date ? `Last date · ${job.last_date}` : "Government update",
-    })) ?? [
-      { title: "Sarkari jobs", href: "/jobs", meta: "Latest notifications" },
-      { title: "Exam results", href: "/results", meta: "Official portals" },
-      { title: "Admit cards", href: "/jobs?category=admit-cards", meta: "Hall tickets" },
-      { title: "Job guides", href: "/guides/jobs", meta: "How to read notifications" },
-    ];
+      meta: job.last_date ? `Last date · ${job.last_date}` : "Latest notification",
+      kind: "job",
+      kicker: "Sarkari",
+    });
+  }
+  for (const row of results?.listings?.slice(0, 2) ?? []) {
+    jobCards.push({
+      title: row.title,
+      href: row.link || "/results",
+      meta: row.last_date ? `Updated · ${row.last_date}` : "Official result",
+      kind: "result",
+      kicker: "Results",
+    });
+  }
+  const hubCards: JobsResultCard[] = [
+    {
+      title: "Browse all Sarkari job notifications",
+      href: "/jobs",
+      meta: "Central & state openings",
+      kind: "hub",
+      kicker: "Jobs hub",
+    },
+    {
+      title: "Exam results & scorecards",
+      href: "/results",
+      meta: "Official portals only",
+      kind: "result",
+      kicker: "Results hub",
+    },
+    {
+      title: "Admit cards & hall tickets",
+      href: "/jobs?category=admit-cards",
+      meta: "Download before the exam",
+      kind: "admit",
+      kicker: "Admit cards",
+    },
+    {
+      title: "How to read a Sarkari notification",
+      href: "/guides/jobs",
+      meta: "Eligibility, fees, last date",
+      kind: "guide",
+      kicker: "Jobs guide",
+    },
+  ];
+  // Prefer live listings; always keep hub cards so the grid never looks empty.
+  const jobsResultCards = [...jobCards, ...hubCards].slice(0, 6);
 
   const goldCity =
     gold?.rates?.find((row) => /delhi/i.test(row.city)) || gold?.rates?.[0];
@@ -153,7 +197,7 @@ export default async function HomePage() {
       <div className="xl:[&_.container]:pl-16 2xl:[&_.container]:pl-20">
         <div id="home-top" className="scroll-mt-0">
           <HomeHeroShell>
-            <Hero stats={data.stats} categories={data.categories} />
+            <Hero categories={data.categories} />
           </HomeHeroShell>
         </div>
 
@@ -217,23 +261,7 @@ export default async function HomePage() {
         <HubAdSense />
 
         <Reveal>
-          <HomeModuleSpotlight
-            id="home-jobs"
-            tint
-            eyebrow="Jobs & results"
-            title={
-              <>
-                Sarkari careers &{" "}
-                <span className="text-gradient">official portals</span>
-              </>
-            }
-            description="Notifications, result portals, and guides on how to read them — not spam marksheets."
-            href="/jobs"
-            cta="Open Jobs"
-            icon={Briefcase}
-            accentClassName="text-amber-400"
-            items={jobItems}
-          />
+          <JobsResultsSection cards={jobsResultCards} />
         </Reveal>
 
         <SportsTeaser data={sportsTeaser} />

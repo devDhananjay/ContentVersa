@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import type { CategoryWithCount } from "@/lib/data/home-data";
 import { categoryPageHref } from "@/lib/data/categories";
 import { isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
-import { VisitorCountBadge } from "@/components/site/visitor-count";
 import { cn } from "@/lib/utils";
 
 const ROTATING_WORDS = ["Read", "Create", "Grow", "Earn", "Build"];
@@ -92,19 +91,13 @@ function TypewriterWord({ words, reduce }: { words: string[]; reduce: boolean | 
 
 interface Props {
   categories: CategoryWithCount[];
-  stats: { creators: string; readers: string; paid: string };
 }
 
-export function Hero({ categories, stats }: Props) {
+export function Hero({ categories }: Props) {
   const reduce = useReducedMotion();
   const cinematic = isHomeHeroVideoEnabled();
 
   const quickCategories = categories.slice(0, 8);
-  const visibleStats = [
-    { value: stats.creators, label: "Published creators" },
-    { value: stats.readers, label: "Article reads" },
-    { value: stats.paid, label: "Paid to creators" },
-  ].filter((stat) => stat.value !== "—");
 
   return (
     <section className="relative overflow-hidden">
@@ -282,44 +275,6 @@ export function Hero({ categories, stats }: Props) {
               </Link>
             </motion.div>
           </motion.div>
-
-          <motion.div
-            className="mt-10"
-            initial={reduce ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.78, duration: 0.5 }}
-          >
-            <VisitorCountBadge />
-          </motion.div>
-
-          {visibleStats.length > 0 ? (
-            <motion.dl
-              className={cn(
-                "mt-14 grid w-full max-w-xl grid-cols-3 divide-x divide-border rounded-2xl border border-border bg-card/70 py-4 backdrop-blur",
-                cinematic && "dark:divide-white/15 dark:border-white/15 dark:bg-black/25"
-              )}
-              initial="hidden"
-              animate="show"
-              variants={{
-                hidden: {},
-                show: { transition: { staggerChildren: 0.1, delayChildren: 0.85 } },
-              }}
-            >
-              {visibleStats.map((stat) => (
-                <motion.div
-                  key={stat.label}
-                  className="px-3 text-center"
-                  variants={{
-                    hidden: { opacity: 0, y: 14 },
-                    show: { opacity: 1, y: 0 },
-                  }}
-                >
-                  <dt className="font-display text-2xl font-bold md:text-3xl">{stat.value}</dt>
-                  <dd className="mt-0.5 text-xs text-muted-foreground md:text-sm">{stat.label}</dd>
-                </motion.div>
-              ))}
-            </motion.dl>
-          ) : null}
         </motion.div>
       </div>
 
