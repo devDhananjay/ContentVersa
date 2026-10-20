@@ -1,10 +1,9 @@
 /**
- * Deduplicate repeated paragraphs in published TOI briefings (Prisma only).
+ * Strip TOI footers from published TOI briefings + enable ads.
  *   NODE_PATH=./build/node_modules npx tsx scripts/sanitize-toi-briefings.ts
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { createHash } from "node:crypto";
 import { PrismaClient } from "@prisma/client";
 
 function loadEnvFiles() {
@@ -29,17 +28,36 @@ function loadEnvFiles() {
   }
 }
 
-function dedupe(content: string): string {
+function sanitizeContent(content: string): string {
   const parts = content.split(/\n\n+/);
   const out: string[] = [];
   const seen = new Set<string>();
   for (const part of parts) {
-    const trimmed = part.trim();
+    let trimmed = part.trim();
     if (!trimmed) continue;
+    if (trimmed === "---" || trimmed === "***" || trimmed === "* * *") continue;
     const key = trimmed.toLowerCase().replace(/\s+/g, " ");
     if (key.startsWith("readers who want depth should cross-check")) continue;
-    if (seen.has(key)) continue;
-    seen.add(key);
+    if (
+      key.includes("primary reporting") &&
+      (key.includes("times of india") || key.includes("toi"))
+    ) {
+      continue;
+    }
+    trimmed = trimmed
+      .replace(
+        /\n?\*?ContentVerse India original briefing\.\s*Primary reporting:\s*\[[^\]]*\]\([^)]*\)\.?\*?/gi,
+        ""
+      )
+      .replace(
+        /\n?\*?ContentVerse India original briefing\.\s*Primary reporting:\s*Times of India\.?\*?/gi,
+        ""
+      )
+      .trim();
+    if (!trimmed) continue;
+    const key2 = trimmed.toLowerCase().replace(/\s+/g, " ");
+    if (seen.has(key2)) continue;
+    seen.add(key2);
     out.push(trimmed);
   }
   return out.join("\n\n");
@@ -55,19 +73,34 @@ loadEnvFiles();
 async function main() {
   const prisma = new PrismaClient();
   const rows = await prisma.blog.findMany({
-    where: { metaKeywords: { contains: "toi-rewrite" } },
-    select: { id: true, slug: true, content: true },
+    where: {
+      metaKeywords: { contains: "toi-rewrite" },
+      status: "PUBLISHED",
+    },
+    select: { id: true, slug: true, content: true, adEligible: true },
   });
   let updated = 0;
   for (const row of rows) {
-    const next = dedupe(row.content);
-    if (next === row.content) continue;
+    const next = sanitizeContent(row.content);
+    const needContent = next !== row.content;
+    const needAds = row.adEligible !== true;
+    if (!needContent && !needAds) continue;
     await prisma.blog.update({
       where: { id: row.id },
-      data: { content: next, readingTime: readingTime(next) },
+      data: {
+        ...(needContent
+          ? { content: next, readingTime: readingTime(next) }
+          : {}),
+        adEligible: true,
+      },
     });
     updated++;
-    console.log("[sanitize]", row.slug, createHash("sha1").update(next).digest("hex").slice(0, 8));
+    console.log(
+      "[sanitize]",
+      row.slug,
+      needContent ? "content" : "",
+      needAds ? "ads" : ""
+    );
   }
   console.log(JSON.stringify({ scanned: rows.length, updated }));
   await prisma.$disconnect();

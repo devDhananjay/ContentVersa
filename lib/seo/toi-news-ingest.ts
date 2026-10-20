@@ -216,7 +216,7 @@ export async function runToiNewsIngest(options?: {
         readingTime: readingTime(article.content),
         status,
         publishedAt: publish ? now : null,
-        adEligible: false,
+        adEligible: publish,
         metaTitle: article.title,
         metaDescription: article.metaDescription,
         metaKeywords: [

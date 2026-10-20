@@ -64,22 +64,13 @@ function buildUserPrompt(item: ToiRssItem, categorySlug: string): string {
     .join("\n");
 }
 
-function withAttribution(
+function finalizeArticle(
   data: Omit<RewriteArticle, "provider">,
-  item: ToiRssItem,
   provider: RewriteArticle["provider"]
 ): RewriteArticle {
-  const attribution = [
-    "",
-    "---",
-    "",
-    `*ContentVerse India original briefing. Primary reporting: [Times of India](${item.link}).*`,
-  ].join("\n");
   return {
     ...data,
-    content: dedupeBriefingParagraphs(
-      `${data.content.trim()}\n${attribution}`
-    ),
+    content: dedupeBriefingParagraphs(data.content.trim()),
     provider,
   };
 }
@@ -90,7 +81,7 @@ function normalizeAiJson(
   provider: RewriteArticle["provider"]
 ): RewriteArticle | null {
   if (!raw.title || !raw.content) return null;
-  return withAttribution(
+  return finalizeArticle(
     {
       title: String(raw.title).trim().slice(0, 160),
       excerpt: String(raw.excerpt || raw.metaDescription || "")
@@ -104,7 +95,6 @@ function normalizeAiJson(
         ? raw.tags.map((t) => String(t).trim()).filter(Boolean).slice(0, 5)
         : ["India news"],
     },
-    item,
     provider
   );
 }
@@ -168,13 +158,40 @@ export function dedupeBriefingParagraphs(content: string): string {
   const out: string[] = [];
   const seen = new Set<string>();
   for (const part of parts) {
-    const trimmed = part.trim();
+    let trimmed = part.trim();
     if (!trimmed) continue;
+    // Drop horizontal rule + TOI source footer (no longer shown on site).
+    if (trimmed === "---" || trimmed === "***" || trimmed === "* * *") continue;
     const key = trimmed.toLowerCase().replace(/\s+/g, " ");
-    // Drop the old local-pad filler line entirely (was duplicated many times).
     if (key.startsWith("readers who want depth should cross-check")) continue;
-    if (seen.has(key)) continue;
-    seen.add(key);
+    if (
+      key.includes("primary reporting") &&
+      (key.includes("times of india") || key.includes("toi"))
+    ) {
+      continue;
+    }
+    if (
+      /\*?contentverse india original briefing\.?\s*primary reporting:?/i.test(
+        trimmed
+      )
+    ) {
+      continue;
+    }
+    // Strip trailing italic TOI attribution line if mixed into a block.
+    trimmed = trimmed
+      .replace(
+        /\n?\*?ContentVerse India original briefing\.\s*Primary reporting:\s*\[[^\]]*\]\([^)]*\)\.?\*?/gi,
+        ""
+      )
+      .replace(
+        /\n?\*?ContentVerse India original briefing\.\s*Primary reporting:\s*Times of India\.?\*?/gi,
+        ""
+      )
+      .trim();
+    if (!trimmed) continue;
+    const key2 = trimmed.toLowerCase().replace(/\s+/g, " ");
+    if (seen.has(key2)) continue;
+    seen.add(key2);
     out.push(trimmed);
   }
   return out.join("\n\n");
@@ -225,7 +242,7 @@ function rewriteLocally(
     ? blurb.slice(0, 160)
     : `ContentVerse India briefing on: ${title}`.slice(0, 160);
 
-  return withAttribution(
+  return finalizeArticle(
     {
       title: title.slice(0, 160),
       excerpt,
@@ -233,7 +250,6 @@ function rewriteLocally(
       metaDescription: excerpt.slice(0, 160),
       tags: ["India news", catName, "Live briefing"].slice(0, 5),
     },
-    item,
     "local"
   );
 }

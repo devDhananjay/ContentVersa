@@ -131,7 +131,9 @@ export default async function BlogPage({
   const isOwnArticle =
     Boolean(userId && blog.author.id && userId === blog.author.id) ||
     Boolean(session?.username && session.username === blog.author.username);
-  const showAds = isPublic && Boolean(blog.adEligible);
+  // Live News briefings always monetize when published (Ads on full story).
+  const showAds =
+    isPublic && (Boolean(blog.adEligible) || isToiBriefing);
   const adSlots = blogAdSlots(getAdDensity());
   const ymylKind = ymylKindForBlogCategory(blog.category);
 
