@@ -11,22 +11,15 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 CRON_SECRET=$(grep -E '^CRON_SECRET=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"')
-APP_URL=$(grep -E '^APP_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"')
-APP_URL=${APP_URL:-https://contentverse.co.in}
+# Hit local Next (bypass nginx 60s proxy_read_timeout) — Gemini rewrites need minutes.
+LOCAL_URL="${TOI_NEWS_LOCAL_URL:-http://127.0.0.1:3000}"
 MAX="${TOI_NEWS_MAX_PER_RUN:-2}"
 if [[ -z "$CRON_SECRET" ]]; then
   echo "CRON_SECRET not set in .env" >&2
   exit 1
 fi
-echo "[cron] toi-news max=${MAX} $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+echo "[cron] toi-news max=${MAX} via ${LOCAL_URL} $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 # force=1 — TOI live desk runs even if admin AI auto-gen toggle is off
-URL="${APP_URL%/}/api/cron/toi-news?max=${MAX}&force=1"
-# Long Gemini rewrites — allow up to 4 minutes
-if curl -sfS --max-time 240 -H "Authorization: Bearer ${CRON_SECRET}" "$URL"; then
-  echo ""
-  exit 0
-fi
-echo "[cron] HTTP failed — trying in-process tsx with build/node_modules" >&2
-export NODE_PATH="$(pwd)/build/node_modules${NODE_PATH:+:$NODE_PATH}"
-npx tsx scripts/toi-news-ingest.ts --max="${MAX}" --force
+URL="${LOCAL_URL%/}/api/cron/toi-news?max=${MAX}&force=1"
+curl -sfS --max-time 280 -H "Authorization: Bearer ${CRON_SECRET}" "$URL"
 echo ""
