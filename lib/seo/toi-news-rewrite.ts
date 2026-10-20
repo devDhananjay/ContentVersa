@@ -162,7 +162,7 @@ async function rewriteWithOpenAICompatible(options: {
   }
 }
 
-/** Strip accidental repeated paragraphs from local/AI briefings. */
+/** Strip accidental repeated / filler paragraphs from local/AI briefings. */
 export function dedupeBriefingParagraphs(content: string): string {
   const parts = content.split(/\n\n+/);
   const out: string[] = [];
@@ -171,6 +171,8 @@ export function dedupeBriefingParagraphs(content: string): string {
     const trimmed = part.trim();
     if (!trimmed) continue;
     const key = trimmed.toLowerCase().replace(/\s+/g, " ");
+    // Drop the old local-pad filler line entirely (was duplicated many times).
+    if (key.startsWith("readers who want depth should cross-check")) continue;
     if (seen.has(key)) continue;
     seen.add(key);
     out.push(trimmed);
