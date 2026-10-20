@@ -1184,6 +1184,12 @@
       "namedRegex": "^/moneyverse/screenshot\\-scan(?:/)?$"
     },
     {
+      "page": "/news",
+      "regex": "^/news(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/news(?:/)?$"
+    },
+    {
       "page": "/policy",
       "regex": "^/policy(?:/)?$",
       "routeKeys": {},

@@ -140,6 +140,14 @@
         {
           "protocol": "https",
           "hostname": "**.bbci.co.uk"
+        },
+        {
+          "protocol": "https",
+          "hostname": "static.toiimg.com"
+        },
+        {
+          "protocol": "https",
+          "hostname": "timesofindia.indiatimes.com"
         }
       ],
       "unoptimized": false
