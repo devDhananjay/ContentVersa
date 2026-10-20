@@ -60,7 +60,8 @@ export function Navbar({
 
   const linkClass = (active: boolean) =>
     cn(
-      "relative inline-flex items-center rounded-full px-2 lg:px-2 xl:px-3 py-1.5 xl:py-2 text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0 leading-none",
+      // Match NavDropdown trigger: same py + items-center so News never sits high
+      "relative inline-flex h-9 items-center rounded-full px-2 lg:px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
       immersive
         ? active
           ? "text-white"
@@ -98,15 +99,15 @@ export function Navbar({
             const Icon = link.icon;
             return (
               <Link key={link.href} href={link.href} className={linkClass(active)}>
-                <span className="inline-flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1.5 leading-none">
                   {link.live ? (
                     <span
-                      className="relative inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center overflow-visible"
+                      className="relative inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center"
                       aria-hidden
                     >
-                      {!active ? (
-                        <span className="absolute h-2 w-2 animate-ping rounded-full bg-red-500/50" />
-                      ) : null}
+                      <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                        <span className="h-2 w-2 animate-ping rounded-full bg-red-500/45" />
+                      </span>
                       <span className="relative h-1.5 w-1.5 rounded-full bg-red-500" />
                     </span>
                   ) : Icon ? (
