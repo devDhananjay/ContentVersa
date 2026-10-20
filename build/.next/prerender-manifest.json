@@ -1,35 +1,6 @@
 {
   "version": 4,
   "routes": {
-    "/apple-icon.png": {
-      "initialHeaders": {
-        "cache-control": "public, immutable, no-transform, max-age=31536000",
-        "content-type": "image/png",
-        "x-next-cache-tags": "_N_T_/layout,_N_T_/apple-icon.png/layout,_N_T_/apple-icon.png/route,_N_T_/apple-icon.png"
-      },
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/apple-icon.png",
-      "dataRoute": null,
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/icon.png": {
       "initialHeaders": {
         "cache-control": "public, immutable, no-transform, max-age=31536000",
@@ -49,6 +20,35 @@
       ],
       "initialRevalidateSeconds": false,
       "srcRoute": "/icon.png",
+      "dataRoute": null,
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/apple-icon.png": {
+      "initialHeaders": {
+        "cache-control": "public, immutable, no-transform, max-age=31536000",
+        "content-type": "image/png",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/apple-icon.png/layout,_N_T_/apple-icon.png/route,_N_T_/apple-icon.png"
+      },
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/apple-icon.png",
       "dataRoute": null,
       "allowHeader": [
         "host",
@@ -137,30 +137,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/robots.txt",
       "dataRoute": null,
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/contact": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/contact",
-      "dataRoute": "/contact.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -314,7 +290,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/advertise": {
+    "/guides/trending": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -327,8 +303,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/advertise",
-      "dataRoute": "/advertise.rsc",
+      "srcRoute": "/guides/[section]",
+      "dataRoute": "/guides/trending.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -353,30 +329,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/guides",
       "dataRoute": "/guides.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/results": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/results",
-      "dataRoute": "/results.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -1058,6 +1010,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/guides/money/used-car-rc-rto-vahan-india": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/guides/[section]/[slug]",
+      "dataRoute": "/guides/money/used-car-rc-rto-vahan-india.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/guides/money/when-to-stop-sip-mutual-fund": {
       "experimentalBypassFor": [
         {
@@ -1121,30 +1097,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/guides/[section]/[slug]",
       "dataRoute": "/guides/movies/where-to-watch-ott-india.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/guides/schemes/aadhaar-update-online-india": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/guides/[section]/[slug]",
-      "dataRoute": "/guides/schemes/aadhaar-update-online-india.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -1370,7 +1322,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/site-map": {
+    "/contact": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -1383,8 +1335,32 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/site-map",
-      "dataRoute": "/site-map.rsc",
+      "srcRoute": "/contact",
+      "dataRoute": "/contact.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/results": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/results",
+      "dataRoute": "/results.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -1418,7 +1394,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/auth/sign-in": {
+    "/site-map": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -1431,56 +1407,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/auth/sign-in",
-      "dataRoute": "/auth/sign-in.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/auth/sign-up": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/auth/sign-up",
-      "dataRoute": "/auth/sign-up.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/huid-verification": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/huid-verification",
-      "dataRoute": "/huid-verification.rsc",
+      "srcRoute": "/site-map",
+      "dataRoute": "/site-map.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -1778,6 +1706,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/huid-verification": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/huid-verification",
+      "dataRoute": "/huid-verification.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/jobs/private": {
       "experimentalBypassFor": [
         {
@@ -1802,7 +1754,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/jobpilot/login": {
+    "/reels": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -1815,8 +1767,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/jobpilot/login",
-      "dataRoute": "/jobpilot/login.rsc",
+      "srcRoute": "/reels",
+      "dataRoute": "/reels.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -1850,6 +1802,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/jobpilot/login": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/jobpilot/login",
+      "dataRoute": "/jobpilot/login.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/jobpilot/tracker": {
       "experimentalBypassFor": [
         {
@@ -1874,7 +1850,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/reels": {
+    "/auth/sign-in": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -1887,8 +1863,32 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/reels",
-      "dataRoute": "/reels.rsc",
+      "srcRoute": "/auth/sign-in",
+      "dataRoute": "/auth/sign-in.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/auth/sign-up": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/auth/sign-up",
+      "dataRoute": "/auth/sign-up.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -3098,6 +3098,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/tools/locations/kochi/atms": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/tools/locations/[city]/[category]",
+      "dataRoute": "/tools/locations/kochi/atms.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/tools/locations/kochi/hospitals": {
       "experimentalBypassFor": [
         {
@@ -3161,30 +3185,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/tools/locations/[city]/[category]",
       "dataRoute": "/tools/locations/kochi/restaurants.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/tools/locations/kochi/schools": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/tools/locations/[city]/[category]",
-      "dataRoute": "/tools/locations/kochi/schools.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -4684,6 +4684,31 @@
     }
   },
   "dynamicRoutes": {
+    "/guides/[section]": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "routeRegex": "^/guides/([^/]+?)(?:/)?$",
+      "dataRoute": "/guides/[section].rsc",
+      "fallback": null,
+      "dataRouteRegex": "^/guides/([^/]+?)\\.rsc$",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/finance/[topic]": {
       "experimentalBypassFor": [
         {
@@ -4737,8 +4762,8 @@
   },
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "6da95c3a484abe248fde26c55666c218",
-    "previewModeSigningKey": "3605ea803dc6f72f9842bd1971935268cdc15542397e6b5af437c671b0d95af2",
-    "previewModeEncryptionKey": "84a6b0fc976b49fee3705d7aed4812061d49d472ab3cf89569a3b2514e0c7621"
+    "previewModeId": "4bcfad7ef614c75f6238f434b72e8a65",
+    "previewModeSigningKey": "234f1e85cb8dfa6c0720c45865cedb59880b48abaa9e3d79a1032e8479c37510",
+    "previewModeEncryptionKey": "b1b35898d432cd4babda47cef6df97abe69cf6f587227aa9ff87b6ff5788aded"
   }
 }
