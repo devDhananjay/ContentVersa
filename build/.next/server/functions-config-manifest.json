@@ -2,14 +2,17 @@
   "version": 1,
   "functions": {
     "/api/auth/google/login": {},
+    "/api/auth/firebase": {},
+    "/api/auth/google/callback": {},
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
-    "/api/auth/firebase": {},
+    "/api/cron/toi-news": {
+      "maxDuration": 300
+    },
+    "/api/reels/upload": {},
     "/api/moneyverse/bank-statement/quota": {},
     "/api/moneyverse/bank-statement/analyze": {},
-    "/api/auth/google/callback": {},
-    "/api/reels/upload": {},
     "/api/upload": {},
     "/uploads/[filename]": {}
   }
