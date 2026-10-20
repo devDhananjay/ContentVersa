@@ -713,16 +713,103 @@ html.sr-read-aloud-focus :focus-visible {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(60% 55% at 15% 0%, hsl(var(--primary) / 0.22), transparent 70%),
-    radial-gradient(45% 45% at 88% 10%, hsl(var(--saffron) / 0.2), transparent 70%),
-    radial-gradient(50% 50% at 50% 100%, hsl(var(--primary) / 0.1), transparent 70%);
+    radial-gradient(55% 50% at 12% 8%, hsl(230 35% 40% / 0.1), transparent 68%),
+    radial-gradient(48% 42% at 88% 6%, hsl(var(--saffron) / 0.16), transparent 70%),
+    radial-gradient(42% 38% at 72% 42%, hsl(var(--primary) / 0.1), transparent 72%),
+    radial-gradient(55% 48% at 50% 105%, hsl(230 30% 30% / 0.06), transparent 70%);
 }
 .dark .v2-aurora,
 .theme-v2[data-mode="dark"] .v2-aurora {
   background:
-    radial-gradient(60% 55% at 15% 0%, hsl(var(--primary) / 0.28), transparent 70%),
-    radial-gradient(45% 45% at 88% 10%, hsl(var(--saffron) / 0.16), transparent 70%),
-    radial-gradient(50% 50% at 50% 100%, hsl(var(--primary) / 0.14), transparent 70%);
+    radial-gradient(60% 55% at 15% 0%, hsl(var(--primary) / 0.3), transparent 70%),
+    radial-gradient(45% 45% at 88% 10%, hsl(var(--saffron) / 0.18), transparent 70%),
+    radial-gradient(40% 40% at 70% 45%, hsl(210 80% 55% / 0.1), transparent 72%),
+    radial-gradient(50% 50% at 50% 100%, hsl(var(--primary) / 0.16), transparent 70%);
+}
+@keyframes v2-aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(1.5%, -1.2%, 0) scale(1.04);
+  }
+}
+.v2-aurora-live {
+  animation: v2-aurora-drift 18s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-aurora-live {
+    animation: none;
+  }
+}
+.hero-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(48px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.hero-orb-a {
+  width: min(42vw, 420px);
+  height: min(42vw, 420px);
+  left: -8%;
+  top: -6%;
+  background: hsl(230 40% 55% / 0.22);
+  animation: hero-orb-float 14s ease-in-out infinite;
+}
+.hero-orb-b {
+  width: min(36vw, 360px);
+  height: min(36vw, 360px);
+  right: -4%;
+  top: 8%;
+  background: hsl(var(--saffron) / 0.2);
+  animation: hero-orb-float 17s ease-in-out infinite reverse;
+}
+.hero-orb-c {
+  width: min(48vw, 480px);
+  height: min(28vw, 280px);
+  left: 28%;
+  bottom: 4%;
+  background: hsl(var(--primary) / 0.14);
+  animation: hero-orb-float 20s ease-in-out infinite;
+}
+.dark .hero-orb-a {
+  background: hsl(var(--primary) / 0.28);
+  opacity: 0.7;
+}
+.dark .hero-orb-b {
+  background: hsl(var(--saffron) / 0.22);
+  opacity: 0.65;
+}
+.dark .hero-orb-c {
+  background: hsl(210 90% 60% / 0.16);
+  opacity: 0.6;
+}
+@keyframes hero-orb-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(3%, 4%, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-orb-a,
+  .hero-orb-b,
+  .hero-orb-c {
+    animation: none;
+  }
+}
+.hero-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: multiply;
+}
+.dark .hero-grain {
+  mix-blend-mode: soft-light;
 }
 .v2-chip {
   border: 1px solid hsl(var(--border));

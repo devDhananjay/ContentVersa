@@ -45,27 +45,34 @@ export function StickyWhatsAppShare({
   return (
     <div
       className={cn(
-        "fixed bottom-20 md:bottom-6 left-1/2 z-40 -translate-x-1/2",
-        "flex items-center gap-2 rounded-full border border-[#25D366]/40 bg-background/95 px-3 py-2 shadow-lg backdrop-blur"
+        "fixed z-40 flex items-center gap-1.5 rounded-full border border-[#25D366]/35 bg-background/95 shadow-lg backdrop-blur-md",
+        // Mobile: left side — clear of bottom nav + right chat/a11y FABs
+        "bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] left-3 right-auto max-w-[min(17.5rem,calc(100vw-5.75rem))] -translate-x-0 px-1.5 py-1.5",
+        // Desktop: centered bottom
+        "md:bottom-6 md:left-1/2 md:max-w-none md:-translate-x-1/2 md:gap-2 md:px-3 md:py-2"
       )}
     >
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-sm font-semibold text-white"
+        className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-[#25D366] px-3 py-2 text-xs font-semibold text-white sm:gap-2 sm:px-4 sm:text-sm"
       >
-        <WhatsAppIcon className="h-4 w-4 text-white" />
-        Share on WhatsApp
+        <WhatsAppIcon className="h-4 w-4 shrink-0 text-white" />
+        <span className="truncate">Share on WhatsApp</span>
       </a>
-      <div className="inline-flex rounded-full border border-border/60 p-0.5">
+      <div
+        className="inline-flex shrink-0 rounded-full border border-border/60 p-0.5"
+        role="group"
+        aria-label="Share language"
+      >
         {(["hi", "en"] as const).map((code) => (
           <button
             key={code}
             type="button"
             onClick={() => setLocale(code)}
             className={cn(
-              "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
+              "rounded-full px-2 py-1 text-[10px] font-bold uppercase leading-none",
               locale === code
                 ? "bg-foreground text-background"
                 : "text-muted-foreground"

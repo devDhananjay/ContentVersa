@@ -41,7 +41,7 @@ export function blogAdSlots(density: AdDensity = getAdDensity()) {
 }
 
 /**
- * Movie detail: left + right skyscrapers (only one sticky) + mid bands.
+ * Movie detail: left + right skyscrapers (only one sticky) + mid bands / MRECs.
  * Hero / watchlist CTAs stay ad-free.
  */
 export function movieAdSlots(density: AdDensity = getAdDensity()) {
@@ -50,14 +50,22 @@ export function movieAdSlots(density: AdDensity = getAdDensity()) {
       leftRail: false,
       rightRail: true,
       afterCast: true,
+      afterTrailer: false,
+      afterStory: true,
+      afterWhereToWatch: false,
+      afterReviews: true,
       midMobile: false,
     };
   }
-  // normal + comfortable: both gutters (long-height ads)
+  // normal + comfortable: gutters + several in-content breaks
   return {
     leftRail: true,
     rightRail: true,
     afterCast: true,
+    afterTrailer: true,
+    afterStory: true,
+    afterWhereToWatch: true,
+    afterReviews: true,
     midMobile: true,
   };
 }

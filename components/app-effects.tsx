@@ -10,7 +10,6 @@ import { RecordSiteVisit } from "@/components/site/record-site-visit";
 import { TrackPageVisit } from "@/components/site/track-page-visit";
 import { ScrollToTop } from "@/components/site/scroll-to-top";
 import { FloatingActionDock } from "@/components/site/floating-action-dock";
-import { AdSenseAnchorAlign } from "@/components/ads/adsense-anchor-align";
 
 export function AppEffects() {
   return (
@@ -24,8 +23,6 @@ export function AppEffects() {
           <RecordSiteVisit />
           <TrackPageVisit />
           <AutoPushPermission />
-          {/* Nudge official AdSense Anchor to bottom-left (right dock has FABs) */}
-          <AdSenseAnchorAlign />
           <FloatingActionDock />
         </ColorVisionProvider>
       </ScreenReaderProvider>

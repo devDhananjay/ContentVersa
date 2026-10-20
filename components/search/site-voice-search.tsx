@@ -72,16 +72,16 @@ export function SiteVoiceSearch({
           onQueryChange?.(q);
           if (navigateOnSubmit) navigateTo(q);
         }}
-        className={cn("relative group", isHero && "w-full max-w-2xl")}
+        className={cn("relative group w-full", isHero && "mx-auto")}
       >
         {isHero ? (
-          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/40 to-[hsl(var(--saffron)/0.4)] opacity-0 blur-lg transition-opacity duration-500 group-focus-within:opacity-70" />
+          <div className="absolute -inset-px rounded-full bg-gradient-to-r from-foreground/10 via-primary/30 to-[hsl(var(--saffron)/0.35)] opacity-50 transition-opacity duration-300 group-focus-within:opacity-90" />
         ) : null}
         <div className="relative">
           <Search
             className={cn(
               "absolute left-3 top-1/2 z-10 -translate-y-1/2 text-muted-foreground",
-              isHero ? "left-4 h-5 w-5 sm:left-5" : "h-4 w-4"
+              isHero ? "left-4 h-4 w-4" : "h-4 w-4"
             )}
           />
           <Input
@@ -98,23 +98,23 @@ export function SiteVoiceSearch({
             autoComplete="off"
             aria-label="Search"
             className={cn(
-              voice.listening && "ring-2 ring-primary/30 border-primary/40",
+              voice.listening && "ring-2 ring-primary/25 border-primary/35",
               isHero
-                ? "h-12 rounded-2xl border-border bg-card pl-12 pr-36 text-base shadow-glow backdrop-blur sm:h-16 sm:pl-14 sm:pr-44"
+                ? "h-11 rounded-full border-border/55 bg-card/90 pl-11 pr-28 text-sm shadow-[0_1px_0_hsl(0_0%_100%/0.7)_inset,0_14px_36px_-20px_hsl(235_30%_20%/0.32)] backdrop-blur-xl transition-[box-shadow,border-color] focus-visible:border-foreground/25 focus-visible:shadow-[0_1px_0_hsl(0_0%_100%/0.7)_inset,0_16px_40px_-18px_hsl(var(--primary)/0.28)] sm:h-12 sm:pl-12 sm:pr-32"
                 : "h-11 rounded-full pl-10 pr-24 text-sm",
               inputClassName
             )}
           />
           <div
             className={cn(
-              "absolute top-1/2 flex -translate-y-1/2 items-center gap-1",
-              isHero ? "right-1.5 sm:right-2" : "right-1.5"
+              "absolute top-1/2 flex -translate-y-1/2 items-center gap-0.5",
+              isHero ? "right-1.5" : "right-1.5"
             )}
           >
             <VoiceSearchButton
               supported={voice.supported}
               listening={voice.listening}
-              size={isHero ? "md" : "sm"}
+              size="sm"
               onToggle={() => {
                 if (voice.listening) voice.stop();
                 else voice.start();
@@ -123,11 +123,12 @@ export function SiteVoiceSearch({
             {isHero ? (
               <Button
                 type="submit"
-                variant="gradient"
-                className="h-9 rounded-xl px-3 text-sm sm:h-12 sm:px-4 sm:text-base"
+                size="sm"
+                variant="default"
+                className="h-8 rounded-full bg-foreground px-3.5 text-xs font-medium text-background transition-transform hover:bg-foreground/90 active:scale-[0.98]"
               >
                 Search
-                <ArrowRight className="hidden h-4 w-4 sm:inline" />
+                <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             ) : (
               <Button
@@ -143,11 +144,23 @@ export function SiteVoiceSearch({
         </div>
       </form>
       {voice.error ? (
-        <p className="mt-2 text-left text-xs text-destructive" role="status">
+        <p
+          className={cn(
+            "mt-2 text-xs text-destructive",
+            isHero ? "text-center" : "text-left"
+          )}
+          role="status"
+        >
           {voice.error}
         </p>
       ) : voice.listening ? (
-        <p className="mt-2 text-left text-xs text-muted-foreground" role="status">
+        <p
+          className={cn(
+            "mt-2 text-xs text-muted-foreground",
+            isHero ? "text-center" : "text-left"
+          )}
+          role="status"
+        >
           Listening… speak your search
         </p>
       ) : null}

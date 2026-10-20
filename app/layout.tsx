@@ -68,7 +68,7 @@ export default function RootLayout({
         <BrandingHead />
         <GoogleAdsTag />
         <AdSenseSiteScript />
-        {/* Official Anchor + vignette; utility routes call DisableAutoAds */}
+        {/* Page-level ads without bottom Anchor; tools/utility call DisableAutoAds */}
         <PageLevelAds />
       </head>
       <body

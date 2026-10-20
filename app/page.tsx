@@ -199,13 +199,14 @@ export default async function HomePage() {
       <ScrollProgress />
       <HomeStickySidebar sections={HOME_SIDEBAR_SECTIONS} />
 
-      <div className="xl:[&_.container]:pl-16 2xl:[&_.container]:pl-20">
-        <div id="home-top" className="scroll-mt-0">
-          <HomeHeroShell>
-            <Hero categories={data.categories} />
-          </HomeHeroShell>
-        </div>
+      {/* Hero + its own L/R rails — centered, no page-wide shift */}
+      <div id="home-top" className="scroll-mt-0">
+        <HomeHeroShell>
+          <Hero categories={data.categories} />
+        </HomeHeroShell>
+      </div>
 
+      <div className="xl:[&_.container]:pl-16 2xl:[&_.container]:pl-20">
         <div id="home-reels" className="scroll-mt-[calc(var(--site-header-offset)+1rem)]">
           <ReelsStripSection />
         </div>

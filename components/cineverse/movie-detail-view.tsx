@@ -1,8 +1,10 @@
+import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Clock, ExternalLink, Star, Tv } from "lucide-react";
 import { PageBack } from "@/components/site/page-back";
 import { BandAd } from "@/components/ads/band-ad";
+import { MrecAd } from "@/components/ads/mrec-ad";
 import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { AddToMovieWatchlistButton } from "@/components/cineverse/add-to-movie-watchlist-button";
 import { StreamingProviders } from "@/components/cineverse/streaming-providers";
@@ -247,7 +249,7 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
               )}
             </Section>
 
-            {/* Natural break after cast — before trailer (not beside CTAs) */}
+            {/* After cast — before trailer */}
             {ads.afterCast ? <BandAd slotKey="horizontal" /> : null}
 
             <Section id="trailer" title={`${movie.title} Trailer`}>
@@ -260,9 +262,10 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
               )}
             </Section>
 
-            {ads.midMobile && !ads.afterCast ? (
+            {ads.afterTrailer ? <MrecAd slotKey="hub" /> : null}
+            {ads.midMobile ? (
               <div className="xl:hidden">
-                <BandAd slotKey="hub" />
+                <BandAd slotKey="horizontal" />
               </div>
             ) : null}
 
@@ -271,6 +274,8 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
                 {movie.overview || "Plot synopsis will appear when published."}
               </p>
             </Section>
+
+            {ads.afterStory ? <BandAd slotKey="hub" /> : null}
 
             <Section id="rating" title={`${movie.title} Rating`}>
               <p className="text-sm text-muted-foreground">
@@ -316,38 +321,43 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
               <StreamingProviders providers={movie.providers} movieTitle={movie.title} />
             </Section>
 
+            {ads.afterWhereToWatch ? <MrecAd slotKey="inArticle" /> : null}
+
             <SponsoredOttBanner />
 
             <Section id="reviews" title={`${movie.title} Reviews`}>
               {movie.reviews.length ? (
                 <div className="space-y-4">
-                  {movie.reviews.map((r) => (
-                    <blockquote
-                      key={r.id}
-                      className="rounded-xl border border-border/50 bg-muted/15 px-4 py-3"
-                    >
-                      <p className="text-sm font-semibold">
-                        {r.author}
-                        {r.rating != null ? (
-                          <span className="ml-2 font-normal text-amber-400">
-                            {r.rating}/10
-                          </span>
+                  {movie.reviews.map((r, i) => (
+                    <Fragment key={r.id}>
+                      <blockquote className="rounded-xl border border-border/50 bg-muted/15 px-4 py-3">
+                        <p className="text-sm font-semibold">
+                          {r.author}
+                          {r.rating != null ? (
+                            <span className="ml-2 font-normal text-amber-400">
+                              {r.rating}/10
+                            </span>
+                          ) : null}
+                        </p>
+                        <p className="mt-2 line-clamp-6 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                          {r.content}
+                        </p>
+                        {r.url ? (
+                          <a
+                            href={r.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 inline-flex text-xs text-violet-300 hover:underline"
+                          >
+                            Read full review
+                          </a>
                         ) : null}
-                      </p>
-                      <p className="mt-2 line-clamp-6 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
-                        {r.content}
-                      </p>
-                      {r.url ? (
-                        <a
-                          href={r.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-2 inline-flex text-xs text-violet-300 hover:underline"
-                        >
-                          Read full review
-                        </a>
+                      </blockquote>
+                      {/* Mid-reviews break after 2nd review */}
+                      {i === 1 && ads.afterWhereToWatch ? (
+                        <BandAd slotKey="horizontal" className="!my-2" />
                       ) : null}
-                    </blockquote>
+                    </Fragment>
                   ))}
                 </div>
               ) : (
@@ -357,6 +367,8 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
                 </p>
               )}
             </Section>
+
+            {ads.afterReviews ? <BandAd slotKey="horizontal" /> : null}
 
             {SHOW_THIRD_PARTY_CREDITS ? (
               <p className="text-center text-[10px] text-muted-foreground">
