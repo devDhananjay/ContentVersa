@@ -769,6 +769,8 @@ html.sr-read-aloud-focus :focus-visible {
 }
 .live-news-dot {
   animation: live-news-dot-pulse 1.6s ease-out infinite;
+  /* Keep pulse ring from shifting flex/baseline alignment */
+  transform: translateZ(0);
 }
 @media (prefers-reduced-motion: reduce) {
   .live-news-title-blink,

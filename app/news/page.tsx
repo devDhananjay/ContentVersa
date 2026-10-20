@@ -70,12 +70,17 @@ export default async function NewsHubPage() {
               <Radio className="h-3.5 w-3.5" />
               India desk
             </p>
-            <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-              <span className="inline-flex items-center gap-2 live-news-title-blink">
-                <span className="h-2.5 w-2.5 rounded-full bg-red-500 live-news-dot" />
-                <span className="text-red-600 dark:text-red-400">Live</span>
-              </span>{" "}
-              News
+            <h1 className="font-display flex flex-nowrap items-center gap-2.5 text-3xl font-bold tracking-tight md:text-4xl">
+              <span
+                className="relative inline-flex h-2.5 w-2.5 shrink-0 rounded-full bg-red-500 live-news-dot"
+                aria-hidden
+              />
+              <span className="whitespace-nowrap">
+                <span className="live-news-title-blink text-red-600 dark:text-red-400">
+                  Live
+                </span>{" "}
+                <span className="text-foreground">News</span>
+              </span>
             </h1>
           </div>
           <p className="text-sm text-muted-foreground">

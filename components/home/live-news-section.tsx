@@ -21,23 +21,25 @@ function formatRelative(iso: string): string {
 
 function LiveNewsHeading({ reduce }: { reduce: boolean | null }) {
   return (
-    <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+    <h2 className="font-display flex flex-nowrap items-center gap-2.5 text-3xl font-bold tracking-tight md:text-4xl">
       <span
         className={cn(
-          "inline-flex items-center gap-2.5",
-          !reduce && "live-news-title-blink"
+          "relative inline-flex h-2.5 w-2.5 shrink-0 rounded-full bg-red-500",
+          !reduce && "live-news-dot"
         )}
-      >
+        aria-hidden
+      />
+      <span className="whitespace-nowrap">
         <span
           className={cn(
-            "relative inline-flex h-2.5 w-2.5 shrink-0 rounded-full bg-red-500",
-            !reduce && "live-news-dot"
+            "text-red-600 dark:text-red-400",
+            !reduce && "live-news-title-blink"
           )}
-          aria-hidden
-        />
-        <span className="text-red-600 dark:text-red-400">Live</span>
-      </span>{" "}
-      <span className="text-foreground">News</span>
+        >
+          Live
+        </span>{" "}
+        <span className="text-foreground">News</span>
+      </span>
     </h2>
   );
 }

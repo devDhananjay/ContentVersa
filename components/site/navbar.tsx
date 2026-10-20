@@ -60,7 +60,7 @@ export function Navbar({
 
   const linkClass = (active: boolean) =>
     cn(
-      "relative rounded-full px-2 lg:px-2 xl:px-3 py-1.5 xl:py-2 text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
+      "relative inline-flex items-center rounded-full px-2 lg:px-2 xl:px-3 py-1.5 xl:py-2 text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0 leading-none",
       immersive
         ? active
           ? "text-white"
@@ -98,23 +98,21 @@ export function Navbar({
             const Icon = link.icon;
             return (
               <Link key={link.href} href={link.href} className={linkClass(active)}>
-                <span className="inline-flex items-center gap-1.5 leading-none">
+                <span className="inline-flex items-center gap-1.5">
                   {link.live ? (
                     <span
-                      className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center"
+                      className="relative inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center overflow-visible"
                       aria-hidden
                     >
-                      <span className="live-news-dot h-1.5 w-1.5 rounded-full bg-red-500" />
+                      {!active ? (
+                        <span className="absolute h-2 w-2 animate-ping rounded-full bg-red-500/50" />
+                      ) : null}
+                      <span className="relative h-1.5 w-1.5 rounded-full bg-red-500" />
                     </span>
                   ) : Icon ? (
                     <Icon className="h-3.5 w-3.5 shrink-0 opacity-70" />
                   ) : null}
-                  <span
-                    className={cn(
-                      "leading-none",
-                      link.live && "text-red-600 dark:text-red-400"
-                    )}
-                  >
+                  <span className={link.live ? "text-red-600 dark:text-red-400" : undefined}>
                     {link.label}
                   </span>
                 </span>

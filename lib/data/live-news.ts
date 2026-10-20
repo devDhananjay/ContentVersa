@@ -161,7 +161,12 @@ function buildCards(
     }
   }
 
-  return cards.slice(0, limit);
+  return cards
+    .sort(
+      (a, b) =>
+        (Date.parse(b.publishedAt) || 0) - (Date.parse(a.publishedAt) || 0)
+    )
+    .slice(0, limit);
 }
 
 async function fetchLiveNewsUncached(limit: number): Promise<LiveNewsCard[]> {
@@ -183,7 +188,7 @@ async function fetchLiveNewsUncached(limit: number): Promise<LiveNewsCard[]> {
 export async function getLiveNewsForHome(limit = 8): Promise<LiveNewsCard[]> {
   const cached = unstable_cache(
     () => fetchLiveNewsUncached(limit),
-    [`live-news-home-v2-${limit}`],
+    [`live-news-home-v3-${limit}`],
     { revalidate: 180, tags: ["live-news"] }
   );
   try {
