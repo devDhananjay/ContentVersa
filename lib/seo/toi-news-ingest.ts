@@ -60,9 +60,11 @@ async function ensureCategory(slug: string) {
 
 async function upsertTags(names: string[]) {
   const tagIds: string[] = [];
-  for (const name of names.slice(0, 5)) {
+  const seen = new Set<string>();
+  for (const name of names) {
     const slug = slugify(name);
-    if (!slug) continue;
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
     const tag = await prisma.tag.upsert({
       where: { slug },
       create: { name, slug },
@@ -70,6 +72,7 @@ async function upsertTags(names: string[]) {
       select: { id: true },
     });
     tagIds.push(tag.id);
+    if (tagIds.length >= 6) break;
   }
   return tagIds;
 }
