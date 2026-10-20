@@ -28,6 +28,7 @@ const STATIC_PAGES: Array<{
 }> = [
   { path: "", changeFrequency: "daily", priority: 1 },
   { path: "/blogs", changeFrequency: "hourly", priority: 0.9 },
+  { path: "/news", changeFrequency: "hourly", priority: 0.88 },
   { path: "/categories", changeFrequency: "daily", priority: 0.8 },
   { path: "/about", changeFrequency: "monthly", priority: 0.5 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.5 },

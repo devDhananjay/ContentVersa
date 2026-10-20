@@ -20,7 +20,9 @@ export type LiveNewsCard = {
   feedLabel: string;
   publishedAt: string;
   hasBriefing: boolean;
+  /** Always false for home — we keep readers on ContentVerse */
   isExternal: boolean;
+  imageUrl?: string | null;
 };
 
 const FEED_LABELS: Record<string, string> = {
@@ -44,6 +46,7 @@ type ToiBlogRow = {
   slug: string;
   title: string;
   excerpt: string | null;
+  coverImage: string | null;
   metaKeywords: string | null;
   publishedAt: Date | null;
   createdAt: Date;
@@ -65,6 +68,7 @@ async function loadToiBriefings(limit: number): Promise<ToiBlogRow[]> {
         slug: true,
         title: true,
         excerpt: true,
+        coverImage: true,
         metaKeywords: true,
         publishedAt: true,
         createdAt: true,
@@ -95,47 +99,10 @@ function buildCards(
   const usedBriefIds = new Set<string>();
   const cards: LiveNewsCard[] = [];
 
-  for (const item of rss) {
-    if (cards.length >= limit) break;
-    const key = toiSourceKey(item.link);
-    const brief = bySource.get(key);
-    if (brief) {
-      usedBriefIds.add(brief.id);
-      cards.push({
-        id: brief.id,
-        title: brief.title,
-        href: `/blog/${brief.slug}`,
-        excerpt: (brief.excerpt || item.description || "").slice(0, 140),
-        categoryLabel: brief.category?.name ?? categoryLabelFromSlug(brief.category?.slug),
-        feedLabel: feedLabel(item.feedKey),
-        publishedAt:
-          brief.publishedAt?.toISOString() ||
-          item.publishedAt ||
-          brief.createdAt.toISOString(),
-        hasBriefing: true,
-        isExternal: false,
-      });
-    } else {
-      cards.push({
-        id: `rss-${key}`,
-        title: item.title,
-        href: item.link,
-        excerpt: (item.description || "Live headline — full ContentVerse briefing updating shortly.").slice(
-          0,
-          140
-        ),
-        categoryLabel: feedLabel(item.feedKey),
-        feedLabel: feedLabel(item.feedKey),
-        publishedAt: item.publishedAt || new Date().toISOString(),
-        hasBriefing: false,
-        isExternal: true,
-      });
-    }
-  }
-
+  // Prefer our published briefings first so home clicks stay on ContentVerse.
   for (const brief of briefs) {
     if (cards.length >= limit) break;
-    if (usedBriefIds.has(brief.id)) continue;
+    usedBriefIds.add(brief.id);
     cards.push({
       id: brief.id,
       title: brief.title,
@@ -147,7 +114,51 @@ function buildCards(
         brief.publishedAt?.toISOString() || brief.createdAt.toISOString(),
       hasBriefing: true,
       isExternal: false,
+      imageUrl: brief.coverImage,
     });
+  }
+
+  for (const item of rss) {
+    if (cards.length >= limit) break;
+    const key = toiSourceKey(item.link);
+    const brief = bySource.get(key);
+    if (brief) {
+      if (usedBriefIds.has(brief.id)) continue;
+      usedBriefIds.add(brief.id);
+      cards.push({
+        id: brief.id,
+        title: brief.title,
+        href: `/blog/${brief.slug}`,
+        excerpt: (brief.excerpt || item.description || "").slice(0, 140),
+        categoryLabel:
+          brief.category?.name ?? categoryLabelFromSlug(brief.category?.slug),
+        feedLabel: feedLabel(item.feedKey),
+        publishedAt:
+          brief.publishedAt?.toISOString() ||
+          item.publishedAt ||
+          brief.createdAt.toISOString(),
+        hasBriefing: true,
+        isExternal: false,
+        imageUrl: brief.coverImage || item.imageUrl,
+      });
+    } else {
+      // No briefing yet — send to /news hub (never off-site TOI).
+      cards.push({
+        id: `rss-${key}`,
+        title: item.title,
+        href: "/news",
+        excerpt: (
+          item.description ||
+          "Live headline — ContentVerse briefing updating shortly."
+        ).slice(0, 140),
+        categoryLabel: feedLabel(item.feedKey),
+        feedLabel: feedLabel(item.feedKey),
+        publishedAt: item.publishedAt || new Date().toISOString(),
+        hasBriefing: false,
+        isExternal: false,
+        imageUrl: item.imageUrl,
+      });
+    }
   }
 
   return cards.slice(0, limit);
@@ -162,7 +173,6 @@ async function fetchLiveNewsUncached(limit: number): Promise<LiveNewsCard[]> {
   ]);
 
   if (rss.length === 0 && briefs.length === 0) {
-    // Offline / empty — keep section from crashing with a gentle empty list
     return [];
   }
 
@@ -173,7 +183,7 @@ async function fetchLiveNewsUncached(limit: number): Promise<LiveNewsCard[]> {
 export async function getLiveNewsForHome(limit = 8): Promise<LiveNewsCard[]> {
   const cached = unstable_cache(
     () => fetchLiveNewsUncached(limit),
-    [`live-news-home-v1-${limit}`],
+    [`live-news-home-v2-${limit}`],
     { revalidate: 180, tags: ["live-news"] }
   );
   try {
@@ -182,6 +192,11 @@ export async function getLiveNewsForHome(limit = 8): Promise<LiveNewsCard[]> {
     console.warn("[live-news] cache/fetch failed", err);
     return fetchLiveNewsUncached(limit).catch(() => []);
   }
+}
+
+/** Full news desk for /news page — more briefings + live RSS pending. */
+export async function getNewsDesk(limit = 24): Promise<LiveNewsCard[]> {
+  return fetchLiveNewsUncached(limit);
 }
 
 export function liveNewsFeedKeys(): string[] {

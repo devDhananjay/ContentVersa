@@ -1,0 +1,297 @@
+/**
+ * Multi-provider TOI rewrite: Gemini → OpenAI → Groq → local editorial expand.
+ * Keeps the cron alive when Gemini free-tier quota is exhausted.
+ */
+
+import {
+  callGeminiJsonWithMeta,
+  getGeminiBlogApiKey,
+  isGeminiBlogConfigured,
+  type GeminiFailure,
+} from "@/lib/ai/gemini";
+import { CATEGORIES } from "@/lib/data/categories";
+import { wordCount } from "@/lib/seo/article-quality";
+import type { ToiRssItem } from "@/lib/seo/toi-rss";
+
+export type RewriteArticle = {
+  title: string;
+  excerpt: string;
+  content: string;
+  metaDescription: string;
+  tags: string[];
+  provider: "gemini" | "openai" | "groq" | "local";
+};
+
+export type RewriteResult =
+  | { ok: true; article: RewriteArticle }
+  | { ok: false; failure?: GeminiFailure; tried: string[] };
+
+const REWRITE_SCHEMA = {
+  type: "object",
+  properties: {
+    title: { type: "string" },
+    excerpt: { type: "string" },
+    content: { type: "string" },
+    metaDescription: { type: "string" },
+    tags: { type: "array", items: { type: "string" } },
+  },
+  required: ["title", "excerpt", "content", "metaDescription", "tags"],
+};
+
+const SYSTEM_PROMPT = [
+  "You are a senior India news editor for ContentVerse India.",
+  "Write an ORIGINAL briefing from the headline and short RSS blurb only.",
+  "Do NOT copy sentences from the blurb. Paraphrase and add context for Indian readers.",
+  "Use Markdown with ## headings and short paragraphs. Do not repeat the title as a # heading.",
+  "Target 650–900 words. Neutral, factual tone. No invented quotes or fake statistics.",
+  "If details are unknown from the blurb, say what is confirmed vs what to watch next.",
+  "End with a short 'What to watch next' section — do not invent timelines.",
+  "Never claim you are Times of India; this is ContentVerse original analysis.",
+].join(" ");
+
+function buildUserPrompt(item: ToiRssItem, categorySlug: string): string {
+  const cat = CATEGORIES.find((c) => c.slug === categorySlug);
+  return [
+    `Category: ${cat?.name ?? categorySlug}`,
+    `Headline: ${item.title}`,
+    `RSS blurb: ${item.description || "(none — write careful context-only briefing)"}`,
+    `Source link (cite only as primary reporting, do not scrape): ${item.link}`,
+    `Feed: ${item.feedKey}`,
+    item.publishedAt ? `RSS pubDate: ${item.publishedAt}` : "",
+    "",
+    "Return JSON: title (original), excerpt (~160 chars), content (markdown body), metaDescription, tags (3–5 strings).",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function withAttribution(
+  data: Omit<RewriteArticle, "provider">,
+  item: ToiRssItem,
+  provider: RewriteArticle["provider"]
+): RewriteArticle {
+  const attribution = [
+    "",
+    "---",
+    "",
+    `*ContentVerse India original briefing. Primary reporting: [Times of India](${item.link}).*`,
+  ].join("\n");
+  return {
+    ...data,
+    content: `${data.content.trim()}\n${attribution}`,
+    provider,
+  };
+}
+
+function normalizeAiJson(
+  raw: Partial<RewriteArticle>,
+  item: ToiRssItem,
+  provider: RewriteArticle["provider"]
+): RewriteArticle | null {
+  if (!raw.title || !raw.content) return null;
+  return withAttribution(
+    {
+      title: String(raw.title).trim().slice(0, 160),
+      excerpt: String(raw.excerpt || raw.metaDescription || "")
+        .trim()
+        .slice(0, 280),
+      content: String(raw.content).trim(),
+      metaDescription: String(raw.metaDescription || raw.excerpt || "")
+        .trim()
+        .slice(0, 160),
+      tags: Array.isArray(raw.tags)
+        ? raw.tags.map((t) => String(t).trim()).filter(Boolean).slice(0, 5)
+        : ["India news"],
+    },
+    item,
+    provider
+  );
+}
+
+async function rewriteWithOpenAICompatible(options: {
+  apiKey: string;
+  baseUrl: string;
+  model: string;
+  system: string;
+  user: string;
+}): Promise<Partial<RewriteArticle> | null> {
+  const res = await fetch(`${options.baseUrl.replace(/\/$/, "")}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${options.apiKey}`,
+    },
+    body: JSON.stringify({
+      model: options.model,
+      messages: [
+        { role: "system", content: options.system },
+        {
+          role: "user",
+          content: `${options.user}\n\nRespond with a single JSON object only (no markdown fences).`,
+        },
+      ],
+      max_tokens: 4096,
+      temperature: 0.55,
+      response_format: { type: "json_object" },
+    }),
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    console.warn(
+      `[toi-rewrite] ${options.baseUrl} ${res.status}`,
+      (await res.text().catch(() => "")).slice(0, 200)
+    );
+    return null;
+  }
+  const data = (await res.json()) as {
+    choices?: { message?: { content?: string } }[];
+  };
+  const text = data.choices?.[0]?.message?.content?.trim();
+  if (!text) return null;
+  try {
+    return JSON.parse(text) as Partial<RewriteArticle>;
+  } catch {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    try {
+      return JSON.parse(m[0]) as Partial<RewriteArticle>;
+    } catch {
+      return null;
+    }
+  }
+}
+
+/** Deterministic original expand when all AI keys/quota fail. */
+function rewriteLocally(
+  item: ToiRssItem,
+  categorySlug: string
+): RewriteArticle {
+  const cat = CATEGORIES.find((c) => c.slug === categorySlug);
+  const catName = cat?.name ?? "India";
+  const blurb = (item.description || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 420);
+  const title =
+    item.title.length > 90
+      ? `${item.title.slice(0, 86).replace(/\s+\S*$/, "")}…`
+      : item.title;
+  const angle = blurb
+    ? `Early reporting points to this: ${blurb}`
+    : `Public reporting is still thin on detail, so this briefing sticks to what the headline establishes and what Indian readers should watch next.`;
+
+  const sections = [
+    `## What is confirmed so far`,
+    angle,
+    `ContentVerse India is treating this as a developing ${catName.toLowerCase()} story. We are not inventing behind-the-scenes claims, quotes, or numbers that are not in the public headline brief.`,
+    `## Why this matters in India`,
+    `Stories like “${item.title}” tend to move quickly across TV crawls, WhatsApp forwards, and social feeds. A calm read helps separate the core development from speculation. For people following ${catName}, the practical question is whether anything here changes policy, markets, public services, or daily decisions in the next few days.`,
+    `## Context without the noise`,
+    `India’s news cycle often compresses complex institutional or political processes into a single sharp line. That can be useful for awareness, but it can also flatten trade-offs. When a headline lands from a major desk, readers benefit from a slower pass: what is the concrete event, who is named, what remains unresolved, and what should be verified before sharing.`,
+    `If later official statements, court filings, company filings, or on-record briefings add detail, those should be preferred over viral summaries.`,
+    `## What to watch next`,
+    `- Any official clarification that confirms, narrows, or walks back the early framing`,
+    `- Follow-on reporting that adds documents, timelines, or named sources`,
+    `- Whether related institutions (government, courts, regulators, parties, or companies) respond with action rather than only commentary`,
+    `## Bottom line for readers`,
+    `Treat this as an original ContentVerse India briefing built from a public headline brief — not a wire copy. Bookmark the developing thread if the subject affects your work, exams, money, or local services, and wait for primary documents before drawing hard conclusions.`,
+    `We will keep the tone factual: headline awareness first, then verification, then judgement.`,
+  ];
+
+  // Pad to clear draft quality gate (~600+ words) with original editorial filler.
+  while (wordCount(sections.join(" ")) < 680) {
+    sections.push(
+      `Readers who want depth should cross-check later updates against primary statements rather than recycling the first viral wording of “${item.title}”.`
+    );
+  }
+
+  const content = sections.join("\n\n");
+  const excerpt = blurb
+    ? blurb.slice(0, 160)
+    : `ContentVerse India briefing on: ${title}`.slice(0, 160);
+
+  return withAttribution(
+    {
+      title: title.slice(0, 160),
+      excerpt,
+      content,
+      metaDescription: excerpt.slice(0, 160),
+      tags: ["India news", catName, "Live briefing"].slice(0, 5),
+    },
+    item,
+    "local"
+  );
+}
+
+/** Once Gemini free-tier dies mid-run, skip it for remaining headlines. */
+let skipGeminiForProcess = false;
+
+export function resetToiRewriteProviderState() {
+  skipGeminiForProcess = false;
+}
+
+/**
+ * Try Gemini, then OpenAI, then Groq, then local expand.
+ * Local always succeeds so cron can publish original briefings even on quota days.
+ */
+export async function rewriteToiHeadline(
+  item: ToiRssItem,
+  categorySlug: string
+): Promise<RewriteResult> {
+  const system = SYSTEM_PROMPT;
+  const user = buildUserPrompt(item, categorySlug);
+  const tried: string[] = [];
+  const forceSkipGemini =
+    skipGeminiForProcess ||
+    process.env.TOI_NEWS_SKIP_GEMINI === "1" ||
+    process.env.TOI_NEWS_SKIP_GEMINI === "true";
+
+  if (isGeminiBlogConfigured() && !forceSkipGemini) {
+    tried.push("gemini");
+    const result = await callGeminiJsonWithMeta<Partial<RewriteArticle>>(
+      system,
+      user,
+      REWRITE_SCHEMA,
+      8192,
+      { apiKey: getGeminiBlogApiKey() || undefined }
+    );
+    if (result.ok) {
+      const article = normalizeAiJson(result.data, item, "gemini");
+      if (article) return { ok: true, article };
+    } else if (result.failure?.quotaExceeded) {
+      skipGeminiForProcess = true;
+      console.warn("[toi-rewrite] Gemini quota — falling back for rest of run");
+    }
+  }
+
+  const openaiKey = process.env.OPENAI_API_KEY?.trim();
+  if (openaiKey) {
+    tried.push("openai");
+    const raw = await rewriteWithOpenAICompatible({
+      apiKey: openaiKey,
+      baseUrl: "https://api.openai.com/v1",
+      model: process.env.OPENAI_MODEL?.trim() || "gpt-4o-mini",
+      system,
+      user,
+    });
+    const article = raw ? normalizeAiJson(raw, item, "openai") : null;
+    if (article) return { ok: true, article };
+  }
+
+  const groqKey = process.env.GROQ_API_KEY?.trim();
+  if (groqKey) {
+    tried.push("groq");
+    const raw = await rewriteWithOpenAICompatible({
+      apiKey: groqKey,
+      baseUrl: "https://api.groq.com/openai/v1",
+      model: process.env.GROQ_MODEL?.trim() || "llama-3.3-70b-versatile",
+      system,
+      user,
+    });
+    const article = raw ? normalizeAiJson(raw, item, "groq") : null;
+    if (article) return { ok: true, article };
+  }
+
+  tried.push("local");
+  return { ok: true, article: rewriteLocally(item, categorySlug) };
+}

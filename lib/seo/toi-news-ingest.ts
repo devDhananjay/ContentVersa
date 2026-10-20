@@ -1,24 +1,21 @@
 /**
- * TOI RSS → Gemini original rewrite → Blog (DRAFT or PUBLISHED).
+ * TOI RSS → original rewrite (Gemini / OpenAI / Groq / local) → Blog.
  * Dedupes by TOI source link in metaKeywords. Does not scrape TOI HTML.
  */
 
 import { BlogStatus } from "@prisma/client";
-import {
-  callGeminiJsonWithMeta,
-  getGeminiBlogApiKey,
-  isGeminiBlogConfigured,
-  type GeminiFailure,
-} from "@/lib/ai/gemini";
 import { CATEGORIES } from "@/lib/data/categories";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { passesDraftQualityGate, wordCount } from "@/lib/seo/article-quality";
 import {
+  resetToiRewriteProviderState,
+  rewriteToiHeadline,
+} from "@/lib/seo/toi-news-rewrite";
+import {
   categoryHintForToiItem,
   fetchToiRssHeadlines,
   toiSourceKey,
-  type ToiRssItem,
 } from "@/lib/seo/toi-rss";
 import { readingTime, slugify } from "@/lib/utils";
 
@@ -96,96 +93,6 @@ async function alreadyIngested(sourceKey: string, title: string): Promise<boolea
   return Boolean(byTitle);
 }
 
-const REWRITE_SCHEMA = {
-  type: "object",
-  properties: {
-    title: { type: "string" },
-    excerpt: { type: "string" },
-    content: { type: "string" },
-    metaDescription: { type: "string" },
-    tags: { type: "array", items: { type: "string" } },
-  },
-  required: ["title", "excerpt", "content", "metaDescription", "tags"],
-};
-
-type RewriteArticle = {
-  title: string;
-  excerpt: string;
-  content: string;
-  metaDescription: string;
-  tags: string[];
-};
-
-type RewriteResult =
-  | { ok: true; article: RewriteArticle }
-  | { ok: false; failure?: GeminiFailure };
-
-async function rewriteToiItem(
-  item: ToiRssItem,
-  categorySlug: string
-): Promise<RewriteResult> {
-  const cat = CATEGORIES.find((c) => c.slug === categorySlug);
-  const system = [
-    "You are a senior India news editor for ContentVerse India.",
-    "Write an ORIGINAL briefing from the headline and short RSS blurb only.",
-    "Do NOT copy sentences from the blurb. Paraphrase and add context for Indian readers.",
-    "Use clear Markdown: one H1-style title is separate; body uses ## headings and short paragraphs.",
-    "Target 650–900 words. Neutral, factual tone. No invented quotes or fake statistics.",
-    "If details are unknown from the blurb, say what is confirmed vs what to watch next.",
-    "End with a short 'What to watch next' section — do not invent timelines.",
-    "Never claim you are Times of India; this is ContentVerse original analysis.",
-  ].join(" ");
-
-  const user = [
-    `Category: ${cat?.name ?? categorySlug}`,
-    `Headline: ${item.title}`,
-    `RSS blurb: ${item.description || "(none — write careful context-only briefing)"}`,
-    `Source link (cite only as primary reporting, do not scrape): ${item.link}`,
-    `Feed: ${item.feedKey}`,
-    item.publishedAt ? `RSS pubDate: ${item.publishedAt}` : "",
-    "",
-    "Return JSON: title (original, not a TOI clone), excerpt (~160 chars), content (markdown body WITHOUT repeating the title as # heading), metaDescription, tags (3–5 strings).",
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  const result = await callGeminiJsonWithMeta<RewriteArticle>(
-    system,
-    user,
-    REWRITE_SCHEMA,
-    8192,
-    { apiKey: getGeminiBlogApiKey() || undefined }
-  );
-  if (!result.ok) {
-    return { ok: false, failure: result.failure };
-  }
-  const data = result.data;
-  if (!data?.title || !data?.content) return { ok: false };
-
-  const attribution = [
-    "",
-    "---",
-    "",
-    `*ContentVerse India original briefing. Primary reporting: [Times of India](${item.link}).*`,
-  ].join("\n");
-
-  const content = `${data.content.trim()}\n${attribution}`;
-  return {
-    ok: true,
-    article: {
-      title: data.title.trim().slice(0, 160),
-      excerpt: (data.excerpt || data.metaDescription || "").trim().slice(0, 280),
-      content,
-      metaDescription: (data.metaDescription || data.excerpt || "")
-        .trim()
-        .slice(0, 160),
-      tags: Array.isArray(data.tags)
-        ? data.tags.map((t) => String(t).trim()).filter(Boolean).slice(0, 5)
-        : ["India news"],
-    },
-  };
-}
-
 function autoPublishEnabled(): boolean {
   const v = (process.env.TOI_NEWS_AUTO_PUBLISH ?? "1").trim().toLowerCase();
   return v === "1" || v === "true" || v === "yes";
@@ -212,9 +119,7 @@ export async function runToiNewsIngest(options?: {
   if (!isDatabaseConfigured()) {
     throw new Error("Database not configured");
   }
-  if (!isGeminiBlogConfigured()) {
-    throw new Error("GEMINI_BLOG_API_KEY (or GEMINI_API_KEY) missing");
-  }
+  // Gemini optional — OpenAI / Groq / local editorial expand still work.
 
   if (!options?.force) {
     const { isAiAutoGenEnabled } = await import("@/lib/ai/auto-gen-toggle");
@@ -245,18 +150,16 @@ export async function runToiNewsIngest(options?: {
     feedKeys: options?.feedKeys,
   });
 
+  resetToiRewriteProviderState();
+
   let created = 0;
   let skipped = 0;
   let failed = 0;
   let published = 0;
   const slugs: string[] = [];
-  // Don't keep hammering Gemini across every headline when quota/models fail.
-  const maxRewriteAttempts = Math.max(maxPerRun + 1, 3);
-  let rewriteAttempts = 0;
 
   for (const item of headlines) {
     if (created >= maxPerRun) break;
-    if (rewriteAttempts >= maxRewriteAttempts) break;
 
     const sourceKey = toiSourceKey(item.link);
     if (await alreadyIngested(sourceKey, item.title)) {
@@ -265,24 +168,17 @@ export async function runToiNewsIngest(options?: {
     }
 
     const categorySlug = categoryHintForToiItem(item);
-    rewriteAttempts++;
-    let rewrite: RewriteResult;
+    let rewrite;
     try {
-      rewrite = await rewriteToiItem(item, categorySlug);
+      rewrite = await rewriteToiHeadline(item, categorySlug);
     } catch (err) {
       console.warn(`[toi-news] rewrite error:`, err);
       failed++;
-      break;
+      continue;
     }
 
     if (!rewrite.ok) {
       failed++;
-      if (rewrite.failure?.quotaExceeded) {
-        console.warn(
-          `[toi-news] Gemini quota hit — stopping run early (${rewrite.failure.message.slice(0, 120)})`
-        );
-        break;
-      }
       console.warn(`[toi-news] rewrite failed: "${item.title}"`);
       continue;
     }
@@ -308,7 +204,7 @@ export async function runToiNewsIngest(options?: {
         slug,
         excerpt: article.excerpt,
         content: article.content.trim(),
-        coverImage: null,
+        coverImage: item.imageUrl || null,
         readingTime: readingTime(article.content),
         status,
         publishedAt: publish ? now : null,
@@ -319,12 +215,12 @@ export async function runToiNewsIngest(options?: {
           sourceKey,
           "toi-rewrite",
           "toi-rss",
+          `toi-provider:${article.provider}`,
           categorySlug,
           ...article.tags,
         ]
           .filter(Boolean)
           .join(", "),
-        // Keep null so Google treats our URL as canonical; source is in body + metaKeywords.
         canonicalUrl: null,
         authorId: owner.id,
         categoryId: category.id,
@@ -336,9 +232,9 @@ export async function runToiNewsIngest(options?: {
     if (publish) published++;
     slugs.push(slug);
     console.log(
-      `[toi-news] ${status}: ${slug} — "${article.title}" (from ${item.feedKey})`
+      `[toi-news] ${status} (${article.provider}): ${slug} — "${article.title}" (from ${item.feedKey})`
     );
-    await sleep(1500);
+    await sleep(800);
   }
 
   return {

@@ -11,6 +11,8 @@ export type ToiRssItem = {
   description?: string;
   publishedAt?: string;
   feedKey: string;
+  /** Optional enclosure / media thumbnail from RSS */
+  imageUrl?: string;
 };
 
 const FETCH_TIMEOUT_MS = 15_000;
@@ -67,6 +69,24 @@ function extractLink(block: string): string | undefined {
   return extractTag(block, "link");
 }
 
+function extractImageUrl(block: string): string | undefined {
+  const enc = block.match(
+    /<enclosure[^>]*url=["']([^"']+)["'][^>]*(?:type=["']image\/[^"']*["'])?/i
+  );
+  if (enc?.[1]?.startsWith("http")) return enc[1];
+  const enc2 = block.match(
+    /<enclosure[^>]*type=["']image\/[^"']*["'][^>]*url=["']([^"']+)["']/i
+  );
+  if (enc2?.[1]?.startsWith("http")) return enc2[1];
+  const media = block.match(
+    /<media:content[^>]*url=["']([^"']+)["']/i
+  );
+  if (media?.[1]?.startsWith("http")) return media[1];
+  const img = block.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (img?.[1]?.startsWith("http")) return img[1];
+  return undefined;
+}
+
 function parseRssItems(
   xml: string,
   feedKey: string,
@@ -87,6 +107,7 @@ function parseRssItems(
       description: description?.slice(0, 800),
       publishedAt: extractTag(block, "pubDate"),
       feedKey,
+      imageUrl: extractImageUrl(block),
     });
     if (items.length >= max) break;
   }

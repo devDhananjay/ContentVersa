@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Map,
   Medal,
+  Radio,
   TrendingUp,
   Wallet,
   Wrench,
@@ -21,6 +22,8 @@ export type NavLinkItem = {
   label: string;
   description?: string;
   icon?: LucideIcon;
+  /** Show blinking red live indicator (News) */
+  live?: boolean;
 };
 
 export type NavDropdown = {
@@ -35,6 +38,7 @@ export const NAV_TOP_LINKS: NavLinkItem[] = [
   { href: "/blogs", label: "Articles", icon: Compass },
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/results", label: "Results", icon: FileSearch },
+  { href: "/news", label: "News", icon: Radio, live: true },
 ];
 
 export const NAV_DROPDOWNS: NavDropdown[] = [
@@ -50,6 +54,13 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
         icon: BookOpen,
       },
       { href: "/blogs", label: "Articles", description: "Long-form stories & explainers", icon: Compass },
+      {
+        href: "/news",
+        label: "Live News",
+        description: "India desk briefings, updating live",
+        icon: Radio,
+        live: true,
+      },
       { href: "/results", label: "Exam Results", description: "Official exam & board portals", icon: FileSearch },
       { href: "/categories", label: "Categories", description: "Topics to follow", icon: LayoutDashboard },
       { href: "/sports", label: "Sports", description: "Live cricket scores", icon: Medal },

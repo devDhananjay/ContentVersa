@@ -99,15 +99,24 @@ export function Navbar({
             return (
               <Link key={link.href} href={link.href} className={linkClass(active)}>
                 <span className="inline-flex items-center gap-1.5">
-                  {Icon ? <Icon className="h-3.5 w-3.5 opacity-70" /> : null}
-                  {link.label}
+                  {link.live ? (
+                    <span
+                      className="live-news-dot h-1.5 w-1.5 shrink-0 rounded-full bg-red-500"
+                      aria-hidden
+                    />
+                  ) : Icon ? (
+                    <Icon className="h-3.5 w-3.5 opacity-70" />
+                  ) : null}
+                  <span className={link.live ? "text-red-600 dark:text-red-400" : undefined}>
+                    {link.label}
+                  </span>
                 </span>
                 {active && (
                   <motion.div
                     layoutId="nav-indicator"
                     className={cn(
                       "absolute inset-0 -z-10 rounded-full",
-                      immersive ? "bg-white/15" : "bg-primary/10"
+                      immersive ? "bg-white/15" : link.live ? "bg-red-500/10" : "bg-primary/10"
                     )}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
@@ -236,7 +245,7 @@ export function Navbar({
                 const Icon = link.icon;
                 return (
                   <Link
-                    key={link.href}
+                    key={`${link.href}-${link.label}`}
                     href={link.href}
                     className={cn(
                       "flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors",
@@ -245,8 +254,14 @@ export function Navbar({
                         : "hover:bg-muted"
                     )}
                   >
-                    {Icon ? <Icon className="h-4 w-4 text-neon-purple" /> : null}
-                    {link.label}
+                    {link.live ? (
+                      <span className="live-news-dot h-2 w-2 rounded-full bg-red-500" aria-hidden />
+                    ) : Icon ? (
+                      <Icon className="h-4 w-4 text-neon-purple" />
+                    ) : null}
+                    <span className={link.live ? "font-semibold text-red-600 dark:text-red-400" : undefined}>
+                      {link.label}
+                    </span>
                   </Link>
                 );
               })}

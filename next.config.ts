@@ -27,6 +27,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "cdn-thumbnails.huggingface.co" },
       { protocol: "https", hostname: "ychef.files.bbci.co.uk" },
       { protocol: "https", hostname: "**.bbci.co.uk" },
+      { protocol: "https", hostname: "static.toiimg.com" },
+      { protocol: "https", hostname: "timesofindia.indiatimes.com" },
     ],
   },
   experimental: {
