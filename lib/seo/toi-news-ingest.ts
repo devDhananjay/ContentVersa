@@ -5,9 +5,10 @@
 
 import { BlogStatus } from "@prisma/client";
 import {
-  callGeminiJson,
+  callGeminiJsonWithMeta,
   getGeminiBlogApiKey,
   isGeminiBlogConfigured,
+  type GeminiFailure,
 } from "@/lib/ai/gemini";
 import { CATEGORIES } from "@/lib/data/categories";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
@@ -115,10 +116,14 @@ type RewriteArticle = {
   tags: string[];
 };
 
+type RewriteResult =
+  | { ok: true; article: RewriteArticle }
+  | { ok: false; failure?: GeminiFailure };
+
 async function rewriteToiItem(
   item: ToiRssItem,
   categorySlug: string
-): Promise<RewriteArticle | null> {
+): Promise<RewriteResult> {
   const cat = CATEGORIES.find((c) => c.slug === categorySlug);
   const system = [
     "You are a senior India news editor for ContentVerse India.",
@@ -144,14 +149,18 @@ async function rewriteToiItem(
     .filter(Boolean)
     .join("\n");
 
-  const data = await callGeminiJson<RewriteArticle>(
+  const result = await callGeminiJsonWithMeta<RewriteArticle>(
     system,
     user,
     REWRITE_SCHEMA,
     8192,
-    { apiKey: getGeminiBlogApiKey() ?? undefined, temperature: 0.55 }
+    { apiKey: getGeminiBlogApiKey() || undefined }
   );
-  if (!data?.title || !data?.content) return null;
+  if (!result.ok) {
+    return { ok: false, failure: result.failure };
+  }
+  const data = result.data;
+  if (!data?.title || !data?.content) return { ok: false };
 
   const attribution = [
     "",
@@ -162,15 +171,18 @@ async function rewriteToiItem(
 
   const content = `${data.content.trim()}\n${attribution}`;
   return {
-    title: data.title.trim().slice(0, 160),
-    excerpt: (data.excerpt || data.metaDescription || "").trim().slice(0, 280),
-    content,
-    metaDescription: (data.metaDescription || data.excerpt || "")
-      .trim()
-      .slice(0, 160),
-    tags: Array.isArray(data.tags)
-      ? data.tags.map((t) => String(t).trim()).filter(Boolean).slice(0, 5)
-      : ["India news"],
+    ok: true,
+    article: {
+      title: data.title.trim().slice(0, 160),
+      excerpt: (data.excerpt || data.metaDescription || "").trim().slice(0, 280),
+      content,
+      metaDescription: (data.metaDescription || data.excerpt || "")
+        .trim()
+        .slice(0, 160),
+      tags: Array.isArray(data.tags)
+        ? data.tags.map((t) => String(t).trim()).filter(Boolean).slice(0, 5)
+        : ["India news"],
+    },
   };
 }
 
@@ -238,9 +250,13 @@ export async function runToiNewsIngest(options?: {
   let failed = 0;
   let published = 0;
   const slugs: string[] = [];
+  // Don't keep hammering Gemini across every headline when quota/models fail.
+  const maxRewriteAttempts = Math.max(maxPerRun + 1, 3);
+  let rewriteAttempts = 0;
 
   for (const item of headlines) {
     if (created >= maxPerRun) break;
+    if (rewriteAttempts >= maxRewriteAttempts) break;
 
     const sourceKey = toiSourceKey(item.link);
     if (await alreadyIngested(sourceKey, item.title)) {
@@ -249,22 +265,34 @@ export async function runToiNewsIngest(options?: {
     }
 
     const categorySlug = categoryHintForToiItem(item);
-    let article: RewriteArticle | null = null;
+    rewriteAttempts++;
+    let rewrite: RewriteResult;
     try {
-      article = await rewriteToiItem(item, categorySlug);
+      rewrite = await rewriteToiItem(item, categorySlug);
     } catch (err) {
       console.warn(`[toi-news] rewrite error:`, err);
       failed++;
-      await sleep(2000);
+      break;
+    }
+
+    if (!rewrite.ok) {
+      failed++;
+      if (rewrite.failure?.quotaExceeded) {
+        console.warn(
+          `[toi-news] Gemini quota hit — stopping run early (${rewrite.failure.message.slice(0, 120)})`
+        );
+        break;
+      }
+      console.warn(`[toi-news] rewrite failed: "${item.title}"`);
       continue;
     }
 
-    if (!article?.content || !passesDraftQualityGate(article.content)) {
+    const article = rewrite.article;
+    if (!article.content || !passesDraftQualityGate(article.content)) {
       failed++;
       console.warn(
-        `[toi-news] quality fail (${wordCount(article?.content ?? "")} words): "${item.title}"`
+        `[toi-news] quality fail (${wordCount(article.content)} words): "${item.title}"`
       );
-      await sleep(2500);
       continue;
     }
 
@@ -310,7 +338,7 @@ export async function runToiNewsIngest(options?: {
     console.log(
       `[toi-news] ${status}: ${slug} — "${article.title}" (from ${item.feedKey})`
     );
-    await sleep(3000);
+    await sleep(1500);
   }
 
   return {

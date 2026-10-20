@@ -21,5 +21,6 @@ fi
 echo "[cron] toi-news max=${MAX} via ${LOCAL_URL} $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 # force=1 — TOI live desk runs even if admin AI auto-gen toggle is off
 URL="${LOCAL_URL%/}/api/cron/toi-news?max=${MAX}&force=1"
-curl -sfS --max-time 280 -H "Authorization: Bearer ${CRON_SECRET}" "$URL"
+# Fail-fast ingest should finish well under 2 min; don't hold the cron for 280s.
+curl -sfS --max-time 120 -H "Authorization: Bearer ${CRON_SECRET}" "$URL"
 echo ""

@@ -104,7 +104,7 @@ function buildCards(
       cards.push({
         id: brief.id,
         title: brief.title,
-        href: `/blogs/${brief.slug}`,
+        href: `/blog/${brief.slug}`,
         excerpt: (brief.excerpt || item.description || "").slice(0, 140),
         categoryLabel: brief.category?.name ?? categoryLabelFromSlug(brief.category?.slug),
         feedLabel: feedLabel(item.feedKey),
@@ -139,7 +139,7 @@ function buildCards(
     cards.push({
       id: brief.id,
       title: brief.title,
-      href: `/blogs/${brief.slug}`,
+      href: `/blog/${brief.slug}`,
       excerpt: (brief.excerpt || "").slice(0, 140),
       categoryLabel: brief.category?.name ?? "India",
       feedLabel: "Briefing",
