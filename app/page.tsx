@@ -26,6 +26,7 @@ import {
 } from "@/components/home/jobs-results-section";
 import { ReelsStripSection } from "@/components/reels/reels-strip-section";
 import { LiveNewsSection } from "@/components/home/live-news-section";
+import { LiveNewsReturnScroll } from "@/components/home/live-news-return-scroll";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getLiveNewsForHome } from "@/lib/data/live-news";
 import { getSportsTeaserData } from "@/lib/sports/data";
@@ -209,6 +210,7 @@ export default async function HomePage() {
           <ReelsStripSection />
         </div>
 
+        <LiveNewsReturnScroll />
         <LiveNewsSection items={liveNews} />
 
         <Reveal>

@@ -47,6 +47,7 @@ import {
 import { blogAdSlots, getAdDensity } from "@/lib/ads/density";
 import { getBlogSeriesMeta } from "@/lib/data/series";
 import { PageBack } from "@/components/site/page-back";
+import { dedupeBriefingParagraphs } from "@/lib/seo/toi-news-rewrite";
 
 export const dynamic = "force-dynamic";
 
@@ -113,7 +114,11 @@ export default async function BlogPage({
 
   const isPublic = blog.status === "PUBLISHED";
   const category = CATEGORIES.find((c) => c.slug === blog.category);
-  const toc = extractTOC(blog.content);
+  const isToiBriefing = Boolean(blog.metaKeywords?.includes("toi-rewrite"));
+  const bodyContent = isToiBriefing
+    ? dedupeBriefingParagraphs(blog.content)
+    : blog.content;
+  const toc = extractTOC(bodyContent);
   const url = `${SITE.url}/blog/${blog.slug}`;
 
   const engagement =
@@ -173,8 +178,8 @@ export default async function BlogPage({
 
       <article className="container max-w-5xl py-8 md:py-12">
         <PageBack
-          href={category ? `/category/${category.slug}` : "/blogs"}
-          label={category?.name ?? "Blogs"}
+          href={isToiBriefing ? "/news" : category ? `/category/${category.slug}` : "/blogs"}
+          label={isToiBriefing ? "Live News" : (category?.name ?? "Blogs")}
           className="mb-6"
         />
         {!isPublic ? (
@@ -248,7 +253,7 @@ export default async function BlogPage({
               coverImage={blog.coverImage}
               authorName={blog.author.name}
               publishedAt={blog.publishedAt}
-              content={blog.content}
+              content={bodyContent}
               excerpt={blog.excerpt}
               category={blog.category}
             />
@@ -349,14 +354,14 @@ export default async function BlogPage({
             ) : null}
             <h2 className="font-display text-2xl font-bold mb-6">Full story</h2>
             {(() => {
-              const parts = blog.content.split(/\n\n+/);
+              const parts = bodyContent.split(/\n\n+/);
               // Mid-article ~40% — TOI-style after early value, before fatigue
               const mid = Math.max(3, Math.floor(parts.length * 0.4));
               const first = parts.slice(0, mid).join("\n\n");
               const second = parts.slice(mid).join("\n\n");
               return (
                 <>
-                  {renderMarkdown(first || blog.content)}
+                  {renderMarkdown(first || bodyContent)}
                   {showAds && adSlots.midArticle && second ? (
                     <AdSlot variant="mrec">
                       <GoogleAdSense slotKey="inArticle" width={300} height={250} />

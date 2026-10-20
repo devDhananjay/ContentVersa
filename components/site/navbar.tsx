@@ -98,16 +98,23 @@ export function Navbar({
             const Icon = link.icon;
             return (
               <Link key={link.href} href={link.href} className={linkClass(active)}>
-                <span className="inline-flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1.5 leading-none">
                   {link.live ? (
                     <span
-                      className="live-news-dot h-1.5 w-1.5 shrink-0 rounded-full bg-red-500"
+                      className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center"
                       aria-hidden
-                    />
+                    >
+                      <span className="live-news-dot h-1.5 w-1.5 rounded-full bg-red-500" />
+                    </span>
                   ) : Icon ? (
-                    <Icon className="h-3.5 w-3.5 opacity-70" />
+                    <Icon className="h-3.5 w-3.5 shrink-0 opacity-70" />
                   ) : null}
-                  <span className={link.live ? "text-red-600 dark:text-red-400" : undefined}>
+                  <span
+                    className={cn(
+                      "leading-none",
+                      link.live && "text-red-600 dark:text-red-400"
+                    )}
+                  >
                     {link.label}
                   </span>
                 </span>

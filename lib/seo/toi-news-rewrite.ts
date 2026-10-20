@@ -10,7 +10,6 @@ import {
   type GeminiFailure,
 } from "@/lib/ai/gemini";
 import { CATEGORIES } from "@/lib/data/categories";
-import { wordCount } from "@/lib/seo/article-quality";
 import type { ToiRssItem } from "@/lib/seo/toi-rss";
 
 export type RewriteArticle = {
@@ -78,7 +77,9 @@ function withAttribution(
   ].join("\n");
   return {
     ...data,
-    content: `${data.content.trim()}\n${attribution}`,
+    content: dedupeBriefingParagraphs(
+      `${data.content.trim()}\n${attribution}`
+    ),
     provider,
   };
 }
@@ -161,7 +162,23 @@ async function rewriteWithOpenAICompatible(options: {
   }
 }
 
-/** Deterministic original expand when all AI keys/quota fail. */
+/** Strip accidental repeated paragraphs from local/AI briefings. */
+export function dedupeBriefingParagraphs(content: string): string {
+  const parts = content.split(/\n\n+/);
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const part of parts) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+    const key = trimmed.toLowerCase().replace(/\s+/g, " ");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(trimmed);
+  }
+  return out.join("\n\n");
+}
+
+/** Deterministic original expand when all AI keys/quota fail — no repeated filler. */
 function rewriteLocally(
   item: ToiRssItem,
   categorySlug: string
@@ -176,36 +193,32 @@ function rewriteLocally(
     item.title.length > 90
       ? `${item.title.slice(0, 86).replace(/\s+\S*$/, "")}…`
       : item.title;
+  const shortTitle = title.length > 70 ? `${title.slice(0, 67)}…` : title;
   const angle = blurb
     ? `Early reporting points to this: ${blurb}`
     : `Public reporting is still thin on detail, so this briefing sticks to what the headline establishes and what Indian readers should watch next.`;
 
-  const sections = [
-    `## What is confirmed so far`,
-    angle,
-    `ContentVerse India is treating this as a developing ${catName.toLowerCase()} story. We are not inventing behind-the-scenes claims, quotes, or numbers that are not in the public headline brief.`,
-    `## Why this matters in India`,
-    `Stories like “${item.title}” tend to move quickly across TV crawls, WhatsApp forwards, and social feeds. A calm read helps separate the core development from speculation. For people following ${catName}, the practical question is whether anything here changes policy, markets, public services, or daily decisions in the next few days.`,
-    `## Context without the noise`,
-    `India’s news cycle often compresses complex institutional or political processes into a single sharp line. That can be useful for awareness, but it can also flatten trade-offs. When a headline lands from a major desk, readers benefit from a slower pass: what is the concrete event, who is named, what remains unresolved, and what should be verified before sharing.`,
-    `If later official statements, court filings, company filings, or on-record briefings add detail, those should be preferred over viral summaries.`,
-    `## What to watch next`,
-    `- Any official clarification that confirms, narrows, or walks back the early framing`,
-    `- Follow-on reporting that adds documents, timelines, or named sources`,
-    `- Whether related institutions (government, courts, regulators, parties, or companies) respond with action rather than only commentary`,
-    `## Bottom line for readers`,
-    `Treat this as an original ContentVerse India briefing built from a public headline brief — not a wire copy. Bookmark the developing thread if the subject affects your work, exams, money, or local services, and wait for primary documents before drawing hard conclusions.`,
-    `We will keep the tone factual: headline awareness first, then verification, then judgement.`,
-  ];
+  const content = dedupeBriefingParagraphs(
+    [
+      `## What is confirmed so far`,
+      angle,
+      `ContentVerse India is treating “${shortTitle}” as a developing ${catName.toLowerCase()} story. We are not inventing behind-the-scenes claims, quotes, or numbers that are not in the public headline brief.`,
+      `## Why this matters in India`,
+      `Headlines in this lane travel fast across TV crawls, WhatsApp forwards, and social feeds. A calm read helps separate the core development from speculation. For people following ${catName}, the practical question is whether anything here changes policy, markets, public services, sport calendars, or day-to-day decisions in the next few days.`,
+      `## Context without the noise`,
+      `India’s news cycle often compresses complex processes into one sharp line. That helps awareness, but it can flatten trade-offs. When a major desk pushes a story, readers benefit from a slower pass: what is the concrete event, who is named, what remains unresolved, and what should be verified before sharing.`,
+      `Prefer later official statements, court filings, company filings, or on-record briefings over viral wording alone.`,
+      `## How to read the next updates`,
+      `If the story widens, look for three signals: a clearer timeline, a named decision-maker or institution, and a document or broadcast that can be checked independently. Until then, treat secondary commentary as opinion around the headline — not as settled fact.`,
+      `## What to watch next`,
+      `- Official clarification that confirms, narrows, or walks back the early framing`,
+      `- Follow-on reporting with documents, timelines, or named sources`,
+      `- Whether related institutions respond with action, not only commentary`,
+      `## Bottom line`,
+      `This is an original ContentVerse India briefing built from a public headline brief — not wire copy. Stay aware, wait for primary documents before hard conclusions, and come back to the Live News desk for the next rewrite when more is confirmed.`,
+    ].join("\n\n")
+  );
 
-  // Pad to clear draft quality gate (~600+ words) with original editorial filler.
-  while (wordCount(sections.join(" ")) < 680) {
-    sections.push(
-      `Readers who want depth should cross-check later updates against primary statements rather than recycling the first viral wording of “${item.title}”.`
-    );
-  }
-
-  const content = sections.join("\n\n");
   const excerpt = blurb
     ? blurb.slice(0, 160)
     : `ContentVerse India briefing on: ${title}`.slice(0, 160);

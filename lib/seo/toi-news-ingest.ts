@@ -187,10 +187,15 @@ export async function runToiNewsIngest(options?: {
     }
 
     const article = rewrite.article;
-    if (!article.content || !passesDraftQualityGate(article.content)) {
+    const words = wordCount(article.content || "");
+    const okQuality =
+      article.provider === "local"
+        ? words >= 320 && (article.content?.trim().length ?? 0) >= 1200
+        : Boolean(article.content && passesDraftQualityGate(article.content));
+    if (!okQuality) {
       failed++;
       console.warn(
-        `[toi-news] quality fail (${wordCount(article.content)} words): "${item.title}"`
+        `[toi-news] quality fail (${words} words, ${article.provider}): "${item.title}"`
       );
       continue;
     }

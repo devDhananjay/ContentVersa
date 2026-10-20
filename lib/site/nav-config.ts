@@ -35,10 +35,10 @@ export type NavDropdown = {
 
 export const NAV_TOP_LINKS: NavLinkItem[] = [
   { href: "/guides", label: "Guides", icon: BookOpen },
+  { href: "/news", label: "News", icon: Radio, live: true },
   { href: "/blogs", label: "Articles", icon: Compass },
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/results", label: "Results", icon: FileSearch },
-  { href: "/news", label: "News", icon: Radio, live: true },
 ];
 
 export const NAV_DROPDOWNS: NavDropdown[] = [

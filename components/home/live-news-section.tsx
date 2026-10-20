@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Radio } from "lucide-react";
 import type { LiveNewsCard } from "@/lib/data/live-news";
+import { markReturnToLiveNews } from "@/components/home/live-news-return-scroll";
 import { cn } from "@/lib/utils";
 
 function formatRelative(iso: string): string {
@@ -59,7 +60,10 @@ function NewsBox({
       transition={{ duration: 0.35, delay: Math.min(index, 6) * 0.04 }}
     >
       <Link
-        href={card.href}
+        href={card.hasBriefing ? card.href : "/news"}
+        onClick={() => {
+          if (card.hasBriefing) markReturnToLiveNews();
+        }}
         className={cn(
           "group relative flex h-full min-h-[176px] flex-col overflow-hidden rounded-2xl border border-border/70 bg-background/90 p-3.5 shadow-[var(--v2-shadow-sm)]",
           "transition-[border-color,box-shadow,transform] duration-300",
