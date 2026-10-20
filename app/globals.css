@@ -742,3 +742,37 @@ html.sr-read-aloud-focus :focus-visible {
 .font-display {
   font-family: var(--font-display), "Source Serif 4", Georgia, serif;
 }
+
+/* Home Live News — soft blink on “Live” + radiating red dot */
+@keyframes live-news-title-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes live-news-dot-pulse {
+  0% {
+    box-shadow: 0 0 0 0 hsl(0 84% 55% / 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 10px hsl(0 84% 55% / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsl(0 84% 55% / 0);
+  }
+}
+.live-news-title-blink {
+  animation: live-news-title-blink 1.35s ease-in-out infinite;
+}
+.live-news-dot {
+  animation: live-news-dot-pulse 1.6s ease-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-news-title-blink,
+  .live-news-dot {
+    animation: none;
+  }
+}

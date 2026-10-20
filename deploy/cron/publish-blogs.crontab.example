@@ -12,3 +12,6 @@
 
 # AdSense-safe DRAFT drip: max 2 unique quality posts/day (no duplicates vs live)
 30 4 * * * /home/ec2-user/ContentVersa/scripts/cron-publish-adsense-drafts.sh >> /home/ec2-user/logs/publish-adsense-drafts.log 2>&1
+
+# TOI RSS → Gemini rewrite → live blogs (every 30 min) — see also toi-news.crontab.example
+*/30 * * * * /home/ec2-user/ContentVersa/scripts/cron-toi-news.sh >> /home/ec2-user/logs/toi-news.log 2>&1

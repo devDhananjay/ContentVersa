@@ -25,7 +25,9 @@ import {
   type JobsResultCard,
 } from "@/components/home/jobs-results-section";
 import { ReelsStripSection } from "@/components/reels/reels-strip-section";
+import { LiveNewsSection } from "@/components/home/live-news-section";
 import { getHomePageData } from "@/lib/data/home-data";
+import { getLiveNewsForHome } from "@/lib/data/live-news";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { getFinanceTickerDataCached } from "@/lib/finance/data";
 import { getHomeModulePreviews } from "@/lib/home/module-previews";
@@ -63,6 +65,7 @@ export const metadata: Metadata = buildMetadata({
 const HOME_SIDEBAR_SECTIONS = [
   { id: "home-top", label: "Home" },
   { id: "home-reels", label: "Reels" },
+  { id: "home-live-news", label: "Live News" },
   { id: "home-guides", label: "Guides" },
   { id: "about-contentverse-heading", label: "About" },
   { id: "continue-reading", label: "Continue" },
@@ -83,7 +86,7 @@ const HOME_SIDEBAR_SECTIONS = [
 ];
 
 export default async function HomePage() {
-  const [data, sportsTeaser, financeTicker, modulePreviews, jobs, results, gold] =
+  const [data, sportsTeaser, financeTicker, modulePreviews, jobs, results, gold, liveNews] =
     await Promise.all([
       getHomePageData(),
       getSportsTeaserData(),
@@ -92,6 +95,7 @@ export default async function HomePage() {
       getGovtJobsCached("jobs").catch(() => null),
       getGovtJobsCached("results").catch(() => null),
       getGoldPriceSnapshot().catch(() => null),
+      getLiveNewsForHome(8).catch(() => []),
     ]);
 
   const jobCards: JobsResultCard[] = [];
@@ -204,6 +208,8 @@ export default async function HomePage() {
         <div id="home-reels" className="scroll-mt-[calc(var(--site-header-offset)+1rem)]">
           <ReelsStripSection />
         </div>
+
+        <LiveNewsSection items={liveNews} />
 
         <Reveal>
           <HomeModuleSpotlight
