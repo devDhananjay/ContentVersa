@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 type SiteVoiceSearchProps = {
   placeholder?: string;
-  /** Where to navigate on submit / voice final. Default `/blogs`. */
+  /** Where to navigate on submit / voice final. Default `/search`. */
   searchPath?: string;
   /** Live filter callback (e.g. news desk) — still navigates if `navigateOnSubmit`. */
   onQueryChange?: (query: string) => void;
@@ -26,7 +26,7 @@ type SiteVoiceSearchProps = {
 
 export function SiteVoiceSearch({
   placeholder = "Search…",
-  searchPath = "/blogs",
+  searchPath = "/search",
   onQueryChange,
   navigateOnVoice = true,
   navigateOnSubmit = true,
@@ -41,7 +41,7 @@ export function SiteVoiceSearch({
   const navigateTo = React.useCallback(
     (raw: string) => {
       const q = raw.trim();
-      const base = searchPath.split("?")[0] || "/blogs";
+      const base = searchPath.split("?")[0] || "/search";
       router.push(q ? `${base}?q=${encodeURIComponent(q)}` : base);
     },
     [router, searchPath]

@@ -183,7 +183,7 @@ export function Hero({ categories }: Props) {
           >
             <SiteVoiceSearch
               size="hero"
-              searchPath="/blogs"
+              searchPath="/search"
               placeholder="Search ‘SIP’, ‘CIBIL’, ‘HUID’… or tap the mic"
               inputClassName={cn(
                 cinematic &&

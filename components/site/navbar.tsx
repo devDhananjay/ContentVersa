@@ -51,7 +51,7 @@ export function Navbar({
       e.preventDefault();
       const fd = new FormData(e.currentTarget);
       const q = String(fd.get("q") ?? "").trim();
-      router.push(q ? `/blogs?q=${encodeURIComponent(q)}` : "/blogs");
+      router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
       setSearchOpen(false);
       setMobileOpen(false);
     },
