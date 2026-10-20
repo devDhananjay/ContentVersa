@@ -20,6 +20,9 @@ export async function generateMetadata({
     .map((c) => c.name)
     .join(", ");
 
+  // Index movies with a real overview so CineVerse can rank for title searches.
+  const thin = !movie.overview || movie.overview.trim().length < 80;
+
   return buildMetadata({
     title: `${movie.title} OTT Release Date, Cast & Where to Watch India`,
     description:
@@ -27,10 +30,9 @@ export async function generateMetadata({
       `${movie.title} cast, trailer, story, rating, OTT release date and where to watch in India on ContentVerse India CineVerse.`,
     path: `/cineverse/movie/${id}`,
     image: movie.backdropUrl ?? movie.posterUrl,
-    // TMDB-scraped detail pages are thin for AdSense — hub + original guides stay indexable.
-    noIndex: true,
+    noIndex: thin,
     keywords: [
-      `${movie.title} OTT release date`,
+      `${movie.title} OTT Release Date`,
       `${movie.title} cast`,
       `${movie.title} where to watch`,
       `${movie.title} trailer`,

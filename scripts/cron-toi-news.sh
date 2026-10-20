@@ -13,7 +13,7 @@ fi
 CRON_SECRET=$(grep -E '^CRON_SECRET=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"')
 # Hit local Next (bypass nginx 60s proxy_read_timeout) — Gemini rewrites need minutes.
 LOCAL_URL="${TOI_NEWS_LOCAL_URL:-http://127.0.0.1:3000}"
-MAX="${TOI_NEWS_MAX_PER_RUN:-2}"
+MAX="${TOI_NEWS_MAX_PER_RUN:-5}"
 if [[ -z "$CRON_SECRET" ]]; then
   echo "CRON_SECRET not set in .env" >&2
   exit 1

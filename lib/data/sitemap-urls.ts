@@ -7,12 +7,15 @@ import { SITE } from "@/lib/seo";
 import {
   isIndexableArticle,
   isIndexableTool,
+  isToiNewsBriefing,
   MIN_INDEXABLE_READING_MINUTES,
+  MIN_NEWS_INDEXABLE_READING_MINUTES,
 } from "@/lib/seo/crawl-policy";
 import { TOOL_REGISTRY, TOOLS_HUB_PATH } from "@/lib/tools/registry";
 import { guideSitemapEntries } from "@/lib/guides/registry";
 import { MONEY_TOPIC_SLUGS } from "@/lib/finance/money-topics";
 import { isRedirectedPath, isNoindexFinanceTopic } from "@/lib/seo/content-redirects";
+import { getCineverseMovieSitemapEntries } from "@/lib/cineverse/sitemap-movies";
 
 type SitemapFreq = MetadataRoute.Sitemap[0]["changeFrequency"];
 
@@ -73,7 +76,6 @@ const STATIC_PAGES: Array<{
   })),
   // Location matrix pages are noindex (thin templates) — keep out of sitemap.
   // /reels is Disallow'd in robots — keep out of sitemap.
-  // TMDB movie detail pages are noindex scrapes — keep out of sitemap.
   // /ai + MoneyVerse OCR analyzers stay live but unsitemap'd (form-heavy / thin for AdSense).
   { path: "/jobs/govt", changeFrequency: "hourly", priority: 0.78 },
   { path: "/jobs/private", changeFrequency: "daily", priority: 0.72 },
@@ -102,10 +104,18 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
       where: {
         status: BlogStatus.PUBLISHED,
         slug: { not: { startsWith: "discover-" } },
-        readingTime: { gte: MIN_INDEXABLE_READING_MINUTES },
-        NOT: [
-          { slug: { contains: "-daily-" } },
-          { metaKeywords: { contains: "ai-daily" } },
+        OR: [
+          {
+            readingTime: { gte: MIN_INDEXABLE_READING_MINUTES },
+            NOT: [
+              { slug: { contains: "-daily-" } },
+              { metaKeywords: { contains: "ai-daily" } },
+            ],
+          },
+          {
+            metaKeywords: { contains: "toi-rewrite" },
+            readingTime: { gte: MIN_NEWS_INDEXABLE_READING_MINUTES },
+          },
         ],
       },
       select: {
@@ -127,13 +137,14 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
       })
     )
     .filter((b) => !isRedirectedPath(`/blog/${b.slug}`))
-    .map((b) =>
-      entry(`/blog/${b.slug}`, {
+    .map((b) => {
+      const isNews = isToiNewsBriefing(b.metaKeywords);
+      return entry(`/blog/${b.slug}`, {
         lastModified: b.publishedAt ?? b.updatedAt,
-        changeFrequency: "weekly",
-        priority: 0.65,
-      })
-    );
+        changeFrequency: isNews ? "hourly" : "weekly",
+        priority: isNews ? 0.88 : 0.65,
+      });
+    });
 
   const profileGroups = await prisma.blog.groupBy({
     by: ["authorId"],
@@ -207,11 +218,28 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     // Sitemap must not 500 when DB is briefly unavailable.
   }
 
+  let movieEntries: MetadataRoute.Sitemap = [];
+  try {
+    const movies = await getCineverseMovieSitemapEntries(500);
+    movieEntries = movies
+      .filter((m) => !isRedirectedPath(m.path))
+      .map((m) =>
+        entry(m.path, {
+          lastModified: m.lastModified,
+          changeFrequency: "weekly",
+          priority: 0.72,
+        })
+      );
+  } catch {
+    // TMDB optional — sitemap still returns blogs/static.
+  }
+
   if (dbEntries.length > 0) {
     return dedupeSitemap([
       ...staticEntries,
       ...categoryEntries,
       ...dbEntries,
+      ...movieEntries,
     ]);
   }
 
@@ -229,5 +257,6 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     ...staticEntries,
     ...categoryEntries,
     ...fallbackBlogs,
+    ...movieEntries,
   ]);
 }

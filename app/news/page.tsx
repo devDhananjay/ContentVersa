@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, Radio } from "lucide-react";
-import { BandAd } from "@/components/ads/band-ad";
-import { HubAdSense } from "@/components/ads/hub-adsense";
-import { MrecAd } from "@/components/ads/mrec-ad";
+import { Radio } from "lucide-react";
 import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
+import { NewsDeskClient } from "@/components/news/news-desk-client";
 import { getNewsDesk } from "@/lib/data/live-news";
-import { buildMetadata } from "@/lib/seo";
-import { cn } from "@/lib/utils";
+import { buildMetadata, SITE } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata: Metadata = buildMetadata({
   title: "Live News — India desk briefings | ContentVerse India",
@@ -25,25 +21,42 @@ export const metadata: Metadata = buildMetadata({
   ],
 });
 
-function formatRelative(iso: string): string {
-  const t = Date.parse(iso);
-  if (!Number.isFinite(t)) return "Just now";
-  const mins = Math.max(0, Math.round((Date.now() - t) / 60_000));
-  if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.round(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.round(hrs / 24)}d ago`;
-}
-
 export default async function NewsHubPage() {
   const items = await getNewsDesk(24);
   const briefings = items.filter((i) => i.hasBriefing);
-  const pending = items.filter((i) => !i.hasBriefing);
-  const mid = Math.max(2, Math.floor(items.length / 2));
+
+  const listJsonLd =
+    briefings.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Live News — ContentVerse India",
+          description:
+            "India desk news briefings updated through the day on ContentVerse India.",
+          url: `${SITE.url}/news`,
+          isPartOf: { "@id": `${SITE.url}/#website` },
+          mainEntity: {
+            "@type": "ItemList",
+            itemListElement: briefings.slice(0, 20).map((b, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              url: b.href.startsWith("http")
+                ? b.href
+                : `${SITE.url}${b.href}`,
+              name: b.title,
+            })),
+          },
+        }
+      : null;
 
   return (
     <div className="container py-8 md:py-12 pb-16">
+      {listJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(listJsonLd) }}
+        />
+      ) : null}
       <div className="flex items-start justify-center gap-4 lg:gap-6 xl:gap-8">
         <StickyRailAd
           slotKey="sidebar"
@@ -77,104 +90,11 @@ export default async function NewsHubPage() {
             </p>
           </div>
 
-          <BandAd slotKey="horizontal" />
-
-          {items.length === 0 ? (
-            <p className="mt-6 rounded-2xl border border-border/60 bg-muted/30 p-8 text-center text-muted-foreground">
-              News desk is warming up — check back in a few minutes.
-            </p>
-          ) : (
-            <>
-              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {items.slice(0, mid).map((card) => (
-                  <NewsCard key={card.id} card={card} />
-                ))}
-              </div>
-
-              <div className="my-8 flex justify-center">
-                <MrecAd slotKey="inArticle" />
-              </div>
-
-              {items.length > mid ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {items.slice(mid).map((card) => (
-                    <NewsCard key={card.id} card={card} />
-                  ))}
-                </div>
-              ) : null}
-            </>
-          )}
-
-          <div className="mt-10">
-            <HubAdSense />
-          </div>
-
-          {pending.length > 0 && briefings.length > 0 ? (
-            <p className="mt-6 text-center text-xs text-muted-foreground">
-              Some live headlines are still being rewritten into ContentVerse
-              briefings — they appear here as soon as they publish.
-            </p>
-          ) : null}
+          <NewsDeskClient items={items} />
         </div>
 
         <StickyRailAd slotKey="hub" sticky label="Sponsored right" />
       </div>
     </div>
-  );
-}
-
-function NewsCard({
-  card,
-}: {
-  card: Awaited<ReturnType<typeof getNewsDesk>>[number];
-}) {
-  return (
-    <Link
-      href={card.hasBriefing ? card.href : "/news"}
-      className={cn(
-        "group flex gap-3 rounded-2xl border border-border/70 bg-background p-3.5 shadow-[var(--v2-shadow-sm)]",
-        "transition-[border-color,box-shadow] hover:border-red-500/35 hover:shadow-[var(--v2-shadow-md)]"
-      )}
-    >
-      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-border/50 bg-muted">
-        {card.imageUrl ? (
-          <Image
-            src={card.imageUrl}
-            alt=""
-            fill
-            sizes="80px"
-            className="object-cover"
-            unoptimized
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-red-500/20 to-transparent">
-            <span className="h-2 w-2 rounded-full bg-red-500" />
-          </div>
-        )}
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />
-            {card.hasBriefing ? "Briefing" : "Live"}
-          </span>
-          <span className="text-[11px] text-muted-foreground">
-            {formatRelative(card.publishedAt)}
-          </span>
-        </div>
-        <h2 className="font-display text-base font-bold leading-snug group-hover:text-red-600 dark:group-hover:text-red-400">
-          {card.title}
-        </h2>
-        {card.excerpt ? (
-          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-            {card.excerpt}
-          </p>
-        ) : null}
-        <p className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
-          {card.hasBriefing ? "Read briefing" : "Updating soon"}
-          <ArrowRight className="h-3 w-3" />
-        </p>
-      </div>
-    </Link>
   );
 }

@@ -148,6 +148,7 @@ export default async function BlogPage({
           datePublished: blog.publishedAt,
           dateModified: blog.updatedAt || blog.publishedAt,
           authorName: blog.author.name,
+          type: isToiBriefing ? "NewsArticle" : "Article",
         });
 
   const coverSrc = resolveBlogCoverImage(

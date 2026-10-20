@@ -1,6 +1,6 @@
 /**
- * Multi-provider TOI rewrite: Gemini → OpenAI → Groq → local editorial expand.
- * Keeps the cron alive when Gemini free-tier quota is exhausted.
+ * Multi-provider TOI rewrite: Gemini → OpenAI → Groq → local light paraphrase.
+ * Goal: keep the SAME actual news (facts, quotes, places) — only reword lightly.
  */
 
 import {
@@ -38,27 +38,52 @@ const REWRITE_SCHEMA = {
 };
 
 const SYSTEM_PROMPT = [
-  "You are a senior India news editor for ContentVerse India.",
-  "Write an ORIGINAL briefing from the headline and short RSS blurb only.",
-  "Do NOT copy sentences from the blurb. Paraphrase and add context for Indian readers.",
-  "Use Markdown with ## headings and short paragraphs. Do not repeat the title as a # heading.",
-  "Target 650–900 words. Neutral, factual tone. No invented quotes or fake statistics.",
-  "If details are unknown from the blurb, say what is confirmed vs what to watch next.",
-  "End with a short 'What to watch next' section — do not invent timelines.",
-  "Never claim you are Times of India; this is ContentVerse original analysis.",
+  "You are a news rewrite desk for ContentVerse India.",
+  "You receive the ACTUAL news article text from a public source.",
+  "Your job: LIGHTLY REWRITE it — same news, same facts, same quotes, same places and numbers.",
+  "Change sentence structure and some keywords/phrasing so it is not a verbatim copy.",
+  "KEEP speaker quotes accurate (you may only fix punctuation). Do NOT invent new quotes or facts.",
+  "Do NOT add editorial sections like 'what to watch', 'why this matters', or invented background.",
+  "Output Markdown: short news paragraphs. If the source lists top quotes, put them under ## Key quotes as bullets.",
+  "Open with a dateline when present (e.g. NEW DELHI: …).",
+  "Title: lightly polish the original headline (same meaning).",
+  "Never claim you are Times of India.",
 ].join(" ");
+
+/** Detect old filler template so we can refresh published posts. */
+export function isFillerNewsBriefing(content: string): boolean {
+  const c = content.toLowerCase();
+  return (
+    c.includes("what is confirmed so far") ||
+    c.includes("why this matters in india") ||
+    c.includes("context without the noise") ||
+    c.includes("how to read the next updates") ||
+    c.includes("contentverse india is treating") ||
+    c.includes("original contentverse india briefing built from a public headline") ||
+    c.includes("the address lands in a news cycle where festival messaging")
+  );
+}
+
+function sourceText(item: ToiRssItem): string {
+  const body = (item.articleBody || "").trim();
+  if (body.length >= 180) return body;
+  const desc = (item.description || "").trim();
+  if (desc.length >= 80) return desc;
+  return item.title;
+}
 
 function buildUserPrompt(item: ToiRssItem, categorySlug: string): string {
   const cat = CATEGORIES.find((c) => c.slug === categorySlug);
+  const source = sourceText(item);
   return [
-    `Category: ${cat?.name ?? categorySlug}`,
-    `Headline: ${item.title}`,
-    `RSS blurb: ${item.description || "(none — write careful context-only briefing)"}`,
-    `Source link (cite only as primary reporting, do not scrape): ${item.link}`,
-    `Feed: ${item.feedKey}`,
-    item.publishedAt ? `RSS pubDate: ${item.publishedAt}` : "",
+    `Category desk: ${cat?.name ?? categorySlug}`,
+    `Original headline: ${item.title}`,
+    item.publishedAt ? `Date: ${item.publishedAt}` : "",
     "",
-    "Return JSON: title (original), excerpt (~160 chars), content (markdown body), metaDescription, tags (3–5 strings).",
+    "ACTUAL NEWS TEXT (lightly rewrite — keep all facts and quotes):",
+    source.slice(0, 10000),
+    "",
+    "Return JSON: title, excerpt (~160 chars), content (markdown rewrite of THIS news), metaDescription, tags (3–5).",
   ]
     .filter(Boolean)
     .join("\n");
@@ -81,19 +106,34 @@ function normalizeAiJson(
   provider: RewriteArticle["provider"]
 ): RewriteArticle | null {
   if (!raw.title || !raw.content) return null;
+  const content = String(raw.content).trim();
+  if (isFillerNewsBriefing(content) && provider !== "local") return null;
+  // Must still look like the same story (overlap with source keywords).
+  const src = sourceText(item).toLowerCase();
+  const out = content.toLowerCase();
+  const anchors = ["modi", "delhi", "india", "said", "minister", "government"];
+  const srcHits = anchors.filter((a) => src.includes(a));
+  if (srcHits.length >= 2) {
+    const kept = srcHits.filter((a) => out.includes(a)).length;
+    if (kept < Math.min(2, srcHits.length)) return null;
+  }
   return finalizeArticle(
     {
       title: String(raw.title).trim().slice(0, 160),
       excerpt: String(raw.excerpt || raw.metaDescription || "")
         .trim()
         .slice(0, 280),
-      content: String(raw.content).trim(),
+      content,
       metaDescription: String(raw.metaDescription || raw.excerpt || "")
         .trim()
         .slice(0, 160),
       tags: Array.isArray(raw.tags)
-        ? raw.tags.map((t) => String(t).trim()).filter(Boolean).slice(0, 5)
-        : ["India news"],
+        ? raw.tags
+            .map((t) => String(t).trim())
+            .filter(Boolean)
+            .filter((t) => !/^toi\s*rewrite$/i.test(t))
+            .slice(0, 5)
+        : ["India news", "ContentVerse", "Live news"],
     },
     provider
   );
@@ -122,7 +162,7 @@ async function rewriteWithOpenAICompatible(options: {
         },
       ],
       max_tokens: 4096,
-      temperature: 0.55,
+      temperature: 0.35,
       response_format: { type: "json_object" },
     }),
     cache: "no-store",
@@ -160,7 +200,6 @@ export function dedupeBriefingParagraphs(content: string): string {
   for (const part of parts) {
     let trimmed = part.trim();
     if (!trimmed) continue;
-    // Drop horizontal rule + TOI source footer (no longer shown on site).
     if (trimmed === "---" || trimmed === "***" || trimmed === "* * *") continue;
     const key = trimmed.toLowerCase().replace(/\s+/g, " ");
     if (key.startsWith("readers who want depth should cross-check")) continue;
@@ -177,7 +216,6 @@ export function dedupeBriefingParagraphs(content: string): string {
     ) {
       continue;
     }
-    // Strip trailing italic TOI attribution line if mixed into a block.
     trimmed = trimmed
       .replace(
         /\n?\*?ContentVerse India original briefing\.\s*Primary reporting:\s*\[[^\]]*\]\([^)]*\)\.?\*?/gi,
@@ -197,50 +235,103 @@ export function dedupeBriefingParagraphs(content: string): string {
   return out.join("\n\n");
 }
 
-/** Deterministic original expand when all AI keys/quota fail — no repeated filler. */
-function rewriteLocally(
+function lightSwap(text: string): string {
+  return text
+    .replace(/\bhighlighted the importance of\b/gi, "underscored")
+    .replace(/\bemphasized the need for\b/gi, "stressed the need for")
+    .replace(/\bcalled for\b/gi, "appealed for")
+    .replace(/\bstressed that\b/gi, "underlined that")
+    .replace(/\balso spoke about\b/gi, "also spoke of")
+    .replace(/\bwhile addressing\b/gi, "as he addressed")
+    .replace(/\bparticipating in\b/gi, "taking part in")
+    .replace(/\bmust remain a priority\b/gi, "must stay a priority")
+    .replace(/\bsymbolised\b/gi, "symbolized")
+    .replace(/\bsignifies\b/gi, "means")
+    .replace(/\bafforded equal opportunities\b/gi, "given equal opportunities")
+    .replace(/\bGet the latest India News.*$/gi, "")
+    .replace(/\bDownload the TOI app\.?/gi, "")
+    .trim();
+}
+
+function splitIntoNewsBlocks(source: string): {
+  narrative: string[];
+  quotes: string[];
+} {
+  const text = source.replace(/\s+/g, " ").trim();
+  // Split before "Here are the top quotes..."
+  const quoteSplit = text.split(
+    /Here are the top quotes from[^:]*:\s*/i
+  );
+  const narrativePart = quoteSplit[0] || text;
+  const quotePart = quoteSplit[1] || "";
+
+  const narrative = narrativePart
+    .split(/(?<=[.!?])\s+(?=[A-Z“"])/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 20);
+
+  const quotes: string[] = [];
+  if (quotePart) {
+    // TOI JSON-LD runs quote bullets together — split into sentences as bullets.
+    const chunks = quotePart
+      .split(/(?<=[.!?…])\s+/)
+      .map((s) => s.trim().replace(/\.\.\.$/, "…"))
+      .filter((s) => s.length > 28 && !/^get the latest/i.test(s));
+    for (const c of chunks) {
+      quotes.push(c);
+    }
+  }
+
+  // Also pull explicit quoted strings from narrative
+  const re = /[“"]([^”"]{20,280})[”"]/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(narrativePart)) !== null) {
+    const q = m[1]!.trim();
+    if (!quotes.some((x) => x.includes(q.slice(0, 40)))) quotes.push(q);
+  }
+
+  return { narrative, quotes: quotes.slice(0, 14) };
+}
+
+/**
+ * Local light rewrite of the ACTUAL article text — same news, reworded.
+ */
+export function rewriteLocally(
   item: ToiRssItem,
   categorySlug: string
 ): RewriteArticle {
   const cat = CATEGORIES.find((c) => c.slug === categorySlug);
   const catName = cat?.name ?? "India";
-  const blurb = (item.description || "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 420);
+  const source = sourceText(item);
+  const { narrative, quotes } = splitIntoNewsBlocks(source);
+
+  const paras: string[] = [];
+  const rewrittenNarrative = narrative.map((s) => lightSwap(s));
+
+  // Group into paragraphs of 1–2 sentences (news feel).
+  for (let i = 0; i < rewrittenNarrative.length; i += 2) {
+    const chunk = rewrittenNarrative.slice(i, i + 2).join(" ");
+    if (chunk) paras.push(chunk);
+  }
+
+  if (!paras.length) {
+    paras.push(lightSwap(source.slice(0, 900)));
+  }
+
+  if (quotes.length) {
+    paras.push("## Key quotes");
+    for (const q of quotes) {
+      const cleaned = lightSwap(q).replace(/^["“]|["”]$/g, "");
+      paras.push(`- “${cleaned}”`);
+    }
+  }
+
+  const content = dedupeBriefingParagraphs(paras.join("\n\n"));
   const title =
-    item.title.length > 90
-      ? `${item.title.slice(0, 86).replace(/\s+\S*$/, "")}…`
+    item.title.length > 110
+      ? `${item.title.slice(0, 106).replace(/\s+\S*$/, "")}…`
       : item.title;
-  const shortTitle = title.length > 70 ? `${title.slice(0, 67)}…` : title;
-  const angle = blurb
-    ? `Early reporting points to this: ${blurb}`
-    : `Public reporting is still thin on detail, so this briefing sticks to what the headline establishes and what Indian readers should watch next.`;
-
-  const content = dedupeBriefingParagraphs(
-    [
-      `## What is confirmed so far`,
-      angle,
-      `ContentVerse India is treating “${shortTitle}” as a developing ${catName.toLowerCase()} story. We are not inventing behind-the-scenes claims, quotes, or numbers that are not in the public headline brief.`,
-      `## Why this matters in India`,
-      `Headlines in this lane travel fast across TV crawls, WhatsApp forwards, and social feeds. A calm read helps separate the core development from speculation. For people following ${catName}, the practical question is whether anything here changes policy, markets, public services, sport calendars, or day-to-day decisions in the next few days.`,
-      `## Context without the noise`,
-      `India’s news cycle often compresses complex processes into one sharp line. That helps awareness, but it can flatten trade-offs. When a major desk pushes a story, readers benefit from a slower pass: what is the concrete event, who is named, what remains unresolved, and what should be verified before sharing.`,
-      `Prefer later official statements, court filings, company filings, or on-record briefings over viral wording alone.`,
-      `## How to read the next updates`,
-      `If the story widens, look for three signals: a clearer timeline, a named decision-maker or institution, and a document or broadcast that can be checked independently. Until then, treat secondary commentary as opinion around the headline — not as settled fact.`,
-      `## What to watch next`,
-      `- Official clarification that confirms, narrows, or walks back the early framing`,
-      `- Follow-on reporting with documents, timelines, or named sources`,
-      `- Whether related institutions respond with action, not only commentary`,
-      `## Bottom line`,
-      `This is an original ContentVerse India briefing built from a public headline brief — not wire copy. Stay aware, wait for primary documents before hard conclusions, and come back to the Live News desk for the next rewrite when more is confirmed.`,
-    ].join("\n\n")
-  );
-
-  const excerpt = blurb
-    ? blurb.slice(0, 160)
-    : `ContentVerse India briefing on: ${title}`.slice(0, 160);
+  const excerpt = lightSwap(narrative[0] || source).slice(0, 160);
 
   return finalizeArticle(
     {
@@ -248,7 +339,9 @@ function rewriteLocally(
       excerpt,
       content,
       metaDescription: excerpt.slice(0, 160),
-      tags: ["India news", catName, "Live briefing"].slice(0, 5),
+      tags: ["India news", "ContentVerse", "Live news", catName]
+        .filter(Boolean)
+        .slice(0, 5),
     },
     "local"
   );
@@ -262,8 +355,7 @@ export function resetToiRewriteProviderState() {
 }
 
 /**
- * Try Gemini, then OpenAI, then Groq, then local expand.
- * Local always succeeds so cron can publish original briefings even on quota days.
+ * Try Gemini, then OpenAI, then Groq, then local light paraphrase.
  */
 export async function rewriteToiHeadline(
   item: ToiRssItem,

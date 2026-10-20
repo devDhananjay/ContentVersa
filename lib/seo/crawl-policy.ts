@@ -18,8 +18,15 @@
  *  stay published but drop from sitemap until expanded. */
 export const MIN_INDEXABLE_READING_MINUTES = 5;
 
+/** Live News (toi-rewrite) briefings — allow faster index with a lower floor. */
+export const MIN_NEWS_INDEXABLE_READING_MINUTES = 2;
+
 /** Minimum published articles before a creator profile is indexable */
 export const MIN_PROFILE_ARTICLES = 2;
+
+export function isToiNewsBriefing(metaKeywords?: string | null): boolean {
+  return (metaKeywords || "").toLowerCase().includes("toi-rewrite");
+}
 
 export function isDiscoverSyndicatedSlug(slug: string): boolean {
   return slug.startsWith("discover-");
@@ -49,6 +56,9 @@ export function isIndexableArticle(input: {
   if (isDiscoverSyndicatedSlug(input.slug)) return false;
   if (isAiVolumeArticle(input)) return false;
   if (MERGE_BLOG_SLUG_SET.has(input.slug)) return false;
+  if (isToiNewsBriefing(input.metaKeywords)) {
+    return input.readingTime >= MIN_NEWS_INDEXABLE_READING_MINUTES;
+  }
   return input.readingTime >= MIN_INDEXABLE_READING_MINUTES;
 }
 

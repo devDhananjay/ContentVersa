@@ -3,25 +3,48 @@
  * Dedupes by TOI source link in metaKeywords. Does not scrape TOI HTML.
  */
 
+import { revalidatePath } from "next/cache";
 import { BlogStatus } from "@prisma/client";
 import { CATEGORIES } from "@/lib/data/categories";
 import { PLATFORM_OWNER_EMAIL } from "@/lib/owner";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { SITE } from "@/lib/seo";
 import { passesDraftQualityGate, wordCount } from "@/lib/seo/article-quality";
+import { MIN_NEWS_INDEXABLE_READING_MINUTES } from "@/lib/seo/crawl-policy";
+import { notifySearchEnginesOfUrls } from "@/lib/seo/ping-index";
 import {
   resetToiRewriteProviderState,
   rewriteToiHeadline,
 } from "@/lib/seo/toi-news-rewrite";
+import { fetchToiArticleText } from "@/lib/seo/toi-article-fetch";
 import {
   categoryHintForToiItem,
   fetchToiRssHeadlines,
   toiSourceKey,
+  type ToiRssItem,
 } from "@/lib/seo/toi-rss";
 import { readingTime, slugify } from "@/lib/utils";
 
+async function enrichWithArticleBody(item: ToiRssItem): Promise<ToiRssItem> {
+  const extracted = await fetchToiArticleText(item.link);
+  if (!extracted?.articleBody) {
+    console.warn(`[toi-news] no article body for ${item.link}`);
+    return item;
+  }
+  return {
+    ...item,
+    title: extracted.headline || item.title,
+    description: extracted.description || item.description,
+    articleBody: extracted.articleBody,
+    imageUrl: item.imageUrl || extracted.imageUrl,
+    publishedAt: extracted.datePublished || item.publishedAt,
+  };
+}
+
 export { toiSourceKey } from "@/lib/seo/toi-rss";
 
-const DEFAULT_MAX_PER_RUN = 2;
+/** More slots = more latest/trending coverage (entertainment + top). */
+const DEFAULT_MAX_PER_RUN = 5;
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -148,8 +171,8 @@ export async function runToiNewsIngest(options?: {
   }
 
   const headlines = await fetchToiRssHeadlines({
-    maxPerFeed: 6,
-    maxTotal: 24,
+    maxPerFeed: 10,
+    maxTotal: 48,
     feedKeys: options?.feedKeys,
   });
 
@@ -170,10 +193,17 @@ export async function runToiNewsIngest(options?: {
       continue;
     }
 
-    const categorySlug = categoryHintForToiItem(item);
+    const enriched = await enrichWithArticleBody(item);
+    if (!enriched.articleBody && !(enriched.description && enriched.description.length > 120)) {
+      failed++;
+      console.warn(`[toi-news] skip — thin source: "${item.title}"`);
+      continue;
+    }
+
+    const categorySlug = categoryHintForToiItem(enriched);
     let rewrite;
     try {
-      rewrite = await rewriteToiHeadline(item, categorySlug);
+      rewrite = await rewriteToiHeadline(enriched, categorySlug);
     } catch (err) {
       console.warn(`[toi-news] rewrite error:`, err);
       failed++;
@@ -202,7 +232,16 @@ export async function runToiNewsIngest(options?: {
 
     const category = await ensureCategory(categorySlug);
     const slug = await uniqueTitleSlug(article.title);
-    const tagIds = await upsertTags([...article.tags, "TOI rewrite", "India news"]);
+    const cleanedTags = article.tags
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .filter((t) => !/^toi\s*rewrite$/i.test(t));
+    const tagIds = await upsertTags([
+      ...cleanedTags,
+      "ContentVerse",
+      "India news",
+      "Live news",
+    ]);
     const status = publish ? BlogStatus.PUBLISHED : BlogStatus.DRAFT;
     const now = new Date();
 
@@ -212,8 +251,11 @@ export async function runToiNewsIngest(options?: {
         slug,
         excerpt: article.excerpt,
         content: article.content.trim(),
-        coverImage: item.imageUrl || null,
-        readingTime: readingTime(article.content),
+        coverImage: enriched.imageUrl || item.imageUrl || null,
+        readingTime: Math.max(
+          MIN_NEWS_INDEXABLE_READING_MINUTES,
+          readingTime(article.content)
+        ),
         status,
         publishedAt: publish ? now : null,
         adEligible: publish,
@@ -223,7 +265,9 @@ export async function runToiNewsIngest(options?: {
           sourceKey,
           "toi-rewrite",
           "toi-rss",
+          enriched.articleBody ? "toi-full-article" : "toi-rss-only",
           `toi-provider:${article.provider}`,
+          `toi-src:${item.link}`,
           categorySlug,
           ...article.tags,
         ]
@@ -243,6 +287,24 @@ export async function runToiNewsIngest(options?: {
       `[toi-news] ${status} (${article.provider}): ${slug} — "${article.title}" (from ${item.feedKey})`
     );
     await sleep(800);
+  }
+
+  if (published > 0 && slugs.length) {
+    try {
+      revalidatePath("/");
+      revalidatePath("/news");
+      revalidatePath("/sitemap.xml");
+      revalidatePath("/news-sitemap.xml");
+      for (const slug of slugs) {
+        revalidatePath(`/blog/${slug}`);
+      }
+    } catch (err) {
+      console.warn("[toi-news] revalidate:", err);
+    }
+
+    const urls = slugs.map((slug) => `${SITE.url}/blog/${slug}`);
+    urls.push(`${SITE.url}/news`);
+    void notifySearchEnginesOfUrls(urls);
   }
 
   return {

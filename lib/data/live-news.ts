@@ -26,10 +26,15 @@ export type LiveNewsCard = {
 };
 
 const FEED_LABELS: Record<string, string> = {
+  entertainment: "Entertainment",
+  latest: "Latest",
   top: "Top stories",
   india: "India",
+  lifestyle: "Lifestyle",
+  cricket: "Cricket",
   business: "Business",
   sports: "Sports",
+  world: "World",
 };
 
 function feedLabel(key: string): string {

@@ -3,10 +3,10 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, BookOpen, Search, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ArrowRight, BookOpen, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { SiteVoiceSearch } from "@/components/search/site-voice-search";
 import type { CategoryWithCount } from "@/lib/data/home-data";
 import { categoryPageHref } from "@/lib/data/categories";
 import { isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
@@ -175,34 +175,22 @@ export function Hero({ categories }: Props) {
             review. Free calculators and live scores sit underneath, not in front.
           </motion.p>
 
-          <motion.form
-            action="/blogs"
-            className="mt-10 w-full max-w-2xl relative group"
+          <motion.div
+            className="mt-10 w-full max-w-2xl"
             initial={reduce ? false : { opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.55 }}
           >
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/40 to-[hsl(var(--saffron)/0.4)] opacity-0 blur-lg transition-opacity duration-500 group-focus-within:opacity-70" />
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground sm:left-5" />
-              <Input
-                name="q"
-                placeholder="Search ‘SIP’, ‘CIBIL’, ‘HUID’…"
-                className={cn(
-                  "h-12 rounded-2xl border-border bg-card pl-12 pr-[5.5rem] text-base shadow-glow backdrop-blur sm:h-16 sm:pl-14 sm:pr-32",
-                  cinematic &&
-                    "dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder:text-white/45"
-                )}
-              />
-              <Button
-                variant="gradient"
-                className="absolute right-1.5 top-1/2 h-9 -translate-y-1/2 rounded-xl px-3 text-sm sm:right-2 sm:h-12 sm:px-4 sm:text-base"
-              >
-                Search
-                <ArrowRight className="hidden h-4 w-4 sm:inline" />
-              </Button>
-            </div>
-          </motion.form>
+            <SiteVoiceSearch
+              size="hero"
+              searchPath="/blogs"
+              placeholder="Search ‘SIP’, ‘CIBIL’, ‘HUID’… or tap the mic"
+              inputClassName={cn(
+                cinematic &&
+                  "dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder:text-white/45"
+              )}
+            />
+          </motion.div>
 
           <motion.div
             className="mt-6 flex flex-wrap items-center justify-center gap-2"

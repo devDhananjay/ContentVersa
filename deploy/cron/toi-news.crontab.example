@@ -4,6 +4,7 @@
 #   crontab -e  → paste line below
 #
 # Every 30 minutes (UTC). Needs GEMINI_* + DB + AI auto-gen enabled in admin.
-# Caps: TOI_NEWS_MAX_PER_RUN (default 2). Publish: TOI_NEWS_AUTO_PUBLISH=1 (default).
+# Caps: TOI_NEWS_MAX_PER_RUN (default 5). Prefers entertainment/latest/trending.
+# Publish: TOI_NEWS_AUTO_PUBLISH=1 (default).
 
 */30 * * * * /home/ec2-user/ContentVersa/scripts/cron-toi-news.sh >> /home/ec2-user/logs/toi-news.log 2>&1

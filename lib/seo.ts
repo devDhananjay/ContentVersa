@@ -277,10 +277,12 @@ export function articleJsonLd(args: {
   datePublished: string;
   dateModified?: string;
   authorName: string;
+  /** Live News briefings use NewsArticle for richer SERP signals. */
+  type?: "Article" | "NewsArticle";
 }) {
   return {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": args.type || "Article",
     headline: args.title,
     description: args.description,
     image: args.image ? [args.image] : undefined,
@@ -293,5 +295,8 @@ export function articleJsonLd(args: {
       logo: { "@type": "ImageObject", url: `${SITE.url}${SITE_LOGO_URL}` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": args.url },
+    ...(args.type === "NewsArticle"
+      ? { isAccessibleForFree: true, inLanguage: "en-IN" }
+      : {}),
   };
 }
