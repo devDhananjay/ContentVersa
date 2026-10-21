@@ -1,11 +1,13 @@
 /**
  * Homepage cinematic hero video (~2MB compressed contentverse-home.mp4).
- * Enable with NEXT_PUBLIC_HOME_HERO_VIDEO_EXPERIMENT=1
+ *
+ * Kept OFF — site uses AmbientPageBackground (theme aurora) only.
+ * Re-enable later only if product explicitly opts in again.
  */
 export const LOCAL_HERO_VIDEO_PATH = "/videos/contentverse-home.mp4";
 
 export function isHomeHeroVideoEnabled() {
-  return process.env.NEXT_PUBLIC_HOME_HERO_VIDEO_EXPERIMENT === "1";
+  return false;
 }
 
 export function homeHeroVideoUrl() {
