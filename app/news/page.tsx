@@ -8,22 +8,30 @@ import { buildMetadata, SITE } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
-export const metadata: Metadata = buildMetadata({
-  title: "Live News — India desk briefings | ContentVerse India",
-  description:
-    "Live India news briefings rewritten for ContentVerse readers — politics, business, sports and top stories, updated through the day.",
-  path: "/news",
-  keywords: [
-    "India live news",
-    "ContentVerse news",
-    "India headlines",
-    "news briefings India",
-  ],
-});
+export const metadata: Metadata = {
+  ...buildMetadata({
+    title: "Live News — India desk briefings | ContentVerse India",
+    description:
+      "Live India news briefings rewritten for ContentVerse readers — politics, business, sports and top stories, updated through the day.",
+    path: "/news",
+    keywords: [
+      "India live news",
+      "ContentVerse news",
+      "India headlines",
+      "news briefings India",
+    ],
+  }),
+  /** Helps crawlers discover the Google News–style sitemap (also in robots.txt). */
+  alternates: {
+    types: {
+      "application/rss+xml": `${SITE.url}/news-sitemap.xml`,
+    },
+  },
+};
 
 export default async function NewsHubPage() {
-  const items = await getNewsDesk(24);
-  const briefings = items.filter((i) => i.hasBriefing);
+  const desk = await getNewsDesk(600);
+  const briefings = desk.items.filter((i) => i.hasBriefing);
 
   const listJsonLd =
     briefings.length > 0
@@ -85,12 +93,12 @@ export default async function NewsHubPage() {
               </h1>
             </div>
             <p className="text-sm text-muted-foreground">
-              {briefings.length} briefing{briefings.length === 1 ? "" : "s"} · every
-              30 min
+              {desk.total} stor{desk.total === 1 ? "y" : "ies"} · last 30 days ·
+              every 30 min
             </p>
           </div>
 
-          <NewsDeskClient items={items} />
+          <NewsDeskClient desk={desk} />
         </div>
 
         <StickyRailAd slotKey="hub" sticky label="Sponsored right" />

@@ -24,6 +24,7 @@ import {
   type ToiRssItem,
 } from "@/lib/seo/toi-rss";
 import { readingTime, slugify } from "@/lib/utils";
+import { resolveToiCoverForIngest } from "@/lib/seo/toi-cover";
 
 async function enrichWithArticleBody(item: ToiRssItem): Promise<ToiRssItem> {
   const extracted = await fetchToiArticleText(item.link);
@@ -131,6 +132,9 @@ export type ToiNewsIngestResult = {
   failed: number;
   published: number;
   slugs: string[];
+  /** In-app + push fan-out for top/live desk stories */
+  notifiedStories?: number;
+  notifiedUsers?: number;
 };
 
 /**
@@ -183,6 +187,7 @@ export async function runToiNewsIngest(options?: {
   let failed = 0;
   let published = 0;
   const slugs: string[] = [];
+  const notifyQueue: { slug: string; title: string; feedKey: string }[] = [];
 
   for (const item of headlines) {
     if (created >= maxPerRun) break;
@@ -244,6 +249,10 @@ export async function runToiNewsIngest(options?: {
     ]);
     const status = publish ? BlogStatus.PUBLISHED : BlogStatus.DRAFT;
     const now = new Date();
+    const rawCover = enriched.imageUrl || item.imageUrl || null;
+    const coverImage = rawCover
+      ? await resolveToiCoverForIngest(rawCover)
+      : null;
 
     await prisma.blog.create({
       data: {
@@ -251,7 +260,7 @@ export async function runToiNewsIngest(options?: {
         slug,
         excerpt: article.excerpt,
         content: article.content.trim(),
-        coverImage: enriched.imageUrl || item.imageUrl || null,
+        coverImage,
         readingTime: Math.max(
           MIN_NEWS_INDEXABLE_READING_MINUTES,
           readingTime(article.content)
@@ -265,6 +274,7 @@ export async function runToiNewsIngest(options?: {
           sourceKey,
           "toi-rewrite",
           "toi-rss",
+          `toi-feed:${item.feedKey}`,
           enriched.articleBody ? "toi-full-article" : "toi-rss-only",
           `toi-provider:${article.provider}`,
           `toi-src:${item.link}`,
@@ -281,13 +291,23 @@ export async function runToiNewsIngest(options?: {
     });
 
     created++;
-    if (publish) published++;
+    if (publish) {
+      published++;
+      notifyQueue.push({
+        slug,
+        title: article.title,
+        feedKey: item.feedKey,
+      });
+    }
     slugs.push(slug);
     console.log(
       `[toi-news] ${status} (${article.provider}): ${slug} — "${article.title}" (from ${item.feedKey})`
     );
     await sleep(800);
   }
+
+  let notifiedStories = 0;
+  let notifiedUsers = 0;
 
   if (published > 0 && slugs.length) {
     try {
@@ -305,6 +325,17 @@ export async function runToiNewsIngest(options?: {
     const urls = slugs.map((slug) => `${SITE.url}/blog/${slug}`);
     urls.push(`${SITE.url}/news`);
     void notifySearchEnginesOfUrls(urls);
+
+    try {
+      const { dispatchLiveNewsNotifications } = await import(
+        "@/lib/notifications/live-news"
+      );
+      const fanout = await dispatchLiveNewsNotifications(notifyQueue);
+      notifiedStories = fanout.stories;
+      notifiedUsers = fanout.notified;
+    } catch (err) {
+      console.warn("[toi-news] live-news notify:", err);
+    }
   }
 
   return {
@@ -314,5 +345,7 @@ export async function runToiNewsIngest(options?: {
     failed,
     published,
     slugs,
+    notifiedStories,
+    notifiedUsers,
   };
 }

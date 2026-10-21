@@ -1190,6 +1190,12 @@
       "namedRegex": "^/news(?:/)?$"
     },
     {
+      "page": "/news-sitemap.xml",
+      "regex": "^/news\\-sitemap\\.xml(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/news\\-sitemap\\.xml(?:/)?$"
+    },
+    {
       "page": "/policy",
       "regex": "^/policy(?:/)?$",
       "routeKeys": {},
@@ -1236,6 +1242,12 @@
       "regex": "^/robots\\.txt(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/robots\\.txt(?:/)?$"
+    },
+    {
+      "page": "/search",
+      "regex": "^/search(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/search(?:/)?$"
     },
     {
       "page": "/site-map",

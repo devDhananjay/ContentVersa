@@ -29,13 +29,20 @@ import { getCurrentUser } from "@/lib/auth";
 import { resolveUserId } from "@/lib/auth/resolve-user-id";
 import { isDatabaseConfigured } from "@/lib/prisma";
 import { shouldSkipImageOptimization } from "@/lib/upload";
-import { formatNumber, getInitials, formatShortDate, timeAgo } from "@/lib/utils";
+import {
+  formatNumber,
+  getInitials,
+  formatIstDateTime,
+  timeAgo,
+} from "@/lib/utils";
 import { buildMetadata, articleJsonLd, SITE } from "@/lib/seo";
 import { isDiscoverSyndicatedSlug } from "@/lib/feeds/discover-blog";
 import { isIndexableArticle } from "@/lib/seo/crawl-policy";
 import { redirectTargetFromCanonical } from "@/lib/seo/content-redirects";
 import { CATEGORIES } from "@/lib/data/categories";
 import { resolveBlogCoverImage } from "@/lib/upload";
+import { CoverBrandBadge } from "@/components/media/cover-brand-badge";
+import { isContentVerseBrandCover } from "@/lib/seo/toi-cover-url";
 import { SeriesNav } from "@/components/blog/series-nav";
 import { AdSlot } from "@/components/ads/ad-slot";
 import { GoogleAdSense } from "@/components/ads/google-adsense";
@@ -88,7 +95,7 @@ export async function generateMetadata({
     description: blog.metaDescription?.trim() || blog.excerpt,
     path: `/blog/${blog.slug}`,
     canonicalUrl: blog.canonicalUrl?.trim() || undefined,
-    image: blog.coverImage,
+    image: resolveBlogCoverImage(blog.coverImage),
     type: "article",
     publishedTime: blog.publishedAt,
     modifiedTime: blog.updatedAt || blog.publishedAt,
@@ -144,10 +151,11 @@ export default async function BlogPage({
           title: blog.title,
           description: blog.excerpt,
           url,
-          image: blog.coverImage,
+          image: resolveBlogCoverImage(blog.coverImage),
           datePublished: blog.publishedAt,
           dateModified: blog.updatedAt || blog.publishedAt,
           authorName: blog.author.name,
+          authorUrl: `${SITE.url}/profile/${blog.author.username}`,
           type: isToiBriefing ? "NewsArticle" : "Article",
         });
 
@@ -247,6 +255,81 @@ export default async function BlogPage({
             </p>
           )}
 
+          {/* Byline + IST date/time sit between headline and body (Google News guidance). */}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-b pb-6">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-12 w-12 border-2 border-border">
+                <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
+                <AvatarFallback>{getInitials(blog.author.name)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-muted-foreground">By</span>
+                  <Link
+                    href={`/profile/${blog.author.username}`}
+                    className="font-semibold hover:underline"
+                    rel="author"
+                  >
+                    {blog.author.name}
+                  </Link>
+                  {blog.author.verified && (
+                    <BadgeCheck className="h-4 w-4 text-neon-cyan" />
+                  )}
+                </div>
+                <p className="mt-0.5 text-xs text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <time dateTime={blog.publishedAt}>
+                    Published {formatIstDateTime(blog.publishedAt)}
+                  </time>
+                  {blog.updatedAt &&
+                  new Date(blog.updatedAt).getTime() -
+                    new Date(blog.publishedAt).getTime() >
+                    60_000 ? (
+                    <>
+                      <span aria-hidden>·</span>
+                      <time dateTime={blog.updatedAt}>
+                        Updated {formatIstDateTime(blog.updatedAt)}
+                      </time>
+                    </>
+                  ) : null}
+                  <span
+                    className="text-muted-foreground/80"
+                    title={timeAgo(blog.publishedAt)}
+                  >
+                    ({timeAgo(blog.publishedAt)})
+                  </span>
+                  <span aria-hidden>·</span>
+                  <Clock className="h-3 w-3" />
+                  <span className="font-medium">{blog.readingTime} min read</span>
+                  <span aria-hidden>·</span>
+                  <Eye className="h-3 w-3" /> {formatNumber(blog.views)}
+                  <span aria-hidden>·</span>
+                  <Heart className="h-3 w-3" /> {formatNumber(blog.likes)}
+                  <span aria-hidden>·</span>
+                  <MessageCircle className="h-3 w-3" />{" "}
+                  {formatNumber(blog.comments)}
+                </p>
+                {blog.author.bio ? (
+                  <p className="mt-1 line-clamp-2 max-w-md text-xs text-muted-foreground">
+                    {blog.author.bio}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {!isOwnArticle ? (
+                <FollowButton
+                  username={blog.author.username}
+                  targetUserId={blog.author.id}
+                  initialFollowerCount={blog.author.followers}
+                />
+              ) : null}
+              <ShareBar url={url} title={blog.title} imageUrl={blog.coverImage} />
+              {blog.id && !isOwnArticle && (
+                <ReportContentButton targetType="BLOG" targetId={blog.id} />
+              )}
+            </div>
+          </div>
+
           {isPublic ? <TrackBlogRead blogSlug={slug} /> : null}
 
           <div className="mt-6">
@@ -261,73 +344,6 @@ export default async function BlogPage({
               category={blog.category}
             />
           </div>
-
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-4 pb-6 border-b">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12 border-2 border-border">
-                <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
-                <AvatarFallback>{getInitials(blog.author.name)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <Link
-                    href={`/profile/${blog.author.username}`}
-                    className="font-semibold hover:underline"
-                  >
-                    {blog.author.name}
-                  </Link>
-                  {blog.author.verified && (
-                    <BadgeCheck className="h-4 w-4 text-neon-cyan" />
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <time dateTime={blog.publishedAt}>
-                    Published {formatShortDate(blog.publishedAt)}
-                  </time>
-                  {blog.updatedAt &&
-                  new Date(blog.updatedAt).getTime() - new Date(blog.publishedAt).getTime() >
-                    60_000 ? (
-                    <>
-                      <span aria-hidden>·</span>
-                      <time dateTime={blog.updatedAt}>
-                        Updated {formatShortDate(blog.updatedAt)}
-                      </time>
-                    </>
-                  ) : null}
-                  <span className="text-muted-foreground/80" title={timeAgo(blog.publishedAt)}>
-                    ({timeAgo(blog.publishedAt)})
-                  </span>
-                  <span aria-hidden>·</span>
-                  <Clock className="h-3 w-3" />
-                  <span className="font-medium">{blog.readingTime} min read</span>
-                  <span aria-hidden>·</span>
-                  <Eye className="h-3 w-3" /> {formatNumber(blog.views)}
-                  <span aria-hidden>·</span>
-                  <Heart className="h-3 w-3" /> {formatNumber(blog.likes)}
-                  <span aria-hidden>·</span>
-                  <MessageCircle className="h-3 w-3" /> {formatNumber(blog.comments)}
-                </p>
-                {blog.author.bio ? (
-                  <p className="text-xs text-muted-foreground line-clamp-2 mt-1 max-w-md">
-                    {blog.author.bio}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {!isOwnArticle ? (
-                <FollowButton
-                  username={blog.author.username}
-                  targetUserId={blog.author.id}
-                  initialFollowerCount={blog.author.followers}
-                />
-              ) : null}
-              <ShareBar url={url} title={blog.title} imageUrl={blog.coverImage} />
-              {blog.id && !isOwnArticle && (
-                <ReportContentButton targetType="BLOG" targetId={blog.id} />
-              )}
-            </div>
-          </div>
         </header>
 
         {coverSrc && (
@@ -341,6 +357,9 @@ export default async function BlogPage({
               className="object-cover"
               unoptimized={shouldSkipImageOptimization(coverSrc)}
             />
+            {isToiBriefing && !isContentVerseBrandCover(coverSrc) ? (
+              <CoverBrandBadge size="lg" />
+            ) : null}
           </div>
         )}
 
@@ -429,13 +448,13 @@ export default async function BlogPage({
                 layout="card"
                 avatarSize="lg"
                 showFollow={!isOwnArticle}
-                publishedLabel={formatShortDate(blog.publishedAt)}
+                publishedLabel={formatIstDateTime(blog.publishedAt)}
                 updatedLabel={
                   blog.updatedAt &&
                   new Date(blog.updatedAt).getTime() -
                     new Date(blog.publishedAt).getTime() >
                     60_000
-                    ? formatShortDate(blog.updatedAt)
+                    ? formatIstDateTime(blog.updatedAt)
                     : undefined
                 }
               />

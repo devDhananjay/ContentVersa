@@ -19,9 +19,35 @@ import { getCineverseMovieSitemapEntries } from "@/lib/cineverse/sitemap-movies"
 
 type SitemapFreq = MetadataRoute.Sitemap[0]["changeFrequency"];
 
-/** Google-safe W3C datetime — no fractional seconds (GSC rejects .205Z). */
-export function formatSitemapLastMod(date: Date): string {
-  return date.toISOString().replace(/\.\d{3}Z$/, "Z");
+/**
+ * Google-safe sitemap lastmod (GSC "Invalid date"):
+ * - default YYYY-MM-DD (Google's simplest accepted form)
+ * - datetime style uses `+00:00` (not `Z` / `+0000` — GSC is picky)
+ * - never future (TMDB "upcoming" release dates)
+ * - never Invalid Date / NaN
+ * - never absurdly old (classic films as lastmod confuse validators)
+ */
+export function formatSitemapLastMod(
+  date: Date | string | number | null | undefined,
+  opts?: { style?: "date" | "datetime" }
+): string {
+  const now = new Date();
+  let d =
+    date instanceof Date
+      ? date
+      : date == null || date === ""
+        ? now
+        : new Date(date);
+  if (!Number.isFinite(d.getTime())) d = now;
+  if (d.getTime() > now.getTime()) d = now;
+  // Floor: don't emit theatrical release years from the 1950s–80s as page lastmod.
+  const min = new Date(now.getTime() - 10 * 365.25 * 24 * 3600 * 1000);
+  if (d.getTime() < min.getTime()) d = min;
+
+  if (opts?.style === "datetime") {
+    return d.toISOString().replace(/\.\d{3}Z$/, "+00:00");
+  }
+  return d.toISOString().slice(0, 10);
 }
 
 const STATIC_PAGES: Array<{

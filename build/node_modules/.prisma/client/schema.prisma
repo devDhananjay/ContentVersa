@@ -72,6 +72,8 @@ enum NotificationType {
   STOCK_WATCHLIST_ALERT
   CINEVERSE_TRAILER
   OTT_WEEKLY
+  /// Live / top desk news (TOI ingest) — push + inbox
+  LIVE_NEWS
 }
 
 enum RevenueSource {

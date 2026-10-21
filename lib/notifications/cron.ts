@@ -111,35 +111,45 @@ async function notifyTrending(
   since: Date
 ) {
   const link = `/blog/${blog.slug}`;
-  const readers = await prisma.readingHistory.findMany({
-    where: { userId: { not: null } },
-    select: { userId: true },
-    distinct: ["userId"],
-    take: USER_BATCH,
-  });
 
-  const payloads = [];
-  for (const r of readers) {
-    if (!r.userId) continue;
-    const dup = await prisma.notification.findFirst({
-      where: {
-        userId: r.userId,
-        type: NotificationType.TRENDING,
-        link,
-        createdAt: { gte: since },
-      },
-    });
-    if (dup) continue;
-    payloads.push({
-      userId: r.userId,
+  const already = await prisma.notification.findMany({
+    where: {
       type: NotificationType.TRENDING,
-      title: "This article is trending today",
-      message: `“${blog.title}” is getting lots of attention — take a look.`,
       link,
-    });
-  }
+      createdAt: { gte: since },
+    },
+    select: { userId: true },
+  });
+  const exclude = new Set(already.map((a) => a.userId));
 
-  const sent = await createUserNotificationsBulk(payloads);
+  let sent = 0;
+  let cursor: string | undefined;
+  for (;;) {
+    const users = await prisma.user.findMany({
+      where: { banned: false },
+      select: { id: true },
+      orderBy: { id: "asc" },
+      take: USER_BATCH,
+      ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+    });
+    if (!users.length) break;
+
+    const payloads = users
+      .filter((u) => !exclude.has(u.id))
+      .map((u) => ({
+        userId: u.id,
+        type: NotificationType.TRENDING,
+        title: "This article is trending today",
+        message: `“${blog.title}” is getting lots of attention — take a look.`,
+        link,
+      }));
+
+    if (payloads.length) {
+      sent += await createUserNotificationsBulk(payloads);
+    }
+    cursor = users[users.length - 1]!.id;
+    if (users.length < USER_BATCH) break;
+  }
 
   const subscribers = await prisma.newsletterSubscriber.findMany({
     where: { weeklyDigest: true },

@@ -5,6 +5,7 @@
  */
 
 import { createHash } from "node:crypto";
+import { cleanToiImageUrl } from "@/lib/seo/toi-cover-url";
 
 export type ToiRssItem = {
   title: string;
@@ -90,7 +91,7 @@ export const TOI_RSS_FEEDS: {
 ];
 
 /** Celebrity / viral / breaking signals → higher pick priority (search traffic). */
-const TRENDING_TITLE_RE =
+export const TRENDING_TITLE_RE =
   /\b(tiger shroff|salman|shahrukh|srk|deepika|ranveer|alia|katrina|rashmika|vijay|rajinikanth|allu arjun|modi|rahul gandhi|kohli|rohit|dhoni|viral|breaking|firing|shot|arrest|stampede|earthquake|crash|attack|controversy|divorced?|wedding|box office|ipl|world cup)\b/i;
 
 function decodeXmlEntities(text: string): string {
@@ -154,7 +155,10 @@ function parseRssItems(
       description: description?.slice(0, 2000),
       publishedAt: extractTag(block, "pubDate"),
       feedKey,
-      imageUrl: extractImageUrl(block),
+      imageUrl: (() => {
+        const raw = extractImageUrl(block);
+        return raw ? cleanToiImageUrl(raw) || raw : undefined;
+      })(),
     });
     if (items.length >= max) break;
   }

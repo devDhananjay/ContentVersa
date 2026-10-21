@@ -105,13 +105,14 @@ export async function getCineverseMovieSitemapEntries(
     }
   }
 
+  // lastmod = when our page is considered current — NEVER TMDB theatrical
+  // release (future premieres / 1950s classics both trip GSC "Invalid date").
+  const now = new Date();
   return [...byId.entries()]
     .sort((a, b) => b[1].getTime() - a[1].getTime())
     .slice(0, limit)
-    .map(([id, lastModified]) => ({
+    .map(([id]) => ({
       path: `/cineverse/movie/${id}`,
-      lastModified: Number.isFinite(lastModified.getTime())
-        ? lastModified
-        : new Date(),
+      lastModified: now,
     }));
 }

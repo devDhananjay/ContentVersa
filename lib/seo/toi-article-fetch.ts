@@ -3,6 +3,8 @@
  * Used so Live News keeps the same facts/quotes — then we lightly rewrite wording.
  */
 
+import { cleanToiImageUrl } from "@/lib/seo/toi-cover-url";
+
 const FETCH_TIMEOUT_MS = 18_000;
 const USER_AGENT =
   "Mozilla/5.0 (compatible; ContentVerseIndiaBot/1.0; +https://contentverse.co.in; news-rewrite)";
@@ -81,7 +83,9 @@ function parseNewsArticleLd(html: string): ToiArticleExtract | null {
               ? stripHtml(n.description).slice(0, 400)
               : undefined,
           articleBody: body.slice(0, 12000),
-          imageUrl: image?.startsWith("http") ? image : undefined,
+          imageUrl: image?.startsWith("http")
+            ? cleanToiImageUrl(image) || image
+            : undefined,
           datePublished:
             typeof n.datePublished === "string" ? n.datePublished : undefined,
         };
@@ -143,7 +147,10 @@ export async function fetchToiArticleText(
       return {
         description: og,
         articleBody: cleanArticleBody(og),
-        imageUrl: extractMeta(html, "og:image") || undefined,
+        imageUrl: (() => {
+          const img = extractMeta(html, "og:image");
+          return img ? cleanToiImageUrl(img) || img : undefined;
+        })(),
         headline: extractMeta(html, "og:title") || undefined,
       };
     }

@@ -22,6 +22,8 @@ type SiteVoiceSearchProps = {
   className?: string;
   inputClassName?: string;
   initialQuery?: string;
+  /** Controlled query (e.g. news desk trending chips). */
+  value?: string;
 };
 
 export function SiteVoiceSearch({
@@ -34,9 +36,14 @@ export function SiteVoiceSearch({
   className,
   inputClassName,
   initialQuery = "",
+  value,
 }: SiteVoiceSearchProps) {
   const router = useRouter();
-  const [query, setQuery] = React.useState(initialQuery);
+  const [query, setQuery] = React.useState(value ?? initialQuery);
+
+  React.useEffect(() => {
+    if (value !== undefined) setQuery(value);
+  }, [value]);
 
   const navigateTo = React.useCallback(
     (raw: string) => {

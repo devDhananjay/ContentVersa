@@ -19,7 +19,11 @@ export type NewsSitemapRow = {
   updatedAt: Date;
 };
 
-/** Last 48h of indexable Live News briefings (Google News–style window). */
+/**
+ * Last 48h of indexable Live News briefings (Google News sitemap window).
+ * Submit https://contentverse.co.in/news-sitemap.xml in Search Console → Sitemaps
+ * (in addition to sitemap.xml). robots.txt already lists both.
+ */
 export async function getNewsSitemapRows(
   limit = 100
 ): Promise<NewsSitemapRow[]> {
@@ -65,7 +69,7 @@ export async function getNewsSitemapRows(
 export function renderNewsSitemapXml(rows: NewsSitemapRow[]): string {
   const items = rows
     .map((row) => {
-      const pub = formatSitemapLastMod(row.publishedAt);
+      const pub = formatSitemapLastMod(row.publishedAt, { style: "datetime" });
       const title = escapeXml(row.title);
       return `  <url>
     <loc>${escapeXml(row.loc)}</loc>

@@ -269,26 +269,47 @@ export function platformModulesJsonLd() {
   };
 }
 
+function toSchemaDate(value: string | Date | undefined | null): string | undefined {
+  if (!value) return undefined;
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return undefined;
+  // W3C Datetime with explicit offset (GSC / News prefer this over bare local).
+  return d.toISOString().replace(/\.\d{3}Z$/, "+00:00");
+}
+
 export function articleJsonLd(args: {
   title: string;
   description: string;
   url: string;
   image?: string;
-  datePublished: string;
-  dateModified?: string;
+  datePublished: string | Date;
+  dateModified?: string | Date;
   authorName: string;
+  /** Profile or about URL — helps Google disambiguate the byline. */
+  authorUrl?: string;
   /** Live News briefings use NewsArticle for richer SERP signals. */
   type?: "Article" | "NewsArticle";
 }) {
+  const datePublished = toSchemaDate(args.datePublished);
+  const dateModified =
+    toSchemaDate(args.dateModified) || datePublished;
+  const images = args.image
+    ? [args.image.startsWith("http") ? args.image : `${SITE.url}${args.image}`]
+    : undefined;
+
   return {
     "@context": "https://schema.org",
     "@type": args.type || "Article",
     headline: args.title,
     description: args.description,
-    image: args.image ? [args.image] : undefined,
-    datePublished: args.datePublished,
-    dateModified: args.dateModified || args.datePublished,
-    author: { "@type": "Person", name: args.authorName },
+    image: images,
+    datePublished,
+    dateModified,
+    author: {
+      "@type": "Person",
+      name: args.authorName,
+      ...(args.authorUrl ? { url: args.authorUrl } : {}),
+    },
     publisher: {
       "@type": "Organization",
       name: SITE.name,

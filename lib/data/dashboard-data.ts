@@ -143,6 +143,11 @@ const NOTIF_ICON: Record<string, DashboardNotification["icon"]> = {
   TRENDING: "like",
   WEEKLY_DIGEST: "system",
   CATEGORY_NEW: "system",
+  CRICKET_MATCH_REMINDER: "system",
+  STOCK_WATCHLIST_ALERT: "system",
+  CINEVERSE_TRAILER: "like",
+  OTT_WEEKLY: "system",
+  LIVE_NEWS: "like",
 };
 
 function timeAgoShort(date: Date): string {

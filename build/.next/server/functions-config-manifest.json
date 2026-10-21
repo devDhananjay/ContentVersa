@@ -11,9 +11,9 @@
       "maxDuration": 300
     },
     "/api/moneyverse/bank-statement/quota": {},
+    "/api/reels/upload": {},
     "/api/moneyverse/bank-statement/analyze": {},
     "/api/upload": {},
-    "/api/reels/upload": {},
     "/uploads/[filename]": {}
   }
 }

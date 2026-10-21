@@ -128,9 +128,32 @@ export function formatDuration(seconds: number): string {
   return min > 0 ? `${h}h ${min}m` : `${h}h`;
 }
 
+/** Date only in Asia/Kolkata (EC2 is UTC — bare toLocaleDateString drifts). */
 export function formatShortDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  if (Number.isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(d);
+}
+
+/** Visible publish time for news bylines — Google News wants date + time on page. */
+export function formatIstDateTime(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (Number.isNaN(d.getTime())) return "";
+  const formatted = new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(d);
+  return `${formatted} IST`;
 }
 
 export function timeAgo(date: Date | string): string {
