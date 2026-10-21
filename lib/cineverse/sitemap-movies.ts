@@ -68,11 +68,12 @@ export type CineverseSitemapMovie = {
 };
 
 /**
- * All movie detail paths we want Google to discover from CineVerse lists.
- * Caps at ~500 unique IDs to keep sitemap healthy.
+ * Movie detail paths for sitemap — India-relevant hub lists only.
+ * Skips deep popular/top_rated pagination (thin TMDB long-tail / AdSense risk).
+ * Caps lower so Google discovers curated titles, not mass shells.
  */
 export async function getCineverseMovieSitemapEntries(
-  limit = 500
+  limit = 120
 ): Promise<CineverseSitemapMovie[]> {
   const byId = new Map<string, Date>();
 
@@ -91,11 +92,9 @@ export async function getCineverseMovieSitemapEntries(
 
   const region = "IN";
   const lists = await Promise.all([
-    fetchListIds("/trending/movie/week", {}, 2),
-    fetchListIds("/movie/now_playing", { region, language: "en-US" }, 2),
-    fetchListIds("/movie/upcoming", { region, language: "en-US" }, 2),
-    fetchListIds("/movie/popular", { region, language: "en-US" }, 5),
-    fetchListIds("/movie/top_rated", { region, language: "en-US" }, 3),
+    fetchListIds("/trending/movie/week", {}, 1),
+    fetchListIds("/movie/now_playing", { region, language: "en-US" }, 1),
+    fetchListIds("/movie/upcoming", { region, language: "en-US" }, 1),
   ]);
 
   for (const map of lists) {

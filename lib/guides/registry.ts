@@ -253,16 +253,18 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     shortTitle: "Match day guide",
     description:
       "Follow an India cricket match day the smart way: toss, key moments, scorecard basics, and where to get live updates without spam.",
-    keywords: ["cricket live updates", "match key moments india"],
-    readingMinutes: 5,
-    updatedLabel: "Jul 2026",
+    keywords: ["cricket live updates", "match key moments india", "ipl match day guide"],
+    readingMinutes: 9,
+    updatedLabel: "Oct 2026",
     relatedHref: "/guides/cricket",
     relatedLabel: "More cricket guides",
+    clusterId: "cricket",
     blocks: [
       {
         heading: "What to track during a live match",
         paragraphs: [
           "A useful match guide is not only the final score. Note toss and decision, powerplay or new-ball phases, partnerships that change the game, reviews, and bowling spells that swing momentum. Those “key moments” are what fans search for hours after the match.",
+          "Keep a simple notepad (phone notes are fine): over number, score, and one line on why the moment mattered. That habit turns chaotic live feeds into something you can explain to friends later.",
         ],
         bullets: [
           "Toss + pitch note (bat/bowl first)",
@@ -272,10 +274,37 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
+        heading: "Format-specific checkpoints",
+        paragraphs: [
+          "In T20, the first six and last five overs usually decide the narrative. In ODIs, middle-overs control and death bowling still matter more than one early boundary. In Tests, sessions and new-ball spells matter more than a single over’s run rate.",
+          "If you only have 20 minutes to catch up, jump to: current required rate (chase), last five overs summary, and top two bowling figures — then skim partnerships.",
+        ],
+      },
+      {
+        heading: "Legal watching and spam avoidance",
+        paragraphs: [
+          "Prefer official broadcasters and licensed apps in India. Unofficial “HD free stream” links are malware and piracy risks. Mute keyword spam in social apps so match alerts do not bury real updates.",
+        ],
+      },
+      {
         heading: "Where to follow on ContentVerse India",
         paragraphs: [
-          "Use our cricket guides for match-day context and scorecard literacy, and browse Sports category articles for written coverage. Avoid unofficial streaming links — prefer official broadcasters and licensed apps in India.",
+          "Use cricket guides for match-day context and scorecard literacy, then read Sports category articles for written previews and explainers. Live score widgets stay separate from our indexable editorial guides on purpose — guides are built for search and clarity, not raw tickers.",
         ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What should I check first if I join a match late?",
+        a: "Toss decision, current score vs overs, required rate if chasing, and the last wicket — then scan bowling figures.",
+      },
+      {
+        q: "Where should I watch legally in India?",
+        a: "Use the official broadcaster or licensed streaming partner for that series. Avoid random free-stream sites.",
+      },
+      {
+        q: "Do live score apps replace match guides?",
+        a: "Scores show state; guides explain context (pitch, phases, why a spell mattered). Use both if you want depth.",
       },
     ],
   },
@@ -286,23 +315,110 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     shortTitle: "Read a scorecard",
     description:
       "Learn batting, bowling, extras, and run-rate lines on an Indian cricket scorecard so live updates make sense.",
-    keywords: ["how to read cricket scorecard", "cricket extras explained"],
-    readingMinutes: 4,
-    updatedLabel: "Jul 2026",
+    keywords: ["how to read cricket scorecard", "cricket extras explained", "strike rate economy rate"],
+    readingMinutes: 8,
+    updatedLabel: "Oct 2026",
     relatedHref: "/category/sports",
     relatedLabel: "Sports articles",
+    clusterId: "cricket",
     blocks: [
       {
         heading: "Batting line",
         paragraphs: [
           "Runs (R), balls (B), fours, sixes, and strike rate tell how a batter scored. “Not out” means they were still batting when the innings ended. Fall of wickets shows when momentum shifted.",
+          "A high strike rate on few balls can look flashy but may not build an innings; pair strike rate with partnership context before judging a knock.",
         ],
       },
       {
         heading: "Bowling & extras",
         paragraphs: [
           "Overs, maidens, runs conceded, and wickets form the bowling summary. Extras (wides, no-balls, byes, leg-byes) are runs not credited to a batter. In T20, economy rate often matters as much as wickets.",
+          "If extras are high, ask whether wicketkeepers missed byes or bowlers sprayed wides under pressure — the scorecard hint is there even without commentary.",
         ],
+      },
+      {
+        heading: "Run rate, projected totals, and chase math",
+        paragraphs: [
+          "Current run rate is runs per over so far. Required rate appears in chases. Projected totals assume the current rate continues — useful as a snapshot, not destiny, especially after a collapse or a powerplay surge.",
+        ],
+        bullets: [
+          "Compare required rate vs career death-over strengths of batters still in",
+          "Note wickets in hand — five wickets with a high required rate is different from two",
+          "In rain-affected games, check DLS/DLS-style targets on official cards when shown",
+        ],
+      },
+      {
+        heading: "Practice drill",
+        paragraphs: [
+          "Open any completed India or IPL scorecard and explain the match in five sentences using only the card: who set the tone, which spell flipped the game, and how extras or partnerships mattered. That drill builds literacy faster than reading definitions alone.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What does economy rate mean?",
+        a: "Runs conceded per over bowled. Lower is better for the bowling side, especially in limited overs.",
+      },
+      {
+        q: "Are extras counted in the team total?",
+        a: "Yes. Extras add to the batting side’s total but are not credited to an individual batter.",
+      },
+      {
+        q: "Why do some cards show SR and others emphasise balls faced?",
+        a: "Formats differ. T20 cards emphasise strike rate; Tests often emphasise time and balls for longer occupations.",
+      },
+    ],
+  },
+  {
+    slug: "how-to-read-a-cricket-match-preview",
+    section: "cricket",
+    title: "How to Read a Cricket Match Preview (India Fans)",
+    shortTitle: "Match preview guide",
+    description:
+      "Decode pitch reports, team news, form guides, and head-to-head notes so match previews help you before the first ball — without junk tips.",
+    keywords: [
+      "cricket match preview explained",
+      "pitch report india cricket",
+      "ipl preview how to read",
+    ],
+    readingMinutes: 8,
+    updatedLabel: "Oct 2026",
+    relatedHref: "/guides/cricket",
+    relatedLabel: "Cricket guides",
+    clusterId: "cricket",
+    blocks: [
+      {
+        heading: "What a good preview must cover",
+        paragraphs: [
+          "Venue and pitch tendency (help pace / spin / true bounce), weather and dew risk, confirmed XI or likely XI, injury news, and one form note per key player. Skip “sure-shot fantasy tips” that never show uncertainty.",
+        ],
+        bullets: [
+          "Pitch + average first-innings scores at the venue (recent)",
+          "Toss importance in that format and ground",
+          "Matchups: spinner vs middle order, death bowlers vs finishers",
+        ],
+      },
+      {
+        heading: "Form vs matchup",
+        paragraphs: [
+          "A batter in form can still struggle against a specific length or a left-arm angle. Previews that only list last five scores miss matchups. Look for one concrete bowling plan vs one batting strength.",
+        ],
+      },
+      {
+        heading: "How ContentVerse India uses previews",
+        paragraphs: [
+          "We keep live score widgets separate from indexable explainers. Read previews and scorecard guides here; use official apps for ball-by-ball. That split keeps pages useful for Google and safe for readers.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Are pitch reports always accurate?",
+        a: "No. They are informed guesses. Treat them as a starting bias, then adjust after the first few overs.",
+      },
+      {
+        q: "Should I trust fantasy “confirmed XI” leaks?",
+        a: "Prefer team socials and official broadcaster graphics close to toss. Early leaks are often wrong.",
       },
     ],
   },
@@ -342,39 +458,6 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         heading: "How to apply / check status",
         paragraphs: [
           "New registrations and e-KYC are handled through the official website or authorised Common Service Centres (CSC), depending on your state’s process. After submission, track payment status and e-KYC flags on the same portal. ContentVerse India does not collect scheme applications — we only explain the process.",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "how-to-verify-govt-scheme-before-you-apply",
-    section: "schemes",
-    title: "How to Verify a Government Scheme Before You Apply",
-    shortTitle: "Verify schemes safely",
-    description:
-      "Avoid fraud: check official .gov.in domains, helplines, and documents before sharing Aadhaar or paying agents for government schemes.",
-    keywords: [
-      "government scheme fraud india",
-      "verify pm scheme official website",
-    ],
-    readingMinutes: 5,
-    updatedLabel: "Jul 2026",
-    blocks: [
-      {
-        heading: "Official sources only",
-        paragraphs: [
-          "Real Central and State schemes publish details on .gov.in / .nic.in sites or the India.gov.in directory. Be careful with WhatsApp PDFs that ask for fees to “approve” a scheme. Most genuine applications do not need you to pay a private agent.",
-        ],
-        bullets: [
-          "Match the scheme name on an official ministry or MyGov page",
-          "Never share OTP / Aadhaar QR casually over chat",
-          "Prefer CSC / state portals for assisted applications",
-        ],
-      },
-      {
-        heading: "Documents checklist pattern",
-        paragraphs: [
-          "Most schemes ask for identity (Aadhaar), bank details, and a category proof (income, caste, farmer land, disability, etc.). Photocopy and keep soft copies ready, but upload only on official forms.",
         ],
       },
     ],
@@ -427,11 +510,12 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     shortTitle: "Exam notification checklist",
     description:
       "A practical checklist for SSC and similar central exam notices: registration, documents, photo specs, and correction window.",
-    keywords: ["ssc notification checklist", "sarkari exam apply guide"],
-    readingMinutes: 5,
-    updatedLabel: "Jul 2026",
+    keywords: ["ssc notification checklist", "sarkari exam apply guide", "ssc otr photo signature"],
+    readingMinutes: 9,
+    updatedLabel: "Oct 2026",
     relatedHref: "/jobs/govt",
     relatedLabel: "Latest govt updates",
+    clusterId: "jobs",
     blocks: [
       {
         heading: "Before you register",
@@ -445,10 +529,88 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
+        heading: "Photo, signature, and document traps",
+        paragraphs: [
+          "Most rejections at form stage are file-spec failures: wrong background, oversized JPG, or signature thicker than allowed. Resize with a simple tool, keep originals, and test upload early — do not wait for the last evening when portals lag.",
+        ],
+      },
+      {
         heading: "After submitting",
         paragraphs: [
           "Download the application printout. Watch for correction windows — many boards allow limited field edits for a short period. Admit cards release later on the same portal; do not trust random Telegram forwards.",
+          "Set calendar reminders for fee deadlines, correction windows, and admit-card dates. Screenshot successful payment references.",
         ],
+      },
+      {
+        heading: "Pair with ContentVerse India Jobs",
+        paragraphs: [
+          "Browse government listings on /jobs/govt, then always finish apply + payment on the commission’s official URL printed in the PDF. Read our “how to read a sarkari notification” guide before you chase every vacancy.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Can I change my photo after final submit?",
+        a: "Only if the board opens a correction window and that field is editable. Otherwise you may need to wait for the next cycle — read the notice.",
+      },
+      {
+        q: "Is CSC help mandatory?",
+        a: "No for most central exams if you can self-register. CSC can help with uploads, but keep your own login credentials.",
+      },
+      {
+        q: "Where do I get admit cards?",
+        a: "Only from the official exam portal linked in the notification. Ignore paid “admit card download” scam sites.",
+      },
+    ],
+  },
+  {
+    slug: "how-to-verify-govt-scheme-before-you-apply",
+    section: "schemes",
+    title: "How to Verify a Government Scheme Before You Apply",
+    shortTitle: "Verify schemes safely",
+    description:
+      "Avoid fraud: check official .gov.in domains, helplines, and documents before sharing Aadhaar or paying agents for government schemes.",
+    keywords: [
+      "government scheme fraud india",
+      "verify pm scheme official website",
+    ],
+    readingMinutes: 8,
+    updatedLabel: "Oct 2026",
+    relatedHref: "/guides/schemes",
+    relatedLabel: "More scheme guides",
+    blocks: [
+      {
+        heading: "Official sources only",
+        paragraphs: [
+          "Real Central and State schemes publish details on .gov.in / .nic.in sites or the India.gov.in directory. Be careful with WhatsApp PDFs that ask for fees to “approve” a scheme. Most genuine applications do not need you to pay a private agent.",
+        ],
+        bullets: [
+          "Match the scheme name on an official ministry or MyGov page",
+          "Never share OTP / Aadhaar QR casually over chat",
+          "Prefer CSC / state portals for assisted applications",
+        ],
+      },
+      {
+        heading: "Documents checklist pattern",
+        paragraphs: [
+          "Most schemes ask for identity (Aadhaar), bank details, and a category proof (income, caste, farmer land, disability, etc.). Photocopy and keep soft copies ready, but upload only on official forms.",
+        ],
+      },
+      {
+        heading: "Fee and agent red flags",
+        paragraphs: [
+          "If someone demands cash to “speed up PM scheme money” or asks you to install an unknown APK, stop. Genuine grievance redressal goes through official helplines and portals. Cross-check any QR payment request against the scheme’s published process.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "How do I know a website is official?",
+        a: "Look for .gov.in / .nic.in domains and HTTPS. Be wary of lookalike spellings and random .com “registration” clones.",
+      },
+      {
+        q: "Should I pay an agent for PM-KISAN or similar?",
+        a: "You should not need private fees to “approve” benefits. Use official portals or authorised CSC where published.",
       },
     ],
   },
@@ -518,11 +680,16 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     shortTitle: "Where to watch OTT",
     description:
       "Find legal OTT options in India — how to check release windows, platform exclusives, and why piracy links are risky.",
-    keywords: ["where to watch ott india", "netflix prime jiocinema guide"],
-    readingMinutes: 5,
-    updatedLabel: "Jul 2026",
+    keywords: [
+      "where to watch ott india",
+      "netflix prime jiocinema guide",
+      "hotstar zee5 sony liv india",
+    ],
+    readingMinutes: 9,
+    updatedLabel: "Oct 2026",
     relatedHref: "/cineverse",
     relatedLabel: "Open CineVerse",
+    clusterId: "movies",
     blocks: [
       {
         heading: "Release windows differ by title",
@@ -531,10 +698,41 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
+        heading: "How to verify “where to watch” quickly",
+        paragraphs: [
+          "Search the title plus the platform name, then open the official app/store listing for India. Provider chips on CineVerse are a starting point — confirm availability in your city plan (mobile vs TV rights sometimes differ).",
+        ],
+        bullets: [
+          "Prefer official apps: Netflix, Prime Video, JioCinema, Disney+ Hotstar, Zee5, SonyLIV, and others as licensed",
+          "Ignore Telegram “drive links” and random APK streamers",
+          "Check language / dub tracks before renting or buying",
+        ],
+      },
+      {
+        heading: "Subscriptions without waste",
+        paragraphs: [
+          "Stack only the one or two apps you finish shows on. Rotate monthly if your watchlist moves. Family plans help only when everyone actually uses the same service — otherwise you pay for shelfware.",
+        ],
+      },
+      {
         heading: "Use CineVerse to track interest",
         paragraphs: [
-          "Browse and save titles on CineVerse, then confirm the legal streaming home on the official OTT app. For cricket documentaries or sports films, Sports coverage and CineVerse can complement each other without duplicate thin pages.",
+          "Browse and save titles on CineVerse, then confirm the legal streaming home on the official OTT app. Pair with our release/cast checklist guide when you are writing or sharing a recommendation.",
         ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Why is a show on Netflix US but not India?",
+        a: "Licensing is territory-specific. Global buzz does not guarantee an India window on the same platform or date.",
+      },
+      {
+        q: "Are free movie sites safe?",
+        a: "Usually not. They often push malware, stolen credentials, or piracy. Use licensed OTT or theatrical tickets.",
+      },
+      {
+        q: "How soon do Bollywood films hit OTT?",
+        a: "Windows vary by studio deal — often several weeks after theatrical, sometimes longer for big festivals.",
       },
     ],
   },
@@ -549,10 +747,11 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       "movie release date cast where to watch",
       "web series india checklist",
     ],
-    readingMinutes: 4,
-    updatedLabel: "Jul 2026",
+    readingMinutes: 8,
+    updatedLabel: "Oct 2026",
     relatedHref: "/cineverse",
     relatedLabel: "Browse movies",
+    clusterId: "movies",
     blocks: [
       {
         heading: "Minimum useful facts",
@@ -567,10 +766,26 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
       {
+        heading: "Certification and language notes",
+        paragraphs: [
+          "If a CBFC certificate or platform age rating is public, mention it. Note original language and whether dubs/subs are confirmed for India — a common search fail point.",
+        ],
+      },
+      {
         heading: "How ContentVerse India structures movie pages",
         paragraphs: [
-          "Our Movies / OTT guides lead with release date, cast, and where to watch in India. That matches how people search and keeps pages useful even after the premiere week.",
+          "Our Movies / OTT guides lead with release date, cast, and where to watch in India. CineVerse detail pages stay indexable only when there is a real overview; thin TMDB shells stay noindex so Google sees quality, not empty templates.",
         ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What if the OTT date is not announced?",
+        a: "Say “theatrical only for now” or “OTT TBA” rather than inventing a date. Update when a studio or platform confirms.",
+      },
+      {
+        q: "How many cast names are enough?",
+        a: "Three to six primary names plus the director/creator covers most search intent without turning the page into a full IMDb dump.",
       },
     ],
   },

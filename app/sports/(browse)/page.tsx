@@ -63,19 +63,23 @@ export default async function SportsHubPage() {
           match previews, analysis, and long-form stories published by verified creators.
         </p>
         <p>
-          Browse live matches below, read{" "}
+          Live score widgets stay useful for fans but are not our SEO bet. For indexable depth, read{" "}
+          <Link href="/guides/cricket/how-to-read-a-cricket-match-preview" className="text-primary hover:underline">
+            match preview literacy
+          </Link>
+          ,{" "}
+          <Link href="/guides/cricket/how-to-read-a-cricket-scorecard" className="text-primary hover:underline">
+            scorecard basics
+          </Link>
+          ,{" "}
           <Link href="/category/sports" className="text-primary hover:underline">
             sports blogs
           </Link>
-          , or open{" "}
+          , and the full{" "}
           <Link href="/guides/cricket" className="text-primary hover:underline">
-            cricket guides
-          </Link>{" "}
-          and{" "}
-          <Link href="/trending" className="text-primary hover:underline">
-            Trending Now
-          </Link>{" "}
-          for what fans are searching today.
+            cricket guides hub
+          </Link>
+          .
         </p>
       </HubEditorialIntro>
 

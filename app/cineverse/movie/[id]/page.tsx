@@ -20,8 +20,8 @@ export async function generateMetadata({
     .map((c) => c.name)
     .join(", ");
 
-  // Index movies with a real overview so CineVerse can rank for title searches.
-  const thin = !movie.overview || movie.overview.trim().length < 80;
+  // AdSense-safe: only index movies with a real overview (raise bar vs thin TMDB shells).
+  const thin = !movie.overview || movie.overview.trim().length < 160;
 
   return buildMetadata({
     title: `${movie.title} OTT Release Date, Cast & Where to Watch India`,

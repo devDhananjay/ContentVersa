@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { GovtCategoryTabs } from "@/components/jobs/govt-category-tabs";
 import { GovtJobCard } from "@/components/jobs/govt-job-card";
 import { JobsSectionHeader } from "@/components/jobs/jobs-section-header";
+import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
+import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { GOVT_CATEGORIES } from "@/lib/jobs/constants";
 import { getGovtJobsCached, parseGovtCategory } from "@/lib/jobs/data";
 import { buildMetadata } from "@/lib/seo";
+import { GOVT_JOBS_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 
 export const dynamic = "force-dynamic";
@@ -52,7 +56,31 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {( !data.configured || data.error) && (
+      <HubJsonLd blocks={hubSeoJsonLdBlocks(GOVT_JOBS_SEO)} />
+      <HubEditorialIntro title="Sarkari naukri checklist before you apply">
+        <p>
+          Browse live government job notifications, admit-card updates and results links below.
+          Always finish registration and fees on the official commission URL in the PDF — ContentVerse
+          India never charges applicants.
+        </p>
+        <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
+          <li>Confirm post name, vacancy count, age limit and last date (IST).</li>
+          <li>Match education and category certificates to the exact notification wording.</li>
+          <li>
+            Read our{" "}
+            <Link href="/guides/jobs/how-to-read-sarkari-job-notification" className="text-primary hover:underline">
+              notification guide
+            </Link>{" "}
+            and{" "}
+            <Link href="/guides/jobs/ssc-style-exam-notification-checklist" className="text-primary hover:underline">
+              SSC-style checklist
+            </Link>{" "}
+            before peak deadline nights.
+          </li>
+        </ol>
+      </HubEditorialIntro>
+
+      {(!data.configured || data.error) && (
         <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/40 p-3 text-sm">
           <AlertCircle className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
           <p className="text-muted-foreground">

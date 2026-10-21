@@ -248,6 +248,36 @@ export const JOBS_HUB_SEO: HubSeoConfig = {
   ],
 };
 
+/** Government listings desk — indexable editorial + FAQ (AdSense-safe). */
+export const GOVT_JOBS_SEO: HubSeoConfig = {
+  path: "/jobs/govt",
+  name: "Government Jobs — Sarkari Naukri India",
+  description:
+    "Latest sarkari naukri notifications, admit cards, results links and vacancy updates for SSC, UPSC, Railways, Banking and state PSCs — with checklists to apply safely.",
+  faqs: [
+    {
+      question: "Does ContentVerse India charge to apply for sarkari jobs?",
+      answer:
+        "No. Listings link to official commission or department sources. Never pay a private agent on our site to “approve” an application.",
+    },
+    {
+      question: "What is the difference between a notification and an admit card?",
+      answer:
+        "A notification announces vacancies, eligibility, fees and last dates. An admit card is released later for exam entry. Use category tabs on this page and always download admit cards from the official portal in the PDF.",
+    },
+    {
+      question: "How do I avoid sarkari job fee scams?",
+      answer:
+        "Pay only on the official apply URL printed in the notification. Ignore WhatsApp “form fill” agents and APKs that ask for UPI outside the commission portal.",
+    },
+    {
+      question: "Where can I learn to read a job notification?",
+      answer:
+        "Read ContentVerse India guides: how to read a sarkari notification, and the SSC-style exam checklist — then return here for live listings.",
+    },
+  ],
+};
+
 export const RESULTS_HUB_SEO: HubSeoConfig = {
   path: "/results",
   name: "Exam & Board Results India — Official Portals",
