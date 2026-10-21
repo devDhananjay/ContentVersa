@@ -68,13 +68,20 @@ async function main() {
     take: slugFilter ? slugFilter.length : 200,
   });
 
-  const short = rows.filter((b) => {
+  const bySlug = new Map(rows.map((b) => [b.slug, b]));
+  // Keep --slugs order (top priority first). Otherwise shortest first.
+  const ordered = slugFilter
+    ? slugFilter.map((s) => bySlug.get(s)).filter(Boolean)
+    : rows;
+
+  const short = ordered.filter((b) => {
+    if (!b) return false;
     const words = b.content.trim().split(/\s+/).filter(Boolean).length;
     return (
       b.readingTime < MIN_INDEXABLE_READING_MINUTES ||
       words < MIN_WORDS_TO_EXPAND
     );
-  });
+  }) as typeof rows;
 
   const targets = short.slice(0, limit);
   console.log(
@@ -83,7 +90,6 @@ async function main() {
 
   let ok = 0;
   let failed = 0;
-  let skipped = 0;
 
   for (const blog of targets) {
     const beforeWords = wordCount(blog.content);
@@ -102,23 +108,25 @@ async function main() {
     });
 
     if (!article?.content || !passesArticleQualityGate(article.content)) {
-      console.error("  ✗ Gemini failed or below quality bar");
+      console.error("  ✗ Gemini failed or below quality bar — keeping original");
       failed++;
-      await sleep(3000);
+      await sleep(12000);
       continue;
     }
 
     const nextRead = readingTime(article.content);
     const nextWords = wordCount(article.content);
+    // Reject near-no-op expands (503 partials that barely grow copy).
     if (
-      nextRead < MIN_INDEXABLE_READING_MINUTES &&
-      nextWords <= beforeWords
+      nextWords < TARGET_MIN_WORDS ||
+      nextRead < MIN_INDEXABLE_READING_MINUTES ||
+      nextWords < beforeWords + 150
     ) {
       console.error(
-        `  ✗ still thin after expand (${nextRead} min, ${nextWords}w) — keeping original`
+        `  ✗ too weak after expand (${nextRead} min, ${nextWords}w; was ${beforeWords}w) — keeping original`
       );
       failed++;
-      await sleep(3000);
+      await sleep(12000);
       continue;
     }
 
@@ -136,14 +144,11 @@ async function main() {
     });
 
     console.log(`  ✓ expanded — ${nextRead} min / ${nextWords}w`);
-    if (nextRead < MIN_INDEXABLE_READING_MINUTES) skipped++;
     ok++;
-    await sleep(2500);
+    await sleep(4000);
   }
 
-  console.log(
-    `\nDone: ${ok} expanded, ${failed} failed, ${skipped} still under ${MIN_INDEXABLE_READING_MINUTES} min (retry later).`
-  );
+  console.log(`\nDone: ${ok} expanded, ${failed} failed.`);
 }
 
 main()
