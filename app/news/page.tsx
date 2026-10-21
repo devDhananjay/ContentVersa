@@ -8,22 +8,31 @@ import { buildMetadata, SITE } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
+const newsBase = buildMetadata({
+  title: "Live News — India desk briefings | ContentVerse India",
+  description:
+    "Live India news briefings rewritten for ContentVerse readers — politics, business, sports and top stories, updated through the day.",
+  path: "/news",
+  keywords: [
+    "India live news",
+    "ContentVerse news",
+    "India headlines",
+    "news briefings India",
+  ],
+});
+
 export const metadata: Metadata = {
-  ...buildMetadata({
-    title: "Live News — India desk briefings | ContentVerse India",
-    description:
-      "Live India news briefings rewritten for ContentVerse readers — politics, business, sports and top stories, updated through the day.",
-    path: "/news",
-    keywords: [
-      "India live news",
-      "ContentVerse news",
-      "India headlines",
-      "news briefings India",
-    ],
-  }),
-  /** Helps crawlers discover the Google News–style sitemap (also in robots.txt). */
+  ...newsBase,
+  /** Keep canonical from buildMetadata; also advertise the news sitemap. */
   alternates: {
+    ...newsBase.alternates,
     types: {
+      ...(typeof newsBase.alternates === "object" &&
+      newsBase.alternates &&
+      "types" in newsBase.alternates &&
+      newsBase.alternates.types
+        ? newsBase.alternates.types
+        : {}),
       "application/rss+xml": `${SITE.url}/news-sitemap.xml`,
     },
   },

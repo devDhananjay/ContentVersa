@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { getAppUrl } from "@/lib/app-url";
 import { PRODUCTION_SITE_URL } from "@/lib/site-config";
 import { DEFAULT_FAVICON_ICONS } from "@/lib/branding/favicon";
-import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
-
 function siteUrl() {
   try {
     return getAppUrl();
@@ -15,9 +13,14 @@ function siteUrl() {
 /** Square logo for Google Organization / Knowledge Graph (min ~112px). */
 export const SITE_LOGO_URL = "/icon-192.png";
 
-/** Main hub modules — prioritized for sitelinks & internal linking (editorial-first for AdSense). */
+/**
+ * Main hub modules — prioritized for sitelinks & internal linking.
+ * Prefer indexable editorial hubs; do not promote noindex widgets (/sports live scores,
+ * /trending, /results) as primary sitelinks — that wastes crawl equity.
+ */
 export const SITE_NAV_HUBS = [
   { name: "India Guides", path: "/guides", description: "Original explainers — schemes, money, jobs, cricket, AI tools, OTT" },
+  { name: "Live News", path: "/news", description: "India desk news briefings updated through the day" },
   { name: "Blogs", path: "/blogs", description: "Long-form articles and stories from Indian writers" },
   {
     name: "Govt Schemes Guides",
@@ -25,10 +28,9 @@ export const SITE_NAV_HUBS = [
     description: "Government scheme eligibility and how to apply India",
   },
   { name: "SIP India", path: "/guides/money/sip-calculator-india-beginners-guide", description: "SIP mutual fund investing explained with free calculator" },
-  { name: "Sports", path: "/sports", description: "Live cricket scores, fixtures and sports news" },
+  { name: "Cricket Guides", path: "/guides/cricket", description: "IPL, World Cup and cricket explainers for India fans" },
   { name: "Finance", path: "/finance", description: "Nifty, Sensex, and links to money guides" },
   { name: "Jobs", path: "/jobs", description: "Sarkari naukri, government jobs and private careers India" },
-  { name: "Exam Results", path: "/results", description: "Official exam and board result portals India" },
   { name: "CineVerse", path: "/cineverse", description: "Movies — OTT release, cast, where to watch & watchlist India" },
   { name: "GoldVerse", path: "/goldverse", description: "Gold & silver rates and BIS hallmark tips" },
   { name: "MoneyVerse", path: "/moneyverse", description: "Expense tracker and budget planner India" },
@@ -40,11 +42,9 @@ export const SITE_NAV_HUBS = [
     description: "Income tax and in-hand salary calculator India new vs old regime",
   },
   {
-    name: "Trending India",
-    path: "/trending",
-    description: SHOW_THIRD_PARTY_CREDITS
-      ? "Google Trends India topics with on-site briefings and chat"
-      : "Trending India topics with on-site briefings and chat",
+    name: "EMI Calculator",
+    path: "/tools/emi-calculator",
+    description: "Free home, car and personal loan EMI calculator India",
   },
 ] as const;
 

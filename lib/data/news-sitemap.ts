@@ -19,6 +19,40 @@ export type NewsSitemapRow = {
   updatedAt: Date;
 };
 
+/** Prefer India desk feeds in Google News sitemap (skip pure world wire). */
+const INDIA_DESK_FEEDS = new Set([
+  "india",
+  "business",
+  "cricket",
+  "sports",
+  "top",
+  "latest",
+  "entertainment",
+  "lifestyle",
+]);
+
+/** Titles that are usually US/global sports or politics with weak India intent. */
+const LOW_INDIA_INTENT_TITLE =
+  /\b(ohio|nfl|nba|mlb|nhl|titans|white house|los angeles|new york|texas governor|gop primary|midterms|premier league matchday)\b/i;
+
+function feedKeyFromKeywords(meta: string | null | undefined): string | null {
+  if (!meta) return null;
+  const m = meta.match(/\btoi-feed:([a-z0-9-]+)\b/i);
+  return m?.[1]?.toLowerCase() ?? null;
+}
+
+/** Keep Google News focused on India-relevant briefings (AdSense + News quality). */
+export function isIndiaDeskNewsBriefing(input: {
+  title: string;
+  metaKeywords?: string | null;
+}): boolean {
+  const feed = feedKeyFromKeywords(input.metaKeywords);
+  if (feed === "world") return false;
+  if (feed && !INDIA_DESK_FEEDS.has(feed)) return false;
+  if (LOW_INDIA_INTENT_TITLE.test(input.title)) return false;
+  return true;
+}
+
 /**
  * Last 48h of indexable Live News briefings (Google News sitemap window).
  * Submit https://contentverse.co.in/news-sitemap.xml in Search Console → Sitemaps
@@ -36,6 +70,8 @@ export async function getNewsSitemapRows(
       metaKeywords: { contains: "toi-rewrite" },
       readingTime: { gte: MIN_NEWS_INDEXABLE_READING_MINUTES },
       publishedAt: { gte: since },
+      // Drop pure world wire from the News sitemap intake.
+      NOT: { metaKeywords: { contains: "toi-feed:world" } },
     },
     select: {
       slug: true,
@@ -46,7 +82,7 @@ export async function getNewsSitemapRows(
       metaKeywords: true,
     },
     orderBy: { publishedAt: "desc" },
-    take: limit,
+    take: Math.min(400, limit * 3),
   });
 
   return blogs
@@ -57,7 +93,14 @@ export async function getNewsSitemapRows(
         metaKeywords: b.metaKeywords,
       })
     )
+    .filter((b) =>
+      isIndiaDeskNewsBriefing({
+        title: b.title,
+        metaKeywords: b.metaKeywords,
+      })
+    )
     .filter((b) => !isRedirectedPath(`/blog/${b.slug}`))
+    .slice(0, limit)
     .map((b) => ({
       loc: `${SITE.url}/blog/${b.slug}`,
       title: b.title,

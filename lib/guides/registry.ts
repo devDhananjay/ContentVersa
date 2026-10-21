@@ -86,7 +86,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
       "ipl live guide",
     ],
     badge: "Sports",
-    relatedHub: { href: "/sports", label: "Live Sports hub" },
+    relatedHub: { href: "/guides/cricket", label: "Cricket guides" },
   },
   {
     slug: "schemes",
@@ -256,8 +256,8 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     keywords: ["cricket live updates", "match key moments india"],
     readingMinutes: 5,
     updatedLabel: "Jul 2026",
-    relatedHref: "/sports",
-    relatedLabel: "Open Sports hub",
+    relatedHref: "/guides/cricket",
+    relatedLabel: "More cricket guides",
     blocks: [
       {
         heading: "What to track during a live match",
@@ -274,7 +274,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       {
         heading: "Where to follow on ContentVerse India",
         paragraphs: [
-          "Use the Sports hub for live and recent fixtures, then return here for explainers on how we structure match coverage. Avoid unofficial streaming links — prefer official broadcasters and licensed apps in India.",
+          "Use our cricket guides for match-day context and scorecard literacy, and browse Sports category articles for written coverage. Avoid unofficial streaming links — prefer official broadcasters and licensed apps in India.",
         ],
       },
     ],
@@ -289,8 +289,8 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     keywords: ["how to read cricket scorecard", "cricket extras explained"],
     readingMinutes: 4,
     updatedLabel: "Jul 2026",
-    relatedHref: "/sports",
-    relatedLabel: "Live scores",
+    relatedHref: "/category/sports",
+    relatedLabel: "Sports articles",
     blocks: [
       {
         heading: "Batting line",

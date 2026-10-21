@@ -144,8 +144,13 @@ export default async function BlogPage({
   const adSlots = blogAdSlots(getAdDensity());
   const ymylKind = ymylKindForBlogCategory(blog.category);
 
+  const thinArticle = !isIndexableArticle({
+    slug: blog.slug,
+    readingTime: blog.readingTime,
+    metaKeywords: blog.metaKeywords,
+  });
   const jsonLd =
-    !isPublic || syndicated
+    !isPublic || syndicated || thinArticle
       ? null
       : articleJsonLd({
           title: blog.title,

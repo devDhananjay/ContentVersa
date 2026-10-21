@@ -1,6 +1,6 @@
 // Client-side helper for uploading images to /api/upload
 
-import { cleanToiImageUrl } from "@/lib/seo/toi-cover-url";
+import { resolveNewsDisplayCover } from "@/lib/seo/toi-cover-url";
 
 /** Default cover when a blog has no image (Unsplash — already in next.config remotePatterns). */
 export const BLOG_COVER_PLACEHOLDER =
@@ -18,11 +18,8 @@ export function resolveBlogCoverImage(src?: string | null): string {
   if (!trimmed || isBrokenCoverUrl(trimmed)) {
     return BLOG_COVER_PLACEHOLDER;
   }
-  // Strip TOI CDN watermark params (overlay-toi_sw) so news covers don't show "TOI".
-  if (/toiimg\.com|overlay-toi/i.test(trimmed)) {
-    return cleanToiImageUrl(trimmed) || trimmed;
-  }
-  return trimmed;
+  // Strip TOI overlays / swap TOI default logo for ContentVerse brand cover.
+  return resolveNewsDisplayCover(trimmed) || trimmed;
 }
 
 /** Bypass Next.js image optimizer for paths/hosts we don't whitelist in next.config. */

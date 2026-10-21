@@ -14,26 +14,19 @@ export function toolPageUrl(slug: string) {
 }
 
 export function toolFaq(tool: ToolDef) {
-  const base = [
-    {
-      q: `Is the ${tool.shortTitle} free on ContentVerse India?`,
-      a: "Yes. All India utility tools on ContentVerse India are free to use with no sign-up required.",
-    },
-    {
-      q: "Is this an official government website?",
-      a: "No. ContentVerse India is an independent platform. We use public datasets and open APIs. For official records, use government portals like Parivahan, GST, FoSCoS, or ECI.",
-    },
-  ];
+  /** Tool-specific guide FAQs first (better for rich results than generic copy). */
+  const guideFaqs = getToolGuide(tool.slug)?.faqs ?? [];
+  const specific: { q: string; a: string }[] = [];
 
   if (tool.slug === "pan-gstin-checker" || tool.slug === "fssai-checker") {
-    base.push({
+    specific.push({
       q: "Does this verify with the government live?",
       a: "This tool checks format and provides official links only. It does not confirm active registration with government databases.",
     });
   }
 
   if (tool.slug === "election-info") {
-    base.push(
+    specific.push(
       {
         q: "Does this tool check my voter status live with ECI?",
         a: "No. It validates EPIC format and helps you open official Election Commission links. Live electoral-roll results appear only after you complete CAPTCHA on electoralsearch.eci.gov.in or other official ECI services.",
@@ -49,23 +42,19 @@ export function toolFaq(tool: ToolDef) {
       {
         q: "My EPIC format looks correct but ECI shows no record. What next?",
         a: "Confirm the state matches your enrolment, re-check letters vs digits (O vs 0), try Search by Details, or apply for correction / new registration through the Voters’ Services Portal (forms such as Form 6 or Form 8).",
-      },
-      {
-        q: "Is ContentVerse India an official Election Commission website?",
-        a: "No. We are an independent India utility site. For official voter status, booth details, forms, and e-EPIC, use eci.gov.in, voters.eci.gov.in, or electoralsearch.eci.gov.in only.",
       }
     );
   }
 
   if (tool.slug === "vehicle-plate-decoder" || tool.slug === "rto-finder") {
-    base.push({
+    specific.push({
       q: "Can I get vehicle owner details from the number plate?",
       a: "No. Owner details require the official Vahan portal. Our decoder only identifies state and RTO code from the plate format.",
     });
   }
 
   if (tool.slug.startsWith("nearby-") || tool.slug === "geo-location") {
-    base.push({
+    specific.push({
       q: "Why do nearby results need location permission?",
       a: "Near me uses your browser GPS. City search uses geocoding instead — no GPS needed.",
     });
@@ -77,36 +66,54 @@ export function toolFaq(tool: ToolDef) {
     tool.slug === "compress-pdf" ||
     tool.slug === "images-to-pdf"
   ) {
-    base.push({
-      q: "Are my PDF files uploaded to ContentVerse India?",
-      a: "No. PDF tools run entirely in your browser. Files stay on your device and are not sent to our servers.",
-    });
-    base.push({
-      q: "What is the maximum file size?",
-      a: "Each file can be up to 25 MB. Very large or encrypted PDFs may fail — unlock or compress offline first if needed.",
-    });
+    specific.push(
+      {
+        q: "Are my PDF files uploaded to ContentVerse India?",
+        a: "No. PDF tools run entirely in your browser. Files stay on your device and are not sent to our servers.",
+      },
+      {
+        q: "What is the maximum file size?",
+        a: "Each file can be up to 25 MB. Very large or encrypted PDFs may fail — unlock or compress offline first if needed.",
+      }
+    );
   }
 
   if (tool.slug === "compress-pdf") {
-    base.push({
+    specific.push({
       q: "Will compress always make my PDF much smaller?",
       a: "Not always. Already-optimized or scanned image PDFs may shrink only a little. We show before/after size honestly.",
     });
   }
 
   if (tool.slug === "salary-tax-calculator") {
-    base.push({
-      q: "Which financial year does this tax calculator use?",
-      a: "FY 2026–27 (AY 2027–28) slab rates under the new default regime (nil up to ₹4 lakh) and the old regime, including standard deduction and Section 87A rebate estimates.",
+    specific.push(
+      {
+        q: "Which financial year does this tax calculator use?",
+        a: "FY 2026–27 (AY 2027–28) slab rates under the new default regime (nil up to ₹4 lakh) and the old regime, including standard deduction and Section 87A rebate estimates.",
+      },
+      {
+        q: "Is this an official Income Tax Department calculator?",
+        a: "No. It is an independent estimate for planning. Always verify on the Income Tax e-filing portal or with a tax professional before filing returns.",
+      }
+    );
+  }
+
+  if (tool.slug === "rd-calculator") {
+    specific.push({
+      q: "How is RD maturity different from FD?",
+      a: "An RD is funded by monthly deposits; an FD is usually a lump sum. This calculator compounds RD instalments to estimate maturity — your bank’s day-count rules may differ slightly.",
     });
-    base.push({
-      q: "Is this an official Income Tax Department calculator?",
-      a: "No. It is an independent estimate for planning. Always verify on the Income Tax e-filing portal or with a tax professional before filing returns.",
+  }
+
+  if (tool.slug === "weather") {
+    specific.push({
+      q: "Which cities does the weather tool cover?",
+      a: "Any city or town you can search by name in India. Results show current conditions plus a short multi-day outlook for planning.",
     });
   }
 
   if (tool.slug === "pnr-status" || tool.slug === "train-running-status") {
-    base.push({
+    specific.push({
       q: "Is this an official IRCTC tool?",
       a: SHOW_THIRD_PARTY_CREDITS
         ? "No. ContentVerse India helps you validate input and open trusted enquiry sites (ConfirmTkt, RailYatri, NTES). Always reconfirm on IRCTC before travel."
@@ -115,35 +122,89 @@ export function toolFaq(tool: ToolDef) {
   }
 
   if (tool.slug === "english-hindi-translator") {
-    base.push({
+    specific.push({
       q: "Is the translation 100% accurate?",
       a: "It is machine translation for everyday use. For legal, medical, or official documents, use a certified human translator.",
     });
   }
 
   if (tool.slug === "silver-rate") {
-    base.push({
+    specific.push({
       q: "Is this the jeweller retail silver rate?",
       a: "We show a spot-based India estimate (international silver × USD/INR). Local jewellers add making charges and GST — confirm before buying.",
     });
   }
 
-  const extra = getToolGuide(tool.slug)?.faqs ?? [];
-  const seen = new Set(base.map((f) => f.q));
-  return [...base, ...extra.filter((f) => !seen.has(f.q))];
+  const closing = [
+    {
+      q: `Is the ${tool.shortTitle} free on ContentVerse India?`,
+      a: "Yes. All India utility tools on ContentVerse India are free to use with no sign-up required.",
+    },
+    {
+      q: "Is this an official government website?",
+      a: "No. ContentVerse India is an independent platform. We use public datasets and open APIs. For official records, use government portals like Parivahan, GST, FoSCoS, or ECI.",
+    },
+  ];
+
+  const out: { q: string; a: string }[] = [];
+  const seen = new Set<string>();
+  for (const item of [...guideFaqs, ...specific, ...closing]) {
+    const key = item.q.trim().toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
 }
 
 export function toolWebAppJsonLd(tool: ToolDef) {
+  const guide = getToolGuide(tool.slug);
   return {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: tool.shortTitle,
+    alternateName: tool.title,
     description: tool.description,
     url: toolPageUrl(tool.slug),
     applicationCategory: "UtilitiesApplication",
-    operatingSystem: "Web",
+    operatingSystem: "Any",
+    browserRequirements: "Requires JavaScript",
     offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
     provider: { "@type": "Organization", name: SITE.name, url: SITE.url },
+    inLanguage: "en-IN",
+    ...(guide?.sections?.length
+      ? {
+          featureList: guide.sections
+            .slice(0, 6)
+            .map((s) => s.heading)
+            .join(", "),
+        }
+      : {}),
+  };
+}
+
+/** HowTo JSON-LD from the first guide sections — improves how-to rich results. */
+export function toolHowToJsonLd(tool: ToolDef) {
+  const guide = getToolGuide(tool.slug);
+  if (!guide?.sections?.length) return null;
+  const steps = guide.sections.slice(0, 6).map((section, i) => ({
+    "@type": "HowToStep",
+    position: i + 1,
+    name: section.heading,
+    text: section.paragraphs[0] || section.heading,
+  }));
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: `How to use ${tool.shortTitle}`,
+    description: guide.intro.slice(0, 300),
+    url: toolPageUrl(tool.slug),
+    totalTime: "PT5M",
+    tool: {
+      "@type": "HowToTool",
+      name: tool.shortTitle,
+    },
+    step: steps,
   };
 }
 

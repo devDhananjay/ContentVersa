@@ -16,6 +16,8 @@ export const metadata: Metadata = buildMetadata({
     "Search articles, India guides, free tools, HUID, SIP, CIBIL and Live News on ContentVerse India.",
   path: "/search",
   keywords: ["ContentVerse search", "HUID", "SIP calculator", "India guides"],
+  // Search SERPs should not compete with hubs / guides in Google.
+  noIndex: true,
 });
 
 function HitCard({ hit }: { hit: SiteSearchHit }) {

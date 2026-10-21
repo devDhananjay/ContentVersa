@@ -13,6 +13,9 @@
  * Programmatic IFSC/pincode tools remain indexable hub utilities, not doorway matrices.
  */
 
+import { MERGE_BLOG_SLUG_SET } from "@/lib/seo/content-redirects";
+import { TOOL_REGISTRY } from "@/lib/tools/registry";
+
 /** Minimum reading minutes for blog posts in sitemap / Google index.
  *  Raised to 5 (~1100 words) for AdSense low-value recovery — short posts
  *  stay published but drop from sitemap until expanded. */
@@ -46,8 +49,6 @@ export function isAiVolumeArticle(input: {
   return keys.includes("ai-daily");
 }
 
-import { MERGE_BLOG_SLUG_SET } from "@/lib/seo/content-redirects";
-
 export function isIndexableArticle(input: {
   slug: string;
   readingTime: number;
@@ -71,23 +72,12 @@ export function isAdEligibleByQuality(input: {
 }
 
 /**
- * Tools with long-form how-to guides stay indexable.
- * Form-only utilities stay crawlable but noindex (AdSense thin-content risk).
+ * All /tools/[slug] registry tools ship with long-form guides + FAQs → indexable.
+ * Thin city×category templates under /tools/locations/* stay noindex separately.
  */
-export const INDEXABLE_TOOL_SLUGS = new Set([
-  "ifsc-finder",
-  "pincode-finder",
-  "emi-calculator",
-  "sip-calculator",
-  "salary-tax-calculator",
-  "gst-calculator",
-  "fuel-price",
-  "rto-finder",
-  "currency-converter",
-  "fd-calculator",
-  "ppf-calculator",
-  "election-info",
-]);
+export const INDEXABLE_TOOL_SLUGS: ReadonlySet<string> = new Set(
+  TOOL_REGISTRY.map((t) => t.slug as string)
+);
 
 export function isIndexableTool(slug: string): boolean {
   return INDEXABLE_TOOL_SLUGS.has(slug);

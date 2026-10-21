@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+
+/** Override root layout index+homepage-canonical so soft-404s don't look indexable. */
+export const metadata: Metadata = {
+  title: "Page not found",
+  robots: { index: false, follow: false },
+  alternates: { canonical: undefined },
+};
 
 export default function NotFound() {
   return (

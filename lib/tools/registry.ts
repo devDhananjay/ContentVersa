@@ -433,3 +433,33 @@ export function getToolBySlug(slug: string): ToolDef | undefined {
 export function toolPath(slug: ToolSlug): string {
   return `${TOOLS_HUB_PATH}/${slug}`;
 }
+
+/**
+ * High-intent tools for homepage / hub discovery (not registry order).
+ * Prefer calculators + banking + PDF over niche nearby variants.
+ */
+export const HOME_FEATURED_TOOL_SLUGS: ToolSlug[] = [
+  "salary-tax-calculator",
+  "emi-calculator",
+  "sip-calculator",
+  "ifsc-finder",
+  "merge-pdf",
+  "fuel-price",
+];
+
+export function getHomeFeaturedTools(limit = 4): ToolDef[] {
+  const picked: ToolDef[] = [];
+  for (const slug of HOME_FEATURED_TOOL_SLUGS) {
+    const tool = getToolBySlug(slug);
+    if (tool) picked.push(tool);
+    if (picked.length >= limit) break;
+  }
+  if (picked.length < limit) {
+    for (const tool of TOOL_REGISTRY) {
+      if (picked.some((p) => p.slug === tool.slug)) continue;
+      picked.push(tool);
+      if (picked.length >= limit) break;
+    }
+  }
+  return picked;
+}

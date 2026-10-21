@@ -47,7 +47,12 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       "Estimate EMI, compare tenure vs interest, and plan borrowing without sales pressure.",
     pillarHref: "/guides/money/emi-calculator-india-guide",
     pillarLabel: "EMI guide (pillar)",
-    toolSlugs: ["emi-calculator", "fd-calculator", "rd-calculator", "salary-tax-calculator"],
+    toolSlugs: [
+      "emi-calculator",
+      "fd-calculator",
+      "rd-calculator",
+      "salary-tax-calculator",
+    ],
     links: [
       { href: "/guides/money/emi-calculator-india-guide", label: "EMI guide" },
       {
@@ -60,6 +65,7 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       },
       { href: "/tools/emi-calculator", label: "EMI calculator" },
       { href: "/tools/fd-calculator", label: "FD calculator" },
+      { href: "/tools/rd-calculator", label: "RD calculator" },
       { href: "/tools/salary-tax-calculator", label: "Salary tax estimator" },
     ],
   },
@@ -181,10 +187,17 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       "Plan trips with fuel context and public RTO code patterns — not private vehicle lookups.",
     pillarHref: "/tools/fuel-price",
     pillarLabel: "Fuel prices",
-    toolSlugs: ["fuel-price", "rto-finder", "weather", "pincode-finder"],
+    toolSlugs: [
+      "fuel-price",
+      "rto-finder",
+      "weather",
+      "pincode-finder",
+      "vehicle-plate-decoder",
+    ],
     links: [
       { href: "/tools/fuel-price", label: "Fuel price" },
       { href: "/tools/rto-finder", label: "RTO finder" },
+      { href: "/tools/weather", label: "Weather forecast" },
       {
         href: "/guides/money/highway-fuel-fastag-trip-planner",
         label: "Highway trip planner",
@@ -198,6 +211,118 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
         label: "FASTag FAQ",
       },
       { href: "/tools/pincode-finder", label: "Pincode finder" },
+      { href: "/tools/vehicle-plate-decoder", label: "Vehicle plate decoder" },
+    ],
+  },
+  {
+    id: "pdf-docs",
+    title: "PDF tools (browser-only)",
+    description:
+      "Merge, split, compress, or convert images to PDF on your device — files are not uploaded.",
+    pillarHref: "/tools/merge-pdf",
+    pillarLabel: "Merge PDF",
+    toolSlugs: ["merge-pdf", "split-pdf", "compress-pdf", "images-to-pdf"],
+    links: [
+      { href: "/tools/merge-pdf", label: "Merge PDF" },
+      { href: "/tools/split-pdf", label: "Split PDF" },
+      { href: "/tools/compress-pdf", label: "Compress PDF" },
+      { href: "/tools/images-to-pdf", label: "Images to PDF" },
+      { href: "/tools/qr-generator", label: "QR generator" },
+      { href: "/tools", label: "All India Tools" },
+    ],
+  },
+  {
+    id: "rail-travel",
+    title: "Train travel utilities",
+    description:
+      "Validate PNR format and open trusted train enquiry links — always reconfirm on official railway sites.",
+    pillarHref: "/tools/pnr-status",
+    pillarLabel: "PNR status",
+    toolSlugs: [
+      "pnr-status",
+      "train-running-status",
+      "indian-holidays",
+      "weather",
+    ],
+    links: [
+      { href: "/tools/pnr-status", label: "PNR status helper" },
+      { href: "/tools/train-running-status", label: "Train running status" },
+      { href: "/tools/indian-holidays", label: "Indian holidays" },
+      { href: "/tools/weather", label: "Weather" },
+      { href: "/tools/currency-converter", label: "Currency converter" },
+      { href: "/tools", label: "All India Tools" },
+    ],
+  },
+  {
+    id: "precious-metals",
+    title: "Gold & silver rates",
+    description:
+      "Track indicative metal rates and learn hallmark / HUID checks before you buy jewellery.",
+    pillarHref: "/goldverse",
+    pillarLabel: "GoldVerse rates",
+    toolSlugs: ["silver-rate", "currency-converter"],
+    links: [
+      { href: "/goldverse", label: "Live gold rates" },
+      { href: "/tools/silver-rate", label: "Silver rate estimate" },
+      { href: "/huid-verification", label: "HUID verification" },
+      {
+        href: "/guides/money/huid-hallmark-gold-buying-india",
+        label: "HUID buying guide",
+      },
+      { href: "/tools/currency-converter", label: "Currency converter" },
+      { href: "/guides/money", label: "Money guides" },
+    ],
+  },
+  {
+    id: "everyday-utils",
+    title: "Everyday India utilities",
+    description:
+      "Quick free utilities for age, QR, barcodes, UUIDs, translation, and holidays.",
+    pillarHref: "/tools",
+    pillarLabel: "India Tools hub",
+    toolSlugs: [
+      "age-calculator",
+      "qr-generator",
+      "barcode-generator",
+      "uuid-generator",
+      "english-hindi-translator",
+      "indian-holidays",
+      "geo-location",
+    ],
+    links: [
+      { href: "/tools/age-calculator", label: "Age calculator" },
+      { href: "/tools/qr-generator", label: "QR generator" },
+      { href: "/tools/barcode-generator", label: "Barcode generator" },
+      { href: "/tools/english-hindi-translator", label: "English–Hindi translator" },
+      { href: "/tools/indian-holidays", label: "Indian holidays" },
+      { href: "/tools/uuid-generator", label: "UUID generator" },
+      { href: "/tools", label: "All India Tools" },
+    ],
+  },
+  {
+    id: "nearby-places",
+    title: "Nearby places",
+    description:
+      "Find hotels, restaurants, hospitals, schools, and ATMs near you or by city search.",
+    pillarHref: "/tools/nearby-places",
+    pillarLabel: "Nearby places",
+    toolSlugs: [
+      "nearby-places",
+      "nearby-hotels",
+      "nearby-restaurants",
+      "nearby-hospitals",
+      "nearby-schools",
+      "nearby-atms",
+      "geo-location",
+    ],
+    links: [
+      { href: "/tools/nearby-places", label: "Nearby places" },
+      { href: "/tools/nearby-hospitals", label: "Nearby hospitals" },
+      { href: "/tools/nearby-hotels", label: "Nearby hotels" },
+      { href: "/tools/nearby-restaurants", label: "Nearby restaurants" },
+      { href: "/tools/nearby-atms", label: "Nearby ATMs" },
+      { href: "/tools/geo-location", label: "My location" },
+      { href: "/tools", label: "All India Tools" },
     ],
   },
 ];
@@ -217,5 +342,7 @@ export function getTopicClusterLinks(
 ): TopicClusterLink[] {
   return cluster.links
     .filter((l) => !currentHref || l.href !== currentHref)
+    // Keep equity on indexable tool hubs — never push thin location matrices.
+    .filter((l) => !l.href.startsWith("/tools/locations/"))
     .slice(0, limit);
 }

@@ -36,6 +36,13 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Collapse www → apex so crawl equity isn't split (canonical alone isn't enough).
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.contentverse.co.in" }],
+        destination: "https://contentverse.co.in/:path*",
+        permanent: true,
+      },
       {
         source: "/jewellers",
         destination: "/goldverse",

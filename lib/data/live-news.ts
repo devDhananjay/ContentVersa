@@ -10,14 +10,10 @@ import {
   toiSourceKey,
   type ToiRssItem,
 } from "@/lib/seo/toi-rss";
-import { cleanToiImageUrl } from "@/lib/seo/toi-cover-url";
+import { resolveNewsDisplayCover } from "@/lib/seo/toi-cover-url";
 
 function newsCoverUrl(url: string | null | undefined): string | null {
-  if (!url?.trim()) return null;
-  if (/toiimg\.com|overlay-toi/i.test(url)) {
-    return cleanToiImageUrl(url) || url;
-  }
-  return url;
+  return resolveNewsDisplayCover(url);
 }
 
 export type LiveNewsCard = {
@@ -450,8 +446,8 @@ async function fetchLiveNewsUncached(
 export async function getLiveNewsForHome(limit = 8): Promise<LiveNewsCard[]> {
   const cached = unstable_cache(
     () => fetchLiveNewsUncached(limit),
-    [`live-news-home-v3-${limit}`],
-    { revalidate: 180, tags: ["live-news"] }
+    [`live-news-home-v4-${limit}`],
+    { revalidate: 120, tags: ["live-news"] }
   );
   try {
     return await cached();

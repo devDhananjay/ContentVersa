@@ -136,6 +136,9 @@ export async function rehostToiCoverWithBrand(
   sourceUrl: string
 ): Promise<string | null> {
   const cleaned = cleanToiImageUrl(sourceUrl);
+  if (cleaned === NEWS_BRAND_COVER || cleaned.endsWith("/news-brand-cover.jpg")) {
+    return NEWS_BRAND_COVER;
+  }
   if (!cleaned.startsWith("http")) return null;
 
   try {
@@ -242,10 +245,14 @@ export async function resolveToiCoverForIngest(
 ): Promise<string | null> {
   const raw = sourceUrl?.trim();
   if (!raw) return null;
+  // Known TOI red-logo msid — never store/serve it.
+  const cleaned = cleanToiImageUrl(raw);
+  if (cleaned === NEWS_BRAND_COVER || cleaned.endsWith("/news-brand-cover.jpg")) {
+    return NEWS_BRAND_COVER;
+  }
   if (!isToiCdnUrl(raw) && !raw.includes("overlay-toi")) {
     return raw;
   }
-  const cleaned = cleanToiImageUrl(raw);
   const hosted = await rehostToiCoverWithBrand(cleaned);
   return hosted || cleaned || null;
 }

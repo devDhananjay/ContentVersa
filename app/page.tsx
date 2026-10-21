@@ -34,7 +34,7 @@ import { getFinanceTickerDataCached } from "@/lib/finance/data";
 import { getHomeModulePreviews } from "@/lib/home/module-previews";
 import { getGovtJobsCached } from "@/lib/jobs/data";
 import { getGoldPriceSnapshot } from "@/lib/goldverse/gold-price";
-import { TOOL_REGISTRY, toolPath } from "@/lib/tools/registry";
+import { getHomeFeaturedTools, toolPath } from "@/lib/tools/registry";
 import { GUIDE_SECTIONS, guideSectionPath } from "@/lib/guides/registry";
 import { SiteJsonLd } from "@/components/seo/site-json-ld";
 import { Reveal, ScrollProgress } from "@/components/home/motion";
@@ -187,10 +187,10 @@ export default async function HomePage() {
         { title: "Money guides", href: "/guides/money", meta: "SIP, tax, EMI" },
       ];
 
-  const toolItems = TOOL_REGISTRY.slice(0, 4).map((tool) => ({
+  const toolItems = getHomeFeaturedTools(4).map((tool) => ({
     title: tool.shortTitle,
     href: toolPath(tool.slug),
-    meta: tool.badge || "Supports guides",
+    meta: tool.badge || "Free India tool",
   }));
 
   return (
