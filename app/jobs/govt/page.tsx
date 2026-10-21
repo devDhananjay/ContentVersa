@@ -80,29 +80,10 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
         </ol>
       </HubEditorialIntro>
 
-      {(!data.configured || data.error) && (
-        <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/40 p-3 text-sm">
-          <AlertCircle className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
-          <p className="text-muted-foreground">
-            {data.error?.includes("not subscribed") ? (
-              SHOW_THIRD_PARTY_CREDITS ? (
-                <>
-                  Your RapidAPI key needs an active <strong className="text-foreground">Sarkari Result</strong>{" "}
-                  subscription to load live data.
-                </>
-              ) : (
-                <>Government listings are updating. Check back shortly.</>
-              )
-            ) : data.error ? (
-              SHOW_THIRD_PARTY_CREDITS || !/rapidapi|sarkari/i.test(data.error)
-                ? data.error
-                : "Government listings are updating. Check back shortly."
-            ) : SHOW_THIRD_PARTY_CREDITS ? (
-              <>Set <code className="rounded bg-muted px-1 text-xs">RAPIDAPI_KEY</code> on the server.</>
-            ) : (
-              <>Government listings are updating. Check back shortly.</>
-            )}
-          </p>
+      {data.error && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-sm">
+          <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+          <p className="text-muted-foreground">{data.error}</p>
         </div>
       )}
 
@@ -116,10 +97,15 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
       <GovtCategoryTabs active={category} />
 
       <p className="text-sm text-muted-foreground">
-        {data.count > 0 ? (
+        {data.source === "portals" ? (
           <>
-            <span className="font-medium text-foreground">{data.count}</span> listings · Opens official
-            {SHOW_THIRD_PARTY_CREDITS ? " Sarkari Result pages" : " notification pages"} in a new tab
+            <span className="font-medium text-foreground">{data.count}</span> official portals · Apply
+            only on commission websites
+          </>
+        ) : data.count > 0 ? (
+          <>
+            <span className="font-medium text-foreground">{data.count}</span> listings
+            {data.source === "cache" ? " (last saved)" : ""} · Opens official pages in a new tab
           </>
         ) : (
           "Listings refresh every 30 minutes"
@@ -129,14 +115,18 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
       {data.listings.length > 0 ? (
         <div className="grid gap-3">
           {data.listings.map((item) => (
-            <GovtJobCard key={item.link} item={item} showDate={showDate} />
+            <GovtJobCard key={item.link} item={item} showDate={showDate && data.source === "live"} />
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border/60 bg-muted/30 p-10 text-center">
+        <div className="rounded-2xl border border-dashed border-border/60 bg-muted/30 p-10 text-center space-y-3">
           <p className="text-sm text-muted-foreground">
-            No {meta.label.toLowerCase()} available at the moment. Check back soon or try another
-            category above.
+            No {meta.label.toLowerCase()} in the live feed right now. Try another category, or open
+            an official portal from our{" "}
+            <Link href="/guides/jobs" className="text-primary hover:underline">
+              jobs guides
+            </Link>
+            .
           </p>
         </div>
       )}
