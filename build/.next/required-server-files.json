@@ -387,6 +387,17 @@
     },
     "_originalRedirects": [
       {
+        "source": "/:path*",
+        "has": [
+          {
+            "type": "host",
+            "value": "www.contentverse.co.in"
+          }
+        ],
+        "destination": "https://contentverse.co.in/:path*",
+        "permanent": true
+      },
+      {
         "source": "/jewellers",
         "destination": "/goldverse",
         "permanent": true

@@ -12,6 +12,18 @@
       "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
     },
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.contentverse.co.in"
+        }
+      ],
+      "destination": "https://contentverse.co.in/:path*",
+      "statusCode": 308,
+      "regex": "^(?!/_next)(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    },
+    {
       "source": "/jewellers",
       "destination": "/goldverse",
       "statusCode": 308,
@@ -810,6 +822,22 @@
         "nxtPslug": "nxtPslug"
       },
       "namedRegex": "^/tools/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/tools/[slug]/opengraph-image",
+      "regex": "^/tools/([^/]+?)/opengraph\\-image(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/tools/(?<nxtPslug>[^/]+?)/opengraph\\-image(?:/)?$"
+    },
+    {
+      "page": "/tools/[slug]/twitter-image",
+      "regex": "^/tools/([^/]+?)/twitter\\-image(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/tools/(?<nxtPslug>[^/]+?)/twitter\\-image(?:/)?$"
     },
     {
       "page": "/trending/[slug]",
