@@ -5,6 +5,7 @@ import {
   TelegramSharePanel,
   type TrendingNewsItem,
 } from "@/components/admin/telegram-share-panel";
+import { TelegramSetupWizard } from "@/components/admin/telegram-setup-wizard";
 import { getTrendingHybrid } from "@/lib/data/blog-db";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +42,7 @@ export default async function AdminTelegramSharePage() {
         </p>
       </div>
 
+      <TelegramSetupWizard />
       <TelegramSharePanel news={news} />
     </div>
   );
