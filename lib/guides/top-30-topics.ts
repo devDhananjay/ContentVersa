@@ -929,6 +929,131 @@ export const TOP_30_TOPIC_ARTICLES: GuideArticle[] = [
       faq("Live price on ContentVerse?", "Indicative context only."),
     ],
   }),
+  topic({
+    slug: "epf-vs-nps-india-salaried-guide",
+    section: "money",
+    title: "EPF vs NPS for Salaried Indians — How to Choose in 2026",
+    shortTitle: "EPF vs NPS",
+    description:
+      "EPF vs NPS for Indian salaried employees: lock-in, tax treatment, employer contribution, withdrawal rules, and a simple allocation approach — educational, not advice.",
+    keywords: [
+      "epf vs nps india",
+      "nps or epf which is better",
+      "salaried retirement india",
+      "epf withdrawal rules",
+      "nps tax benefit 80ccd",
+    ],
+    readingMinutes: 10,
+    clusterId: "sip-investing",
+    relatedHref: "/guides/money/sip-calculator-india-beginners-guide",
+    relatedLabel: "SIP beginners guide",
+    blocks: [
+      block("What each product is for", [
+        "EPF is primarily workplace retirement savings with employee + employer contributions (rules vary by establishment). NPS is a voluntary (or corporate) retirement account with market-linked options and extra tax space under current law for many people.",
+        "They are not rivals in every case — many households use EPF as the core and NPS as a top-up. Educational only; verify limits on the Income Tax / EPFO / NPS portals.",
+      ]),
+      block("Liquidity and lock-in", [
+        "EPF has defined partial-withdrawal and final-settlement paths tied to employment and purpose codes. NPS has stricter retirement orientation with annuity/lump-sum rules at exit. If you may need money in 3–5 years, do not park emergency cash in either.",
+      ], [
+        "Keep 3–6 months expenses liquid before maximising retirement lock-ins",
+        "Read your UAN passbook and NPS statement once a quarter",
+        "Job change: track EPF transfer; do not leave multiple forgotten accounts",
+      ]),
+      block("A practical allocation sketch", [
+        "If your employer already funds EPF heavily, compare whether extra voluntary EPF beats starting NPS for diversification and the additional deduction (where eligible). If EPF is thin or you are in a new-regime tax path, run numbers with a CA or reliable calculator before copying a LinkedIn thread.",
+      ]),
+      block("Common mistakes", [
+        "Treating EPF as a spending account, ignoring nominee updates, and buying NPS only for a March tax rush without understanding equity allocation. Also ignore “guaranteed double” WhatsApp schemes that misuse EPFO branding.",
+      ]),
+    ],
+    faqs: [
+      faq("Can I have both EPF and NPS?", "Yes for many salaried people — contribution capacity and tax regime decide the mix."),
+      faq("Is this financial advice?", "No. Rules change; confirm on official portals and with a qualified advisor."),
+      faq("Where do I check EPF balance?", "Through the UMANG / EPFO member portal with your UAN — not random APKs."),
+    ],
+  }),
+  topic({
+    slug: "rrb-railway-job-notification-checklist-india",
+    section: "jobs",
+    title: "RRB / Railway Job Notification Checklist for First-Time Applicants",
+    shortTitle: "Railway job checklist",
+    description:
+      "RRB and railway recruitment checklist for India: CEN notice reading, medical standards, document scans, fee, and official apply links — avoid fake “form fill” agents.",
+    keywords: [
+      "rrb notification checklist",
+      "railway job apply guide india",
+      "rrb cen how to apply",
+      "railway recruitment documents",
+    ],
+    readingMinutes: 9,
+    clusterId: "govt-schemes",
+    relatedHref: "/jobs/govt",
+    relatedLabel: "Govt jobs desk",
+    blocks: [
+      block("Start with the CEN PDF, not Telegram forwards", [
+        "Every RRB cycle publishes a Centralised Employment Notice (CEN). Note posts, medical categories, age with relaxations, fee, and the exact apply window in IST. Set reminders 48 hours before close — portals slow down near deadlines.",
+      ]),
+      block("Documents and photo traps", [
+        "Keep community certificate, educational proofs, and photo/sign within the KB and pixel limits in the notice. Name and DOB must match certificates. Cyber-café “agents” that ask for OTP or extra cash outside the official fee are a red flag.",
+      ], [
+        "Save OTR / registration credentials offline",
+        "Download the application printout after submit",
+        "Watch only the official RRB regional site for admit cards",
+      ]),
+      block("Medical and post mapping", [
+        "Some posts need stricter medical fitness. Do not apply only for the salary line — read medical standards and posting nature. If you fail medical later, the effort and fee are sunk.",
+      ]),
+      block("Where ContentVerse India helps", [
+        "Use /jobs/govt for listing alerts, then finish apply on the official RRB URL. Pair with our sarkari notification and SSC-style checklists for form hygiene.",
+      ]),
+    ],
+    faqs: [
+      faq("Is one application enough for all RRBs?", "Follow the CEN — some cycles are multi-RRB with one form; others differ. Read the PDF."),
+      faq("Can I edit after final submit?", "Only if a correction window opens. Otherwise wait for the next CEN."),
+      faq("Fake railway jobs on WhatsApp?", "Never pay private agents for “guaranteed selection”. Official fee is only on the portal."),
+    ],
+  }),
+  topic({
+    slug: "dls-method-cricket-explained-india-fans",
+    section: "cricket",
+    title: "DLS Method Explained for India Fans — Rain Rules Without Confusion",
+    shortTitle: "DLS explained",
+    description:
+      "Duckworth–Lewis–Stern (DLS) rain rule for cricket in plain English for India fans: why targets change, what “par score” means, and how to read the card after a stoppage.",
+    keywords: [
+      "dls method explained",
+      "duckworth lewis stern india",
+      "rain rule cricket target",
+      "par score meaning cricket",
+    ],
+    readingMinutes: 9,
+    clusterId: "cricket",
+    relatedHref: "/guides/cricket/how-to-read-a-cricket-scorecard",
+    relatedLabel: "Read a scorecard",
+    blocks: [
+      block("Why rain needs a formula", [
+        "Limited-overs games have a fixed resource: overs and wickets. When rain steals overs, you cannot simply prorate runs — wickets in hand matter. DLS (Duckworth–Lewis–Stern) revises the target so both sides get a fair share of remaining resources.",
+      ]),
+      block("Par score in one line", [
+        "Par is the score the team batting second should have at that point to be ahead under DLS. If they are above par when play stops (and rules say the game can be decided), they are ahead — commentary often flashes this live.",
+      ]),
+      block("What fans should check after a stoppage", [
+        "Revised overs, revised target, and whether a minimum overs threshold was met to constitute a game. Do not trust a random screenshot of “final target” until the official scoreboard / broadcaster graphic updates.",
+      ], [
+        "Note wickets lost before the interruption",
+        "Watch for G50 / resource table talk only if you enjoy the maths — the graphic is enough for most fans",
+        "Super Over / tie rules are separate from DLS",
+      ]),
+      block("Where this sits on ContentVerse India", [
+        "Use this explainer plus our scorecard and match-preview guides. Live score widgets stay separate from indexable explainers so Google sees useful pages, not thin tickers.",
+      ]),
+    ],
+    faqs: [
+      faq("Is DLS used in Tests?", "Rain rules differ; DLS is for limited-overs. Tests use other interruption procedures."),
+      faq("Why does the target look “unfair”?", "It protects resource balance — a team that kept wickets is rewarded versus one that slogged early."),
+      faq("VJD vs DLS?", "Some competitions historically used VJD; international and most India televised ODIs/T20s use DLS. Follow the match playing conditions."),
+    ],
+  }),
 ];
 
 /** Canonical 30 ranking URLs (6 pillars + 24 topics) for hub + ItemList schema. */
@@ -1082,5 +1207,20 @@ export const TOP_30_GUIDE_PATHS: { href: string; label: string; intent: string }
     href: "/guides/money/silver-rate-today-india-cities",
     label: "Silver rate today — city retail",
     intent: "silver rate today india",
+  },
+  {
+    href: "/guides/money/epf-vs-nps-india-salaried-guide",
+    label: "EPF vs NPS for salaried Indians",
+    intent: "epf vs nps india",
+  },
+  {
+    href: "/guides/jobs/rrb-railway-job-notification-checklist-india",
+    label: "RRB / railway job apply checklist",
+    intent: "rrb notification how to apply",
+  },
+  {
+    href: "/guides/cricket/dls-method-cricket-explained-india-fans",
+    label: "DLS rain rule explained",
+    intent: "dls method explained cricket",
   },
 ];

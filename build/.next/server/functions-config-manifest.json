@@ -3,16 +3,16 @@
   "functions": {
     "/api/auth/firebase": {},
     "/api/auth/google/login": {},
-    "/api/cron/sports-sync": {
+    "/api/cron/toi-news": {
       "maxDuration": 300
     },
-    "/api/auth/google/callback": {},
-    "/api/cron/toi-news": {
+    "/api/cron/sports-sync": {
       "maxDuration": 300
     },
     "/api/moneyverse/bank-statement/quota": {},
     "/api/moneyverse/bank-statement/analyze": {},
     "/api/reels/upload": {},
+    "/api/auth/google/callback": {},
     "/api/upload": {},
     "/uploads/[filename]": {}
   }
