@@ -65,12 +65,16 @@ export default async function GuideArticlePage({ params }: Props) {
     article.clusterId === "salary-tax" ||
     article.clusterId === "gst-business" ||
     article.clusterId === "sip-investing" ||
-    article.clusterId === "emi-loans";
+    article.clusterId === "emi-loans" ||
+    article.clusterId === "jobs";
 
   const ymylKind =
-    article.slug === "ayushman-bharat-pmjay-eligibility"
+    article.slug === "ayushman-bharat-pmjay-eligibility" ||
+    article.slug === "health-insurance-india-beginners"
       ? "health"
-      : article.clusterId === "salary-tax" || article.clusterId === "gst-business"
+      : article.clusterId === "salary-tax" ||
+          article.clusterId === "gst-business" ||
+          article.slug.includes("tax-regime")
         ? "tax"
         : article.section === "money"
           ? "finance"
@@ -132,7 +136,9 @@ export default async function GuideArticlePage({ params }: Props) {
             <GoogleAdSense slotKey="horizontal" width={300} height={250} />
           </AdSlot>
 
-          {showYmyl ? <YmylDisclaimer kind={ymylKind} /> : null}
+          {showYmyl ? (
+            <YmylDisclaimer kind={ymylKind} reviewedLabel={article.updatedLabel} />
+          ) : null}
 
           <div className="space-y-8">
             {article.blocks.map((block, i) => (
@@ -155,6 +161,51 @@ export default async function GuideArticlePage({ params }: Props) {
                     ))}
                   </ul>
                 ) : null}
+                {block.table?.headers?.length && block.table.rows?.length ? (
+                  <div className="overflow-x-auto rounded-xl border border-border/60">
+                    {block.table.caption ? (
+                      <p className="border-b border-border/50 bg-muted/30 px-3 py-2 text-xs font-medium text-foreground">
+                        {block.table.caption}
+                      </p>
+                    ) : null}
+                    <table className="w-full min-w-[28rem] border-collapse text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-border/60 bg-muted/20">
+                          {block.table.headers.map((h) => (
+                            <th
+                              key={h}
+                              scope="col"
+                              className="px-3 py-2.5 font-semibold text-foreground"
+                            >
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {block.table.rows.map((row, ri) => (
+                          <tr
+                            key={`${block.heading}-r${ri}`}
+                            className="border-b border-border/40 last:border-0"
+                          >
+                            {row.map((cell, ci) => (
+                              <td
+                                key={`${ri}-${ci}`}
+                                className={
+                                  ci === 0
+                                    ? "px-3 py-2.5 font-medium text-foreground/90"
+                                    : "px-3 py-2.5 text-muted-foreground"
+                                }
+                              >
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null}
                 {/* Mid-guide after first section */}
                 {i === 0 && article.blocks.length > 1 ? (
                   <HubAdSense className="!px-0" />
@@ -162,6 +213,29 @@ export default async function GuideArticlePage({ params }: Props) {
               </section>
             ))}
           </div>
+
+          {article.sources?.length ? (
+            <aside className="rounded-2xl border border-border/60 bg-card/40 p-4 text-sm">
+              <p className="font-semibold text-foreground">Sources & official links</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Updated {article.updatedLabel}. Always re-check live rules on the primary portal.
+              </p>
+              <ul className="mt-3 list-disc space-y-1.5 pl-5 text-muted-foreground">
+                {article.sources.map((s) => (
+                  <li key={s.href}>
+                    <Link
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      {s.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          ) : null}
 
           {article.faqs?.length ? (
             <section className="space-y-4">

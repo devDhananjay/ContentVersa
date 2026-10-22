@@ -56,6 +56,18 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     links: [
       { href: "/guides/money/emi-calculator-india-guide", label: "EMI guide" },
       {
+        href: "/guides/money/personal-loan-eligibility-documents-india",
+        label: "Personal loan eligibility",
+      },
+      {
+        href: "/guides/money/credit-card-vs-personal-loan-india-2026",
+        label: "Card vs personal loan 2026",
+      },
+      {
+        href: "/guides/money/credit-card-rewards-vs-cashback-india-2026",
+        label: "Rewards vs cashback cards",
+      },
+      {
         href: "/guides/money/credit-score-cibil-india-guide",
         label: "CIBIL / credit score",
       },
@@ -80,6 +92,7 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     links: [
       { href: "/guides/money/sip-calculator-india-beginners-guide", label: "SIP guide" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
+      { href: "/guides/money/sip-vs-fd-india-2026", label: "SIP vs FD 2026" },
       { href: "/guides/money/fd-vs-rd-india-guide", label: "FD vs RD" },
       { href: "/tools/fd-calculator", label: "FD calculator" },
       { href: "/guides/money/ppf-account-india-guide", label: "PPF account rules" },
@@ -127,6 +140,10 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       { href: "/guides/money/salary-tax-calculator-india-guide", label: "Salary tax guide" },
       { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
       {
+        href: "/guides/money/old-vs-new-tax-regime-india-2026",
+        label: "Old vs new tax regime 2026",
+      },
+      {
         href: "/guides/money/itr-filing-checklist-salaried-india",
         label: "ITR filing checklist",
       },
@@ -134,6 +151,14 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       {
         href: "/guides/money/term-insurance-beginners-india",
         label: "Term insurance beginners",
+      },
+      {
+        href: "/guides/money/term-vs-endowment-insurance-india-2026",
+        label: "Term vs endowment 2026",
+      },
+      {
+        href: "/guides/money/health-insurance-india-beginners",
+        label: "Health insurance beginners",
       },
       { href: "/tools/term-cover-calculator", label: "Term cover calculator" },
       {
@@ -354,6 +379,10 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     toolSlugs: ["take-home-calculator", "salary-tax-calculator", "age-calculator"],
     links: [
       { href: "/jobs/govt", label: "Govt jobs hub" },
+      {
+        href: "/guides/jobs/ibps-banking-exam-salary-structure-india",
+        label: "IBPS exam & salary structure",
+      },
       {
         href: "/guides/jobs/ssc-salary-slip-how-to-read-india",
         label: "How to read an SSC salary slip",

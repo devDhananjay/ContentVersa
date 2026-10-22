@@ -13,6 +13,7 @@ const COPY: Record<
     sources: [
       { href: "https://www.sebi.gov.in/", label: "SEBI" },
       { href: "https://www.rbi.org.in/", label: "RBI" },
+      { href: "https://www.irdai.gov.in/", label: "IRDAI" },
       { href: "https://www.nseindia.com/", label: "NSE" },
     ],
   },
@@ -27,16 +28,23 @@ const COPY: Record<
   },
   health: {
     title: "Not medical advice",
-    body: "Health-related content on ContentVerse India is for general awareness only. It is not diagnosis, treatment, or a substitute for a licensed clinician. For symptoms or medication decisions, consult a qualified doctor.",
+    body: "Health-related content on ContentVerse India is for general awareness only. It is not diagnosis, treatment, a policy quote, or a substitute for a licensed clinician. For symptoms or medication decisions, consult a qualified doctor; for insurance, read IRDAI-regulated disclosures.",
     sourcesLabel: "Trusted references",
     sources: [
       { href: "https://www.mohfw.gov.in/", label: "MoHFW" },
+      { href: "https://www.irdai.gov.in/", label: "IRDAI" },
       { href: "https://www.who.int/", label: "WHO" },
     ],
   },
   schemes: {
     title: "Scheme explainers — check the official portal",
     body: "Eligibility, documents, and steps can change. Always confirm on the government scheme’s official website or helpline before you apply or pay any fee. ContentVerse India does not collect application fees for govt schemes.",
+    sourcesLabel: "Starting points",
+    sources: [
+      { href: "https://www.india.gov.in/", label: "India.gov.in" },
+      { href: "https://www.ibps.in/", label: "IBPS" },
+      { href: "https://ssc.gov.in/", label: "SSC" },
+    ],
   },
   general: {
     title: "Educational content",
@@ -48,9 +56,12 @@ const COPY: Record<
 export function YmylDisclaimer({
   kind = "general",
   className,
+  reviewedLabel = "October 2026",
 }: {
   kind?: YmylKind;
   className?: string;
+  /** Shown as “Last reviewed: …” — pass article.updatedLabel on money pages */
+  reviewedLabel?: string;
 }) {
   const copy = COPY[kind];
   return (
@@ -63,7 +74,9 @@ export function YmylDisclaimer({
     >
       <p className="font-medium text-foreground">{copy.title}</p>
       <p className="mt-1.5 leading-relaxed">{copy.body}</p>
-      <p className="mt-2 text-xs">Last reviewed: September 2026. Confirm live rules on official portals.</p>
+      <p className="mt-2 text-xs">
+        Last reviewed: {reviewedLabel}. Confirm live rules on official portals.
+      </p>
       {copy.sources?.length ? (
         <p className="mt-2 text-xs">
           {copy.sourcesLabel}:{" "}

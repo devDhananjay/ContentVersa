@@ -2,7 +2,13 @@
  * India evergreen pack (Oct 2026) — original money/jobs guides.
  * Wired into GUIDE_ARTICLES for AdSense-quality depth + tool linking.
  */
-import type { GuideArticle, GuideBlock, GuideFaq, GuideSectionSlug } from "./registry";
+import type {
+  GuideArticle,
+  GuideBlock,
+  GuideFaq,
+  GuideSectionSlug,
+  GuideSource,
+} from "./registry";
 
 function block(
   heading: string,
@@ -29,6 +35,7 @@ function guide(input: {
   relatedLabel: string;
   blocks: GuideBlock[];
   faqs: GuideFaq[];
+  sources?: GuideSource[];
 }): GuideArticle {
   return {
     ...input,
@@ -55,6 +62,11 @@ export const EVERGREEN_PACK_OCT_2026: GuideArticle[] = [
     clusterId: "salary-tax",
     relatedHref: "/tools/term-cover-calculator",
     relatedLabel: "Open term cover calculator",
+    sources: [
+      { href: "https://www.irdai.gov.in/", label: "IRDAI" },
+      { href: "https://www.policyholder.gov.in/", label: "Policyholder.gov.in" },
+      { href: "https://www.incometax.gov.in/", label: "Income Tax portal" },
+    ],
     blocks: [
       block("What term insurance actually is", [
         "Term insurance pays a lump sum to your nominees if you die during the policy term. There is usually no maturity “return of premium” story unless you buy a costly variant. You are buying income replacement for dependants — not a savings product.",
@@ -113,6 +125,10 @@ export const EVERGREEN_PACK_OCT_2026: GuideArticle[] = [
     clusterId: "salary-tax",
     relatedHref: "/tools/salary-tax-calculator",
     relatedLabel: "Salary tax → then take-home / term tools",
+    sources: [
+      { href: "https://www.incometax.gov.in/", label: "Income Tax portal" },
+      { href: "https://www.incometax.gov.in/iec/foportal/", label: "e-Filing portal" },
+    ],
     blocks: [
       block("Before you open the portal", [
         "Collect Form 16 from your employer, Form 16A if you had TDS on interest or other income, bank interest certificates, rent receipts / landlord PAN if claiming HRA under the old regime, and investment proofs you already declared.",
@@ -174,6 +190,10 @@ export const EVERGREEN_PACK_OCT_2026: GuideArticle[] = [
     clusterId: "jobs",
     relatedHref: "/tools/take-home-calculator",
     relatedLabel: "Open take-home calculator",
+    sources: [
+      { href: "https://ssc.gov.in/", label: "SSC" },
+      { href: "https://www.incometax.gov.in/", label: "Income Tax portal" },
+    ],
     blocks: [
       block("Gross is not what hits your account", [
         "A typical central / SSC-cadre slip shows earnings (basic pay, dearness allowance, HRA, transport, and other allowances) and deductions (PF/NPS, income tax, CGEGIS, professional tax where applicable). Net pay = earnings − deductions for that month.",
@@ -230,6 +250,11 @@ export const EVERGREEN_PACK_OCT_2026: GuideArticle[] = [
     clusterId: "sip-investing",
     relatedHref: "/tools/epf-calculator",
     relatedLabel: "Open EPF calculator",
+    sources: [
+      { href: "https://unifiedportal-mem.epfindia.gov.in/", label: "EPFO member portal" },
+      { href: "https://www.epfindia.gov.in/", label: "EPFO" },
+      { href: "https://www.incometax.gov.in/", label: "Income Tax portal" },
+    ],
     blocks: [
       block("Partial withdrawal vs final settlement", [
         "Partial withdrawals (advance) are allowed for notified purposes — medical, education, marriage, housing, etc. — with service and amount caps that EPFO updates over time. Final settlement is usually tied to leaving employment and waiting periods / conditions in force.",

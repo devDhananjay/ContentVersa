@@ -1,6 +1,7 @@
 import { PILLAR_GUIDE_ARTICLES } from "./pillar-articles";
 import { TOP_30_TOPIC_ARTICLES } from "./top-30-topics";
 import { EVERGREEN_PACK_OCT_2026 } from "./evergreen-pack-oct2026";
+import { HIGH_CPC_PACK_OCT_2026 } from "./high-cpc-pack-oct2026";
 
 export const GUIDES_HUB_PATH = "/guides";
 
@@ -18,10 +19,24 @@ export type GuideFaq = {
   a: string;
 };
 
+export type GuideTable = {
+  /** Optional caption shown above the table */
+  caption?: string;
+  headers: string[];
+  rows: string[][];
+};
+
+export type GuideSource = {
+  href: string;
+  label: string;
+};
+
 export type GuideBlock = {
   heading: string;
   paragraphs: string[];
   bullets?: string[];
+  /** Comparison / checklist table — advertisers and readers both like clear X vs Y */
+  table?: GuideTable;
 };
 
 export type GuideArticle = {
@@ -39,6 +54,8 @@ export type GuideArticle = {
   clusterId?: string;
   relatedHref?: string;
   relatedLabel?: string;
+  /** Official / primary sources for E-E-A-T (shown under the guide) */
+  sources?: GuideSource[];
 };
 
 export type GuideSection = {
@@ -178,6 +195,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
   ...PILLAR_GUIDE_ARTICLES,
   ...TOP_30_TOPIC_ARTICLES,
   ...EVERGREEN_PACK_OCT_2026,
+  ...HIGH_CPC_PACK_OCT_2026,
   {
     slug: "why-topics-trend-in-india",
     section: "trending",

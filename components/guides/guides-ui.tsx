@@ -9,8 +9,13 @@ import {
 } from "@/lib/guides/registry";
 import { TOP_30_GUIDE_PATHS } from "@/lib/guides/top-30-topics";
 import { EVERGREEN_PACK_PATHS } from "@/lib/guides/evergreen-pack-oct2026";
+import { HIGH_CPC_PACK_PATHS } from "@/lib/guides/high-cpc-pack-oct2026";
 
-const FEATURED_GUIDE_PATHS = [...TOP_30_GUIDE_PATHS, ...EVERGREEN_PACK_PATHS];
+const FEATURED_GUIDE_PATHS = [
+  ...TOP_30_GUIDE_PATHS,
+  ...EVERGREEN_PACK_PATHS,
+  ...HIGH_CPC_PACK_PATHS,
+];
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 

@@ -2,14 +2,31 @@
  * Top-30 high-intent India topics — full SEO guides (not thin stubs).
  * Each page: keyword title, 150–160 char meta, H2s, FAQ, internal links.
  */
-import type { GuideArticle, GuideBlock, GuideFaq, GuideSectionSlug } from "./registry";
+import type {
+  GuideArticle,
+  GuideBlock,
+  GuideFaq,
+  GuideSectionSlug,
+  GuideSource,
+  GuideTable,
+} from "./registry";
 
 function block(
   heading: string,
   paragraphs: string[],
-  bullets?: string[]
+  bulletsOrExtras?: string[] | { bullets?: string[]; table?: GuideTable }
 ): GuideBlock {
-  return bullets?.length ? { heading, paragraphs, bullets } : { heading, paragraphs };
+  if (Array.isArray(bulletsOrExtras)) {
+    return bulletsOrExtras.length
+      ? { heading, paragraphs, bullets: bulletsOrExtras }
+      : { heading, paragraphs };
+  }
+  return {
+    heading,
+    paragraphs,
+    ...(bulletsOrExtras?.bullets?.length ? { bullets: bulletsOrExtras.bullets } : {}),
+    ...(bulletsOrExtras?.table ? { table: bulletsOrExtras.table } : {}),
+  };
 }
 
 function faq(q: string, a: string): GuideFaq {
@@ -29,10 +46,11 @@ function topic(input: {
   relatedLabel: string;
   blocks: GuideBlock[];
   faqs: GuideFaq[];
+  sources?: GuideSource[];
 }): GuideArticle {
   return {
     ...input,
-    updatedLabel: "Aug 2026",
+    updatedLabel: "Oct 2026",
   };
 }
 
@@ -57,11 +75,27 @@ export const TOP_30_TOPIC_ARTICLES: GuideArticle[] = [
     clusterId: "sip-investing",
     relatedHref: "/tools/fd-calculator",
     relatedLabel: "FD calculator → also try SIP / PPF",
+    sources: [
+      { href: "https://www.rbi.org.in/", label: "RBI" },
+      { href: "https://www.dicgc.org.in/", label: "DICGC" },
+    ],
     blocks: [
       block("FD and RD in one sentence", [
         "A Fixed Deposit (FD) is a lump sum parked for a chosen tenure at a published rate. A Recurring Deposit (RD) is a monthly contribution that compounds over the same style of bank tenure. They are savings products, not market-linked funds — still subject to bank credit risk and premature-penalty rules.",
         "Use ContentVerse India’s FD and RD calculators to compare maturity value, then confirm the live rate, compounding convention, and TDS rules on your bank’s official page. This guide is educational, not a product recommendation.",
-      ]),
+      ], {
+        table: {
+          caption: "FD vs RD India 2026 — quick compare",
+          headers: ["Factor", "Fixed Deposit (FD)", "Recurring Deposit (RD)"],
+          rows: [
+            ["Cash in", "Lump sum upfront", "Monthly instalments"],
+            ["Best when", "Money already saved", "Building a corpus monthly"],
+            ["Break risk", "Rate cut / penalty common", "Missed instalment penalties"],
+            ["Tax lens", "Interest as per law / TDS", "Same family of rules"],
+            ["Tools here", "FD calculator", "RD calculator"],
+          ],
+        },
+      }),
       block("When an FD usually fits", [
         "FDs suit money you already have and will not need until a known date — a wedding buffer, a down-payment parked for 12–24 months, or a senior-citizen rate you want to lock. Laddering (splitting across 3–4 tenures) reduces the pain of breaking one large FD.",
       ], [
@@ -538,11 +572,27 @@ export const TOP_30_TOPIC_ARTICLES: GuideArticle[] = [
     clusterId: "emi-loans",
     relatedHref: "/tools/emi-calculator",
     relatedLabel: "Compare EMIs",
+    sources: [
+      { href: "https://www.rbi.org.in/", label: "RBI" },
+      { href: "https://www.bis.gov.in/", label: "BIS (hallmark / HUID context)" },
+    ],
     blocks: [
       block("Collateral vs clean loan", [
         "A gold loan is secured against jewellery or coins; the lender caps how much you get with an LTV (loan-to-value) percentage of the appraised gold value. A personal loan is typically unsecured — priced on income, existing EMIs, and bureau score. Neither is “free money”, and both can damage cashflow if the EMI is optimistic.",
         "Families sometimes prefer gold loans for speed and lower headline rates; personal loans keep jewellery at home but usually cost more per rupee borrowed. The right pick is the one you can repay without selling future savings.",
-      ]),
+      ], {
+        table: {
+          caption: "Gold loan vs personal loan — India 2026",
+          headers: ["Factor", "Gold loan", "Personal loan"],
+          rows: [
+            ["Security", "Jewellery / coins pledged", "Typically unsecured"],
+            ["Pricing drivers", "LTV + gold rate + product", "Income, FOIR, bureau"],
+            ["Speed", "Often faster if docs ready", "KYC + income underwriting"],
+            ["Main risk", "Auction / repossession path", "Higher rate / FOIR stress"],
+            ["Compare with", "Same tenure EMI + fees", "Same tenure EMI + fees"],
+          ],
+        },
+      }),
       block("Cost stack to compare (not just the interest rate)", [
         "Line up interest, processing fee, valuation / appraiser charges, penal interest, foreclosure or part-prepayment rules, and insurance if bundled. Gold loans can look cheaper until you price auction / repossession clauses after missed payments. Personal loans can be costlier but do not put family jewellery at risk.",
       ], [

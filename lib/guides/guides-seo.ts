@@ -9,8 +9,13 @@ import {
 } from "./registry";
 import { TOP_30_GUIDE_PATHS } from "./top-30-topics";
 import { EVERGREEN_PACK_PATHS } from "./evergreen-pack-oct2026";
+import { HIGH_CPC_PACK_PATHS } from "./high-cpc-pack-oct2026";
 
-const HUB_FEATURED_GUIDE_PATHS = [...TOP_30_GUIDE_PATHS, ...EVERGREEN_PACK_PATHS];
+const HUB_FEATURED_GUIDE_PATHS = [
+  ...TOP_30_GUIDE_PATHS,
+  ...EVERGREEN_PACK_PATHS,
+  ...HIGH_CPC_PACK_PATHS,
+];
 
 export function guidesHubUrl() {
   return `${SITE.url}${GUIDES_HUB_PATH}`;
