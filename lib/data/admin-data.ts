@@ -376,8 +376,13 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
 export async function getAdminBlogs(status?: BlogStatus | "ALL"): Promise<AdminBlogRow[]> {
   if (!isDatabaseConfigured()) return [];
 
+  // Discover feed shadow rows (discover-*) stay ARCHIVED for engagement only —
+  // keep them out of admin lists so they don't clutter Archived / moderation.
   const blogs = await prisma.blog.findMany({
-    where: status && status !== "ALL" ? { status } : undefined,
+    where: {
+      slug: { not: { startsWith: "discover-" } },
+      ...(status && status !== "ALL" ? { status } : {}),
+    },
     include: {
       author: { include: { profile: true } },
       category: true,

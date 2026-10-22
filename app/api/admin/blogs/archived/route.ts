@@ -12,8 +12,12 @@ export async function DELETE() {
       return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     }
 
+    // Never wipe discover-* shadow rows — Discover comments/reactions need them.
     const archived = await prisma.blog.findMany({
-      where: { status: BlogStatus.ARCHIVED },
+      where: {
+        status: BlogStatus.ARCHIVED,
+        slug: { not: { startsWith: "discover-" } },
+      },
       select: { id: true, slug: true },
     });
 
@@ -25,7 +29,12 @@ export async function DELETE() {
 
     await prisma.$transaction([
       prisma.poll.deleteMany({ where: { blogId: { in: ids } } }),
-      prisma.blog.deleteMany({ where: { status: BlogStatus.ARCHIVED } }),
+      prisma.blog.deleteMany({
+        where: {
+          status: BlogStatus.ARCHIVED,
+          slug: { not: { startsWith: "discover-" } },
+        },
+      }),
     ]);
 
     revalidatePath("/admin/blogs");
