@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Cloud, CloudRain, CloudSun, Loader2, Sun } from "lucide-react";
+import { Cloud, CloudRain, CloudSun, Loader2, MapPin, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** Bump when place-name logic changes so sticky wrong cities (e.g. Dadri) refresh. */
+/** Bump when place-name logic changes so sticky wrong cities refresh. */
 const CACHE_KEY = "cv-nav-weather-v4";
+const SKIP_KEY = "cv-nav-weather-skip-geo";
 const CACHE_MS = 45 * 60 * 1000;
 
 type WeatherCache = {
@@ -60,6 +61,34 @@ function writeCache(data: WeatherCache) {
   }
 }
 
+function readSkipGeo(): boolean {
+  try {
+    return localStorage.getItem(SKIP_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeSkipGeo() {
+  try {
+    localStorage.setItem(SKIP_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+async function queryGeoPermission(): Promise<PermissionState | "unsupported"> {
+  try {
+    if (!navigator.permissions?.query) return "unsupported";
+    const status = await navigator.permissions.query({
+      name: "geolocation" as PermissionName,
+    });
+    return status.state;
+  } catch {
+    return "unsupported";
+  }
+}
+
 export function NavWeatherChip({
   immersive = false,
   className,
@@ -69,7 +98,66 @@ export function NavWeatherChip({
 }) {
   const [data, setData] = React.useState<WeatherCache | null>(null);
   const [loading, setLoading] = React.useState(false);
-  const [denied, setDenied] = React.useState(false);
+  /** Show opt-in chip instead of auto browser prompt. */
+  const [needsOptIn, setNeedsOptIn] = React.useState(false);
+  const [hidden, setHidden] = React.useState(false);
+
+  const fetchWeatherAt = React.useCallback(async (lat: number, lng: number) => {
+    const res = await fetch(
+      `/api/tools/weather?lat=${encodeURIComponent(String(lat))}&lng=${encodeURIComponent(String(lng))}`
+    );
+    const json = (await res.json()) as {
+      error?: string;
+      place?: { name?: string };
+      current?: { temperature_2m?: number; weather_code?: number };
+    };
+    if (!res.ok || !json.current) throw new Error(json.error || "Failed");
+
+    const next: WeatherCache = {
+      place: json.place?.name || "Near you",
+      temp: Math.round(Number(json.current.temperature_2m)),
+      code: Number(json.current.weather_code ?? 0),
+      at: Date.now(),
+      lat,
+      lng,
+    };
+    writeCache(next);
+    setData(next);
+  }, []);
+
+  const requestLocation = React.useCallback(
+    (fromUserGesture: boolean) => {
+      if (!navigator.geolocation) {
+        if (fromUserGesture) writeSkipGeo();
+        setHidden(true);
+        return;
+      }
+
+      setLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            await fetchWeatherAt(pos.coords.latitude, pos.coords.longitude);
+            setNeedsOptIn(false);
+          } catch {
+            if (fromUserGesture) writeSkipGeo();
+            setHidden(true);
+          } finally {
+            setLoading(false);
+          }
+        },
+        () => {
+          // Denied or dismissed — never auto-prompt again this browser.
+          writeSkipGeo();
+          setNeedsOptIn(false);
+          setHidden(true);
+          setLoading(false);
+        },
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: CACHE_MS }
+      );
+    },
+    [fetchWeatherAt]
+  );
 
   React.useEffect(() => {
     try {
@@ -84,51 +172,46 @@ export function NavWeatherChip({
       return;
     }
 
-    if (!navigator.geolocation) {
-      setDenied(true);
+    if (readSkipGeo()) {
+      setHidden(true);
       return;
     }
 
-    setLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude: lat, longitude: lng } = pos.coords;
-          const res = await fetch(
-            `/api/tools/weather?lat=${encodeURIComponent(String(lat))}&lng=${encodeURIComponent(String(lng))}`
-          );
-          const json = (await res.json()) as {
-            error?: string;
-            place?: { name?: string };
-            current?: { temperature_2m?: number; weather_code?: number };
-          };
-          if (!res.ok || !json.current) throw new Error(json.error || "Failed");
+    if (!navigator.geolocation) {
+      setHidden(true);
+      return;
+    }
 
-          const next: WeatherCache = {
-            place: json.place?.name || "Near you",
-            temp: Math.round(Number(json.current.temperature_2m)),
-            code: Number(json.current.weather_code ?? 0),
-            at: Date.now(),
-            lat,
-            lng,
-          };
-          writeCache(next);
-          setData(next);
-        } catch {
-          setDenied(true);
-        } finally {
-          setLoading(false);
-        }
-      },
-      () => {
-        setDenied(true);
-        setLoading(false);
-      },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: CACHE_MS }
-    );
-  }, []);
+    let cancelled = false;
 
-  if (denied && !data) return null;
+    (async () => {
+      const permission = await queryGeoPermission();
+      if (cancelled) return;
+
+      // Already allowed earlier — refresh silently (no new prompt).
+      if (permission === "granted") {
+        requestLocation(false);
+        return;
+      }
+
+      // Denied in browser settings — stay quiet.
+      if (permission === "denied") {
+        writeSkipGeo();
+        setHidden(true);
+        return;
+      }
+
+      // "prompt" or unsupported: do NOT auto-call getCurrentPosition
+      // (that re-opens the permission dialog on every page load).
+      setNeedsOptIn(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [requestLocation]);
+
+  if (hidden && !data) return null;
 
   if (loading && !data) {
     return (
@@ -145,6 +228,27 @@ export function NavWeatherChip({
         <Loader2 className="h-3 w-3 animate-spin" />
         <span>…</span>
       </span>
+    );
+  }
+
+  if (needsOptIn && !data) {
+    return (
+      <button
+        type="button"
+        onClick={() => requestLocation(true)}
+        title="Show local weather (asks location once)"
+        aria-label="Enable local weather"
+        className={cn(
+          "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+          immersive
+            ? "border-white/15 bg-white/10 text-white/90 hover:bg-white/15"
+            : "border-border/50 bg-muted/40 text-muted-foreground hover:border-sky-500/35 hover:bg-sky-500/10 hover:text-foreground",
+          className
+        )}
+      >
+        <MapPin className="h-3.5 w-3.5 shrink-0" />
+        <span>Weather</span>
+      </button>
     );
   }
 
