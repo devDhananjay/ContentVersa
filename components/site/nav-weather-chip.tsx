@@ -5,10 +5,24 @@ import Link from "next/link";
 import { Cloud, CloudRain, CloudSun, Loader2, MapPin, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** Bump when place-name logic changes so sticky wrong cities refresh. */
-const CACHE_KEY = "cv-nav-weather-v4";
+/** Weather snapshot — short TTL (hourly refresh like AccuWeather / weather.com). */
+const WEATHER_KEY = "cv-nav-weather-v5";
+/** Saved place from last GPS — long-lived; no re-prompt until user moves far. */
+const LOC_KEY = "cv-nav-weather-loc-v5";
 const SKIP_KEY = "cv-nav-weather-skip-geo";
-const CACHE_MS = 45 * 60 * 1000;
+
+const WEATHER_TTL_MS = 60 * 60 * 1000; // refresh conditions hourly
+const LOC_RECHECK_MS = 6 * 60 * 60 * 1000; // silent GPS recheck at most every 6h
+/** ~8 km — city-scale move; ignore GPS jitter / same-neighbourhood noise */
+const MOVE_KM = 8;
+
+type SavedLoc = {
+  lat: number;
+  lng: number;
+  place: string;
+  /** Last time we actually called getCurrentPosition */
+  checkedAt: number;
+};
 
 type WeatherCache = {
   place: string;
@@ -40,22 +54,56 @@ function shortPlace(name: string) {
   return cleaned.length > 14 ? `${cleaned.slice(0, 13)}…` : cleaned;
 }
 
-function readCache(): WeatherCache | null {
+function haversineKm(aLat: number, aLng: number, bLat: number, bLng: number) {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(bLat - aLat);
+  const dLng = toRad(bLng - aLng);
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
+function readLoc(): SavedLoc | null {
   try {
-    const raw = localStorage.getItem(CACHE_KEY);
+    const raw = localStorage.getItem(LOC_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as WeatherCache;
-    if (!parsed?.place || typeof parsed.temp !== "number") return null;
-    if (Date.now() - parsed.at > CACHE_MS) return null;
+    const parsed = JSON.parse(raw) as SavedLoc;
+    if (typeof parsed?.lat !== "number" || typeof parsed?.lng !== "number") return null;
     return parsed;
   } catch {
     return null;
   }
 }
 
-function writeCache(data: WeatherCache) {
+function writeLoc(loc: SavedLoc) {
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    localStorage.setItem(LOC_KEY, JSON.stringify(loc));
+  } catch {
+    /* ignore quota */
+  }
+}
+
+function readWeather(): WeatherCache | null {
+  try {
+    const raw = localStorage.getItem(WEATHER_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as WeatherCache;
+    if (!parsed?.place || typeof parsed.temp !== "number") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function weatherFresh(w: WeatherCache | null) {
+  return !!w && Date.now() - w.at < WEATHER_TTL_MS;
+}
+
+function writeWeather(data: WeatherCache) {
+  try {
+    localStorage.setItem(WEATHER_KEY, JSON.stringify(data));
   } catch {
     /* ignore quota */
   }
@@ -89,6 +137,48 @@ async function queryGeoPermission(): Promise<PermissionState | "unsupported"> {
   }
 }
 
+function migrateLegacyLoc(): SavedLoc | null {
+  try {
+    const v4 = localStorage.getItem("cv-nav-weather-v4");
+    if (v4) {
+      const parsed = JSON.parse(v4) as {
+        lat?: number;
+        lng?: number;
+        place?: string;
+        temp?: number;
+        code?: number;
+        at?: number;
+      };
+      if (typeof parsed.lat === "number" && typeof parsed.lng === "number") {
+        const loc: SavedLoc = {
+          lat: parsed.lat,
+          lng: parsed.lng,
+          place: parsed.place || "Near you",
+          checkedAt: typeof parsed.at === "number" ? parsed.at : 0,
+        };
+        writeLoc(loc);
+        if (parsed.place && typeof parsed.temp === "number" && typeof parsed.at === "number") {
+          writeWeather({
+            place: loc.place,
+            temp: parsed.temp,
+            code: Number(parsed.code ?? 0),
+            at: parsed.at,
+            lat: loc.lat,
+            lng: loc.lng,
+          });
+        }
+        localStorage.removeItem("cv-nav-weather-v4");
+        return loc;
+      }
+    }
+    localStorage.removeItem("cv-nav-weather-v3");
+    localStorage.removeItem("cv-nav-weather-v4");
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
 export function NavWeatherChip({
   immersive = false,
   className,
@@ -98,32 +188,121 @@ export function NavWeatherChip({
 }) {
   const [data, setData] = React.useState<WeatherCache | null>(null);
   const [loading, setLoading] = React.useState(false);
-  /** Show opt-in chip instead of auto browser prompt. */
   const [needsOptIn, setNeedsOptIn] = React.useState(false);
   const [hidden, setHidden] = React.useState(false);
 
-  const fetchWeatherAt = React.useCallback(async (lat: number, lng: number) => {
-    const res = await fetch(
-      `/api/tools/weather?lat=${encodeURIComponent(String(lat))}&lng=${encodeURIComponent(String(lng))}`
-    );
-    const json = (await res.json()) as {
-      error?: string;
-      place?: { name?: string };
-      current?: { temperature_2m?: number; weather_code?: number };
-    };
-    if (!res.ok || !json.current) throw new Error(json.error || "Failed");
+  const fetchWeatherAt = React.useCallback(
+    async (lat: number, lng: number, placeHint?: string) => {
+      const res = await fetch(
+        `/api/tools/weather?lat=${encodeURIComponent(String(lat))}&lng=${encodeURIComponent(String(lng))}`
+      );
+      const json = (await res.json()) as {
+        error?: string;
+        place?: { name?: string };
+        current?: { temperature_2m?: number; weather_code?: number };
+      };
+      if (!res.ok || !json.current) throw new Error(json.error || "Failed");
 
-    const next: WeatherCache = {
-      place: json.place?.name || "Near you",
-      temp: Math.round(Number(json.current.temperature_2m)),
-      code: Number(json.current.weather_code ?? 0),
-      at: Date.now(),
-      lat,
-      lng,
-    };
-    writeCache(next);
-    setData(next);
-  }, []);
+      const place = json.place?.name || placeHint || "Near you";
+      const next: WeatherCache = {
+        place,
+        temp: Math.round(Number(json.current.temperature_2m)),
+        code: Number(json.current.weather_code ?? 0),
+        at: Date.now(),
+        lat,
+        lng,
+      };
+      writeWeather(next);
+      writeLoc({
+        lat,
+        lng,
+        place,
+        checkedAt: Date.now(),
+      });
+      setData(next);
+      return next;
+    },
+    []
+  );
+
+  /** Weather-only refresh from saved coords — never touches GPS / permission. */
+  const refreshWeatherFromSaved = React.useCallback(
+    async (loc: SavedLoc) => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `/api/tools/weather?lat=${encodeURIComponent(String(loc.lat))}&lng=${encodeURIComponent(String(loc.lng))}`
+        );
+        const json = (await res.json()) as {
+          error?: string;
+          place?: { name?: string };
+          current?: { temperature_2m?: number; weather_code?: number };
+        };
+        if (!res.ok || !json.current) throw new Error(json.error || "Failed");
+
+        const next: WeatherCache = {
+          place: json.place?.name || loc.place || "Near you",
+          temp: Math.round(Number(json.current.temperature_2m)),
+          code: Number(json.current.weather_code ?? 0),
+          at: Date.now(),
+          lat: loc.lat,
+          lng: loc.lng,
+        };
+        writeWeather(next);
+        // Keep checkedAt — this is not a GPS recheck
+        writeLoc({ ...loc, place: next.place });
+        setData(next);
+      } catch {
+        /* keep last good chip */
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  /**
+   * Silent GPS — only when browser already granted permission.
+   * Updates saved place only if user moved ~8km+; otherwise just weather.
+   * Does NOT call getCurrentPosition when state is "prompt" (no dialog spam).
+   */
+  const silentRecheckIfMoved = React.useCallback(
+    (loc: SavedLoc) => {
+      if (!navigator.geolocation) return;
+      if (Date.now() - (loc.checkedAt || 0) < LOC_RECHECK_MS) return;
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const moved = haversineKm(loc.lat, loc.lng, lat, lng) >= MOVE_KM;
+          try {
+            if (moved) {
+              await fetchWeatherAt(lat, lng);
+            } else {
+              writeLoc({ ...loc, checkedAt: Date.now() });
+              if (!weatherFresh(readWeather())) {
+                await refreshWeatherFromSaved({ ...loc, checkedAt: Date.now() });
+              }
+            }
+          } catch {
+            /* keep chip */
+          }
+        },
+        () => {
+          // Permission revoked mid-session — stop auto GPS; keep weather from saved coords
+          writeSkipGeo();
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 8000,
+          // Prefer a recent fix when we do recheck; weather path uses saved coords
+          maximumAge: 5 * 60 * 1000,
+        }
+      );
+    },
+    [fetchWeatherAt, refreshWeatherFromSaved]
+  );
 
   const requestLocation = React.useCallback(
     (fromUserGesture: boolean) => {
@@ -147,28 +326,34 @@ export function NavWeatherChip({
           }
         },
         () => {
-          // Denied or dismissed — never auto-prompt again this browser.
           writeSkipGeo();
           setNeedsOptIn(false);
           setHidden(true);
           setLoading(false);
         },
-        { enableHighAccuracy: false, timeout: 10000, maximumAge: CACHE_MS }
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: WEATHER_TTL_MS }
       );
     },
     [fetchWeatherAt]
   );
 
   React.useEffect(() => {
-    try {
-      localStorage.removeItem("cv-nav-weather-v3");
-    } catch {
-      /* ignore */
-    }
+    const loc = readLoc() || migrateLegacyLoc();
+    const cached = readWeather();
 
-    const cached = readCache();
-    if (cached) {
-      setData(cached);
+    // Show last known weather immediately (even if stale) — AccuWeather-style
+    if (cached) setData(cached);
+
+    if (loc) {
+      setNeedsOptIn(false);
+      if (!weatherFresh(cached)) {
+        void refreshWeatherFromSaved(loc);
+      }
+      // Optional silent move-check only if already granted (no prompt)
+      void (async () => {
+        const permission = await queryGeoPermission();
+        if (permission === "granted") silentRecheckIfMoved(loc);
+      })();
       return;
     }
 
@@ -188,28 +373,26 @@ export function NavWeatherChip({
       const permission = await queryGeoPermission();
       if (cancelled) return;
 
-      // Already allowed earlier — refresh silently (no new prompt).
       if (permission === "granted") {
+        // First visit after grant but no saved loc yet — silent fix, no dialog
         requestLocation(false);
         return;
       }
 
-      // Denied in browser settings — stay quiet.
       if (permission === "denied") {
         writeSkipGeo();
         setHidden(true);
         return;
       }
 
-      // "prompt" or unsupported: do NOT auto-call getCurrentPosition
-      // (that re-opens the permission dialog on every page load).
+      // "prompt" / unsupported: wait for tap — never auto-prompt
       setNeedsOptIn(true);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [requestLocation]);
+  }, [refreshWeatherFromSaved, requestLocation, silentRecheckIfMoved]);
 
   if (hidden && !data) return null;
 
