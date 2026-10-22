@@ -954,6 +954,12 @@
       "namedRegex": "^/admin/settings(?:/)?$"
     },
     {
+      "page": "/admin/telegram-share",
+      "regex": "^/admin/telegram\\-share(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/telegram\\-share(?:/)?$"
+    },
+    {
       "page": "/admin/users",
       "regex": "^/admin/users(?:/)?$",
       "routeKeys": {},
