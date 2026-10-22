@@ -95,6 +95,24 @@ export function guideSectionJsonLd(section: GuideSection) {
   ];
 }
 
+/** Actual editorial word count for schema — avoids inflated readingMinutes × 180. */
+export function estimateGuideWordCount(article: GuideArticle): number {
+  const parts = [
+    article.title,
+    article.description,
+    ...article.blocks.flatMap((b) => [
+      b.heading,
+      ...b.paragraphs,
+      ...(b.bullets ?? []),
+      ...(b.table
+        ? [b.table.caption ?? "", ...b.table.headers, ...b.table.rows.flat()]
+        : []),
+    ]),
+    ...(article.faqs ?? []).flatMap((f) => [f.q, f.a]),
+  ];
+  return Math.max(300, parts.join(" ").split(/\s+/).filter(Boolean).length);
+}
+
 export function guideArticleJsonLd(article: GuideArticle, section: GuideSection) {
   const url = `${SITE.url}${guideArticlePath(article)}`;
   const articleLd = {
@@ -113,7 +131,7 @@ export function guideArticleJsonLd(article: GuideArticle, section: GuideSection)
     articleSection: section.shortTitle,
     inLanguage: "en-IN",
     keywords: article.keywords.join(", "),
-    wordCount: Math.max(400, article.readingMinutes * 180),
+    wordCount: estimateGuideWordCount(article),
     mainEntityOfPage: url,
     isPartOf: {
       "@type": "WebPage",
