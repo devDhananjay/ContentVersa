@@ -15,6 +15,7 @@ import { buildMetadata } from "@/lib/seo";
 import { BrandingHead } from "@/components/site/branding-head";
 import { AdSenseSiteScript } from "@/components/ads/adsense-site-script";
 import { PageLevelAds } from "@/components/ads/page-level-ads";
+import { VignetteJsLeakGuard } from "@/components/ads/vignette-js-leak-guard";
 import { GoogleAdsTag } from "@/components/ads/google-ads-tag";
 
 /** Body / UI — Fontshare Satoshi (self-hosted). */
@@ -68,7 +69,7 @@ export default function RootLayout({
         <BrandingHead />
         <GoogleAdsTag />
         <AdSenseSiteScript />
-        {/* Page-level ads (vignette + regular bottom Anchor); tools/utility call DisableAutoAds */}
+        {/* Bottom Anchor only — vignette off (iOS raw-JS leak). Utilities: DisableAutoAds */}
         <PageLevelAds />
       </head>
       <body
@@ -82,6 +83,7 @@ export default function RootLayout({
         >
           <SessionProvider>
           <BookmarkStatusProvider>
+          <VignetteJsLeakGuard />
           <SkipToMainLink />
           {/*
             Content-sized shell only — no min-h-0 / overflow-x-hidden / flex height trap.
