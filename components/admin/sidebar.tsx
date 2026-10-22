@@ -17,6 +17,7 @@ import {
   Sparkles,
   Share2,
   LineChart,
+  Send,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CreatorDashboardLink } from "@/components/admin/creator-dashboard-link";
@@ -60,6 +61,7 @@ export function AdminSidebar({
     { href: "/admin/ai-articles", label: "AI articles", icon: Sparkles },
     { href: "/admin/seo", label: "SEO pipeline", icon: LineChart },
     { href: "/admin/meta-publishing", label: "Meta publishing", icon: Share2 },
+    { href: "/admin/telegram-share", label: "Telegram share", icon: Send },
     { href: "/admin/users", label: "All users", icon: Users2 },
     { href: "/admin/categories", label: "Categories", icon: FolderTree },
     { href: "/admin/revenue", label: "Revenue", icon: Megaphone },
