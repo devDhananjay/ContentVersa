@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { Copy, Check, ExternalLink, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -164,7 +163,14 @@ export function TelegramSharePanel({ news }: { news: TrendingNewsItem[] }) {
     <div className="space-y-6">
       <p className="text-sm text-muted-foreground max-w-2xl">
         Button pe tap → clipboard → Telegram groups mein paste. Har tip mein related
-        interlinks bhi hain. Bot ki zarurat nahi.
+        interlinks bhi hain.
+      </p>
+      <p className="text-xs text-muted-foreground max-w-2xl rounded-xl border border-sky-500/25 bg-sky-500/5 px-3 py-2">
+        Auto (5–6×/day, 2–3h gap): BotFather token + group chat IDs → server{" "}
+        <code className="text-[10px]">TELEGRAM_BOT_TOKEN</code> /{" "}
+        <code className="text-[10px]">TELEGRAM_CHAT_IDS</code> — details{" "}
+        <code className="text-[10px]">ops/telegram-bot-setup.md</code>. Max 8 chats,
+        mass blast nahi.
       </p>
 
       <div className="flex flex-wrap gap-2">
