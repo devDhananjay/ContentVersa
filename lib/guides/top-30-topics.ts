@@ -56,7 +56,7 @@ export const TOP_30_TOPIC_ARTICLES: GuideArticle[] = [
     readingMinutes: 11,
     clusterId: "sip-investing",
     relatedHref: "/tools/fd-calculator",
-    relatedLabel: "Open FD calculator",
+    relatedLabel: "FD calculator → also try SIP / PPF",
     blocks: [
       block("FD and RD in one sentence", [
         "A Fixed Deposit (FD) is a lump sum parked for a chosen tenure at a published rate. A Recurring Deposit (RD) is a monthly contribution that compounds over the same style of bank tenure. They are savings products, not market-linked funds — still subject to bank credit risk and premature-penalty rules.",
@@ -101,7 +101,7 @@ export const TOP_30_TOPIC_ARTICLES: GuideArticle[] = [
     readingMinutes: 12,
     clusterId: "sip-investing",
     relatedHref: "/tools/ppf-calculator",
-    relatedLabel: "Open PPF calculator",
+    relatedLabel: "PPF calculator → also try SIP / FD",
     blocks: [
       block("What PPF is for", [
         "The Public Provident Fund is a long-horizon government-backed savings scheme with contribution caps and a multi-year lock-in. Indians use it for retirement buffers and (under the old tax regime) eligible 80C-style claims — confirm current tax treatment on official Income Tax / Post Office pages.",
@@ -532,26 +532,41 @@ export const TOP_30_TOPIC_ARTICLES: GuideArticle[] = [
       "personal loan emi",
       "gold loan interest",
       "should i take gold loan",
+      "loan vs gold loan india",
     ],
-    readingMinutes: 10,
+    readingMinutes: 12,
     clusterId: "emi-loans",
     relatedHref: "/tools/emi-calculator",
     relatedLabel: "Compare EMIs",
     blocks: [
       block("Collateral vs clean loan", [
-        "A gold loan is secured against jewellery; LTV (loan-to-value) caps how much you get versus gold value. A personal loan is typically unsecured and priced for your income and bureau score. Neither is “free money”.",
+        "A gold loan is secured against jewellery or coins; the lender caps how much you get with an LTV (loan-to-value) percentage of the appraised gold value. A personal loan is typically unsecured — priced on income, existing EMIs, and bureau score. Neither is “free money”, and both can damage cashflow if the EMI is optimistic.",
+        "Families sometimes prefer gold loans for speed and lower headline rates; personal loans keep jewellery at home but usually cost more per rupee borrowed. The right pick is the one you can repay without selling future savings.",
       ]),
-      block("Cost stack to compare", [
-        "Interest, processing fee, valuation charges, penal interest, and foreclosure rules. Gold loans can look cheaper until auction/repossession clauses after missed payments. Personal loans can be costlier but do not put family jewellery at risk.",
+      block("Cost stack to compare (not just the interest rate)", [
+        "Line up interest, processing fee, valuation / appraiser charges, penal interest, foreclosure or part-prepayment rules, and insurance if bundled. Gold loans can look cheaper until you price auction / repossession clauses after missed payments. Personal loans can be costlier but do not put family jewellery at risk.",
+      ], [
+        "Ask for the Key Fact Statement (KFS) / MITC in writing",
+        "Same principal and tenure when you compare two products",
+        "Check whether interest is monthly reducing or another convention",
+      ]),
+      block("When a gold loan often fits", [
+        "Short-tenure needs (a few months to a couple of years), strong documentation friction on personal loans, or when you already own hallmark gold and understand LTV haircuts. Prefer HUID / hallmark jewellery and keep the pledge receipt safe. See our HUID guide before pledging anything doubtful.",
+      ]),
+      block("When a personal loan often fits", [
+        "You need funds without pledging jewellery, your bureau score and income support a competitive rate, and the EMI fits under a comfortable share of take-home after rent and existing loans. Stress-test a rate hike if the product is floating.",
       ]),
       block("Use the EMI calculator twice", [
-        "Same tenure, two principals/rates. Then read the lender’s KFS / MITC. This is not a loan marketplace.",
+        "Enter the same tenure for both quotes and note EMI plus total interest. Then read the lender’s KFS — calculators cannot price auction timelines or foreclosure fees. This is not a loan marketplace and not a credit offer.",
       ]),
     ],
     faqs: [
-      faq("Will they sell my gold immediately?", "After notice periods in the agreement. Read the contract."),
-      faq("Can I part-release gold?", "Product-specific."),
-      faq("Is this an offer?", "No."),
+      faq(
+        "Will they sell my gold immediately if I miss one EMI?",
+        "Contracts set notice and auction processes. Read the agreement; do not rely on branch verbal assurances."
+      ),
+      faq("Can I part-release gold?", "Product-specific — ask before you pledge."),
+      faq("Is this an offer?", "No. Compare only on regulated lender sites."),
     ],
   }),
   topic({

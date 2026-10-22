@@ -8,6 +8,9 @@ import {
   type GuideSection,
 } from "@/lib/guides/registry";
 import { TOP_30_GUIDE_PATHS } from "@/lib/guides/top-30-topics";
+import { EVERGREEN_PACK_PATHS } from "@/lib/guides/evergreen-pack-oct2026";
+
+const FEATURED_GUIDE_PATHS = [...TOP_30_GUIDE_PATHS, ...EVERGREEN_PACK_PATHS];
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -87,15 +90,16 @@ export function TopThirtyGuidesGrid() {
     <section className="space-y-4">
       <div className="space-y-1">
         <h2 className="font-display text-xl font-bold tracking-tight">
-          30 high-intent India topics
+          High-intent India topics
         </h2>
         <p className="text-sm text-muted-foreground max-w-2xl">
           Pillar pages built for how people search — FASTag, EMI, SIP, tax, scams,
-          schemes, and more. Each has FAQ schema and links to tools.
+          schemes, ITR, term cover, PF withdrawal, and more. Each has FAQ schema
+          and links to tools.
         </p>
       </div>
       <ol className="grid gap-2 sm:grid-cols-2">
-        {TOP_30_GUIDE_PATHS.map((item, i) => (
+        {FEATURED_GUIDE_PATHS.map((item, i) => (
           <li key={item.href}>
             <Link
               href={item.href}

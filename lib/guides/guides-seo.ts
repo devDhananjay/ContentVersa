@@ -8,6 +8,9 @@ import {
   type GuideSection,
 } from "./registry";
 import { TOP_30_GUIDE_PATHS } from "./top-30-topics";
+import { EVERGREEN_PACK_PATHS } from "./evergreen-pack-oct2026";
+
+const HUB_FEATURED_GUIDE_PATHS = [...TOP_30_GUIDE_PATHS, ...EVERGREEN_PACK_PATHS];
 
 export function guidesHubUrl() {
   return `${SITE.url}${GUIDES_HUB_PATH}`;
@@ -35,10 +38,10 @@ export function top30GuidesItemListJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "ContentVerse India — 30 high-intent guides",
+    name: "ContentVerse India — high-intent India guides",
     itemListOrder: "https://schema.org/ItemListOrderAscending",
-    numberOfItems: TOP_30_GUIDE_PATHS.length,
-    itemListElement: TOP_30_GUIDE_PATHS.map((item, i) => ({
+    numberOfItems: HUB_FEATURED_GUIDE_PATHS.length,
+    itemListElement: HUB_FEATURED_GUIDE_PATHS.map((item, i) => ({
       "@type": "ListItem",
       position: i + 1,
       name: item.label,

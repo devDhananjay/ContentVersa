@@ -1,5 +1,6 @@
 import { PILLAR_GUIDE_ARTICLES } from "./pillar-articles";
 import { TOP_30_TOPIC_ARTICLES } from "./top-30-topics";
+import { EVERGREEN_PACK_OCT_2026 } from "./evergreen-pack-oct2026";
 
 export const GUIDES_HUB_PATH = "/guides";
 
@@ -176,6 +177,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
 export const GUIDE_ARTICLES: GuideArticle[] = [
   ...PILLAR_GUIDE_ARTICLES,
   ...TOP_30_TOPIC_ARTICLES,
+  ...EVERGREEN_PACK_OCT_2026,
   {
     slug: "why-topics-trend-in-india",
     section: "trending",

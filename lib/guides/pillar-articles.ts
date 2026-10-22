@@ -218,7 +218,7 @@ export const PILLAR_GUIDE_ARTICLES: GuideArticle[] = [
     readingMinutes: 14,
     updatedLabel: "Sept 2026",
     relatedHref: "/tools/sip-calculator",
-    relatedLabel: "Open SIP calculator",
+    relatedLabel: "Open SIP calculator → then FD / PPF",
     clusterId: "sip-investing",
     faqs: [
       {
@@ -282,6 +282,18 @@ export const PILLAR_GUIDE_ARTICLES: GuideArticle[] = [
         heading: "Common mistakes to avoid",
         paragraphs: [
           "Pausing SIPs after one bad month, investing money you need within two years, and ignoring expense ratios / direct vs regular plans are more damaging than picking the “wrong” popular large-cap. Do not treat a calculator maturity number as guaranteed corpus for a home down-payment next year.",
+        ],
+      },
+      {
+        heading: "Next: SIP calculator → FD → PPF (same session)",
+        paragraphs: [
+          "Open the SIP calculator with your monthly surplus. Then run the same rupee amount on the FD calculator (lump sum you already have) and the PPF calculator (yearly 80C-style lock-in under rules that apply to you). Read our FD vs RD and PPF account guides if you are choosing a parking spot for money you cannot risk in markets.",
+          "A practical stack many salaried households use for planning conversations: emergency buffer → term cover if dependants rely on you → SIP for long goals → PPF/FD for known-date needs. Educational only — not a product recommendation.",
+        ],
+        bullets: [
+          "SIP calculator — project monthly investing",
+          "FD calculator — lock a lump sum you already have",
+          "PPF calculator — long lock-in, notified rate assumptions",
         ],
       },
     ],

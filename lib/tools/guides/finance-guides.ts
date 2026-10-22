@@ -148,9 +148,14 @@ export const FINANCE_GUIDES: Partial<Record<string, ToolGuide>> = {
       },
     ],
     relatedLinks: [
-      { href: "/tools/emi-calculator", label: "EMI calculator" },
-      { href: "/tools/ppf-calculator", label: "PPF calculator" },
+      {
+        href: "/guides/money/sip-calculator-india-beginners-guide",
+        label: "SIP beginners guide",
+      },
       { href: "/tools/fd-calculator", label: "FD calculator" },
+      { href: "/guides/money/fd-vs-rd-india-guide", label: "FD vs RD guide" },
+      { href: "/tools/ppf-calculator", label: "PPF calculator" },
+      { href: "/guides/money/ppf-account-india-guide", label: "PPF account guide" },
       { href: "/tools/rd-calculator", label: "RD calculator" },
       { href: "/tools", label: "All India Tools" },
     ],
@@ -236,10 +241,15 @@ export const FINANCE_GUIDES: Partial<Record<string, ToolGuide>> = {
       },
     ],
     relatedLinks: [
-      { href: "/tools/rd-calculator", label: "RD calculator" },
-      { href: "/tools/ppf-calculator", label: "PPF calculator" },
+      { href: "/guides/money/fd-vs-rd-india-guide", label: "FD vs RD guide" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
-      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
+      {
+        href: "/guides/money/sip-calculator-india-beginners-guide",
+        label: "SIP beginners guide",
+      },
+      { href: "/tools/ppf-calculator", label: "PPF calculator" },
+      { href: "/guides/money/ppf-account-india-guide", label: "PPF account guide" },
+      { href: "/tools/rd-calculator", label: "RD calculator" },
       { href: "/tools", label: "All India Tools" },
     ],
     faqs: [
@@ -399,8 +409,14 @@ export const FINANCE_GUIDES: Partial<Record<string, ToolGuide>> = {
       },
     ],
     relatedLinks: [
+      { href: "/guides/money/ppf-account-india-guide", label: "PPF account guide" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
+      {
+        href: "/guides/money/sip-calculator-india-beginners-guide",
+        label: "SIP beginners guide",
+      },
       { href: "/tools/fd-calculator", label: "FD calculator" },
+      { href: "/guides/money/fd-vs-rd-india-guide", label: "FD vs RD guide" },
       { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
       { href: "/tools", label: "All India Tools" },
     ],

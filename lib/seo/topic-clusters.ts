@@ -79,11 +79,13 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     toolSlugs: ["sip-calculator", "ppf-calculator", "fd-calculator"],
     links: [
       { href: "/guides/money/sip-calculator-india-beginners-guide", label: "SIP guide" },
-      { href: "/guides/money/ppf-account-india-guide", label: "PPF account rules" },
-      { href: "/guides/money/fd-vs-rd-india-guide", label: "FD vs RD" },
-      { href: "/guides/money/when-to-stop-sip-mutual-fund", label: "When to pause a SIP" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
+      { href: "/guides/money/fd-vs-rd-india-guide", label: "FD vs RD" },
+      { href: "/tools/fd-calculator", label: "FD calculator" },
+      { href: "/guides/money/ppf-account-india-guide", label: "PPF account rules" },
       { href: "/tools/ppf-calculator", label: "PPF calculator" },
+      { href: "/guides/money/when-to-stop-sip-mutual-fund", label: "When to pause a SIP" },
+      { href: "/guides/money/epf-pf-withdrawal-rules-india", label: "EPF / PF withdrawal" },
     ],
   },
   {
@@ -116,6 +118,14 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
     toolSlugs: ["salary-tax-calculator", "gst-calculator", "sip-calculator"],
     links: [
       { href: "/guides/money/salary-tax-calculator-india-guide", label: "Salary tax guide" },
+      {
+        href: "/guides/money/itr-filing-checklist-salaried-india",
+        label: "ITR filing checklist",
+      },
+      {
+        href: "/guides/money/term-insurance-beginners-india",
+        label: "Term insurance beginners",
+      },
       {
         href: "/guides/money/hra-exemption-documents-india",
         label: "HRA exemption documents",
@@ -323,6 +333,28 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       { href: "/tools/nearby-atms", label: "Nearby ATMs" },
       { href: "/tools/geo-location", label: "My location" },
       { href: "/tools", label: "All India Tools" },
+    ],
+  },
+  {
+    id: "jobs",
+    title: "Govt jobs & salary basics",
+    description:
+      "Read notifications carefully, understand payslips, and use official portals — never pay for a “guaranteed selection”.",
+    pillarHref: "/jobs/govt",
+    pillarLabel: "Govt jobs hub",
+    links: [
+      { href: "/jobs/govt", label: "Govt jobs hub" },
+      {
+        href: "/guides/jobs/ssc-salary-slip-how-to-read-india",
+        label: "How to read an SSC salary slip",
+      },
+      { href: "/guides/jobs", label: "Job guides" },
+      { href: "/results", label: "Exam results directory" },
+      {
+        href: "/guides/money/salary-tax-calculator-india-guide",
+        label: "Salary tax guide",
+      },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
     ],
   },
 ];
