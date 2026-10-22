@@ -29,6 +29,8 @@ import {
   FileArchive,
   Images,
   ReceiptIndianRupee,
+  Shield,
+  Landmark,
   type LucideIcon,
 } from "lucide-react";
 import type { ToolSlug } from "@/lib/tools/registry";
@@ -71,6 +73,9 @@ const ICONS: Record<ToolSlug, LucideIcon> = {
   "compress-pdf": FileArchive,
   "images-to-pdf": Images,
   "salary-tax-calculator": ReceiptIndianRupee,
+  "term-cover-calculator": Shield,
+  "take-home-calculator": Wallet,
+  "epf-calculator": Landmark,
 };
 
 export function ToolIcon({ slug, className }: { slug: ToolSlug; className?: string }) {

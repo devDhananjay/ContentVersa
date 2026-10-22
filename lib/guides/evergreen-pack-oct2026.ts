@@ -53,8 +53,8 @@ export const EVERGREEN_PACK_OCT_2026: GuideArticle[] = [
     ],
     readingMinutes: 12,
     clusterId: "salary-tax",
-    relatedHref: "/tools/salary-tax-calculator",
-    relatedLabel: "Salary tax calculator",
+    relatedHref: "/tools/term-cover-calculator",
+    relatedLabel: "Open term cover calculator",
     blocks: [
       block("What term insurance actually is", [
         "Term insurance pays a lump sum to your nominees if you die during the policy term. There is usually no maturity “return of premium” story unless you buy a costly variant. You are buying income replacement for dependants — not a savings product.",
@@ -112,7 +112,7 @@ export const EVERGREEN_PACK_OCT_2026: GuideArticle[] = [
     readingMinutes: 11,
     clusterId: "salary-tax",
     relatedHref: "/tools/salary-tax-calculator",
-    relatedLabel: "Estimate tax first",
+    relatedLabel: "Salary tax → then take-home / term tools",
     blocks: [
       block("Before you open the portal", [
         "Collect Form 16 from your employer, Form 16A if you had TDS on interest or other income, bank interest certificates, rent receipts / landlord PAN if claiming HRA under the old regime, and investment proofs you already declared.",
@@ -172,8 +172,8 @@ export const EVERGREEN_PACK_OCT_2026: GuideArticle[] = [
     ],
     readingMinutes: 10,
     clusterId: "jobs",
-    relatedHref: "/jobs/govt",
-    relatedLabel: "Govt jobs hub",
+    relatedHref: "/tools/take-home-calculator",
+    relatedLabel: "Open take-home calculator",
     blocks: [
       block("Gross is not what hits your account", [
         "A typical central / SSC-cadre slip shows earnings (basic pay, dearness allowance, HRA, transport, and other allowances) and deductions (PF/NPS, income tax, CGEGIS, professional tax where applicable). Net pay = earnings − deductions for that month.",
@@ -228,8 +228,8 @@ export const EVERGREEN_PACK_OCT_2026: GuideArticle[] = [
     ],
     readingMinutes: 12,
     clusterId: "sip-investing",
-    relatedHref: "/guides/money/epf-vs-nps-india-salaried-guide",
-    relatedLabel: "EPF vs NPS guide",
+    relatedHref: "/tools/epf-calculator",
+    relatedLabel: "Open EPF calculator",
     blocks: [
       block("Partial withdrawal vs final settlement", [
         "Partial withdrawals (advance) are allowed for notified purposes — medical, education, marriage, housing, etc. — with service and amount caps that EPFO updates over time. Final settlement is usually tied to leaving employment and waiting periods / conditions in force.",

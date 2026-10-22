@@ -31,6 +31,9 @@ import { SplitPdfTool } from "./split-pdf-tool";
 import { CompressPdfTool } from "./compress-pdf-tool";
 import { ImagesToPdfTool } from "./images-to-pdf-tool";
 import { SalaryTaxCalculatorTool } from "./salary-tax-calculator-tool";
+import { TermCoverCalculatorTool } from "./term-cover-calculator-tool";
+import { TakeHomeCalculatorTool } from "./take-home-calculator-tool";
+import { EpfCalculatorTool } from "./epf-calculator-tool";
 
 const TOOL_COMPONENTS: Record<ToolSlug, React.ComponentType> = {
   "ifsc-finder": IfscFinderTool,
@@ -70,6 +73,9 @@ const TOOL_COMPONENTS: Record<ToolSlug, React.ComponentType> = {
   "compress-pdf": CompressPdfTool,
   "images-to-pdf": ImagesToPdfTool,
   "salary-tax-calculator": SalaryTaxCalculatorTool,
+  "term-cover-calculator": TermCoverCalculatorTool,
+  "take-home-calculator": TakeHomeCalculatorTool,
+  "epf-calculator": EpfCalculatorTool,
 };
 
 export function ToolRenderer({ slug }: { slug: ToolSlug }) {

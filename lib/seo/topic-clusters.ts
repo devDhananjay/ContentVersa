@@ -76,7 +76,7 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       "Project SIP growth, understand market risk, and pair investing with tax basics.",
     pillarHref: "/guides/money/sip-calculator-india-beginners-guide",
     pillarLabel: "SIP guide (pillar)",
-    toolSlugs: ["sip-calculator", "ppf-calculator", "fd-calculator"],
+    toolSlugs: ["sip-calculator", "ppf-calculator", "fd-calculator", "epf-calculator"],
     links: [
       { href: "/guides/money/sip-calculator-india-beginners-guide", label: "SIP guide" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
@@ -84,8 +84,9 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       { href: "/tools/fd-calculator", label: "FD calculator" },
       { href: "/guides/money/ppf-account-india-guide", label: "PPF account rules" },
       { href: "/tools/ppf-calculator", label: "PPF calculator" },
-      { href: "/guides/money/when-to-stop-sip-mutual-fund", label: "When to pause a SIP" },
+      { href: "/tools/epf-calculator", label: "EPF calculator" },
       { href: "/guides/money/epf-pf-withdrawal-rules-india", label: "EPF / PF withdrawal" },
+      { href: "/guides/money/when-to-stop-sip-mutual-fund", label: "When to pause a SIP" },
     ],
   },
   {
@@ -115,17 +116,26 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       "Compare old vs new tax regimes for planning — always verify on the official portal before filing.",
     pillarHref: "/guides/money/salary-tax-calculator-india-guide",
     pillarLabel: "Salary tax guide (pillar)",
-    toolSlugs: ["salary-tax-calculator", "gst-calculator", "sip-calculator"],
+    toolSlugs: [
+      "salary-tax-calculator",
+      "take-home-calculator",
+      "term-cover-calculator",
+      "gst-calculator",
+      "sip-calculator",
+    ],
     links: [
       { href: "/guides/money/salary-tax-calculator-india-guide", label: "Salary tax guide" },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
       {
         href: "/guides/money/itr-filing-checklist-salaried-india",
         label: "ITR filing checklist",
       },
+      { href: "/tools/take-home-calculator", label: "Take-home calculator" },
       {
         href: "/guides/money/term-insurance-beginners-india",
         label: "Term insurance beginners",
       },
+      { href: "/tools/term-cover-calculator", label: "Term cover calculator" },
       {
         href: "/guides/money/hra-exemption-documents-india",
         label: "HRA exemption documents",
@@ -134,7 +144,6 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
         href: "/guides/money/section-80c-elss-ppf-lic-india",
         label: "Section 80C options",
       },
-      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
       { href: "/tools/gst-calculator", label: "GST calculator" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
     ],
@@ -342,19 +351,21 @@ export const TOPIC_CLUSTERS: TopicCluster[] = [
       "Read notifications carefully, understand payslips, and use official portals — never pay for a “guaranteed selection”.",
     pillarHref: "/jobs/govt",
     pillarLabel: "Govt jobs hub",
+    toolSlugs: ["take-home-calculator", "salary-tax-calculator", "age-calculator"],
     links: [
       { href: "/jobs/govt", label: "Govt jobs hub" },
       {
         href: "/guides/jobs/ssc-salary-slip-how-to-read-india",
         label: "How to read an SSC salary slip",
       },
+      { href: "/tools/take-home-calculator", label: "Take-home calculator" },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
       { href: "/guides/jobs", label: "Job guides" },
       { href: "/results", label: "Exam results directory" },
       {
         href: "/guides/money/salary-tax-calculator-india-guide",
         label: "Salary tax guide",
       },
-      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
     ],
   },
 ];

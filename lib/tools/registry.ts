@@ -37,7 +37,10 @@ export type ToolSlug =
   | "split-pdf"
   | "compress-pdf"
   | "images-to-pdf"
-  | "salary-tax-calculator";
+  | "salary-tax-calculator"
+  | "term-cover-calculator"
+  | "take-home-calculator"
+  | "epf-calculator";
 
 export type ToolDef = {
   slug: ToolSlug;
@@ -327,6 +330,48 @@ export const TOOL_REGISTRY: ToolDef[] = [
     badge: "Finance",
   },
   {
+    slug: "term-cover-calculator",
+    title: "Term Insurance Cover Calculator India — How Much Cover?",
+    shortTitle: "Term Cover Calculator",
+    description:
+      "Estimate term life cover from annual take-home, years of support, loans, and existing policies. Educational illustration — not a policy quote.",
+    keywords: [
+      "term insurance calculator india",
+      "how much term cover",
+      "life cover calculator",
+      "term plan cover estimator",
+    ],
+    badge: "Finance",
+  },
+  {
+    slug: "take-home-calculator",
+    title: "Take-Home Salary Calculator — Basic, DA, HRA India",
+    shortTitle: "Take-Home Calculator",
+    description:
+      "Estimate in-hand pay from basic, DA %, HRA %, allowances, PF/NPS, and TDS — useful for reading SSC / central govt style slips.",
+    keywords: [
+      "take home salary calculator",
+      "in hand salary basic da hra",
+      "ssc salary calculator",
+      "govt payslip calculator india",
+    ],
+    badge: "Finance",
+  },
+  {
+    slug: "epf-calculator",
+    title: "EPF Calculator India — Project Provident Fund Balance",
+    shortTitle: "EPF Calculator",
+    description:
+      "Project EPF corpus from current balance, employee/employer monthly contributions, and an assumed rate. Illustrative — not EPFO passbook.",
+    keywords: [
+      "epf calculator india",
+      "pf balance calculator",
+      "provident fund calculator",
+      "epf maturity estimator",
+    ],
+    badge: "Finance",
+  },
+  {
     slug: "fuel-price",
     title: "Petrol & Diesel Price by City India",
     shortTitle: "Fuel Price",
@@ -442,6 +487,9 @@ export const HOME_FEATURED_TOOL_SLUGS: ToolSlug[] = [
   "salary-tax-calculator",
   "emi-calculator",
   "sip-calculator",
+  "term-cover-calculator",
+  "epf-calculator",
+  "take-home-calculator",
   "ifsc-finder",
   "merge-pdf",
   "fuel-price",

@@ -60,10 +60,15 @@ export const FINANCE_GUIDES: Partial<Record<string, ToolGuide>> = {
       },
     ],
     relatedLinks: [
+      {
+        href: "/guides/money/gold-loan-vs-personal-loan-india",
+        label: "Gold loan vs personal loan",
+      },
+      { href: "/tools/take-home-calculator", label: "Take-home calculator" },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
       { href: "/tools/fd-calculator", label: "FD calculator" },
-      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
-      { href: "/tools/ppf-calculator", label: "PPF calculator" },
+      { href: "/tools/epf-calculator", label: "EPF calculator" },
       { href: "/tools", label: "All India Tools" },
     ],
     faqs: [
@@ -156,6 +161,7 @@ export const FINANCE_GUIDES: Partial<Record<string, ToolGuide>> = {
       { href: "/guides/money/fd-vs-rd-india-guide", label: "FD vs RD guide" },
       { href: "/tools/ppf-calculator", label: "PPF calculator" },
       { href: "/guides/money/ppf-account-india-guide", label: "PPF account guide" },
+      { href: "/tools/epf-calculator", label: "EPF calculator" },
       { href: "/tools/rd-calculator", label: "RD calculator" },
       { href: "/tools", label: "All India Tools" },
     ],
@@ -417,6 +423,7 @@ export const FINANCE_GUIDES: Partial<Record<string, ToolGuide>> = {
       },
       { href: "/tools/fd-calculator", label: "FD calculator" },
       { href: "/guides/money/fd-vs-rd-india-guide", label: "FD vs RD guide" },
+      { href: "/tools/epf-calculator", label: "EPF calculator" },
       { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
       { href: "/tools", label: "All India Tools" },
     ],
@@ -585,9 +592,14 @@ export const FINANCE_GUIDES: Partial<Record<string, ToolGuide>> = {
       },
     ],
     relatedLinks: [
+      {
+        href: "/guides/money/itr-filing-checklist-salaried-india",
+        label: "ITR filing checklist",
+      },
+      { href: "/tools/take-home-calculator", label: "Take-home calculator" },
+      { href: "/tools/term-cover-calculator", label: "Term cover calculator" },
+      { href: "/tools/epf-calculator", label: "EPF calculator" },
       { href: "/tools/ppf-calculator", label: "PPF calculator" },
-      { href: "/tools/gst-calculator", label: "GST calculator" },
-      { href: "/tools/emi-calculator", label: "EMI calculator" },
       { href: "/tools/sip-calculator", label: "SIP calculator" },
       { href: "/tools", label: "All India Tools" },
     ],
@@ -851,5 +863,141 @@ export const FINANCE_GUIDES: Partial<Record<string, ToolGuide>> = {
       },
     ],
     ymylKind: "general",
+  },
+
+  "term-cover-calculator": {
+    intro:
+      "This term cover calculator helps you sketch how much life cover to discuss with an insurer: multiply annual take-home by years of support, add loans, subtract existing cover, then optionally apply a ₹-per-lakh premium quote you already have. It is for planning conversations — not a policy illustration from ContentVerse.",
+    sections: [
+      {
+        heading: "How to use it",
+        paragraphs: [
+          "Enter annual take-home (not CTC), years you want dependants supported, outstanding home/personal loans, and any existing term or group cover. The tool suggests a rounded cover amount. If you paste a premium rate from an insurer quote (₹ per lakh per year), you also see an illustrative annual premium.",
+        ],
+        bullets: [
+          "Use take-home from payslips or our take-home / salary-tax tools",
+          "Do not treat the suggestion as a mandatory formula",
+          "Medicals and disclosures change real premiums",
+        ],
+      },
+      {
+        heading: "What to read next",
+        paragraphs: [
+          "Pair this tool with our term insurance beginners guide, then estimate tax on salary with the salary-tax calculator. Pure term is protection — invest surplus with SIP / PPF / FD tools separately.",
+        ],
+      },
+    ],
+    relatedLinks: [
+      {
+        href: "/guides/money/term-insurance-beginners-india",
+        label: "Term insurance beginners guide",
+      },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
+      { href: "/tools/take-home-calculator", label: "Take-home calculator" },
+      { href: "/tools/sip-calculator", label: "SIP calculator" },
+      {
+        href: "/guides/money/itr-filing-checklist-salaried-india",
+        label: "ITR checklist",
+      },
+      { href: "/tools", label: "All India Tools" },
+    ],
+    faqs: [
+      {
+        q: "Is this an IRDAI-registered quote?",
+        a: "No. Enter a rate from an insurer’s own quote journey if you want a premium sketch.",
+      },
+      {
+        q: "Should cover always be 15× income?",
+        a: "No. Dependants, loans, and assets change the need. The years field is editable for a reason.",
+      },
+    ],
+    ymylKind: "finance",
+  },
+
+  "take-home-calculator": {
+    intro:
+      "Estimate monthly in-hand pay from basic, DA %, HRA %, other allowances, PF/NPS %, and TDS. Useful when reading an SSC or central-government style salary slip before you compare offers or apply for a loan.",
+    sections: [
+      {
+        heading: "How the math works here",
+        paragraphs: [
+          "DA and HRA are treated as percentages of basic. PF/NPS is a percentage of basic + DA (common for many central structures — your cadre may differ). Other allowances and deductions are flat rupees. Net = gross − deductions.",
+        ],
+      },
+      {
+        heading: "Match the official slip",
+        paragraphs: [
+          "City HRA class, transport allowance, and NPS vs GPF rules vary. Use this to understand lines on a slip, then confirm with HR / Form 16. See our SSC salary-slip guide for what each line usually means.",
+        ],
+      },
+    ],
+    relatedLinks: [
+      {
+        href: "/guides/jobs/ssc-salary-slip-how-to-read-india",
+        label: "How to read an SSC salary slip",
+      },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
+      { href: "/tools/term-cover-calculator", label: "Term cover calculator" },
+      { href: "/tools/emi-calculator", label: "EMI calculator" },
+      { href: "/tools/epf-calculator", label: "EPF calculator" },
+      { href: "/jobs/govt", label: "Govt jobs hub" },
+      { href: "/tools", label: "All India Tools" },
+    ],
+    faqs: [
+      {
+        q: "Does this use the Pay Matrix automatically?",
+        a: "No. Enter the basic from your offer or slip. Levels and cells change with Pay Commission orders.",
+      },
+      {
+        q: "Is DA rate fixed?",
+        a: "No. DA is revised periodically. Update the % when a new order is notified.",
+      },
+    ],
+    ymylKind: "finance",
+  },
+
+  "epf-calculator": {
+    intro:
+      "Project a provident-fund style balance from today’s corpus, employee and employer monthly contributions, and an assumed annual rate. Use it to plan — then verify the live passbook and withdrawal rules on the EPFO member portal.",
+    sections: [
+      {
+        heading: "What this projection assumes",
+        paragraphs: [
+          "Contributions are added each month and the balance compounds at a constant monthly rate derived from your assumed annual %. Real EPFO interest is notified and credited on EPFO’s rules, and EPS splits are not modelled here.",
+        ],
+      },
+      {
+        heading: "Withdrawals and related reading",
+        paragraphs: [
+          "Partial and final settlements follow purpose codes and service conditions. Read our EPF withdrawal guide and EPF vs NPS guide before you raise a claim. For long-term investing outside EPF, use SIP and PPF calculators.",
+        ],
+      },
+    ],
+    relatedLinks: [
+      {
+        href: "/guides/money/epf-pf-withdrawal-rules-india",
+        label: "EPF / PF withdrawal guide",
+      },
+      {
+        href: "/guides/money/epf-vs-nps-india-salaried-guide",
+        label: "EPF vs NPS guide",
+      },
+      { href: "/tools/ppf-calculator", label: "PPF calculator" },
+      { href: "/tools/sip-calculator", label: "SIP calculator" },
+      { href: "/tools/salary-tax-calculator", label: "Salary tax calculator" },
+      { href: "/tools/take-home-calculator", label: "Take-home calculator" },
+      { href: "/tools", label: "All India Tools" },
+    ],
+    faqs: [
+      {
+        q: "Can I withdraw online from this tool?",
+        a: "No. Claims are only on the official EPFO member portal after UAN KYC.",
+      },
+      {
+        q: "Why doesn’t this match my passbook?",
+        a: "EPFO uses notified rates, EPS, and credit timing. This is a smooth planning model only.",
+      },
+    ],
+    ymylKind: "finance",
   },
 };
