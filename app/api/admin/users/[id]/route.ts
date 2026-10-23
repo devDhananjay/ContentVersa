@@ -13,13 +13,20 @@ const PatchSchema = z
     password: z.string().min(8, "Password must be at least 8 characters").optional(),
     banned: z.boolean().optional(),
     banReason: z.string().max(300).nullable().optional(),
+    canWriteBlogs: z.boolean().optional(),
+    aiBlogPermission: z.enum(["NONE", "REQUESTED", "GRANTED", "DENIED"]).optional(),
   })
   .refine(
     (data) =>
       data.role !== undefined ||
       data.password !== undefined ||
-      data.banned !== undefined,
-    { message: "Provide role, password, and/or banned status to update" }
+      data.banned !== undefined ||
+      data.canWriteBlogs !== undefined ||
+      data.aiBlogPermission !== undefined,
+    {
+      message:
+        "Provide role, password, banned status, canWriteBlogs, and/or aiBlogPermission to update",
+    }
   );
 
 const ELEVATED = ["ADMIN", "SUPER_ADMIN"] as const;
@@ -55,6 +62,8 @@ export async function PATCH(
       password?: string;
       banned?: boolean;
       banReason?: string | null;
+      canWriteBlogs?: boolean;
+      aiBlogPermission?: "NONE" | "REQUESTED" | "GRANTED" | "DENIED";
     } = {};
 
     if (parsed.role !== undefined) {
@@ -114,6 +123,13 @@ export async function PATCH(
       }
     }
 
+    if (parsed.canWriteBlogs !== undefined) {
+      updateData.canWriteBlogs = parsed.canWriteBlogs;
+    }
+    if (parsed.aiBlogPermission !== undefined) {
+      updateData.aiBlogPermission = parsed.aiBlogPermission;
+    }
+
     const user = await prisma.user.update({
       where: { id },
       data: updateData,
@@ -125,6 +141,8 @@ export async function PATCH(
         role: true,
         banned: true,
         banReason: true,
+        canWriteBlogs: true,
+        aiBlogPermission: true,
       },
     });
 

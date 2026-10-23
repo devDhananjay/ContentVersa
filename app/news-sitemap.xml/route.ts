@@ -6,7 +6,8 @@ export const revalidate = 300;
 /** GET /news-sitemap.xml — Live News briefings for fast Google discovery */
 export async function GET() {
   try {
-    const rows = await getNewsSitemapRows(100);
+    // Google News allows up to 1,000 URLs per news sitemap (last 2 days only).
+    const rows = await getNewsSitemapRows(1000);
     const xml = renderNewsSitemapXml(rows);
     return new Response(xml, {
       status: 200,

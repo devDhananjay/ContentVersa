@@ -23,10 +23,19 @@ export async function GET() {
   const user = isDatabaseConfigured() ? await refreshSessionIfStale(current) : current;
   const userId = isDatabaseConfigured() ? await resolveUserId(user) : null;
 
+  let canWriteBlogs = true;
+  let aiBlogPermission: "NONE" | "REQUESTED" | "GRANTED" | "DENIED" = "NONE";
+  let canUseAiBlog = false;
+
   if (isDatabaseConfigured() && userId) {
     const row = await prisma.user.findUnique({
       where: { id: userId },
-      select: { banned: true },
+      select: {
+        banned: true,
+        role: true,
+        canWriteBlogs: true,
+        aiBlogPermission: true,
+      },
     });
     if (row?.banned) {
       await clearSessionCookie();
@@ -35,6 +44,16 @@ export async function GET() {
         { status: 403, headers: NO_STORE }
       );
     }
+    if (row) {
+      const { computeCanUseAiBlog } = await import("@/lib/auth/blog-permissions");
+      canWriteBlogs = row.canWriteBlogs;
+      aiBlogPermission = row.aiBlogPermission;
+      canUseAiBlog = computeCanUseAiBlog(row.role, row.aiBlogPermission);
+    }
+  } else {
+    const { roleHasDefaultAiBlogAccess } = await import("@/lib/auth/blog-permissions");
+    canUseAiBlog = roleHasDefaultAiBlogAccess(current.role);
+    if (canUseAiBlog) aiBlogPermission = "GRANTED";
   }
 
   let profile: {
@@ -96,6 +115,9 @@ export async function GET() {
         reading,
         payoutEmail: wallet?.payoutEmail ?? null,
         currency: wallet?.currency ?? "INR",
+        canWriteBlogs,
+        aiBlogPermission,
+        canUseAiBlog,
       },
     },
     { headers: NO_STORE }

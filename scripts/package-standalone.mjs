@@ -28,13 +28,24 @@ if (existsSync(staticSrc)) {
   mkdirSync(join(buildDir, ".next"), { recursive: true });
   cpSync(staticSrc, staticDest, { recursive: true });
 
-  const devChunks = readdirSync(staticDest).filter((f) =>
-    /turbopack|hmr-client|next-devtools/i.test(f)
-  );
-  if (devChunks.length > 0) {
+  // `next dev --turbopack` can pollute .next while a prod build runs — refuse
+  // packaging if any nested HMR / next-devtools assets are present.
+  const bad = [];
+  const walk = (dir) => {
+    for (const name of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, name.name);
+      if (name.isDirectory()) walk(p);
+      else if (/hmr-client|next-devtools|browser_dev_hmr/i.test(name.name)) {
+        bad.push(p);
+      }
+    }
+  };
+  walk(staticDest);
+  if (bad.length > 0) {
     console.error(
-      "Refusing to package dev build — found turbopack/HMR chunks in .next/static. " +
-        "Stop `next dev`, run `rm -rf .next build`, then `NODE_ENV=production npm run build:server`."
+      "Refusing to package a polluted build — found HMR/devtools assets:\n  " +
+        bad.slice(0, 8).join("\n  ") +
+        "\nStop `next dev`, run `rm -rf .next build`, then `NODE_ENV=production npm run build:server`."
     );
     process.exit(1);
   }

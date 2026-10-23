@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, BookOpen, Sparkles } from "lucide-react";
+import { ArrowUpRight, BookOpen, Megaphone, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { SiteVoiceSearch } from "@/components/search/site-voice-search";
@@ -123,6 +123,115 @@ export function Hero({ categories }: Props) {
             transition={{ duration: 0.65, ease: easeOut }}
             className="mx-auto flex w-full min-w-0 max-w-[36rem] flex-1 flex-col items-center px-3 text-center sm:px-6"
           >
+            {/* Advertise CTA — compact pill above the editorial eyebrow */}
+            <motion.div
+              className="mb-3 flex justify-center"
+              initial={reduce ? false : { opacity: 0, y: 8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.02, duration: 0.45, ease: easeOut }}
+            >
+              <Link
+                href="/advertise"
+                className={cn(
+                  "group relative inline-flex items-center gap-2 overflow-hidden rounded-full py-1 pl-1 pr-2.5",
+                  "border border-transparent bg-card/80 shadow-[0_8px_28px_-14px_hsl(var(--primary)/0.5)] backdrop-blur-md",
+                  "transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5",
+                  "hover:shadow-[0_12px_32px_-12px_hsl(var(--saffron)/0.45)]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45",
+                  cinematic && "dark:bg-black/35 dark:shadow-[0_10px_32px_-12px_rgba(0,0,0,0.6)]"
+                )}
+              >
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 rounded-full p-px"
+                  style={{
+                    background:
+                      "linear-gradient(120deg, hsl(var(--primary)), hsl(var(--saffron)), hsl(var(--primary)))",
+                    backgroundSize: "200% 200%",
+                    WebkitMask:
+                      "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    WebkitMaskComposite: "xor",
+                    maskComposite: "exclude",
+                    animation: reduce ? undefined : "cv-ad-border-shift 3.2s linear infinite",
+                  }}
+                />
+                {!reduce ? (
+                  <motion.span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 skew-x-[-18deg] bg-gradient-to-r from-transparent via-white/20 to-transparent dark:via-white/10"
+                    animate={{ x: ["0%", "380%"] }}
+                    transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.4 }}
+                  />
+                ) : null}
+
+                <span className="relative z-[1] flex h-7 w-7 shrink-0 items-center justify-center">
+                  {!reduce ? (
+                    <>
+                      <motion.span
+                        className="absolute inset-0 rounded-full bg-primary/25"
+                        animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 1.35, repeat: Infinity, ease: "easeOut" }}
+                      />
+                      <motion.span
+                        className="absolute inset-0 rounded-full border border-[hsl(var(--saffron))]/45"
+                        animate={{ scale: [1, 1.75], opacity: [0.65, 0] }}
+                        transition={{ duration: 1.35, repeat: Infinity, ease: "easeOut", delay: 0.2 }}
+                      />
+                    </>
+                  ) : null}
+                  <motion.span
+                    className={cn(
+                      "relative flex h-7 w-7 items-center justify-center rounded-full",
+                      "bg-gradient-to-br from-primary via-primary/85 to-[hsl(var(--saffron))]",
+                      "shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.65)]"
+                    )}
+                    animate={
+                      reduce
+                        ? undefined
+                        : {
+                            rotate: [0, -12, 10, -6, 5, 0],
+                            y: [0, -1.5, 0],
+                            scale: [1, 1.05, 1],
+                          }
+                    }
+                    transition={
+                      reduce
+                        ? undefined
+                        : { duration: 1.3, repeat: Infinity, ease: "easeInOut" }
+                    }
+                    aria-hidden
+                  >
+                    <Megaphone className="h-3 w-3 text-white" strokeWidth={2.4} />
+                  </motion.span>
+                </span>
+
+                <span className="relative z-[1] flex flex-col items-start gap-0.5 text-left leading-none">
+                  <span className="font-display text-[12px] font-bold tracking-tight text-gradient">
+                    Advertise with us
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                    <span className="h-0.5 w-0.5 rounded-full bg-[hsl(var(--saffron))]" />
+                    Brands · hubs · sponsored
+                  </span>
+                </span>
+
+                <span
+                  className={cn(
+                    "relative z-[1] flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
+                    "bg-muted/70 text-foreground transition-colors duration-300",
+                    "group-hover:bg-primary group-hover:text-primary-foreground"
+                  )}
+                >
+                  <ArrowUpRight
+                    className={cn(
+                      "h-3 w-3 transition-transform duration-300",
+                      "group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    )}
+                  />
+                </span>
+              </Link>
+            </motion.div>
+
             {/* Badge */}
             <motion.div
               className="flex justify-center"

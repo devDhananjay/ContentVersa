@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutDashboard, LogIn, Settings, LogOut, Shield } from "lucide-react";
+import {
+  LayoutDashboard,
+  LogIn,
+  Settings,
+  LogOut,
+  Shield,
+  Menu,
+} from "lucide-react";
 import { isAdminRole } from "@/lib/auth/roles";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,24 +22,31 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "@/components/auth/use-session";
 import { useSignOut } from "@/components/auth/sign-out-button";
-import { getInitials } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 
-export function UserNav() {
+export function UserNav({ immersive = false }: { immersive?: boolean }) {
   const { user, loading } = useSession();
   const { signOut, loading: signingOut } = useSignOut();
 
   if (loading) {
     return (
-      <div className="h-9 w-24 rounded-lg bg-muted/50 animate-pulse" aria-hidden />
+      <div
+        className="h-9 w-9 shrink-0 rounded-full bg-muted/50 animate-pulse"
+        aria-hidden
+      />
     );
   }
 
   if (!user) {
     return (
       <Link href="/auth/sign-in">
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-9 gap-1.5 rounded-full px-3"
+        >
           <LogIn className="h-4 w-4" />
-          Sign in
+          <span className="hidden sm:inline">Sign in</span>
         </Button>
       </Link>
     );
@@ -44,33 +58,45 @@ export function UserNav() {
   const isAdmin = isAdminRole(user.role);
 
   return (
-    <div className="flex items-center gap-1 shrink-0 min-w-0">
-      <DropdownMenu>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          size="sm"
-          className="gap-2 pl-1.5 pr-2.5 max-w-[11rem] shrink-0"
-          aria-label={displayName}
+          size="icon"
+          className={cn(
+            "relative h-9 w-9 shrink-0 rounded-full border-border/70 p-0 shadow-sm",
+            immersive && "border-white/30 bg-white/10 hover:bg-white/15"
+          )}
+          aria-label={`${displayName} menu`}
         >
-          <Avatar className="h-7 w-7 shrink-0">
+          <Avatar className="h-full w-full rounded-full">
             {user.image ? (
               <AvatarImage src={user.image} alt={displayName} />
             ) : null}
-            <AvatarFallback className="text-[10px]">
+            <AvatarFallback className="rounded-full text-[10px] font-semibold">
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden md:inline truncate min-w-0 max-w-[7rem] lg:max-w-[9rem]">
-            {displayName}
+          <span
+            className={cn(
+              "absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border border-background shadow-sm",
+              immersive
+                ? "bg-white text-black"
+                : "bg-foreground text-background"
+            )}
+            aria-hidden
+          >
+            <Menu className="h-2.5 w-2.5" strokeWidth={2.5} />
           </span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-52">
+      <DropdownMenuContent align="end" className="w-56" sideOffset={8}>
         <DropdownMenuLabel className="font-normal">
           <p className="text-sm font-medium truncate">{displayName}</p>
           {displayUsername ? (
-            <p className="text-xs text-muted-foreground truncate">{displayUsername}</p>
+            <p className="text-xs text-muted-foreground truncate">
+              {displayUsername}
+            </p>
           ) : null}
           <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
         </DropdownMenuLabel>
@@ -83,7 +109,10 @@ export function UserNav() {
         </DropdownMenuItem>
         {isAdmin && (
           <DropdownMenuItem asChild>
-            <Link href="/admin" className="cursor-pointer text-orange-600 dark:text-orange-400">
+            <Link
+              href="/admin"
+              className="cursor-pointer text-orange-600 dark:text-orange-400"
+            >
               <Shield className="h-4 w-4 mr-2" />
               Admin View
             </Link>
@@ -109,7 +138,6 @@ export function UserNav() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-    </div>
   );
 }
 
@@ -118,7 +146,9 @@ export function MobileUserNav() {
   const { signOut, loading: signingOut } = useSignOut();
 
   if (loading) {
-    return <div className="flex-1 h-10 rounded-lg bg-muted/50 animate-pulse" aria-hidden />;
+    return (
+      <div className="flex-1 h-10 rounded-lg bg-muted/50 animate-pulse" aria-hidden />
+    );
   }
 
   if (!user) {

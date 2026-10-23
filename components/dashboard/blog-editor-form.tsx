@@ -135,12 +135,57 @@ export function BlogEditorForm({
   const [cropOpen, setCropOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("write");
   const [aiNotice, setAiNotice] = React.useState<string | null>(null);
+  const [canWriteBlogs, setCanWriteBlogs] = React.useState(true);
+  const [canUseAiBlog, setCanUseAiBlog] = React.useState(adminMode);
+  const [aiBlogPermission, setAiBlogPermission] = React.useState<
+    "NONE" | "REQUESTED" | "GRANTED" | "DENIED"
+  >(adminMode ? "GRANTED" : "NONE");
+  const [permsLoaded, setPermsLoaded] = React.useState(adminMode);
   const coverInputRef = React.useRef<HTMLInputElement>(null);
 
   const aiContext = React.useMemo(
     () => ({ title, excerpt, content: markdown, category }),
     [title, excerpt, markdown, category]
   );
+
+  React.useEffect(() => {
+    if (adminMode) {
+      setCanWriteBlogs(true);
+      setCanUseAiBlog(true);
+      setAiBlogPermission("GRANTED");
+      setPermsLoaded(true);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/auth/me", { credentials: "include" });
+        const json = (await res.json()) as {
+          user?: {
+            canWriteBlogs?: boolean;
+            canUseAiBlog?: boolean;
+            aiBlogPermission?: "NONE" | "REQUESTED" | "GRANTED" | "DENIED";
+            role?: string;
+          } | null;
+        };
+        if (cancelled) return;
+        const u = json.user;
+        setCanWriteBlogs(u?.canWriteBlogs !== false);
+        setCanUseAiBlog(!!u?.canUseAiBlog);
+        setAiBlogPermission(u?.aiBlogPermission || "NONE");
+      } catch {
+        if (!cancelled) {
+          setCanWriteBlogs(true);
+          setCanUseAiBlog(false);
+        }
+      } finally {
+        if (!cancelled) setPermsLoaded(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [adminMode]);
 
   const applyDraft = (data: BlogDraft) => {
     setEditingId(data.id);
@@ -261,6 +306,12 @@ export function BlogEditorForm({
   };
 
   const generateFromTitle = async () => {
+    if (!canUseAiBlog) {
+      setSubmitError(
+        "AI blog writing needs admin permission. Request access from the AI Assist panel."
+      );
+      return;
+    }
     if (title.trim().length < 5) {
       setSubmitError("Add a title with at least 5 characters first.");
       return;
@@ -442,6 +493,18 @@ export function BlogEditorForm({
     }
   };
 
+  if (!adminMode && permsLoaded && !canWriteBlogs && !blogId) {
+    return (
+      <div className="container py-16 max-w-lg text-center space-y-3">
+        <p className="font-display text-2xl font-bold">Writing not enabled</p>
+        <p className="text-sm text-muted-foreground">
+          An admin must allow blog writing on your account before you can create posts.
+          You can still request AI blog access from settings once writing is enabled.
+        </p>
+      </div>
+    );
+  }
+
   if (loadingDraft) {
     return (
       <div className="container py-16 max-w-6xl flex items-center justify-center gap-2 text-muted-foreground">
@@ -451,7 +514,7 @@ export function BlogEditorForm({
     );
   }
 
-  const showGenerateCta = title.trim().length >= 5;
+  const showGenerateCta = canUseAiBlog && title.trim().length >= 5;
 
   return (
     <div className="container py-6 max-w-6xl">
@@ -970,6 +1033,12 @@ export function BlogEditorForm({
             excerpt={excerpt}
             content={markdown}
             category={category}
+            canUseAiBlog={canUseAiBlog}
+            aiBlogPermission={aiBlogPermission}
+            onAiPermissionChange={({ aiBlogPermission: next, canUseAiBlog: allowed }) => {
+              setAiBlogPermission(next);
+              setCanUseAiBlog(allowed);
+            }}
             onApplyTitle={setTitle}
             onApplyExcerpt={setExcerpt}
             onApplySeoTitle={setSeoTitle}

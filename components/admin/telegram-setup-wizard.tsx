@@ -159,23 +159,36 @@ export function TelegramSetupWizard() {
         <Bot className="h-5 w-5 text-sky-500" />
         <h2 className="font-display text-lg font-bold">Telegram — setup + Send now</h2>
       </div>
-      <ol className="list-decimal space-y-1.5 pl-5 text-sm text-muted-foreground">
-        <li>
-          Phone Telegram →{" "}
+      <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-200">
+        Cursor / browser se <code className="text-[10px]">t.me</code> aksar blank rehta hai.
+        Phone pe Telegram app kholo, ya niche Web Telegram use karo.
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" size="sm" variant="secondary" asChild>
           <a
-            href="https://t.me/BotFather"
+            href="https://web.telegram.org/k/#@BotFather"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:underline"
           >
-            @BotFather
-          </a>{" "}
-          → <code className="text-xs">/newbot</code> → token copy
-        </li>
-        <li>Token paste → Discover (optional) ya chat IDs manually</li>
-        <li>Bot ko group mein add + post permission</li>
+            Open BotFather (Web)
+          </a>
+        </Button>
+        <Button type="button" size="sm" variant="outline" asChild>
+          <a href="tg://resolve?domain=BotFather">Open in Telegram app</a>
+        </Button>
+      </div>
+      <ol className="list-decimal space-y-1.5 pl-5 text-sm text-muted-foreground">
         <li>
-          <strong className="text-foreground">Send today tip</strong> dabao — message abhi groups pe jayega
+          BotFather → <code className="text-xs">/newbot</code> → token copy (ya pehle se bana ho to{" "}
+          <code className="text-xs">/token</code>)
+        </li>
+        <li>Token yahan paste → Discover / chat IDs</li>
+        <li>
+          Bot ko group mein <strong className="text-foreground">admin</strong> banao (post
+          permission)
+        </li>
+        <li>
+          <strong className="text-foreground">Send today tip</strong> — message abhi jayega
         </li>
       </ol>
 

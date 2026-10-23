@@ -46,6 +46,8 @@ export type AdminUserRow = {
   /** Browser push allowed — at least one FCM token saved */
   pushEnabled: boolean;
   pushDeviceCount: number;
+  canWriteBlogs: boolean;
+  aiBlogPermission: "NONE" | "REQUESTED" | "GRANTED" | "DENIED";
 };
 
 export type AdminBlogRow = {
@@ -289,6 +291,8 @@ export async function getAdminUsers(): Promise<AdminUserRow[]> {
     isVerified: u.profile?.isVerified ?? false,
     pushEnabled: u._count.pushTokens > 0,
     pushDeviceCount: u._count.pushTokens,
+    canWriteBlogs: u.canWriteBlogs,
+    aiBlogPermission: u.aiBlogPermission,
   }));
 }
 
@@ -340,6 +344,8 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     isVerified: user.profile?.isVerified ?? false,
     pushEnabled: user._count.pushTokens > 0,
     pushDeviceCount: user._count.pushTokens,
+    canWriteBlogs: user.canWriteBlogs,
+    aiBlogPermission: user.aiBlogPermission,
     bio: user.profile?.bio ?? null,
     headline: user.profile?.headline ?? null,
     totalViews: user.profile?.totalViews ?? 0,

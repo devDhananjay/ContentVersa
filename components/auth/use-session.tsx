@@ -22,6 +22,9 @@ export type SessionMeUser = SessionUser & {
     totalFormatted: string;
     articlesRead: number;
   } | null;
+  canWriteBlogs?: boolean;
+  aiBlogPermission?: "NONE" | "REQUESTED" | "GRANTED" | "DENIED";
+  canUseAiBlog?: boolean;
 };
 
 type SessionContextValue = {

@@ -55,15 +55,18 @@ export function isIndiaDeskNewsBriefing(input: {
 
 /**
  * Last 48h of indexable Live News briefings (Google News sitemap window).
- * Submit https://contentverse.co.in/news-sitemap.xml in Search Console → Sitemaps
- * (in addition to sitemap.xml). robots.txt already lists both.
+ * Google rule: only articles from the last two days belong in a news sitemap
+ * (https://developers.google.com/search/docs/crawling-indexing/sitemaps/news-sitemap).
+ * Older news stays on site forever and remains in sitemap.xml for regular Search.
+ * Cap = Google's max 1,000 news:news entries per file (not an artificial 100).
  */
 export async function getNewsSitemapRows(
-  limit = 100
+  limit = 1000
 ): Promise<NewsSitemapRow[]> {
   if (!isDatabaseConfigured()) return [];
 
   const since = new Date(Date.now() - 48 * 60 * 60 * 1000);
+  const capped = Math.min(1000, Math.max(1, limit));
   const blogs = await prisma.blog.findMany({
     where: {
       status: BlogStatus.PUBLISHED,
@@ -82,7 +85,7 @@ export async function getNewsSitemapRows(
       metaKeywords: true,
     },
     orderBy: { publishedAt: "desc" },
-    take: Math.min(400, limit * 3),
+    take: Math.min(3000, capped * 3),
   });
 
   return blogs
@@ -100,7 +103,7 @@ export async function getNewsSitemapRows(
       })
     )
     .filter((b) => !isRedirectedPath(`/blog/${b.slug}`))
-    .slice(0, limit)
+    .slice(0, capped)
     .map((b) => ({
       loc: `${SITE.url}/blog/${b.slug}`,
       title: b.title,

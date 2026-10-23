@@ -1,7 +1,6 @@
 {
   "version": 1,
   "functions": {
-    "/api/auth/firebase": {},
     "/api/auth/google/callback": {},
     "/api/auth/google/login": {},
     "/api/cron/sports-sync": {
@@ -14,6 +13,7 @@
     "/api/moneyverse/bank-statement/analyze": {},
     "/api/reels/upload": {},
     "/api/upload": {},
+    "/api/auth/firebase": {},
     "/uploads/[filename]": {}
   }
 }

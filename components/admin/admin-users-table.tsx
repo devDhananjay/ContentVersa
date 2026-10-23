@@ -39,6 +39,7 @@ const FILTER_DEFAULTS = {
   status: "all",
   verified: "all",
   push: "all",
+  ai: "all",
   dateFrom: "",
   dateTo: "",
   sort: "newest",
@@ -78,6 +79,11 @@ function applyUserFilters(rows: AdminUserRow[], f: UserFilters): AdminUserRow[] 
     if (f.verified === "no" && u.isVerified) return false;
     if (f.push === "on" && !u.pushEnabled) return false;
     if (f.push === "off" && u.pushEnabled) return false;
+    if (f.ai === "requested" && u.aiBlogPermission !== "REQUESTED") return false;
+    if (f.ai === "granted" && u.aiBlogPermission !== "GRANTED") return false;
+    if (f.ai === "none" && u.aiBlogPermission !== "NONE" && u.aiBlogPermission !== "DENIED")
+      return false;
+    if (f.ai === "nowrite" && u.canWriteBlogs) return false;
     if (!inDateRange(u.createdAt, f.dateFrom, f.dateTo)) return false;
     return true;
   });
@@ -216,6 +222,19 @@ export function AdminUsersTable({
                 ],
               },
               {
+                id: "ai",
+                value: filters.ai,
+                onChange: (v) => set("ai", v),
+                placeholder: "Blog / AI",
+                options: [
+                  { value: "all", label: "Any permissions" },
+                  { value: "requested", label: "AI access requested" },
+                  { value: "granted", label: "AI access granted" },
+                  { value: "none", label: "No AI access" },
+                  { value: "nowrite", label: "Writing revoked" },
+                ],
+              },
+              {
                 id: "sort",
                 value: filters.sort,
                 onChange: (v) => set("sort", v),
@@ -276,6 +295,12 @@ export function AdminUsersTable({
                         <p className="font-semibold">{u.name || u.username}</p>
                         {u.isVerified && <BadgeCheck className="h-3.5 w-3.5 text-neon-cyan" />}
                         {u.banned && <Badge variant="destructive">Inactive</Badge>}
+                        {u.aiBlogPermission === "REQUESTED" && (
+                          <Badge variant="warning">AI requested</Badge>
+                        )}
+                        {!u.canWriteBlogs && (
+                          <Badge variant="outline">No write</Badge>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground">@{u.username}</p>
                     </div>

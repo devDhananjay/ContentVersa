@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { runAiAssist, buildPlaceholderImageUrl, type AiAction } from "@/lib/ai/assist";
 import { BlogGenerationError } from "@/lib/ai/generate-full-blog";
-import { isGeminiConfigured } from "@/lib/ai/gemini";
+import { requireUser } from "@/lib/auth";
+import {
+  getBlogPermissionsForSession,
+  isAiBlogWriteAction,
+} from "@/lib/auth/blog-permissions";
 
 const Schema = z.object({
   action: z.enum([
@@ -43,8 +47,28 @@ function friendlyAiError(err: unknown): string {
 
 export async function POST(req: Request) {
   try {
+    const session = await requireUser();
     const body = await req.json();
     const parsed = Schema.parse(body);
+
+    if (isAiBlogWriteAction(parsed.action)) {
+      const perms = await getBlogPermissionsForSession(session);
+      if (!perms.canUseAiBlog) {
+        return NextResponse.json(
+          {
+            error:
+              perms.aiBlogPermission === "REQUESTED"
+                ? "Your AI blog request is pending admin approval."
+                : perms.aiBlogPermission === "DENIED"
+                  ? "AI blog writing was denied. Contact an admin if you need access."
+                  : "AI blog writing requires permission. Request access from your dashboard.",
+            code: "AI_BLOG_FORBIDDEN",
+            aiBlogPermission: perms.aiBlogPermission,
+          },
+          { status: 403 }
+        );
+      }
+    }
 
     if (parsed.action === "generate-image") {
       const prompt =
@@ -119,6 +143,9 @@ export async function POST(req: Request) {
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+    if (err instanceof Error && err.message === "UNAUTHENTICATED") {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 });
     }
     console.error("[ai assist]", err);
     return NextResponse.json({ error: friendlyAiError(err) }, { status: 500 });

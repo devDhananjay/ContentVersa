@@ -38,13 +38,18 @@ export function NotificationBell() {
   if (!user) return null;
 
   return (
-    <Button variant="ghost" size="icon" className="relative" asChild>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="relative h-9 w-9 shrink-0 rounded-full"
+      asChild
+    >
       <Link href="/dashboard/notifications" aria-label="Notifications">
-        <Bell className="h-5 w-5" />
+        <Bell className="h-4 w-4" />
         {unread > 0 && (
           <Badge
             variant="pink"
-            className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full px-1 py-0 text-[10px] pointer-events-none"
+            className="pointer-events-none absolute -right-0.5 -top-0.5 h-4 min-w-4 rounded-full px-1 py-0 text-[10px]"
           >
             {unread > 9 ? "9+" : unread}
           </Badge>

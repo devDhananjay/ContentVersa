@@ -8,6 +8,7 @@ import { PenSquare, Menu, X, LayoutDashboard } from "lucide-react";
 import { Logo } from "./logo";
 import { NavDropdown } from "./nav-dropdown";
 import { NavWeatherChip } from "./nav-weather-chip";
+import { NavLocaleToggle } from "./nav-locale-toggle";
 import { UserNav, MobileUserNav } from "@/components/auth/user-nav";
 import { AdminViewButton } from "@/components/auth/admin-view-button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -38,7 +39,6 @@ export function Navbar({
 
   const linkClass = (active: boolean) =>
     cn(
-      // Match NavDropdown trigger: same py + items-center so News never sits high
       "relative inline-flex h-9 items-center rounded-full px-2 lg:px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
       immersive
         ? active
@@ -52,17 +52,15 @@ export function Navbar({
   return (
     <header
       className={cn(
-        "overflow-x-clip",
         !embedded && "border-b border-border/50 bg-background/95 backdrop-blur-xl"
       )}
     >
-      <div className="container flex h-[3.75rem] items-center gap-2 xl:gap-3 flex-nowrap min-w-0">
+      <div className="container flex h-[3.75rem] min-w-0 items-center gap-1.5 xl:gap-2.5">
         <Logo src={logoSrc} size="sm" immersive={immersive} className="shrink-0" />
 
-        {/* Nav links — fixed width cluster so Jobs never gets crushed */}
         <nav
           className={cn(
-            "hidden lg:flex items-center gap-0.5 shrink-0 ml-1 rounded-full border px-0.5 py-0.5",
+            "ml-0.5 hidden min-w-0 shrink items-center gap-0.5 overflow-x-auto rounded-full border px-0.5 py-0.5 lg:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
             immersive
               ? "border-white/10 bg-white/5 backdrop-blur-md"
               : "border-border/50 bg-muted/30 backdrop-blur-sm"
@@ -91,7 +89,9 @@ export function Navbar({
                   ) : Icon ? (
                     <Icon className="h-3.5 w-3.5 shrink-0 opacity-70" />
                   ) : null}
-                  <span className={link.live ? "text-red-600 dark:text-red-400" : undefined}>
+                  <span
+                    className={link.live ? "text-red-600 dark:text-red-400" : undefined}
+                  >
                     {link.label}
                   </span>
                 </span>
@@ -100,7 +100,11 @@ export function Navbar({
                     layoutId="nav-indicator"
                     className={cn(
                       "absolute inset-0 -z-10 rounded-full",
-                      immersive ? "bg-white/15" : link.live ? "bg-red-500/10" : "bg-primary/10"
+                      immersive
+                        ? "bg-white/15"
+                        : link.live
+                          ? "bg-red-500/10"
+                          : "bg-primary/10"
                     )}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
@@ -110,50 +114,94 @@ export function Navbar({
           })}
         </nav>
 
-        {/* Breathing room between Jobs and weather */}
-        <div className="flex-1 min-w-4" aria-hidden />
+        <div className="min-w-2 flex-1" aria-hidden />
 
-        <div className="hidden md:flex items-center gap-2 shrink-0">
-          <NavWeatherChip immersive={immersive} className="hidden lg:inline-flex" />
-          <Link href="/dashboard/create">
+        {/* Desktop / tablet actions — compact, never clip the profile circle */}
+        <div className="hidden shrink-0 items-center gap-1 md:flex md:gap-1.5">
+          <NavWeatherChip
+            immersive={immersive}
+            className="hidden max-w-[7.5rem] lg:inline-flex"
+          />
+
+          <Link href="/dashboard/create" className="shrink-0">
             <Button
-              variant="gradient"
               size="sm"
-              className="gap-1.5 shrink-0 rounded-full"
+              className="h-9 gap-1.5 rounded-full px-2.5 xl:px-3.5 bg-black text-white hover:bg-neutral-900 hover:text-white"
             >
               <PenSquare className="h-4 w-4" />
               <span className="hidden xl:inline">Write</span>
             </Button>
           </Link>
-          <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
+
+          <div
+            className={cn(
+              "flex items-center gap-0.5",
+              immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10 [&_a]:text-white/90"
+            )}
+          >
             <StreakBadge />
-          </div>
-          <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
             <NotificationBell />
           </div>
-          <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
+
+          <span
+            aria-hidden
+            className={cn(
+              "mx-0.5 hidden h-5 w-px shrink-0 sm:block",
+              immersive ? "bg-white/20" : "bg-border/70"
+            )}
+          />
+
+          <NavLocaleToggle immersive={immersive} />
+          <div
+            className={cn(
+              immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10"
+            )}
+          >
             <ThemeToggle />
           </div>
-          <UserNav />
+
+          <UserNav immersive={immersive} />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "h-9 w-9 shrink-0 rounded-full lg:hidden",
+              immersive && "text-white hover:bg-white/10"
+            )}
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
 
-        <div className="flex items-center gap-1.5 md:hidden shrink-0">
-          <NavWeatherChip immersive={immersive} />
-          <StreakBadge />
-          <div className={cn(immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10")}>
+        {/* Phone */}
+        <div className="ml-auto flex shrink-0 items-center gap-1 md:hidden">
+          <NavLocaleToggle immersive={immersive} />
+          <div
+            className={cn(
+              immersive && "[&_button]:text-white/90 [&_button]:hover:bg-white/10"
+            )}
+          >
             <ThemeToggle />
           </div>
+          <UserNav immersive={immersive} />
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "h-9 w-9 shrink-0 rounded-full",
+              immersive && "text-white hover:bg-white/10"
+            )}
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn("md:hidden shrink-0 rounded-full", immersive && "text-white hover:bg-white/10")}
-          onClick={() => setMobileOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
       </div>
 
       <AnimatePresence>
@@ -163,9 +211,9 @@ export function Navbar({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden border-t bg-background/98 backdrop-blur-2xl"
+            className="border-t bg-background/98 backdrop-blur-2xl lg:hidden"
           >
-            <div className="container py-4 space-y-1 max-h-[min(70vh,520px)] overflow-y-auto">
+            <div className="container max-h-[min(70vh,520px)] space-y-1 overflow-y-auto py-4">
               {NAV_MOBILE_LINKS.map((link) => {
                 const Icon = link.icon;
                 return (
@@ -180,11 +228,20 @@ export function Navbar({
                     )}
                   >
                     {link.live ? (
-                      <span className="live-news-dot h-2 w-2 rounded-full bg-red-500" aria-hidden />
+                      <span
+                        className="live-news-dot h-2 w-2 rounded-full bg-red-500"
+                        aria-hidden
+                      />
                     ) : Icon ? (
                       <Icon className="h-4 w-4 text-neon-purple" />
                     ) : null}
-                    <span className={link.live ? "font-semibold text-red-600 dark:text-red-400" : undefined}>
+                    <span
+                      className={
+                        link.live
+                          ? "font-semibold text-red-600 dark:text-red-400"
+                          : undefined
+                      }
+                    >
                       {link.label}
                     </span>
                   </Link>
@@ -197,11 +254,11 @@ export function Navbar({
                 <LayoutDashboard className="h-4 w-4" />
                 Dashboard
               </Link>
-              <AdminViewButton fullWidth variant="gradient" className="w-full mt-2" />
-              <div className="flex gap-2 pt-3 sticky bottom-0 bg-background/95 pb-1">
+              <AdminViewButton fullWidth variant="gradient" className="mt-2 w-full" />
+              <div className="sticky bottom-0 flex gap-2 bg-background/95 pb-1 pt-3">
                 <MobileUserNav />
                 <Link href="/dashboard/create" className="flex-1">
-                  <Button variant="gradient" className="w-full rounded-full">
+                  <Button className="w-full rounded-full bg-black text-white hover:bg-neutral-900 hover:text-white">
                     Write
                   </Button>
                 </Link>

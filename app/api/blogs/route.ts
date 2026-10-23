@@ -7,6 +7,7 @@ import { getPublishedBlogsLiteHybrid } from "@/lib/data/blog-db";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { requireUserId } from "@/lib/auth/resolve-user-id";
+import { getBlogPermissionsForSession } from "@/lib/auth/blog-permissions";
 import { readingTime, slugify } from "@/lib/utils";
 import { normalizeCoverImageUrl } from "@/lib/server/upload-cover";
 import { notifyAdminsOfPendingBlog } from "@/lib/notifications/blog-pending-admin";
@@ -163,6 +164,17 @@ export async function POST(req: Request) {
     }
 
     const authorId = await requireUserId(session);
+    const perms = await getBlogPermissionsForSession(session);
+    if (!perms.canWriteBlogs) {
+      return NextResponse.json(
+        {
+          error:
+            "You do not have permission to write blogs. Ask an admin to enable writing for your account.",
+          code: "WRITE_BLOGS_FORBIDDEN",
+        },
+        { status: 403 }
+      );
+    }
     const body = await req.json();
     const parsed = CreateSchema.parse(body);
 

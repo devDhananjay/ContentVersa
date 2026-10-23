@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChangeUserPassword } from "@/components/admin/change-user-password";
 import { UserInactiveToggle } from "@/components/admin/user-inactive-toggle";
+import { UserBlogPermissions } from "@/components/admin/user-blog-permissions";
 import { getAdminUserDetail } from "@/lib/data/admin-data";
 import { getCurrentUser } from "@/lib/auth";
 import { formatNumber, getInitials } from "@/lib/utils";
@@ -89,6 +90,16 @@ export default async function AdminUserDetailPage({
           userEmail={user.email}
           banned={user.banned}
           banReason={user.banReason}
+        />
+      ) : null}
+
+      {canManageStatus ? (
+        <UserBlogPermissions
+          userId={user.id}
+          userEmail={user.email}
+          role={user.role}
+          canWriteBlogs={user.canWriteBlogs}
+          aiBlogPermission={user.aiBlogPermission}
         />
       ) : null}
 

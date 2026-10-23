@@ -55,10 +55,10 @@ export function StreakBadge({ className }: { className?: string }) {
           : `Read 1 min today to keep your ${days || "new"} streak`
       }
       className={cn(
-        "inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-semibold transition-colors shrink-0",
+        "inline-flex h-9 shrink-0 items-center gap-1 rounded-full border px-2.5 text-xs font-semibold transition-colors",
         lit
           ? "border-orange-500/40 bg-orange-500/10 text-orange-600 dark:text-orange-400"
-          : "border-border/60 text-muted-foreground hover:text-foreground hover:bg-accent/40",
+          : "border-border/60 text-muted-foreground hover:bg-accent/40 hover:text-foreground",
         className
       )}
     >
