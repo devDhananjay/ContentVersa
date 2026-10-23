@@ -6,6 +6,7 @@ import { getSiteLogoUrl } from "@/lib/branding/site-logo";
 import { Github, Twitter, Instagram, Youtube } from "lucide-react";
 import { SITE } from "@/lib/seo";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+import { TelegramIcon } from "@/components/icons/telegram-icon";
 
 const SOCIAL_LINKS: { label: string; href: string; Icon: ElementType }[] = [
   { label: "Twitter / X", href: SITE.sameAs[0] || "https://twitter.com/contentverse", Icon: Twitter },
@@ -15,6 +16,8 @@ const SOCIAL_LINKS: { label: string; href: string; Icon: ElementType }[] = [
 ];
 
 const WHATSAPP_CHANNEL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL?.trim();
+const TELEGRAM_URL =
+  process.env.NEXT_PUBLIC_TELEGRAM_URL?.trim() || SITE.telegram;
 
 const EXPLORE = [
   { label: "India Guides", href: "/guides" },
@@ -142,6 +145,17 @@ export async function Footer() {
                   className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#25D366]/40 text-[#25D366] transition-colors hover:border-[#25D366]"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
+                </a>
+              ) : null}
+              {TELEGRAM_URL ? (
+                <a
+                  href={TELEGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Telegram"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#26A5E4]/40 text-[#26A5E4] transition-colors hover:border-[#26A5E4]"
+                >
+                  <TelegramIcon className="h-4 w-4" />
                 </a>
               ) : null}
             </div>
