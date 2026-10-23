@@ -16,7 +16,10 @@ const MOBILE_TABS = [
 export function MobileNav() {
   const pathname = usePathname();
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border/60 bg-background/95 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
+    <div
+      id="site-mobile-nav"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border/60 bg-background/95 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]"
+    >
       <nav className="grid grid-cols-5">
         {MOBILE_TABS.map((tab) => {
           const active =

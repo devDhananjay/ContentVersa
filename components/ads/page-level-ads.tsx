@@ -5,14 +5,14 @@ const ADSENSE_ID = normalizeAdSenseClientId(
 );
 
 /**
- * Page-level formats: keep regular bottom Anchor only.
+ * Page-level formats.
  *
- * Vignette (full-screen interstitial) is intentionally NOT enabled here —
- * on iOS Safari / Next.js, vignette close often dumps raw Google JS
- * (`window.dicnf` / Closure) as a blank page. Turn Vignette OFF in AdSense
- * UI too (Ads → site → Overlay formats) so account settings match.
+ * Bottom Anchor overlay is OFF (`overlays.bottom: false`). AdSense Auto Ads
+ * in the account UI can still inject sticky bars — `AdSenseAnchorSuppress`
+ * removes those. Vignette is not enabled in code (iOS leak); if the account
+ * still serves one, chrome polish + leak guard apply.
  *
- * Utility routes still call DisableAutoAds to kill anchors there.
+ * Also turn OFF “Anchor ads” under AdSense → site → Overlay formats.
  */
 export function PageLevelAds() {
   if (!ADSENSE_ID) return null;
@@ -20,7 +20,7 @@ export function PageLevelAds() {
   return (
     <script
       dangerouslySetInnerHTML={{
-        __html: `(window.adsbygoogle=window.adsbygoogle||[]).push({google_ad_client:${JSON.stringify(ADSENSE_ID)},enable_page_level_ads:true,overlays:{bottom:true}});`,
+        __html: `(window.adsbygoogle=window.adsbygoogle||[]).push({google_ad_client:${JSON.stringify(ADSENSE_ID)},enable_page_level_ads:true,overlays:{bottom:false}});`,
       }}
     />
   );

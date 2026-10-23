@@ -21,6 +21,12 @@ export function blogAdSlots(density: AdDensity = getAdDensity()) {
       midArticle: false,
       afterContent: true,
       sidebar: false,
+      /** YourStory-style 3×300×250 + 300×600 desktop rail */
+      stackedRail: false,
+      /** Mobile 320×50 masthead after cover */
+      mobileTop: false,
+      /** Extra in-article MRECs on mobile only */
+      mobileExtraMids: false,
     };
   }
   if (density === "normal") {
@@ -29,14 +35,20 @@ export function blogAdSlots(density: AdDensity = getAdDensity()) {
       midArticle: true,
       afterContent: true,
       sidebar: true,
+      stackedRail: true,
+      mobileTop: true,
+      mobileExtraMids: true,
     };
   }
-  // comfortable (default): TOI-style ATF after cover + mid + end + one right rail
+  // comfortable (default): ATF + mid + end + stacked right rail + mobile map
   return {
     afterCover: true,
     midArticle: true,
     afterContent: true,
     sidebar: true,
+    stackedRail: true,
+    mobileTop: true,
+    mobileExtraMids: true,
   };
 }
 

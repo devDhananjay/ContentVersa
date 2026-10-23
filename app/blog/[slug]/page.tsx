@@ -2,7 +2,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { Suspense } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Clock, Eye, MessageCircle, Heart, BadgeCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +46,8 @@ import { isContentVerseBrandCover } from "@/lib/seo/toi-cover-url";
 import { SeriesNav } from "@/components/blog/series-nav";
 import { AdSlot } from "@/components/ads/ad-slot";
 import { GoogleAdSense } from "@/components/ads/google-adsense";
+import { MobileTopAd } from "@/components/ads/mobile-top-ad";
+import { StackedRailAd } from "@/components/ads/stacked-rail-ad";
 import { StickyWhatsAppShare } from "@/components/blog/sticky-whatsapp-share";
 import {
   YmylDisclaimer,
@@ -368,8 +370,9 @@ export default async function BlogPage({
           </div>
         )}
 
+        {showAds && adSlots.mobileTop ? <MobileTopAd /> : null}
         {showAds && adSlots.afterCover ? (
-          <AdSlot className="mb-2 mt-0" variant="mrec">
+          <AdSlot className="mb-2 mt-0 hidden lg:block" variant="mrec">
             <GoogleAdSense slotKey="inArticle" width={300} height={250} />
           </AdSlot>
         ) : null}
@@ -382,21 +385,48 @@ export default async function BlogPage({
             <h2 className="font-display text-2xl font-bold mb-6">Full story</h2>
             {(() => {
               const parts = bodyContent.split(/\n\n+/);
-              // Mid-article ~40% — TOI-style after early value, before fatigue
-              const mid = Math.max(3, Math.floor(parts.length * 0.4));
-              const first = parts.slice(0, mid).join("\n\n");
-              const second = parts.slice(mid).join("\n\n");
-              return (
-                <>
-                  {renderMarkdown(first || bodyContent)}
-                  {showAds && adSlots.midArticle && second ? (
-                    <AdSlot variant="mrec">
-                      <GoogleAdSense slotKey="inArticle" width={300} height={250} />
-                    </AdSlot>
-                  ) : null}
-                  {second ? renderMarkdown(second) : null}
-                </>
-              );
+              if (!showAds || !adSlots.midArticle || parts.length < 4) {
+                return renderMarkdown(bodyContent);
+              }
+
+              // Desktop: one mid ~40%. Mobile: YourStory-style extras at ~20/40/60/80%.
+              const breaks: { fraction: number; mobileOnly: boolean }[] =
+                adSlots.mobileExtraMids
+                  ? [
+                      { fraction: 0.2, mobileOnly: true },
+                      { fraction: 0.4, mobileOnly: false },
+                      { fraction: 0.6, mobileOnly: true },
+                      { fraction: 0.8, mobileOnly: true },
+                    ]
+                  : [{ fraction: 0.4, mobileOnly: false }];
+
+              const indices = breaks
+                .map((b) => ({
+                  ...b,
+                  index: Math.max(2, Math.min(parts.length - 2, Math.floor(parts.length * b.fraction))),
+                }))
+                .filter((b, i, arr) => arr.findIndex((x) => x.index === b.index) === i)
+                .sort((a, b) => a.index - b.index);
+
+              const nodes: ReactNode[] = [];
+              let cursor = 0;
+              indices.forEach((b, i) => {
+                const chunk = parts.slice(cursor, b.index).join("\n\n");
+                if (chunk) nodes.push(<div key={`body-${i}`}>{renderMarkdown(chunk)}</div>);
+                nodes.push(
+                  <AdSlot
+                    key={`ad-${i}`}
+                    variant="mrec"
+                    className={b.mobileOnly ? "lg:hidden" : undefined}
+                  >
+                    <GoogleAdSense slotKey="inArticle" width={300} height={250} />
+                  </AdSlot>
+                );
+                cursor = b.index;
+              });
+              const rest = parts.slice(cursor).join("\n\n");
+              if (rest) nodes.push(<div key="body-end">{renderMarkdown(rest)}</div>);
+              return <>{nodes}</>;
             })()}
 
             <div className="mt-10 flex flex-wrap gap-2">
@@ -503,12 +533,13 @@ export default async function BlogPage({
           */}
           <aside className="hidden lg:block lg:sticky lg:top-[calc(var(--site-header-offset)+1rem)] lg:self-start max-h-[calc(100dvh-var(--site-header-offset)-2rem)] overflow-y-auto scrollbar-hide space-y-5">
             <TableOfContents items={toc} />
-            {showAds && adSlots.sidebar ? (
+            {showAds && adSlots.stackedRail ? (
+              <StackedRailAd className="pt-2" />
+            ) : showAds && adSlots.sidebar ? (
               <div className="space-y-2 pt-2">
                 <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground/70">
                   Advertisement
                 </p>
-                {/* TOI-style tall rail — one sticky column (≤300px wide) */}
                 <GoogleAdSense slotKey="sidebar" width={160} height={600} />
               </div>
             ) : null}

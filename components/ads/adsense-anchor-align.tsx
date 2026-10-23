@@ -3,24 +3,29 @@
 import * as React from "react";
 
 /**
- * Official AdSense Anchor defaults to a full-width / bottom bar.
- * Site FABs (help, a11y) sit bottom-right — nudge Anchor to bottom-left
- * so they don’t collide. Never hide the ad (policy); only reposition.
+ * Lift AdSense bottom Anchor above the mobile tab bar (YourStory-style sticky).
+ * Desktop: keep a normal bottom bar. Never hide the ad — only reposition.
  */
 export function AdSenseAnchorAlign() {
   React.useEffect(() => {
-    const BOTTOM_MAX = 120;
-    const RIGHT_CLEAR = 96; // leave dock clear
+    const BOTTOM_SCAN = 160;
+
+    const mobileNavHeight = () => {
+      const nav = document.getElementById("site-mobile-nav");
+      if (!nav || window.getComputedStyle(nav).display === "none") return 0;
+      return Math.ceil(nav.getBoundingClientRect().height);
+    };
+
+    const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
 
     const isAnchorCandidate = (el: HTMLElement) => {
       const st = window.getComputedStyle(el);
       if (st.position !== "fixed" && st.position !== "sticky") return false;
       const r = el.getBoundingClientRect();
       if (r.width < 120 || r.height < 40) return false;
-      if (r.height > window.innerHeight * 0.55) return false; // not vignette fullscreen
-      const nearBottom = window.innerHeight - r.bottom <= BOTTOM_MAX;
+      if (r.height > window.innerHeight * 0.55) return false; // not vignette
+      const nearBottom = window.innerHeight - r.bottom <= BOTTOM_SCAN;
       if (!nearBottom) return false;
-      // Prefer Google-injected nodes
       const id = el.id || "";
       const cls = typeof el.className === "string" ? el.className : "";
       const src =
@@ -33,23 +38,25 @@ export function AdSenseAnchorAlign() {
         ) ||
         !!el.closest("ins.adsbygoogle") ||
         !!el.closest(".google-auto-placed");
-      return looksGoogle || (r.width >= window.innerWidth * 0.7 && nearBottom);
+      return looksGoogle || (r.width >= window.innerWidth * 0.65 && nearBottom);
     };
 
     const align = (el: HTMLElement) => {
-      if (el.dataset.cvAnchorAligned === "1") return;
-      const r = el.getBoundingClientRect();
-      const maxW = Math.min(360, Math.max(280, window.innerWidth - RIGHT_CLEAR - 24));
-      el.style.setProperty("left", "12px", "important");
-      el.style.setProperty("right", "auto", "important");
+      const navH = isMobile() ? mobileNavHeight() : 0;
+      // Full-width sticky strip above MobileNav (YS pattern)
+      el.style.setProperty("left", "0", "important");
+      el.style.setProperty("right", "0", "important");
       el.style.setProperty("margin-left", "0", "important");
       el.style.setProperty("margin-right", "0", "important");
       el.style.setProperty("transform", "none", "important");
-      if (r.width > maxW || r.width >= window.innerWidth * 0.85) {
-        el.style.setProperty("width", `${maxW}px`, "important");
-        el.style.setProperty("max-width", `${maxW}px`, "important");
-      }
-      el.style.setProperty("bottom", "12px", "important");
+      el.style.setProperty("width", "100%", "important");
+      el.style.setProperty("max-width", "100%", "important");
+      el.style.setProperty(
+        "bottom",
+        navH > 0 ? `${navH}px` : "0px",
+        "important"
+      );
+      el.style.setProperty("z-index", "39", "important"); // under MobileNav (z-40)
       el.dataset.cvAnchorAligned = "1";
     };
 
@@ -62,10 +69,11 @@ export function AdSenseAnchorAlign() {
         const parent = el.parentElement;
         if (parent && isAnchorCandidate(parent)) align(parent);
       });
-      // Also catch fixed bottom bars Google injects without class names
-      document.querySelectorAll<HTMLElement>("body > div, body > ins").forEach((el) => {
-        if (isAnchorCandidate(el)) align(el);
-      });
+      document
+        .querySelectorAll<HTMLElement>("body > div, body > ins")
+        .forEach((el) => {
+          if (isAnchorCandidate(el)) align(el);
+        });
     };
 
     scan();
