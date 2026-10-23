@@ -1,18 +1,21 @@
 "use client";
 
 import * as React from "react";
-import { Copy, Check, Loader2, RefreshCw, Bot } from "lucide-react";
+import { Copy, Check, Loader2, RefreshCw, Bot, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 
 type ChatRow = { id: string; title: string; type: string };
 
 export function TelegramSetupWizard() {
   const [token, setToken] = React.useState("");
+  const [manualIds, setManualIds] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [sending, setSending] = React.useState(false);
   const [bot, setBot] = React.useState<{
     username?: string;
     name?: string;
@@ -21,6 +24,16 @@ export function TelegramSetupWizard() {
   const [selected, setSelected] = React.useState<Set<string>>(new Set());
   const [hint, setHint] = React.useState("");
   const [copiedEnv, setCopiedEnv] = React.useState(false);
+  const [lastSend, setLastSend] = React.useState<string>("");
+
+  const resolveChatIds = React.useCallback(() => {
+    const fromSelect = Array.from(selected);
+    const fromManual = manualIds
+      .split(/[,;\s]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return Array.from(new Set([...fromSelect, ...fromManual])).slice(0, 8);
+  }, [selected, manualIds]);
 
   const discover = async () => {
     setLoading(true);
@@ -63,17 +76,67 @@ export function TelegramSetupWizard() {
     }
   };
 
+  const sendNow = async (mode: "today" | "slot0") => {
+    const chatIds = resolveChatIds();
+    if (!token.trim() && chatIds.length === 0) {
+      toast.error("Token + kam se kam 1 chat ID chahiye");
+      return;
+    }
+    if (chatIds.length === 0) {
+      toast.error("Group chat ID select/paste karo (max 8)");
+      return;
+    }
+    setSending(true);
+    setLastSend("");
+    try {
+      const res = await fetch("/api/admin/telegram/send", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: token.trim() || undefined,
+          chatIds,
+          useTodayPack: mode === "today",
+          slot: mode === "slot0" ? 0 : undefined,
+        }),
+      });
+      const data = (await res.json()) as {
+        error?: string;
+        ok?: boolean;
+        sent?: number;
+        chats?: number;
+        results?: { chatId: string; ok: boolean; error?: string }[];
+        preview?: string;
+      };
+      if (!res.ok) throw new Error(data.error || "Send failed");
+      const fails = (data.results || []).filter((r) => !r.ok);
+      setLastSend(
+        `Sent ${data.sent}/${data.chats}` +
+          (fails.length
+            ? ` — fails: ${fails.map((f) => `${f.chatId}: ${f.error}`).join("; ")}`
+            : "")
+      );
+      if (data.sent && data.sent > 0) {
+        toast.success(`Telegram pe bhej diya (${data.sent} chat)`);
+      } else {
+        toast.error(data.error || "Kisi chat pe nahi gaya — bot admin/permission check");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Send failed");
+    } finally {
+      setSending(false);
+    }
+  };
+
   const envBlock = React.useMemo(() => {
-    const ids = Array.from(selected).slice(0, 8).join(",");
+    const ids = resolveChatIds().join(",");
     const t = token.trim();
     if (!t && !ids) return "";
     return [
       t ? `TELEGRAM_BOT_TOKEN=${t}` : "# TELEGRAM_BOT_TOKEN=paste-from-BotFather",
-      ids
-        ? `TELEGRAM_CHAT_IDS=${ids}`
-        : "# TELEGRAM_CHAT_IDS=-100xxx,-100yyy",
+      ids ? `TELEGRAM_CHAT_IDS=${ids}` : "# TELEGRAM_CHAT_IDS=-100xxx,-100yyy",
     ].join("\n");
-  }, [selected, token]);
+  }, [resolveChatIds, token]);
 
   const toggle = (id: string) => {
     setSelected((prev) => {
@@ -94,11 +157,11 @@ export function TelegramSetupWizard() {
     <section className="rounded-2xl border border-sky-500/30 bg-sky-500/5 p-5 space-y-4">
       <div className="flex items-center gap-2">
         <Bot className="h-5 w-5 text-sky-500" />
-        <h2 className="font-display text-lg font-bold">Telegram setup (app se nikaalo)</h2>
+        <h2 className="font-display text-lg font-bold">Telegram — setup + Send now</h2>
       </div>
       <ol className="list-decimal space-y-1.5 pl-5 text-sm text-muted-foreground">
         <li>
-          Telegram pe{" "}
+          Phone Telegram →{" "}
           <a
             href="https://t.me/BotFather"
             target="_blank"
@@ -109,9 +172,11 @@ export function TelegramSetupWizard() {
           </a>{" "}
           → <code className="text-xs">/newbot</code> → token copy
         </li>
-        <li>Token neeche paste → Discover</li>
-        <li>Bot ko group mein add karo + group mein 1 message → phir Discover dubara</li>
-        <li>Groups tick karo → Copy .env → server pe daalo</li>
+        <li>Token paste → Discover (optional) ya chat IDs manually</li>
+        <li>Bot ko group mein add + post permission</li>
+        <li>
+          <strong className="text-foreground">Send today tip</strong> dabao — message abhi groups pe jayega
+        </li>
       </ol>
 
       <div className="space-y-2">
@@ -128,6 +193,7 @@ export function TelegramSetupWizard() {
           />
           <Button
             type="button"
+            variant="outline"
             onClick={() => void discover()}
             disabled={loading}
             className="gap-1.5 shrink-0"
@@ -140,9 +206,20 @@ export function TelegramSetupWizard() {
             Discover chats
           </Button>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="tg-ids">Chat IDs (comma-separated, max 8)</Label>
+        <Textarea
+          id="tg-ids"
+          placeholder="-1001234567890, -1009876543210"
+          value={manualIds}
+          onChange={(e) => setManualIds(e.target.value)}
+          className="font-mono text-xs min-h-[64px]"
+        />
         <p className="text-[11px] text-muted-foreground">
-          Token is request pe use hota hai — yahan save nahi hota. Empty chhodoge to
-          server <code className="text-[10px]">TELEGRAM_BOT_TOKEN</code> try hoga.
+          ID nahi pata? Discover use karo, ya group mein{" "}
+          <code className="text-[10px]">@userinfobot</code> add karke ID maango.
         </p>
       </div>
 
@@ -159,8 +236,8 @@ export function TelegramSetupWizard() {
 
       {chats.length > 0 ? (
         <div className="space-y-2">
-          <p className="text-sm font-medium">Groups / chats (tick → env)</p>
-          <ul className="space-y-2 max-h-64 overflow-y-auto">
+          <p className="text-sm font-medium">Discovered chats (tick)</p>
+          <ul className="space-y-2 max-h-48 overflow-y-auto">
             {chats.map((c) => (
               <li key={c.id}>
                 <label className="flex items-start gap-3 rounded-xl border bg-background/80 p-3 cursor-pointer hover:border-sky-500/40">
@@ -176,19 +253,6 @@ export function TelegramSetupWizard() {
                       {c.id} · {c.type}
                     </span>
                   </span>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    className="shrink-0"
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      await navigator.clipboard.writeText(c.id);
-                      toast.success("Chat ID copied");
-                    }}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
                 </label>
               </li>
             ))}
@@ -196,15 +260,45 @@ export function TelegramSetupWizard() {
         </div>
       ) : null}
 
+      <div className="flex flex-wrap gap-2 pt-1">
+        <Button
+          type="button"
+          className="gap-1.5"
+          disabled={sending}
+          onClick={() => void sendNow("today")}
+        >
+          {sending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
+          Send today tip (money + job)
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="gap-1.5"
+          disabled={sending}
+          onClick={() => void sendNow("slot0")}
+        >
+          <Send className="h-4 w-4" />
+          Send slot-0 tip
+        </Button>
+      </div>
+      {lastSend ? (
+        <p className="text-xs text-muted-foreground font-mono break-all">{lastSend}</p>
+      ) : null}
+
       {envBlock ? (
-        <div className="space-y-2">
-          <p className="text-sm font-medium">.env lines (server pe paste)</p>
+        <div className="space-y-2 border-t border-border/50 pt-4">
+          <p className="text-sm font-medium">Daily auto (cron) ke liye .env</p>
           <pre className="rounded-xl border bg-background p-3 text-[11px] font-mono overflow-x-auto whitespace-pre-wrap">
             {envBlock}
           </pre>
           <Button
             type="button"
             size="sm"
+            variant="secondary"
             className="gap-1.5"
             onClick={async () => {
               await navigator.clipboard.writeText(envBlock);

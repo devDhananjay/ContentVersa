@@ -47,7 +47,7 @@ export function tipMessageForSlot(slot: number): string {
   return buildSingleLinkMessage(j, "job");
 }
 
-async function sendToChat(
+export async function sendToChat(
   token: string,
   chatId: string,
   text: string
@@ -74,6 +74,42 @@ async function sendToChat(
     };
   }
   return { chatId, ok: true };
+}
+
+/** Admin / manual send — token + chat list from request or env (max 8). */
+export async function sendTelegramTipMessage(opts: {
+  text: string;
+  token?: string;
+  chatIds?: string[];
+}): Promise<{
+  configured: boolean;
+  chats: number;
+  sent: number;
+  results: { chatId: string; ok: boolean; error?: string }[];
+}> {
+  const token = (opts.token || process.env.TELEGRAM_BOT_TOKEN || "").trim();
+  const chatIds = (opts.chatIds?.length ? opts.chatIds : getTelegramChatIds())
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 8);
+  const text = opts.text.trim();
+
+  if (!token || !chatIds.length || !text) {
+    return { configured: false, chats: chatIds.length, sent: 0, results: [] };
+  }
+
+  const results: { chatId: string; ok: boolean; error?: string }[] = [];
+  for (const chatId of chatIds) {
+    if (results.length) await new Promise((r) => setTimeout(r, 800));
+    results.push(await sendToChat(token, chatId, text));
+  }
+
+  return {
+    configured: true,
+    chats: chatIds.length,
+    sent: results.filter((r) => r.ok).length,
+    results,
+  };
 }
 
 export async function postTelegramDailyTips(slot: number): Promise<{
