@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, BookOpen, Flame, Megaphone, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowUpRight, BookOpen, Megaphone, Sparkles, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { SiteVoiceSearch } from "@/components/search/site-voice-search";
@@ -418,11 +418,11 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
               >
                 <span
                   className={cn(
-                    "inline-flex h-7 shrink-0 items-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-2.5 text-[10px] font-bold uppercase tracking-wider text-white",
-                    cinematic && "shadow-[0_4px_14px_-6px_rgba(249,115,22,0.65)]"
+                    "inline-flex h-7 shrink-0 items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground",
+                    cinematic && "dark:text-white/55"
                   )}
                 >
-                  <Flame className="h-3 w-3" aria-hidden />
+                  <TrendingUp className="h-3.5 w-3.5 text-red-500" aria-hidden />
                   {t("home.trendSearchesTitleLead", "Trending")}
                 </span>
                 {trendChips.map((kw) => (
@@ -430,14 +430,14 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                     key={kw.href}
                     href={kw.href}
                     className={cn(
-                      "inline-flex h-7 max-w-[12rem] items-center gap-1 truncate rounded-full border border-orange-500/25 bg-orange-500/10 px-2.5 text-[11px] font-semibold text-orange-700 shadow-sm backdrop-blur-sm transition-colors dark:text-orange-300",
-                      "hover:border-orange-400/50 hover:bg-orange-500/15",
+                      "inline-flex h-7 max-w-[12rem] items-center gap-1 truncate rounded-full border border-border/70 bg-card px-2.5 text-[11px] font-medium text-foreground shadow-sm backdrop-blur-sm transition-colors",
+                      "hover:border-red-500/35 hover:bg-muted/60",
                       cinematic &&
-                        "dark:border-orange-400/30 dark:bg-orange-500/15 dark:text-orange-200 dark:hover:border-orange-400/45 dark:hover:bg-orange-500/25"
+                        "dark:border-white/15 dark:bg-white/10 dark:text-white/85 dark:hover:border-red-400/40 dark:hover:bg-white/15"
                     )}
                     title={kw.traffic ? `${kw.title} (~${kw.traffic})` : kw.title}
                   >
-                    <TrendingUp className="h-3 w-3 shrink-0 opacity-80" aria-hidden />
+                    <TrendingUp className="h-3 w-3 shrink-0 text-red-500" aria-hidden />
                     <span className="truncate">{kw.title}</span>
                   </LocaleLink>
                 ))}

@@ -112,7 +112,7 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
       {trendingKeywords.length > 0 ? (
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            <TrendingUp className="h-3.5 w-3.5 text-orange-500" aria-hidden />
+            <TrendingUp className="h-3.5 w-3.5 text-red-500" aria-hidden />
             Trending
           </span>
           {trendingKeywords.map((kw) => {
@@ -126,11 +126,11 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
                 className={cn(
                   "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
                   active
-                    ? "border-orange-500/50 bg-orange-500/10 text-orange-700 dark:text-orange-300"
-                    : "border-border/70 bg-background text-foreground hover:border-orange-500/40 hover:bg-orange-500/5"
+                    ? "border-red-500/45 bg-red-500/10 text-red-700 dark:text-red-300"
+                    : "border-border/70 bg-card text-foreground hover:border-red-500/35 hover:bg-muted/60"
                 )}
               >
-                <TrendingUp className="h-3 w-3 text-orange-500" aria-hidden />
+                <TrendingUp className="h-3 w-3 text-red-500" aria-hidden />
                 {kw}
                 {active ? <X className="h-3 w-3 opacity-70" aria-hidden /> : null}
               </button>

@@ -144,16 +144,17 @@ export function TrendingSearchesSection({ items }: Props) {
 
         {/* Quick chip row — “TRENDING · Box Office · Tiger Shroff …” */}
         <div className="mb-6 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-white">
-            <Flame className="h-3.5 w-3.5" />
+          <span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <TrendingUp className="h-3.5 w-3.5 text-red-500" aria-hidden />
             {t("home.trendSearchesTitleLead", "Trending")}
           </span>
           {chips.map((trend) => (
             <LocaleLink
               key={`chip-${trend.slug}`}
               href={trend.href}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-card/80 px-3 py-1.5 text-xs font-semibold transition hover:border-orange-400/50 hover:bg-orange-500/10 hover:text-orange-700 dark:hover:text-orange-300"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border/70 bg-card px-3 py-1.5 text-xs font-medium transition hover:border-red-500/35 hover:bg-muted/60"
             >
+              <TrendingUp className="h-3 w-3 shrink-0 text-red-500" aria-hidden />
               {trend.title}
               {trend.traffic ? (
                 <span className="text-[10px] font-normal text-muted-foreground">
