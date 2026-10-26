@@ -13,6 +13,9 @@ TELEGRAM_CHAT_IDS=-100xxxxxxxxxx,-100yyyyyyyyyy
 
 `TELEGRAM_CHAT_IDS` = comma-separated group/channel IDs (max 8).
 
+Live (EC2): private DM `6017754332` + channel **ContentVerse India Tips** `-1004371530121`  
+Invite: https://t.me/+TPRn45-lJA44N2U1 — bot `@ContentVerseTipsBot` is admin (post rights).
+
 ## 2) Group mein bot
 1. Group → Add members → apna bot  
 2. Bot ko **post permission** (admin recommended for channels)  

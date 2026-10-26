@@ -85,10 +85,10 @@ export const SITE = {
     "https://www.instagram.com/contentverse",
     "https://www.youtube.com/@contentverse",
     "https://github.com/devDhananjay/ContentVersa",
-    "https://t.me/ContentVerseTipsBot",
+    "https://t.me/+TPRn45-lJA44N2U1",
   ] as string[],
-  /** Telegram bot / channel for tips (footer + JSON-LD). */
-  telegram: "https://t.me/ContentVerseTipsBot",
+  /** Telegram tips channel (footer + JSON-LD). */
+  telegram: "https://t.me/+TPRn45-lJA44N2U1",
   ogImage: "/og-default.png",
   logo: SITE_LOGO_URL,
   logoIcon: "/logo-mark.svg",
