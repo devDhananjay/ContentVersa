@@ -187,7 +187,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="relative mx-auto w-full max-w-[96rem] px-2 pt-5 pb-8 sm:px-3 md:pt-7 md:pb-10">
+      <div className="relative mx-auto w-full max-w-[96rem] px-2 pt-7 pb-11 sm:px-3 md:pt-10 md:pb-14">
         {/* Ads sit at the outer corners; hero content stays centered */}
         <div className="flex w-full items-start">
           <div className="hidden w-[160px] shrink-0 justify-start pt-2 xl:flex 2xl:w-[180px]">
@@ -206,7 +206,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
           >
             {/* Advertise CTA — compact pill above the editorial eyebrow */}
             <motion.div
-              className="mb-2 flex justify-center"
+              className="mb-3 flex justify-center"
               initial={reduce ? false : { opacity: 0, y: 8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 0.02, duration: 0.45, ease: easeOut }}
@@ -341,7 +341,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             {/* Brand */}
             <h1
               className={cn(
-                "mt-3 font-display font-semibold tracking-[-0.03em] text-[clamp(1.85rem,4.2vw,2.85rem)] leading-[1.1]",
+                "mt-4 font-display font-semibold tracking-[-0.03em] text-[clamp(2rem,4.6vw,3.1rem)] leading-[1.1]",
                 cinematic && "dark:drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
               )}
             >
@@ -356,7 +356,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             </h1>
 
             <motion.div
-              className="mt-2.5 h-px w-10 origin-center bg-gradient-to-r from-transparent via-primary/55 to-transparent"
+              className="mt-3 h-px w-10 origin-center bg-gradient-to-r from-transparent via-primary/55 to-transparent"
               initial={reduce ? false : { scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ delay: 0.18, duration: 0.45 }}
@@ -364,7 +364,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
             <motion.p
               className={cn(
-                "mt-2.5 inline-flex max-w-full flex-wrap items-baseline justify-center gap-x-1.5 font-display text-[clamp(0.92rem,1.9vw,1.1rem)] font-medium leading-[1.4] tracking-[-0.012em]",
+                "mt-3 inline-flex max-w-full flex-wrap items-baseline justify-center gap-x-1.5 font-display text-[clamp(0.95rem,2vw,1.15rem)] font-medium leading-[1.45] tracking-[-0.012em]",
                 "text-foreground/80",
                 cinematic && "dark:text-white/85"
               )}
@@ -380,7 +380,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
             <motion.p
               className={cn(
-                "mt-2 max-w-lg text-pretty text-[12px] leading-snug text-muted-foreground sm:text-[13px]",
+                "mt-3 max-w-lg text-pretty text-[13px] leading-relaxed text-muted-foreground sm:text-sm",
                 cinematic && "dark:text-white/65"
               )}
               initial={reduce ? false : { opacity: 0, y: 6 }}
@@ -391,7 +391,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             </motion.p>
 
             <motion.div
-              className="mt-4 w-full"
+              className="mt-5 w-full"
               initial={reduce ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.36, duration: 0.45 }}
@@ -410,7 +410,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
             {trendChips.length > 0 ? (
               <motion.div
-                className="mt-2.5 flex w-full max-w-xl flex-wrap items-center justify-center gap-1.5"
+                className="mt-3.5 flex w-full max-w-xl flex-wrap items-center justify-center gap-2"
                 initial={reduce ? false : { opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.4 }}
@@ -445,7 +445,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             ) : null}
 
             <motion.div
-              className="mt-3.5 flex items-center justify-center gap-2"
+              className="mt-5 flex items-center justify-center gap-2.5"
               initial={reduce ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.44, duration: 0.4 }}
@@ -481,7 +481,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             </motion.div>
 
             <motion.div
-              className="mt-5 flex w-full flex-col items-center gap-2.5 border-t border-border/40 pt-4"
+              className="mt-7 flex w-full flex-col items-center gap-3 border-t border-border/40 pt-5"
               initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.52, duration: 0.4 }}

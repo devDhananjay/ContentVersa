@@ -1,6 +1,7 @@
 {
   "version": 1,
   "functions": {
+    "/api/auth/google/callback": {},
     "/api/auth/firebase": {},
     "/api/auth/google/login": {},
     "/api/cron/sports-sync": {
@@ -9,11 +10,10 @@
     "/api/cron/toi-news": {
       "maxDuration": 300
     },
-    "/api/auth/google/callback": {},
-    "/api/moneyverse/bank-statement/analyze": {},
     "/api/moneyverse/bank-statement/quota": {},
-    "/api/upload": {},
     "/api/reels/upload": {},
+    "/api/moneyverse/bank-statement/analyze": {},
+    "/api/upload": {},
     "/uploads/[filename]": {}
   }
 }
