@@ -1,5 +1,7 @@
 import { cache } from "react";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { DEFAULT_PAGES_HI } from "@/lib/data/site-pages-hi";
+import type { AppLocale } from "@/lib/i18n/config";
 import { CONTACT_EMAIL, LEGACY_CONTACT_EMAIL, normalizeContactEmail } from "@/lib/site-contact";
 
 export type SitePageSection = {
@@ -777,11 +779,28 @@ export async function ensureSitePagesInDb() {
   }
 }
 
-export async function getSitePage(slug: string): Promise<SitePageData | null> {
+export async function getSitePage(
+  slug: string,
+  locale: AppLocale = "en"
+): Promise<SitePageData | null> {
   if (!(SITE_PAGE_SLUGS as readonly string[]).includes(slug)) return null;
 
   const key = slug as SitePageSlug;
   const fallback = DEFAULT_PAGES[key];
+  const hiFallback = DEFAULT_PAGES_HI[key];
+
+  // Free HI mode: serve code Hindi bodies (DB is English-only today).
+  if (locale === "hi") {
+    if (!isDatabaseConfigured()) {
+      return { ...hiFallback };
+    }
+    await ensureSitePagesInDb();
+    const row = await prisma.sitePage.findUnique({ where: { slug } });
+    return {
+      ...hiFallback,
+      updatedAt: row?.updatedAt?.toISOString(),
+    };
+  }
 
   if (!isDatabaseConfigured()) {
     return { ...fallback };
@@ -799,7 +818,9 @@ export async function getSitePage(slug: string): Promise<SitePageData | null> {
   return mapped;
 }
 
-export const getSitePageCached = cache(getSitePage);
+export const getSitePageCached = cache(
+  (slug: string, locale: AppLocale = "en") => getSitePage(slug, locale)
+);
 
 export async function updateSitePage(
   slug: SitePageSlug,

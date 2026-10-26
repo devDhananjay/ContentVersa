@@ -30,3 +30,17 @@ export function t(
   }
   return typeof cur === "string" ? cur : fallback ?? path;
 }
+
+/** Replace `{key}` placeholders in a translated string. */
+export function tf(
+  dict: Dictionary,
+  path: string,
+  vars: Record<string, string | number>,
+  fallback?: string
+): string {
+  let out = t(dict, path, fallback);
+  for (const [k, v] of Object.entries(vars)) {
+    out = out.replaceAll(`{${k}}`, String(v));
+  }
+  return out;
+}

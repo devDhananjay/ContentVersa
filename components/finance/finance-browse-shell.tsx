@@ -3,6 +3,8 @@ import { TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PageBack } from "@/components/site/page-back";
 import { FinanceHubLive } from "./finance-hub-live";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getFinanceHubDataCached } from "@/lib/finance/data";
 
 const HERO_IMAGE =
@@ -14,13 +16,15 @@ export async function FinanceBrowseShell({
   children: React.ReactNode;
 }) {
   const hub = await getFinanceHubDataCached();
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
 
   return (
     <div>
       <section className="relative h-[180px] md:h-[220px] overflow-hidden rounded-b-2xl mx-0">
         <Image
           src={HERO_IMAGE}
-          alt="Finance Hub"
+          alt={t(dict, "hubs.financeTitle")}
           fill
           priority
           sizes="100vw"
@@ -28,15 +32,15 @@ export async function FinanceBrowseShell({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/60" />
         <div className="container relative h-full flex flex-col justify-end pb-6">
-          <PageBack href="/" label="Home" tone="onDark" className="mb-3" />
+          <PageBack href="/" label={t(dict, "common.home")} tone="onDark" className="mb-3" />
           <Badge variant="outline" className="w-fit mb-2 text-[10px] gap-1 h-5">
-            <TrendingUp className="h-2.5 w-2.5" /> Indian Markets
+            <TrendingUp className="h-2.5 w-2.5" /> {t(dict, "hubs.financeBadge")}
           </Badge>
           <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">
-            Finance Hub
+            {t(dict, "hubs.financeTitle")}
           </h1>
           <p className="mt-1 text-xs md:text-sm text-muted-foreground max-w-md">
-            Live markets · MoneyVerse guides · SIP, gold, loans & tax
+            {t(dict, "hubs.financeSub")}
           </p>
         </div>
       </section>

@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { PageBack } from "@/components/site/page-back";
 import { GoldPriceHub } from "./gold-price-hub";
 import { SilverRateTool } from "@/components/tools/silver-rate-tool";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getGoldPriceSnapshot } from "@/lib/goldverse/gold-price";
 import { getSilverPriceSnapshot } from "@/lib/goldverse/silver-price";
 
@@ -20,13 +22,15 @@ export async function GoldVerseBrowseShell({
     getGoldPriceSnapshot(),
     getSilverPriceSnapshot(),
   ]);
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
 
   return (
     <div>
       <section className="relative mx-0 h-[210px] overflow-hidden rounded-b-2xl md:h-[260px]">
         <Image
           src={HERO_IMAGE}
-          alt="GoldVerse — Gold HUID verification India"
+          alt={t(dict, "hubs.goldTitle")}
           fill
           priority
           sizes="100vw"
@@ -35,19 +39,18 @@ export async function GoldVerseBrowseShell({
         <div className="absolute inset-0 bg-gradient-to-br from-amber-950/80 via-background/90 to-background/70" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.15),transparent_55%)]" />
         <div className="container relative flex h-full flex-col justify-end pb-6">
-          <PageBack href="/" label="Home" tone="onDark" className="mb-3" />
+          <PageBack href="/" label={t(dict, "common.home")} tone="onDark" className="mb-3" />
           <Badge
             variant="outline"
             className="mb-2 h-5 w-fit gap-1 border-amber-500/40 text-[10px] text-amber-200"
           >
-            <Gem className="h-2.5 w-2.5" /> BIS Hallmark · India
+            <Gem className="h-2.5 w-2.5" /> {t(dict, "hubs.goldBadge")}
           </Badge>
           <h1 className="font-display text-2xl font-bold tracking-tight md:text-4xl">
             Gold<span className="text-amber-400">Verse</span>
           </h1>
           <p className="mt-1 max-w-xl text-xs text-muted-foreground md:text-sm">
-            HUID verify, gold & silver rates, hallmark guide & BIS tools — for buyers
-            and jewellers across India
+            {t(dict, "hubs.goldSub")}
           </p>
         </div>
       </section>

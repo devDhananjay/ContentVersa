@@ -1,27 +1,31 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Briefcase, Building2, Landmark } from "lucide-react";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
+import { stripLocalePrefix } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
-  { href: "/jobs", label: "Overview", icon: Briefcase, exact: true },
-  { href: "/jobs/govt", label: "Govt Jobs", icon: Landmark, exact: false },
-  { href: "/jobs/private", label: "Private Jobs", icon: Building2, exact: false },
-];
+  { href: "/jobs", labelKey: "hubs.jobsNavOverview", icon: Briefcase, exact: true },
+  { href: "/jobs/govt", labelKey: "hubs.jobsNavGovt", icon: Landmark, exact: false },
+  { href: "/jobs/private", labelKey: "hubs.jobsNavPrivate", icon: Building2, exact: false },
+] as const;
 
 export function JobsNav() {
   const pathname = usePathname();
+  const path = stripLocalePrefix(pathname || "/");
+  const { t } = useDictionary();
 
   return (
     <nav className="inline-flex flex-wrap gap-1 rounded-xl bg-muted/60 p-1 border border-border/50">
       {LINKS.map((link) => {
         const active = link.exact
-          ? pathname === link.href
-          : pathname?.startsWith(link.href);
+          ? path === link.href
+          : path === link.href || path.startsWith(`${link.href}/`);
         return (
-          <Link
+          <LocaleLink
             key={link.href}
             href={link.href}
             className={cn(
@@ -32,8 +36,8 @@ export function JobsNav() {
             )}
           >
             <link.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-            {link.label}
-          </Link>
+            {t(link.labelKey)}
+          </LocaleLink>
         );
       })}
     </nav>

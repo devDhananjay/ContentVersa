@@ -19,69 +19,73 @@ import {
   hubFaqJsonLd,
 } from "@/lib/seo/hub-seo";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "India Guides — Trending, Govt Schemes, Money, Jobs, Cricket, AI & Movies",
-  description:
-    "Free India explainers built for search: 30 high-intent topics — FASTag, EMI, SIP, tax, CIBIL, UPI fraud, PPF, schemes, jobs — plus cricket, AI, and OTT watch guides.",
-  path: GUIDES_HUB_PATH,
-  keywords: [
-    "india guides",
-    "fastag guide india",
-    "emi calculator guide",
-    "sip beginners india",
-    "cibil score india",
-    "upi fraud india",
-    "ppf account rules",
-    "ifsc code guide",
-    "govt schemes eligibility",
-    "why is it trending",
-    "sarkari job notification",
-    "ContentVerse India guides",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const { getRequestLocale } = await import("@/lib/i18n/locale-server");
+  const { getDictionary, t } = await import("@/lib/i18n/get-dictionary");
+  const { withLocalePrefix } = await import("@/lib/i18n/config");
+  const { buildHreflangAlternates } = await import("@/lib/i18n/hreflang");
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  return buildMetadata({
+    title: `${t(dict, "hubs.guidesBadge")} — ${t(dict, "hubs.guidesTitle")} ${t(dict, "hubs.guidesTitleAccent")}`,
+    description: t(dict, "hubs.guidesSub"),
+    path: withLocalePrefix(GUIDES_HUB_PATH, locale),
+    alternates: buildHreflangAlternates(GUIDES_HUB_PATH),
+    keywords: [
+      "india guides",
+      "fastag guide india",
+      "emi calculator guide",
+      "sip beginners india",
+      "cibil score india",
+      "ContentVerse India guides",
+    ],
+  });
+}
 
-export default function GuidesHubPage() {
+export default async function GuidesHubPage() {
+  const { getRequestLocale } = await import("@/lib/i18n/locale-server");
+  const { getDictionary, t } = await import("@/lib/i18n/get-dictionary");
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const blocks = [
     guidesHubJsonLd(),
     top30GuidesItemListJsonLd(),
     hubFaqJsonLd(GUIDES_HUB_FAQS),
-    hubBreadcrumbJsonLd("India Guides", GUIDES_HUB_PATH),
+    hubBreadcrumbJsonLd(t(dict, "hubs.guidesBadge"), GUIDES_HUB_PATH),
   ];
 
   return (
     <div className="container space-y-10 py-8 md:py-10">
       <HubJsonLd blocks={blocks} />
 
-      <PageBack href="/" label="Home" />
+      <PageBack href="/" label={t(dict, "common.home")} />
 
       <header className="max-w-3xl space-y-3">
         <Badge variant="neon" className="gap-1">
           <BookOpen className="h-3 w-3" />
-          India Guides
+          {t(dict, "hubs.guidesBadge")}
         </Badge>
         <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
-          Guides built for how India{" "}
-          <span className="text-gradient">searches</span>
+          {t(dict, "hubs.guidesTitle")}{" "}
+          <span className="text-gradient">{t(dict, "hubs.guidesTitleAccent")}</span>
         </h1>
         <p className="text-muted-foreground leading-relaxed">
-          Thirty high-intent topic pages sit on top of six formats — trending,
-          cricket, schemes, jobs, AI, movies, and money. Each pillar uses H2s,
-          FAQs, and links to live tools.
+          {t(dict, "hubs.guidesSub")}
         </p>
         <p className="text-sm text-muted-foreground">
-          Also explore{" "}
+          {t(dict, "common.exploreMore")}:{" "}
           <Link href="/tools" className="text-primary underline-offset-2 hover:underline">
-            India Tools
+            {t(dict, "nav.indiaTools")}
           </Link>
           ,{" "}
           <Link href="/jobs/govt" className="text-primary underline-offset-2 hover:underline">
-            Govt Jobs
+            {t(dict, "hubs.jobsNavGovt")}
           </Link>
-          , and{" "}
+          ,{" "}
           <Link href="/sports" className="text-primary underline-offset-2 hover:underline">
-            Sports
+            {t(dict, "nav.sports")}
           </Link>
           .
         </p>
@@ -92,8 +96,8 @@ export default function GuidesHubPage() {
       <TopThirtyGuidesGrid />
 
       <TopicClustersHubStrip
-        title="Topic clusters"
-        subtitle="Start from a pillar page, then move between guides, tools, and related reading."
+        title={t(dict, "hubs.topicClusters")}
+        subtitle={t(dict, "hubs.guidesSub")}
       />
 
       <YmylDisclaimer kind="schemes" />

@@ -5,23 +5,29 @@ import {
   getSitePageCached,
   type SitePageSlug,
 } from "@/lib/data/site-pages";
+import { withLocalePrefix } from "@/lib/i18n/config";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { buildMetadata } from "@/lib/seo";
 
 export function makeSitePageMetadata(slug: SitePageSlug) {
   return async function generateMetadata(): Promise<Metadata> {
-    const page = await getSitePageCached(slug);
+    const locale = await getRequestLocale();
+    const page = await getSitePageCached(slug, locale);
     if (!page) return buildMetadata({ title: "Page", noIndex: true });
     return buildMetadata({
       title: page.title,
       description: page.subtitle,
-      path: `/${slug}`,
+      path: withLocalePrefix(`/${slug}`, locale),
+      alternates: buildHreflangAlternates(`/${slug}`),
     });
   };
 }
 
 export function makeSitePage(slug: SitePageSlug) {
   return async function SitePage() {
-    const page = await getSitePageCached(slug);
+    const locale = await getRequestLocale();
+    const page = await getSitePageCached(slug, locale);
     if (!page) notFound();
     return <SitePageRenderer page={page} />;
   };

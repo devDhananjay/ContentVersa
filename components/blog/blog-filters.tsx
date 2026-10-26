@@ -13,17 +13,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CATEGORIES } from "@/lib/data/categories";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import { cn } from "@/lib/utils";
 
-const SORTS = [
-  { value: "trending", label: "Trending" },
-  { value: "trending_week", label: "Trending this week" },
-  { value: "most_read_today", label: "Most read today" },
-  { value: "latest", label: "Latest" },
-  { value: "liked", label: "Most Liked" },
-  { value: "viewed", label: "Most Viewed" },
-  { value: "editor", label: "Editor's Choice" },
-];
+const SORT_KEYS = [
+  { value: "trending", labelKey: "blog.sortTrending", fallback: "Trending" },
+  { value: "trending_week", labelKey: "blog.sortTrendingWeek", fallback: "Trending this week" },
+  { value: "most_read_today", labelKey: "blog.sortMostRead", fallback: "Most read today" },
+  { value: "latest", labelKey: "blog.sortLatest", fallback: "Latest" },
+  { value: "liked", labelKey: "blog.sortLiked", fallback: "Most Liked" },
+  { value: "viewed", labelKey: "blog.sortViewed", fallback: "Most Viewed" },
+  { value: "editor", labelKey: "blog.sortEditor", fallback: "Editor's Choice" },
+] as const;
 
 export function BlogFilters({
   defaultQuery = "",
@@ -36,6 +37,7 @@ export function BlogFilters({
 }) {
   const router = useRouter();
   const sp = useSearchParams();
+  const { t } = useDictionary();
   const [q, setQ] = React.useState(defaultQuery);
 
   // Keep search box in sync when URL changes (back/forward, chip clears)
@@ -79,7 +81,7 @@ export function BlogFilters({
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search articles, creators, tags…"
+            placeholder={t("blog.searchPlaceholder")}
             className="pl-9 h-9 text-sm"
           />
           {q ? (
@@ -90,7 +92,7 @@ export function BlogFilters({
                 setParams({ q: undefined });
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2"
-              aria-label="Clear search"
+              aria-label={t("common.clearAll")}
             >
               <X className="h-4 w-4 text-muted-foreground" />
             </button>
@@ -102,18 +104,18 @@ export function BlogFilters({
             onValueChange={(v) => setParams({ sort: v === "trending" ? undefined : v })}
           >
             <SelectTrigger className="w-full sm:w-44 h-9 text-sm">
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder={t("blog.sortTrending")} />
             </SelectTrigger>
             <SelectContent>
-              {SORTS.map((s) => (
+              {SORT_KEYS.map((s) => (
                 <SelectItem key={s.value} value={s.value}>
-                  {s.label}
+                  {t(s.labelKey, s.fallback)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Button type="submit" variant="gradient" size="sm" className="gap-1.5 h-9 px-3">
-            <Sparkles className="h-3.5 w-3.5" /> Apply
+            <Sparkles className="h-3.5 w-3.5" /> {t("common.apply")}
           </Button>
         </div>
       </form>
@@ -129,7 +131,7 @@ export function BlogFilters({
               : "bg-card hover:border-foreground/40"
           )}
         >
-          All
+          {t("common.all")}
         </button>
         {CATEGORIES.map((c) => {
           const active = activeCategory === c.slug;
@@ -148,7 +150,7 @@ export function BlogFilters({
                   : "bg-card hover:border-foreground/40"
               )}
             >
-              {c.name}
+              {t(`categories.${c.slug}`, c.name)}
             </button>
           );
         })}
@@ -156,10 +158,13 @@ export function BlogFilters({
 
       {(activeCategory || defaultQuery || (activeSort && activeSort !== "trending")) && (
         <p className="text-xs text-muted-foreground">
-          Filters:
+          {t("common.filters")}:
           {activeCategory ? (
             <span className="ml-1 font-medium text-foreground">
-              {CATEGORIES.find((c) => c.slug === activeCategory)?.name || activeCategory}
+              {t(
+                `categories.${activeCategory}`,
+                CATEGORIES.find((c) => c.slug === activeCategory)?.name || activeCategory
+              )}
             </span>
           ) : null}
           {defaultQuery ? (
@@ -169,7 +174,11 @@ export function BlogFilters({
           ) : null}
           {activeSort && activeSort !== "trending" ? (
             <span className="ml-1 font-medium text-foreground">
-              · {SORTS.find((s) => s.value === activeSort)?.label || activeSort}
+              ·{" "}
+              {(() => {
+                const s = SORT_KEYS.find((x) => x.value === activeSort);
+                return s ? t(s.labelKey, s.fallback) : activeSort;
+              })()}
             </span>
           ) : null}
           <button
@@ -180,7 +189,7 @@ export function BlogFilters({
               router.push("/blogs");
             }}
           >
-            Clear all
+            {t("common.clearAll")}
           </button>
         </p>
       )}

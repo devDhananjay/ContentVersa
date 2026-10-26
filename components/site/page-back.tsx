@@ -1,5 +1,8 @@
-import Link from "next/link";
+"use client";
+
 import { ArrowLeft } from "lucide-react";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import { cn } from "@/lib/utils";
 
 type PageBackProps = {
@@ -18,9 +21,10 @@ export function PageBack({
   className,
   tone = "default",
 }: PageBackProps) {
+  const { t } = useDictionary();
   const onDark = tone === "onDark";
   return (
-    <Link
+    <LocaleLink
       href={href}
       className={cn(
         "group inline-flex items-center gap-2 text-sm font-medium transition-colors",
@@ -40,8 +44,8 @@ export function PageBack({
       >
         <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
       </span>
-      <span>Back to {label}</span>
-    </Link>
+      <span>{t("common.backTo").replace("{label}", label)}</span>
+    </LocaleLink>
   );
 }
 
@@ -58,12 +62,13 @@ type PageTrailProps = {
 
 /** Back control plus optional breadcrumb row for nested pages. */
 export function PageTrail({ back, crumbs, className }: PageTrailProps) {
+  const { t } = useDictionary();
   return (
     <div className={cn("space-y-3", className)}>
       <PageBack href={back.href} label={back.label} />
       {crumbs && crumbs.length > 0 ? (
         <nav
-          aria-label="Breadcrumb"
+          aria-label={t("common.breadcrumb")}
           className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground"
         >
           {crumbs.map((crumb, i) => (
@@ -73,9 +78,9 @@ export function PageTrail({ back, crumbs, className }: PageTrailProps) {
             >
               {i > 0 ? <span aria-hidden>/</span> : null}
               {crumb.href ? (
-                <Link href={crumb.href} className="hover:text-foreground">
+                <LocaleLink href={crumb.href} className="hover:text-foreground">
                   {crumb.label}
-                </Link>
+                </LocaleLink>
               ) : (
                 <span className="text-foreground line-clamp-1">{crumb.label}</span>
               )}

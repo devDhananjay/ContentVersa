@@ -1,11 +1,12 @@
 import Image from "next/image";
-import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { LiveMatchTicker } from "@/components/sports/live-match-ticker";
 import { SportsNav } from "@/components/sports/sports-nav";
 import { SportsSidebar } from "@/components/sports/sports-sidebar";
 import { PageBack } from "@/components/site/page-back";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getSportsHubDataCached } from "@/lib/sports/data";
 
 const HERO_IMAGE =
@@ -18,13 +19,15 @@ export async function SportsBrowseShell({
 }) {
   const hub = await getSportsHubDataCached();
   const tickerMatches = [...hub.live, ...hub.upcoming, ...hub.recent];
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
 
   return (
     <div>
       <section className="relative h-[240px] md:h-[280px] overflow-hidden">
         <Image
           src={HERO_IMAGE}
-          alt="Sports Hub"
+          alt={t(dict, "hubs.sportsTitle")}
           fill
           priority
           sizes="100vw"
@@ -33,15 +36,15 @@ export async function SportsBrowseShell({
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/75 to-background/45" />
         <div className="absolute inset-0 bg-gradient-to-br from-lime-500/15 via-green-500/5 to-neon-cyan/15 mix-blend-overlay" />
         <div className="container relative h-full flex flex-col justify-end pb-8">
-          <PageBack href="/" label="Home" tone="onDark" className="mb-3" />
+          <PageBack href="/" label={t(dict, "common.home")} tone="onDark" className="mb-3" />
           <Badge variant="gradient" className="w-fit mb-2 text-xs">
-            Cricket · Live
+            {t(dict, "hubs.sportsBadge")}
           </Badge>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
-            Sports Hub
+            {t(dict, "hubs.sportsTitle")}
           </h1>
           <p className="mt-1.5 text-sm text-foreground/75 max-w-xl">
-            Live scores, teams, players and cricket news in one place.
+            {t(dict, "hubs.sportsSub")}
           </p>
         </div>
       </section>
@@ -52,10 +55,7 @@ export async function SportsBrowseShell({
         <div className="container mt-4">
           <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
             <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
-            <p className="text-muted-foreground">
-              Live cricket scores are temporarily unavailable. Browse sports blogs and
-              match guides meanwhile, or check back shortly.
-            </p>
+            <p className="text-muted-foreground">{t(dict, "hubs.sportsUnavailable")}</p>
           </div>
         </div>
       )}

@@ -1,7 +1,9 @@
-import Link from "next/link";
 import type { SitePageData } from "@/lib/data/site-pages";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { MultiplexAd } from "@/components/ads/multiplex-ad";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { CONTACT_EMAIL, normalizeContactEmail } from "@/lib/site-contact";
 import { formatAdminDate } from "@/lib/admin/list-filters";
 import { ArrowRight, Mail } from "lucide-react";
@@ -29,12 +31,12 @@ function TextWithEmail({ text }: { text: string }) {
         <span key={i}>
           {part}
           {i < parts.length - 1 ? (
-            <Link
+            <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="font-medium text-neon-purple hover:underline underline-offset-4"
             >
               {CONTACT_EMAIL}
-            </Link>
+            </a>
           ) : null}
         </span>
       ))}
@@ -42,25 +44,27 @@ function TextWithEmail({ text }: { text: string }) {
   );
 }
 
-const RELATED_LINKS: { href: string; label: string }[] = [
-  { href: "/about", label: "About" },
-  { href: "/creator-program", label: "Creator Program" },
-  { href: "/careers", label: "Careers" },
-  { href: "/press", label: "Press" },
-  { href: "/press-kit", label: "Press Kit" },
-  { href: "/advertise", label: "Advertise" },
-  { href: "/ai", label: "ContentVerse India AI" },
-  { href: "/finance", label: "Finance" },
-  { href: "/jobs", label: "Jobs" },
-  { href: "/tools", label: "India Tools" },
-  { href: "/policy", label: "Content Policy" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
-  { href: "/cookies", label: "Cookies" },
-  { href: "/contact", label: "Contact" },
+const RELATED_LINKS: { href: string; labelKey: string; fallback: string }[] = [
+  { href: "/about", labelKey: "pages.about", fallback: "About" },
+  { href: "/creator-program", labelKey: "pages.creatorProgram", fallback: "Creator Program" },
+  { href: "/careers", labelKey: "pages.careers", fallback: "Careers" },
+  { href: "/press", labelKey: "pages.press", fallback: "Press" },
+  { href: "/press-kit", labelKey: "pages.pressKit", fallback: "Press Kit" },
+  { href: "/advertise", labelKey: "pages.advertise", fallback: "Advertise" },
+  { href: "/ai", labelKey: "hubs.aiTitle", fallback: "ContentVerse India AI" },
+  { href: "/finance", labelKey: "nav.finance", fallback: "Finance" },
+  { href: "/jobs", labelKey: "nav.jobs", fallback: "Jobs" },
+  { href: "/tools", labelKey: "nav.indiaTools", fallback: "India Tools" },
+  { href: "/policy", labelKey: "pages.policy", fallback: "Content Policy" },
+  { href: "/privacy", labelKey: "pages.privacy", fallback: "Privacy" },
+  { href: "/terms", labelKey: "pages.terms", fallback: "Terms" },
+  { href: "/cookies", labelKey: "pages.cookies", fallback: "Cookies" },
+  { href: "/contact", labelKey: "pages.contact", fallback: "Contact" },
 ];
 
-export function SitePageRenderer({ page }: { page: SitePageData }) {
+export async function SitePageRenderer({ page }: { page: SitePageData }) {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const related = RELATED_LINKS.filter((l) => l.href !== `/${page.slug}`);
 
   return (
@@ -68,7 +72,7 @@ export function SitePageRenderer({ page }: { page: SitePageData }) {
       <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-neon-purple/10 via-neon-blue/5 to-transparent pointer-events-none" />
 
       <div className="container relative py-12 md:py-16 max-w-4xl">
-        <PageBack href="/" label="Home" className="mb-6" />
+        <PageBack href="/" label={t(dict, "common.home")} className="mb-6" />
         <header className="mb-10 md:mb-14">
           {page.badge ? (
             <p className="inline-flex items-center rounded-full border border-neon-purple/30 bg-neon-purple/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-neon-purple mb-4">
@@ -83,7 +87,10 @@ export function SitePageRenderer({ page }: { page: SitePageData }) {
           </p>
           {page.updatedAt ? (
             <p className="mt-3 text-xs text-muted-foreground">
-              Last updated {formatAdminDate(page.updatedAt)} IST
+              {t(dict, "common.lastUpdated").replace(
+                "{date}",
+                formatAdminDate(page.updatedAt)
+              )}
             </p>
           ) : null}
         </header>
@@ -176,20 +183,22 @@ export function SitePageRenderer({ page }: { page: SitePageData }) {
         ) : null}
 
         <nav
-          aria-label="Related pages"
+          aria-label={t(dict, "common.exploreMore")}
           className="mt-12 rounded-3xl border bg-card p-6 md:p-8"
         >
-          <h2 className="font-display text-lg font-bold mb-4">Explore more</h2>
+          <h2 className="font-display text-lg font-bold mb-4">
+            {t(dict, "common.exploreMore")}
+          </h2>
           <div className="flex flex-wrap gap-2">
             {related.map((link) => (
-              <Link
+              <LocaleLink
                 key={link.href}
                 href={link.href}
                 className="inline-flex items-center gap-1.5 rounded-full border bg-background px-3.5 py-1.5 text-sm font-medium hover:border-neon-purple/40 hover:text-neon-purple transition-colors"
               >
-                {link.label}
+                {t(dict, link.labelKey, link.fallback)}
                 <ArrowRight className="h-3.5 w-3.5 opacity-60" />
-              </Link>
+              </LocaleLink>
             ))}
           </div>
         </nav>

@@ -19,49 +19,48 @@ import { buildMetadata } from "@/lib/seo";
 import { TOOLS_HUB_PATH } from "@/lib/tools/registry";
 import { toolsHubJsonLd } from "@/lib/tools/tools-seo";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Free India Utility Tools — Weather, Tax, PDF, IFSC & More",
-  description:
-    "Free daily-use tools for India — salary & income tax calculator, weather, currency converter, QR & barcode, merge/split/compress PDF, PNR status, Hindi translator, IFSC, pincode, RTO, EMI, SIP, FD, GST and fuel prices.",
-  path: TOOLS_HUB_PATH,
-  keywords: [
-    "india utility tools",
-    "income tax calculator india",
-    "salary calculator",
-    "merge pdf free",
-    "weather india",
-    "qr code generator",
-    "PNR status check",
-    "english hindi translator",
-    "IFSC finder",
-    "EMI calculator india",
-    "FD calculator",
-    "GST calculator",
-    "silver rate today",
-    "nearby places india",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const { getRequestLocale } = await import("@/lib/i18n/locale-server");
+  const { getDictionary, t } = await import("@/lib/i18n/get-dictionary");
+  const { withLocalePrefix } = await import("@/lib/i18n/config");
+  const { buildHreflangAlternates } = await import("@/lib/i18n/hreflang");
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  return buildMetadata({
+    title: t(dict, "hubs.toolsTitle"),
+    description: t(dict, "hubs.toolsSub"),
+    path: withLocalePrefix(TOOLS_HUB_PATH, locale),
+    alternates: buildHreflangAlternates(TOOLS_HUB_PATH),
+    keywords: [
+      "india utility tools",
+      "income tax calculator india",
+      "IFSC finder",
+      "EMI calculator india",
+      "ContentVerse India tools",
+    ],
+  });
+}
 
-export default function ToolsHubPage() {
+export default async function ToolsHubPage() {
+  const { getRequestLocale } = await import("@/lib/i18n/locale-server");
+  const { getDictionary, t } = await import("@/lib/i18n/get-dictionary");
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const blocks = [
     toolsHubJsonLd(),
     hubFaqJsonLd(TOOLS_HUB_FAQS),
-    hubBreadcrumbJsonLd("India Tools", TOOLS_HUB_PATH),
+    hubBreadcrumbJsonLd(t(dict, "nav.indiaTools"), TOOLS_HUB_PATH),
   ];
 
   return (
     <div className="container space-y-10 py-8 md:py-10">
       <HubJsonLd blocks={blocks} />
-      <PageBack href="/" label="Home" />
+      <PageBack href="/" label={t(dict, "common.home")} />
       <ToolsHubIntro />
-      <HubEditorialIntro title="Free calculators & utilities built for India">
-        <p>
-          ContentVerse India Tools covers everyday search intents — tax, PDF, travel,
-          banking codes, EMI/SIP/FD maths, weather and nearby places — without signup for
-          core utilities.
-        </p>
+      <HubEditorialIntro title={t(dict, "hubs.toolsEditorialTitle")}>
+        <p>{t(dict, "hubs.toolsEditorialBody")}</p>
         <p>
           Popular starts:{" "}
           <Link href="/tools/salary-tax-calculator" className="text-primary hover:underline">
