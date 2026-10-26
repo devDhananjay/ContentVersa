@@ -262,7 +262,15 @@
     "newsletterThanks": "आप जुड़ गए — धन्यवाद!",
     "publishTitle": "ContentVerse India पर लिखना चाहते हैं?",
     "publishSub": "लंबे ब्लॉग लिखें, पोस्ट शेड्यूल करें और समुदाय के साथ बढ़ें।",
-    "publishCta": "लिखना शुरू करें"
+    "publishCta": "लिखना शुरू करें",
+    "trendSearchesEyebrow": "भारत में सबसे ज़्यादा खोजे गए",
+    "trendSearchesTitleLead": "ट्रेंडिंग",
+    "trendSearchesTitleRest": "सर्च",
+    "trendSearchesTitle": "ट्रेंडिंग सर्च",
+    "trendSearchesIntro": "भारत अभी क्या खोज रहा है — विषय खोलकर छोटी ब्रीफ़िंग और संबंधित हेडलाइन पढ़ें।",
+    "trendSearchesAll": "सभी ट्रेंडिंग",
+    "trendSearchesUnit": "सर्च",
+    "trendSearchesOpen": "ब्रीफ़िंग खोलें"
   },
   "admin": {
     "translations": "अनुवाद",

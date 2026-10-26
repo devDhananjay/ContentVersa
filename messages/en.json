@@ -262,7 +262,15 @@
     "newsletterThanks": "You're in — thanks!",
     "publishTitle": "Want to publish on ContentVerse India?",
     "publishSub": "Write long-form blogs, schedule posts and grow with the community.",
-    "publishCta": "Start writing"
+    "publishCta": "Start writing",
+    "trendSearchesEyebrow": "Most searched in India",
+    "trendSearchesTitleLead": "Trending",
+    "trendSearchesTitleRest": "searches",
+    "trendSearchesTitle": "Trending searches",
+    "trendSearchesIntro": "What India is searching right now — open a topic for a short briefing and related headlines.",
+    "trendSearchesAll": "All trending",
+    "trendSearchesUnit": "searches",
+    "trendSearchesOpen": "Open briefing"
   },
   "admin": {
     "translations": "Translations",

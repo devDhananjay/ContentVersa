@@ -27,8 +27,10 @@ import {
 import { ReelsStripSection } from "@/components/reels/reels-strip-section";
 import { LiveNewsSection } from "@/components/home/live-news-section";
 import { LiveNewsReturnScroll } from "@/components/home/live-news-return-scroll";
+import { TrendingSearchesSection } from "@/components/home/trending-searches-section";
 import { getHomePageData } from "@/lib/data/home-data";
 import { getLiveNewsForHome } from "@/lib/data/live-news";
+import { fetchIndiaTrends } from "@/lib/trending/google-trends";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { getFinanceTickerDataCached } from "@/lib/finance/data";
 import { getHomeModulePreviews } from "@/lib/home/module-previews";
@@ -79,6 +81,7 @@ const HOME_SIDEBAR_SECTIONS = [
   { id: "home-top", label: "Home" },
   { id: "home-reels", label: "Reels" },
   { id: "home-live-news", label: "Live News" },
+  { id: "home-trending-searches", label: "Trending" },
   { id: "home-guides", label: "Guides" },
   { id: "about-contentverse-heading", label: "About" },
   { id: "continue-reading", label: "Continue" },
@@ -99,8 +102,17 @@ const HOME_SIDEBAR_SECTIONS = [
 ];
 
 export default async function HomePage() {
-  const [data, sportsTeaser, financeTicker, modulePreviews, jobs, results, gold, liveNews] =
-    await Promise.all([
+  const [
+    data,
+    sportsTeaser,
+    financeTicker,
+    modulePreviews,
+    jobs,
+    results,
+    gold,
+    liveNews,
+    trendingSearches,
+  ] = await Promise.all([
       getHomePageData(),
       getSportsTeaserData(),
       getFinanceTickerDataCached().catch(() => null),
@@ -109,6 +121,7 @@ export default async function HomePage() {
       getGovtJobsCached("results").catch(() => null),
       getGoldPriceSnapshot().catch(() => null),
       getLiveNewsForHome(8).catch(() => []),
+      fetchIndiaTrends().catch(() => []),
     ]);
 
   const jobCards: JobsResultCard[] = [];
@@ -225,6 +238,8 @@ export default async function HomePage() {
 
         <LiveNewsReturnScroll />
         <LiveNewsSection items={liveNews} />
+
+        <TrendingSearchesSection items={trendingSearches} />
 
         <Reveal>
           <HomeModuleSpotlight
