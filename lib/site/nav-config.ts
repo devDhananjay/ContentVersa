@@ -98,8 +98,15 @@ export const NAV_MOBILE_LINKS: NavLinkItem[] = [
 
 export function isNavActive(pathname: string | null, href: string) {
   if (!pathname) return false;
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
+  // Ignore /hi locale prefix for active-state matching
+  const path =
+    pathname === "/hi"
+      ? "/"
+      : pathname.startsWith("/hi/")
+        ? pathname.slice(3)
+        : pathname;
+  if (href === "/") return path === "/";
+  return path === href || path.startsWith(`${href}/`);
 }
 
 export function isDropdownActive(pathname: string | null, items: NavLinkItem[]) {

@@ -57,6 +57,11 @@ import { blogAdSlots, getAdDensity } from "@/lib/ads/density";
 import { getBlogSeriesMeta } from "@/lib/data/series";
 import { PageBack } from "@/components/site/page-back";
 import { dedupeBriefingParagraphs } from "@/lib/seo/toi-news-rewrite";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { resolveLocalizedBlog } from "@/lib/i18n/blog-translations";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
+import { withLocalePrefix } from "@/lib/i18n/config";
+import { LocaleFallbackBanner } from "@/components/i18n/locale-fallback-banner";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +71,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const locale = await getRequestLocale();
   const session = await getCurrentUser();
   const userId = session ? await resolveUserId(session) : null;
   const blog = await getBlogBySlugForViewer(slug, userId);
@@ -77,6 +83,19 @@ export async function generateMetadata({
       noIndex: true,
     });
   }
+  const localized = await resolveLocalizedBlog(
+    {
+      id: blog.id,
+      title: blog.title,
+      excerpt: blog.excerpt ?? null,
+      content: blog.content,
+      metaTitle: blog.metaTitle ?? null,
+      metaDescription: blog.metaDescription ?? null,
+      metaKeywords: blog.metaKeywords,
+      category: blog.category ? { slug: blog.category } : null,
+    },
+    locale
+  );
   const isPublic = blog.status === "PUBLISHED";
   const syndicated = isDiscoverSyndicatedSlug(blog.slug);
   const thin = !isIndexableArticle({
@@ -90,12 +109,36 @@ export async function generateMetadata({
       : []),
     ...blog.tags,
   ];
+  // True only when a published Hindi BlogTranslation exists (not soft EN fallback).
+  const hasPublishedHi =
+    locale === "hi"
+      ? !localized.usedFallback && localized.locale === "hi"
+      : false;
+
+  // For EN requests we still need to know if HI exists for hreflang pairing.
+  let hiPublishedForHreflang = hasPublishedHi;
+  if (locale === "en" && isDatabaseConfigured() && blog.id) {
+    const { getBlogTranslation } = await import("@/lib/i18n/blog-translations");
+    const hi = await getBlogTranslation(blog.id, "hi");
+    hiPublishedForHreflang = hi?.status === "PUBLISHED";
+  }
+
+  const enPath = `/blog/${blog.slug}`;
+  // Free / missing HI: canonical stays EN (avoid duplicate /hi soft-fallback in index).
+  const path =
+    locale === "hi" && !hasPublishedHi
+      ? enPath
+      : withLocalePrefix(enPath, locale);
+  const languages = buildHreflangAlternates(enPath, {
+    includeHi: hiPublishedForHreflang,
+  }).languages;
+
   return buildMetadata({
     title: isPublic
-      ? blog.metaTitle?.trim() || blog.title
-      : `${blog.metaTitle?.trim() || blog.title} (Preview)`,
-    description: blog.metaDescription?.trim() || blog.excerpt,
-    path: `/blog/${blog.slug}`,
+      ? localized.metaTitle?.trim() || localized.title
+      : `${localized.metaTitle?.trim() || localized.title} (Preview)`,
+    description: localized.metaDescription?.trim() || localized.excerpt || undefined,
+    path,
     canonicalUrl: blog.canonicalUrl?.trim() || undefined,
     image: resolveBlogCoverImage(blog.coverImage),
     type: "article",
@@ -103,7 +146,12 @@ export async function generateMetadata({
     modifiedTime: blog.updatedAt || blog.publishedAt,
     authors: [blog.author.name],
     keywords: keywordList.length ? keywordList : blog.tags,
-    noIndex: !isPublic || syndicated || thin,
+    noIndex:
+      !isPublic ||
+      syndicated ||
+      thin ||
+      (locale === "hi" && !hasPublishedHi),
+    alternates: { languages },
   });
 }
 
@@ -113,6 +161,7 @@ export default async function BlogPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const locale = await getRequestLocale();
   const session = await getCurrentUser();
   const userId = session ? await resolveUserId(session) : null;
   const blog = await getBlogBySlugForViewer(slug, userId);
@@ -121,14 +170,29 @@ export default async function BlogPage({
     permanentRedirect(redirectTargetFromCanonical(blog.canonicalUrl));
   }
 
+  const localized = await resolveLocalizedBlog(
+    {
+      id: blog.id,
+      title: blog.title,
+      excerpt: blog.excerpt ?? null,
+      content: blog.content,
+      metaTitle: blog.metaTitle ?? null,
+      metaDescription: blog.metaDescription ?? null,
+      metaKeywords: blog.metaKeywords,
+      category: blog.category ? { slug: blog.category } : null,
+    },
+    locale
+  );
+
   const isPublic = blog.status === "PUBLISHED";
   const category = CATEGORIES.find((c) => c.slug === blog.category);
   const isToiBriefing = Boolean(blog.metaKeywords?.includes("toi-rewrite"));
+  const rawBody = localized.content;
   const bodyContent = isToiBriefing
-    ? dedupeBriefingParagraphs(blog.content)
-    : blog.content;
+    ? dedupeBriefingParagraphs(rawBody)
+    : rawBody;
   const toc = extractTOC(bodyContent);
-  const url = `${SITE.url}/blog/${blog.slug}`;
+  const url = `${SITE.url}${withLocalePrefix(`/blog/${blog.slug}`, locale)}`;
 
   const engagement =
     isPublic && isDatabaseConfigured() && blog.id
@@ -155,8 +219,8 @@ export default async function BlogPage({
     !isPublic || syndicated || thinArticle
       ? null
       : articleJsonLd({
-          title: blog.title,
-          description: blog.excerpt,
+          title: localized.title,
+          description: localized.excerpt || blog.excerpt,
           url,
           image: resolveBlogCoverImage(blog.coverImage),
           datePublished: blog.publishedAt,
@@ -233,6 +297,12 @@ export default async function BlogPage({
             parts={seriesMeta.parts}
           />
         ) : null}
+        <LocaleFallbackBanner
+          locale={locale}
+          usedFallback={localized.usedFallback}
+          translationStatus={localized.translationStatus}
+          slug={blog.slug}
+        />
         <header className="mb-8">
           <div className="flex flex-wrap items-center gap-2 mb-5">
             {!isPublic ? (
@@ -254,11 +324,11 @@ export default async function BlogPage({
             {blog.editorPick && <Badge variant="neon">Editor&apos;s Pick</Badge>}
           </div>
           <h1 className="font-display text-3xl md:text-5xl font-semibold tracking-[-0.01em] leading-[1.2]">
-            {blog.title}
+            {localized.title}
           </h1>
-          {blog.excerpt && (
+          {localized.excerpt && (
             <p className="mt-5 text-xl text-muted-foreground max-w-3xl">
-              {blog.excerpt}
+              {localized.excerpt}
             </p>
           )}
 
@@ -330,7 +400,7 @@ export default async function BlogPage({
                   initialFollowerCount={blog.author.followers}
                 />
               ) : null}
-              <ShareBar url={url} title={blog.title} imageUrl={blog.coverImage} />
+              <ShareBar url={url} title={localized.title} imageUrl={blog.coverImage} />
               {blog.id && !isOwnArticle && (
                 <ReportContentButton targetType="BLOG" targetId={blog.id} />
               )}
@@ -547,7 +617,7 @@ export default async function BlogPage({
         </div>
 
         {isPublic ? (
-          <StickyWhatsAppShare url={url} title={blog.title} />
+          <StickyWhatsAppShare url={url} title={localized.title} />
         ) : null}
 
         <Suspense fallback={null}>

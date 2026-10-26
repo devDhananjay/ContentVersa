@@ -42,25 +42,37 @@ import { HomeEditorialSection } from "@/components/home/home-editorial-section";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { BandAd } from "@/components/ads/band-ad";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { withLocalePrefix } from "@/lib/i18n/config";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "ContentVerse India — original Indian guides, explainers and stories",
-  description:
-    "Original Indian guides, explainers and stories on money, schemes, jobs, and everyday how-tos — with free calculators as supporting tools.",
-  path: "/",
-  keywords: [
-    "ContentVerse India",
-    "contentverse.co.in",
-    "Indian guides",
-    "SIP calculator India",
-    "CIBIL credit score India",
-    "HUID verification",
-    "government schemes India",
-    "free India tools",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title:
+      locale === "hi"
+        ? "ContentVerse India — भारतीय गाइड्स, समझाने वाले लेख और कहानियाँ"
+        : "ContentVerse India — original Indian guides, explainers and stories",
+    description:
+      locale === "hi"
+        ? "पैसे, योजनाएँ, नौकरियाँ और रोज़मर्रा के कैसे-करें — मूल भारतीय गाइड्स और मुफ़्त कैलकुलेटर्स।"
+        : "Original Indian guides, explainers and stories on money, schemes, jobs, and everyday how-tos — with free calculators as supporting tools.",
+    path: withLocalePrefix("/", locale),
+    keywords: [
+      "ContentVerse India",
+      "contentverse.co.in",
+      "Indian guides",
+      "SIP calculator India",
+      "CIBIL credit score India",
+      "HUID verification",
+      "government schemes India",
+      "free India tools",
+    ],
+    alternates: buildHreflangAlternates("/"),
+  });
+}
 
 /** Editorial-first order for AdSense / quality review. */
 const HOME_SIDEBAR_SECTIONS = [

@@ -18,6 +18,7 @@ import {
   Share2,
   LineChart,
   Send,
+  Languages,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CreatorDashboardLink } from "@/components/admin/creator-dashboard-link";
@@ -58,6 +59,7 @@ export function AdminSidebar({
       badge: pendingReelCount > 0 ? pendingReelCount : undefined,
     },
     { href: "/admin/blogs", label: "All blogs", icon: FileText },
+    { href: "/admin/translations", label: "Hindi queue", icon: Languages },
     { href: "/admin/ai-articles", label: "AI articles", icon: Sparkles },
     { href: "/admin/seo", label: "SEO pipeline", icon: LineChart },
     { href: "/admin/meta-publishing", label: "Meta publishing", icon: Share2 },

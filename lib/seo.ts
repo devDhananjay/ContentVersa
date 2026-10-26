@@ -127,6 +127,8 @@ export function buildMetadata(input: {
   publishedTime?: string;
   modifiedTime?: string;
   authors?: string[];
+  /** hreflang map from buildHreflangAlternates() */
+  alternates?: { languages?: Record<string, string> };
 }): Metadata {
   const title = input.title
     ? input.title.includes(SITE.name) || input.title.includes("ContentVerse India")
@@ -157,7 +159,12 @@ export function buildMetadata(input: {
         "gold price today",
       ],
     authors: input.authors?.map((name) => ({ name })),
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      ...(input.alternates?.languages
+        ? { languages: input.alternates.languages }
+        : {}),
+    },
     robots: input.noIndex
       ? { index: false, follow: true }
       : { index: true, follow: true },

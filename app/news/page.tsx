@@ -4,41 +4,47 @@ import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { NewsDeskClient } from "@/components/news/news-desk-client";
 import { getNewsDesk } from "@/lib/data/live-news";
 import { buildMetadata, SITE } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
+import { withLocalePrefix } from "@/lib/i18n/config";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
-const newsBase = buildMetadata({
-  title: "Live News — India desk briefings | ContentVerse India",
-  description:
-    "Live India news briefings rewritten for ContentVerse readers — politics, business, sports and top stories, updated through the day.",
-  path: "/news",
-  keywords: [
-    "India live news",
-    "ContentVerse news",
-    "India headlines",
-    "news briefings India",
-  ],
-});
-
-export const metadata: Metadata = {
-  ...newsBase,
-  /** Keep canonical from buildMetadata; also advertise the news sitemap. */
-  alternates: {
-    ...newsBase.alternates,
-    types: {
-      ...(typeof newsBase.alternates === "object" &&
-      newsBase.alternates &&
-      "types" in newsBase.alternates &&
-      newsBase.alternates.types
-        ? newsBase.alternates.types
-        : {}),
-      "application/rss+xml": `${SITE.url}/news-sitemap.xml`,
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  const path = withLocalePrefix("/news", locale);
+  const newsBase = buildMetadata({
+    title: `${t(dict, "news.title")} — ${t(dict, "news.subtitle")} | ContentVerse India`,
+    description:
+      locale === "hi"
+        ? "भारत की लाइव न्यूज़ ब्रीफ़िंग — राजनीति, बिज़नेस, खेल और टॉप स्टोरीज़।"
+        : "Live India news briefings rewritten for ContentVerse readers — politics, business, sports and top stories, updated through the day.",
+    path,
+    keywords: [
+      "India live news",
+      "ContentVerse news",
+      "India headlines",
+      "news briefings India",
+    ],
+    alternates: buildHreflangAlternates("/news"),
+  });
+  return {
+    ...newsBase,
+    alternates: {
+      ...newsBase.alternates,
+      types: {
+        "application/rss+xml": `${SITE.url}/news-sitemap.xml`,
+      },
     },
-  },
-};
+  };
+}
 
 export default async function NewsHubPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const desk = await getNewsDesk(600);
   const briefings = desk.items.filter((i) => i.hasBriefing);
 
@@ -50,7 +56,7 @@ export default async function NewsHubPage() {
           name: "Live News — ContentVerse India",
           description:
             "India desk news briefings updated through the day on ContentVerse India.",
-          url: `${SITE.url}/news`,
+          url: `${SITE.url}${withLocalePrefix("/news", locale)}`,
           isPartOf: { "@id": `${SITE.url}/#website` },
           mainEntity: {
             "@type": "ItemList",
@@ -59,7 +65,7 @@ export default async function NewsHubPage() {
               position: i + 1,
               url: b.href.startsWith("http")
                 ? b.href
-                : `${SITE.url}${b.href}`,
+                : `${SITE.url}${withLocalePrefix(b.href, locale)}`,
               name: b.title,
             })),
           },
@@ -86,18 +92,15 @@ export default async function NewsHubPage() {
             <div>
               <p className="v2-eyebrow mb-2 inline-flex items-center gap-1.5 text-red-600 dark:text-red-400">
                 <Radio className="h-3.5 w-3.5" />
-                India desk
+                {t(dict, "news.subtitle")}
               </p>
               <h1 className="font-display flex flex-nowrap items-center gap-2.5 text-3xl font-bold tracking-tight md:text-4xl">
                 <span
                   className="relative inline-flex h-2.5 w-2.5 shrink-0 rounded-full bg-red-500 live-news-dot"
                   aria-hidden
                 />
-                <span className="whitespace-nowrap">
-                  <span className="live-news-title-blink text-red-600 dark:text-red-400">
-                    Live
-                  </span>{" "}
-                  <span className="text-foreground">News</span>
+                <span className="whitespace-nowrap text-foreground">
+                  {t(dict, "news.title")}
                 </span>
               </h1>
             </div>

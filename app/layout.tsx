@@ -19,6 +19,7 @@ import { VignetteJsLeakGuard } from "@/components/ads/vignette-js-leak-guard";
 import { VignetteChromePolish } from "@/components/ads/vignette-chrome-polish";
 import { AdSenseAnchorSuppress } from "@/components/ads/adsense-anchor-suppress";
 import { GoogleAdsTag } from "@/components/ads/google-ads-tag";
+import { HtmlLangSync } from "@/components/i18n/html-lang";
 
 /** Body / UI — Fontshare Satoshi (self-hosted). */
 const satoshi = localFont({
@@ -89,6 +90,7 @@ export default function RootLayout({
           <VignetteChromePolish />
           <AdSenseAnchorSuppress />
           <SkipToMainLink />
+          <HtmlLangSync />
           {/*
             Content-sized shell only — no min-h-0 / overflow-x-hidden / flex height trap.
             Document scroll lives on html (see globals.css).

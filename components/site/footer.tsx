@@ -7,6 +7,9 @@ import { Github, Twitter, Instagram, Youtube } from "lucide-react";
 import { SITE } from "@/lib/seo";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { TelegramIcon } from "@/components/icons/telegram-icon";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { withLocalePrefix } from "@/lib/i18n/config";
 
 const SOCIAL_LINKS: { label: string; href: string; Icon: ElementType }[] = [
   { label: "Twitter / X", href: SITE.sameAs[0] || "https://twitter.com/contentverse", Icon: Twitter },
@@ -19,24 +22,6 @@ const WHATSAPP_CHANNEL = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL?.trim();
 const TELEGRAM_URL =
   process.env.NEXT_PUBLIC_TELEGRAM_URL?.trim() || SITE.telegram;
 
-const EXPLORE = [
-  { label: "India Guides", href: "/guides" },
-  { label: "Blogs", href: "/blogs" },
-  { label: "Govt Schemes", href: "/guides/schemes" },
-  { label: "India Tools", href: "/tools" },
-  { label: "ContentVerse India AI", href: "/ai" },
-  { label: "Trending Now", href: "/trending" },
-  { label: "Sports", href: "/sports" },
-  { label: "Finance", href: "/finance" },
-  { label: "CineVerse", href: "/cineverse" },
-  { label: "GoldVerse", href: "/goldverse" },
-  { label: "MoneyVerse", href: "/moneyverse" },
-  { label: "Jobs", href: "/jobs" },
-  { label: "Exam Results", href: "/results" },
-  { label: "Reels", href: "/reels" },
-  { label: "Categories", href: "/categories" },
-] as const;
-
 const TOOLS = [
   { label: "All India Tools", href: "/tools" },
   { label: "Salary Tax Calculator", href: "/tools/salary-tax-calculator" },
@@ -44,32 +29,6 @@ const TOOLS = [
   { label: "Weather", href: "/tools/weather" },
   { label: "IFSC Finder", href: "/tools/ifsc-finder" },
   { label: "HUID Verify", href: "/huid-verification" },
-] as const;
-
-const CREATORS = [
-  { label: "Write", href: "/dashboard/create" },
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Monetization", href: "/dashboard/earnings" },
-  { label: "Creator Program", href: "/creator-program" },
-  { label: "Leaderboard", href: "/leaderboard" },
-] as const;
-
-const COMPANY = [
-  { label: "About", href: "/about" },
-  { label: "Careers", href: "/careers" },
-  { label: "Press", href: "/press" },
-  { label: "Press Kit", href: "/press-kit" },
-  { label: "Advertise", href: "/advertise" },
-  { label: "Contact", href: "/contact" },
-] as const;
-
-const LEGAL = [
-  { label: "Terms", href: "/terms" },
-  { label: "Privacy", href: "/privacy" },
-  { label: "Cookies", href: "/cookies" },
-  { label: "Content Policy", href: "/policy" },
-  { label: "Site Map", href: "/site-map" },
-  { label: "Sitemap", href: "/sitemap.xml" },
 ] as const;
 
 function FooterLink({ href, label }: { href: string; label: string }) {
@@ -110,6 +69,57 @@ function FooterNavColumn({
 
 export async function Footer() {
   const logoSrc = await getSiteLogoUrl();
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  const L = (path: string, href: string) => ({
+    label: t(dict, path),
+    href: withLocalePrefix(href, locale),
+  });
+
+  const explore = [
+    L("footer.indiaGuides", "/guides"),
+    L("footer.blogs", "/blogs"),
+    L("footer.govtSchemes", "/guides/schemes"),
+    L("footer.indiaTools", "/tools"),
+    { label: "ContentVerse India AI", href: withLocalePrefix("/ai", locale) },
+    L("footer.trending", "/trending"),
+    L("footer.sports", "/sports"),
+    L("footer.finance", "/finance"),
+    { label: "CineVerse", href: withLocalePrefix("/cineverse", locale) },
+    { label: "GoldVerse", href: withLocalePrefix("/goldverse", locale) },
+    { label: "MoneyVerse", href: withLocalePrefix("/moneyverse", locale) },
+    L("nav.jobs", "/jobs"),
+    L("nav.results", "/results"),
+    { label: "Reels", href: withLocalePrefix("/reels", locale) },
+    { label: "Categories", href: withLocalePrefix("/categories", locale) },
+  ];
+  const creators = [
+    L("footer.write", "/dashboard/create"),
+    L("nav.dashboard", "/dashboard"),
+    L("footer.monetization", "/dashboard/earnings"),
+    L("footer.creatorProgram", "/creator-program"),
+    L("footer.leaderboard", "/leaderboard"),
+  ];
+  const company = [
+    L("footer.about", "/about"),
+    L("footer.careers", "/careers"),
+    L("footer.press", "/press"),
+    { label: "Press Kit", href: withLocalePrefix("/press-kit", locale) },
+    L("footer.advertise", "/advertise"),
+    L("footer.contact", "/contact"),
+  ];
+  const legal = [
+    L("footer.terms", "/terms"),
+    L("footer.privacy", "/privacy"),
+    L("footer.cookies", "/cookies"),
+    L("footer.contentPolicy", "/policy"),
+    L("footer.siteMap", "/site-map"),
+    { label: "Sitemap", href: "/sitemap.xml" },
+  ];
+  const tools = TOOLS.map((x) => ({
+    ...x,
+    href: withLocalePrefix(x.href, locale),
+  }));
 
   return (
     <footer className="relative mt-24 border-t border-border bg-card/60">
@@ -120,8 +130,7 @@ export async function Footer() {
           <div>
             <Logo src={logoSrc} size="lg" />
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              {SITE.searchName} — blogs, sports, finance, MoneyVerse, CineVerse,
-              jobs, and free India tools. {SITE.tagline}
+              {SITE.searchName} — {t(dict, "footer.tagline")}
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-2">
               {SOCIAL_LINKS.map(({ label, href, Icon }) => (
@@ -162,10 +171,10 @@ export async function Footer() {
           </div>
 
           <div className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4">
-            <FooterNavColumn title="Explore" links={EXPLORE} />
-            <FooterNavColumn title="Tools" links={TOOLS} />
-            <FooterNavColumn title="Creators" links={CREATORS} />
-            <FooterNavColumn title="Company" links={COMPANY} />
+            <FooterNavColumn title={t(dict, "footer.explore")} links={explore} />
+            <FooterNavColumn title={t(dict, "footer.tools")} links={tools} />
+            <FooterNavColumn title={t(dict, "footer.creators")} links={creators} />
+            <FooterNavColumn title={t(dict, "footer.company")} links={company} />
           </div>
         </div>
 
@@ -173,13 +182,13 @@ export async function Footer() {
 
         <div className="mt-8 flex flex-col gap-4 border-t border-border/50 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} ContentVerse India. All rights reserved.
+            © {new Date().getFullYear()} ContentVerse India. {t(dict, "footer.rights")}
           </p>
           <nav
-            aria-label="Legal"
+            aria-label={t(dict, "footer.legal")}
             className="flex flex-wrap items-center gap-x-4 gap-y-2"
           >
-            {LEGAL.map((l) => (
+            {legal.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}

@@ -1,16 +1,22 @@
 "use client";
 
 import * as React from "react";
+import { usePathname, useRouter } from "next/navigation";
 import {
   readSiteLocale,
   writeSiteLocale,
   SITE_LOCALE_EVENT,
   type SiteLocale,
 } from "@/lib/site/locale";
+import {
+  localeFromPathname,
+  stripLocalePrefix,
+  withLocalePrefix,
+} from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 
 /**
- * Compact HI / EN tabs — same pill style as WhatsApp share locale switch.
+ * Compact HI / EN tabs — navigates to /hi/... or English path and persists preference.
  */
 export function NavLocaleToggle({
   className,
@@ -19,11 +25,14 @@ export function NavLocaleToggle({
   className?: string;
   immersive?: boolean;
 }) {
-  const [locale, setLocale] = React.useState<SiteLocale>("en");
+  const pathname = usePathname() || "/";
+  const router = useRouter();
+  const pathLocale = localeFromPathname(pathname);
+  const [locale, setLocale] = React.useState<SiteLocale>(pathLocale);
   const [ready, setReady] = React.useState(false);
 
   React.useEffect(() => {
-    setLocale(readSiteLocale());
+    setLocale(pathLocale);
     setReady(true);
     const onChange = (e: Event) => {
       const detail = (e as CustomEvent<{ locale?: SiteLocale }>).detail;
@@ -33,11 +42,16 @@ export function NavLocaleToggle({
     };
     window.addEventListener(SITE_LOCALE_EVENT, onChange);
     return () => window.removeEventListener(SITE_LOCALE_EVENT, onChange);
-  }, []);
+  }, [pathLocale]);
 
   const pick = (code: SiteLocale) => {
     setLocale(code);
     writeSiteLocale(code);
+    const stripped = stripLocalePrefix(pathname);
+    const next = withLocalePrefix(stripped, code);
+    if (next !== pathname) {
+      router.push(next);
+    }
   };
 
   return (

@@ -30,6 +30,23 @@ enum BlogStatus {
   ARCHIVED
 }
 
+enum TranslationLocale {
+  en
+  hi
+}
+
+enum TranslationStatus {
+  DRAFT
+  READY
+  PUBLISHED
+}
+
+enum TranslationSource {
+  HUMAN
+  AI
+  AI_EDITED
+}
+
 enum ReelMediaType {
   IMAGE
   VIDEO
@@ -277,7 +294,10 @@ model Category {
   id            String        @id @default(cuid())
   name          String        @unique
   slug          String        @unique
+  /// Optional Hindi display name for /hi routes
+  nameHi        String?
   description   String?       @db.Text
+  descriptionHi String?       @db.Text
   banner        String?
   icon          String?
   color         String?
@@ -376,12 +396,36 @@ model Blog {
   feedback    ArticleFeedback[]
   relatedReels Reel[]
   reposts     BlogRepost[]
+  translations BlogTranslation[]
 
   @@index([authorId])
   @@index([status])
   @@index([publishedAt])
   @@index([slug])
   @@index([categoryId])
+}
+
+/// Localized title/body for a blog (EN primary stays on Blog; HI usually here).
+model BlogTranslation {
+  id              String             @id @default(cuid())
+  blogId          String
+  locale          TranslationLocale
+  title           String
+  excerpt         String?            @db.Text
+  content         String             @db.Text
+  contentJson     Json?
+  metaTitle       String?
+  metaDescription String?            @db.Text
+  status          TranslationStatus  @default(DRAFT)
+  source          TranslationSource  @default(AI)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  @@unique([blogId, locale])
+  @@index([locale, status])
+  @@index([status, updatedAt])
 }
 
 model BlogTag {

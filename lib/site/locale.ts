@@ -1,10 +1,15 @@
-export type SiteLocale = "en" | "hi";
+import {
+  LOCALE_COOKIE,
+  isAppLocale,
+  type AppLocale,
+} from "@/lib/i18n/config";
 
-export const SITE_LOCALE_KEY = "cv-site-locale";
+export type SiteLocale = AppLocale;
+export const SITE_LOCALE_KEY = LOCALE_COOKIE;
 export const SITE_LOCALE_EVENT = "cv-site-locale";
 
 export function isSiteLocale(v: unknown): v is SiteLocale {
-  return v === "en" || v === "hi";
+  return isAppLocale(v);
 }
 
 export function readSiteLocale(): SiteLocale {
@@ -22,6 +27,13 @@ export function writeSiteLocale(locale: SiteLocale) {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(SITE_LOCALE_KEY, locale);
+  } catch {
+    /* ignore */
+  }
+  try {
+    document.cookie = `${SITE_LOCALE_KEY}=${locale};path=/;max-age=${
+      60 * 60 * 24 * 365
+    };samesite=lax`;
   } catch {
     /* ignore */
   }

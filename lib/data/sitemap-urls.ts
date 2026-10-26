@@ -107,6 +107,25 @@ const STATIC_PAGES: Array<{
   { path: "/jobs/private", changeFrequency: "daily", priority: 0.72 },
 ];
 
+/** Hindi UI hubs (dictionary i18n) — safe to sitemap; blog HI only when PUBLISHED. */
+const HI_STATIC_HUBS: Array<{
+  path: string;
+  changeFrequency: SitemapFreq;
+  priority: number;
+}> = [
+  { path: "/hi", changeFrequency: "daily", priority: 0.95 },
+  { path: "/hi/blogs", changeFrequency: "hourly", priority: 0.85 },
+  { path: "/hi/news", changeFrequency: "hourly", priority: 0.85 },
+  { path: "/hi/categories", changeFrequency: "daily", priority: 0.75 },
+  { path: "/hi/about", changeFrequency: "monthly", priority: 0.45 },
+  { path: "/hi/tools", changeFrequency: "daily", priority: 0.88 },
+  { path: "/hi/jobs", changeFrequency: "daily", priority: 0.75 },
+  { path: "/hi/finance", changeFrequency: "hourly", priority: 0.8 },
+  { path: "/hi/moneyverse", changeFrequency: "daily", priority: 0.8 },
+  { path: "/hi/goldverse", changeFrequency: "hourly", priority: 0.8 },
+  { path: "/hi/cineverse", changeFrequency: "hourly", priority: 0.78 },
+];
+
 function entry(
   path: string,
   opts: {
@@ -145,6 +164,7 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
         ],
       },
       select: {
+        id: true,
         slug: true,
         updatedAt: true,
         publishedAt: true,
@@ -154,7 +174,7 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
       orderBy: { publishedAt: "desc" },
   });
 
-  const blogEntries: MetadataRoute.Sitemap = blogs
+  const indexableBlogs = blogs
     .filter((b) =>
       isIndexableArticle({
         slug: b.slug,
@@ -162,15 +182,61 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
         metaKeywords: b.metaKeywords,
       })
     )
-    .filter((b) => !isRedirectedPath(`/blog/${b.slug}`))
-    .map((b) => {
-      const isNews = isToiNewsBriefing(b.metaKeywords);
-      return entry(`/blog/${b.slug}`, {
-        lastModified: b.publishedAt ?? b.updatedAt,
-        changeFrequency: isNews ? "hourly" : "weekly",
-        priority: isNews ? 0.88 : 0.65,
-      });
+    .filter((b) => !isRedirectedPath(`/blog/${b.slug}`));
+
+  const blogEntries: MetadataRoute.Sitemap = indexableBlogs.map((b) => {
+    const isNews = isToiNewsBriefing(b.metaKeywords);
+    return entry(`/blog/${b.slug}`, {
+      lastModified: b.publishedAt ?? b.updatedAt,
+      changeFrequency: isNews ? "hourly" : "weekly",
+      priority: isNews ? 0.88 : 0.65,
     });
+  });
+
+  let hiBlogEntries: MetadataRoute.Sitemap = [];
+  try {
+    const hiPublished = await prisma.blogTranslation.findMany({
+      where: {
+        locale: "hi",
+        status: "PUBLISHED",
+        blog: { status: BlogStatus.PUBLISHED },
+      },
+      select: {
+        updatedAt: true,
+        blog: {
+          select: {
+            slug: true,
+            publishedAt: true,
+            metaKeywords: true,
+            readingTime: true,
+          },
+        },
+      },
+      take: 2000,
+    });
+
+    hiBlogEntries = hiPublished
+      .filter(
+        (t) =>
+          t.blog?.slug &&
+          !isRedirectedPath(`/blog/${t.blog.slug}`) &&
+          isIndexableArticle({
+            slug: t.blog.slug,
+            readingTime: t.blog.readingTime,
+            metaKeywords: t.blog.metaKeywords,
+          })
+      )
+      .map((t) => {
+        const isNews = isToiNewsBriefing(t.blog.metaKeywords);
+        return entry(`/hi/blog/${t.blog.slug}`, {
+          lastModified: t.blog.publishedAt ?? t.updatedAt,
+          changeFrequency: isNews ? "hourly" : "weekly",
+          priority: isNews ? 0.86 : 0.62,
+        });
+      });
+  } catch {
+    /* table may not exist until migrate */
+  }
 
   const profileGroups = await prisma.blog.groupBy({
     by: ["authorId"],
@@ -199,7 +265,7 @@ async function dynamicDbEntries(now: Date): Promise<MetadataRoute.Sitemap> {
       );
   }
 
-  return [...blogEntries, ...profileEntries];
+  return [...blogEntries, ...hiBlogEntries, ...profileEntries];
 }
 
 function dedupeSitemap(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
@@ -217,9 +283,10 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticPaths = new Set(STATIC_PAGES.map((p) => p.path || "/"));
 
-  const staticEntries: MetadataRoute.Sitemap = STATIC_PAGES.filter(
-    (page) => !isRedirectedPath(page.path || "/")
-  ).map((page) =>
+  const staticEntries: MetadataRoute.Sitemap = [
+    ...STATIC_PAGES.filter((page) => !isRedirectedPath(page.path || "/")),
+    ...HI_STATIC_HUBS,
+  ].map((page) =>
     entry(page.path, {
       lastModified: now,
       changeFrequency: page.changeFrequency,

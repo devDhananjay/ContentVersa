@@ -45,6 +45,7 @@ import { shouldSkipImageOptimization, uploadImage } from "@/lib/upload";
 import { getSiteHostname } from "@/lib/site-config";
 import { useRouter } from "next/navigation";
 import { AiAssistPanel } from "@/components/dashboard/ai-assist-panel";
+import { GenerateHindiButton } from "@/components/dashboard/generate-hindi-button";
 import { AiImageGenerator } from "@/components/dashboard/ai-image-generator";
 import { TryWithAiButton } from "@/components/dashboard/try-with-ai-button";
 import { ImageCropDialog } from "@/components/media/image-crop-dialog";
@@ -103,6 +104,7 @@ export function BlogEditorForm({
   const editorRef = React.useRef<BlockEditorHandle>(null);
   const [loadingDraft, setLoadingDraft] = React.useState(!!blogId);
   const [editingId, setEditingId] = React.useState<string | null>(blogId ?? null);
+  const [blogSlug, setBlogSlug] = React.useState<string | null>(null);
   const [liveStatus, setLiveStatus] = React.useState<string>("DRAFT");
   const [editorKey, setEditorKey] = React.useState("new");
   const [initialMarkdown, setInitialMarkdown] = React.useState("");
@@ -189,6 +191,7 @@ export function BlogEditorForm({
 
   const applyDraft = (data: BlogDraft) => {
     setEditingId(data.id);
+    setBlogSlug(data.slug || null);
     setLiveStatus(data.status || "DRAFT");
     setScheduledFor(data.scheduledFor ?? null);
     setTitle(data.title);
@@ -420,7 +423,7 @@ export function BlogEditorForm({
       });
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;
-        blog?: { id: string; status?: string };
+        blog?: { id: string; status?: string; slug?: string };
       };
       if (!res.ok) {
         throw new Error(data.error || "Could not save blog");
@@ -428,6 +431,7 @@ export function BlogEditorForm({
       if (!editingId && data.blog?.id) {
         setEditingId(data.blog.id);
       }
+      if (data.blog?.slug) setBlogSlug(data.blog.slug);
       if (data.blog?.status) setLiveStatus(data.blog.status);
       if (opts && "scheduledFor" in opts) {
         setScheduledFor(opts.scheduledFor ?? null);
@@ -1045,6 +1049,11 @@ export function BlogEditorForm({
             onApplyTags={(t) => setTags((prev) => [...new Set([...prev, ...t])].slice(0, 5))}
             onApplyContent={applyGeneratedContent}
             onApplyFullBlog={applyFullBlog}
+          />
+
+          <GenerateHindiButton
+            slug={blogSlug}
+            disabled={submitting || generating || !canUseAiBlog}
           />
 
           <AiImageGenerator

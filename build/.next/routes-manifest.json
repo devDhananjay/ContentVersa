@@ -500,6 +500,14 @@
       "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/tip(?:/)?$"
     },
     {
+      "page": "/api/blogs/[slug]/translate",
+      "regex": "^/api/blogs/([^/]+?)/translate(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/blogs/(?<nxtPslug>[^/]+?)/translate(?:/)?$"
+    },
+    {
       "page": "/api/categories/[slug]/subscribe",
       "regex": "^/api/categories/([^/]+?)/subscribe(?:/)?$",
       "routeKeys": {
@@ -958,6 +966,12 @@
       "regex": "^/admin/telegram\\-share(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admin/telegram\\-share(?:/)?$"
+    },
+    {
+      "page": "/admin/translations",
+      "regex": "^/admin/translations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/translations(?:/)?$"
     },
     {
       "page": "/admin/users",

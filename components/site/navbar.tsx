@@ -15,6 +15,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { StreakBadge } from "@/components/engagement/streak-badge";
 import { Button } from "@/components/ui/button";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import {
   NAV_DROPDOWNS,
   NAV_MOBILE_LINKS,
@@ -22,6 +24,14 @@ import {
   isNavActive,
 } from "@/lib/site/nav-config";
 import { cn } from "@/lib/utils";
+
+const NAV_LABEL_KEYS: Record<string, string> = {
+  "/guides": "nav.guides",
+  "/news": "nav.news",
+  "/blogs": "nav.articles",
+  "/jobs": "nav.jobs",
+  "/results": "nav.results",
+};
 
 export function Navbar({
   embedded = false,
@@ -33,6 +43,7 @@ export function Navbar({
   immersive?: boolean;
 }) {
   const pathname = usePathname();
+  const { t } = useDictionary();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   React.useEffect(() => setMobileOpen(false), [pathname]);
@@ -73,8 +84,11 @@ export function Navbar({
           {NAV_TOP_LINKS.map((link) => {
             const active = isNavActive(pathname, link.href);
             const Icon = link.icon;
+            const label = NAV_LABEL_KEYS[link.href]
+              ? t(NAV_LABEL_KEYS[link.href], link.label)
+              : link.label;
             return (
-              <Link key={link.href} href={link.href} className={linkClass(active)}>
+              <LocaleLink key={link.href} href={link.href} className={linkClass(active)}>
                 <span className="inline-flex items-center gap-1.5 leading-none">
                   {link.live ? (
                     <span
@@ -92,7 +106,7 @@ export function Navbar({
                   <span
                     className={link.live ? "text-red-600 dark:text-red-400" : undefined}
                   >
-                    {link.label}
+                    {label}
                   </span>
                 </span>
                 {active && (
@@ -109,7 +123,7 @@ export function Navbar({
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}
-              </Link>
+              </LocaleLink>
             );
           })}
         </nav>
@@ -123,15 +137,15 @@ export function Navbar({
             className="hidden max-w-[7.5rem] lg:inline-flex"
           />
 
-          <Link href="/dashboard/create" className="shrink-0">
+          <LocaleLink href="/dashboard/create" className="shrink-0">
             <Button
               size="sm"
               className="h-9 gap-1.5 rounded-full px-2.5 xl:px-3.5 bg-black text-white hover:bg-neutral-900 hover:text-white"
             >
               <PenSquare className="h-4 w-4" />
-              <span className="hidden xl:inline">Write</span>
+              <span className="hidden xl:inline">{t("nav.write")}</span>
             </Button>
-          </Link>
+          </LocaleLink>
 
           <div
             className={cn(
@@ -170,7 +184,7 @@ export function Navbar({
               immersive && "text-white hover:bg-white/10"
             )}
             onClick={() => setMobileOpen((v) => !v)}
-            aria-label="Toggle menu"
+            aria-label={t("nav.toggleMenu")}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -196,7 +210,7 @@ export function Navbar({
               immersive && "text-white hover:bg-white/10"
             )}
             onClick={() => setMobileOpen((v) => !v)}
-            aria-label="Toggle menu"
+            aria-label={t("nav.toggleMenu")}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -257,11 +271,11 @@ export function Navbar({
               <AdminViewButton fullWidth variant="gradient" className="mt-2 w-full" />
               <div className="sticky bottom-0 flex gap-2 bg-background/95 pb-1 pt-3">
                 <MobileUserNav />
-                <Link href="/dashboard/create" className="flex-1">
+                <LocaleLink href="/dashboard/create" className="flex-1">
                   <Button className="w-full rounded-full bg-black text-white hover:bg-neutral-900 hover:text-white">
-                    Write
+                    {t("nav.write")}
                   </Button>
-                </Link>
+                </LocaleLink>
               </div>
             </div>
           </motion.div>
