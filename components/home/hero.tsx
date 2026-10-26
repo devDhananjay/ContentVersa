@@ -80,15 +80,24 @@ function TypewriterWord({ words, reduce }: { words: string[]; reduce: boolean | 
   );
 }
 
+export type HeroTrendKeyword = {
+  title: string;
+  href: string;
+  traffic?: string;
+};
+
 interface Props {
   categories: CategoryWithCount[];
+  /** Google Trends India keywords — shown under the search box */
+  trendingKeywords?: HeroTrendKeyword[];
 }
 
-export function Hero({ categories }: Props) {
+export function Hero({ categories, trendingKeywords = [] }: Props) {
   const reduce = useReducedMotion();
   const { t } = useDictionary();
   const cinematic = isHomeHeroVideoEnabled();
   const topics = categories.slice(0, 7);
+  const trendChips = trendingKeywords.slice(0, 10);
   const rotatingWords = [
     t("home.rotateRead"),
     t("home.rotateCreate"),
@@ -334,6 +343,40 @@ export function Hero({ categories }: Props) {
                 )}
               />
             </motion.div>
+
+            {trendChips.length > 0 ? (
+              <motion.div
+                className="mt-3.5 flex w-full max-w-lg flex-wrap items-center justify-center gap-1.5"
+                initial={reduce ? false : { opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.4 }}
+                aria-label={t("home.trendSearchesTitle", "Trending searches")}
+              >
+                <span
+                  className={cn(
+                    "inline-flex h-7 shrink-0 items-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-2.5 text-[10px] font-bold uppercase tracking-wider text-white",
+                    cinematic && "shadow-[0_4px_14px_-6px_rgba(249,115,22,0.65)]"
+                  )}
+                >
+                  {t("home.trendSearchesTitleLead", "Trending")}
+                </span>
+                {trendChips.map((kw) => (
+                  <LocaleLink
+                    key={kw.href}
+                    href={kw.href}
+                    className={cn(
+                      "inline-flex h-7 max-w-[11rem] items-center truncate rounded-full border border-border/60 bg-card/85 px-2.5 text-[11px] font-semibold text-foreground/80 shadow-sm backdrop-blur-sm transition-colors",
+                      "hover:border-orange-400/50 hover:bg-orange-500/10 hover:text-orange-700 dark:hover:text-orange-300",
+                      cinematic &&
+                        "dark:border-white/15 dark:bg-white/10 dark:text-white/80 dark:hover:border-orange-400/40 dark:hover:bg-orange-500/20 dark:hover:text-orange-200"
+                    )}
+                    title={kw.traffic ? `${kw.title} (~${kw.traffic})` : kw.title}
+                  >
+                    {kw.title}
+                  </LocaleLink>
+                ))}
+              </motion.div>
+            ) : null}
 
             <motion.div
               className="mt-5 flex items-center justify-center gap-2"

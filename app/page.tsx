@@ -15,7 +15,6 @@ import { Newsletter } from "@/components/home/newsletter";
 import { SportsTeaser } from "@/components/home/sports-teaser";
 import { FinanceTeaser } from "@/components/home/finance-teaser";
 import { TrendingSection } from "@/components/home/trending";
-import { LatestSection } from "@/components/home/latest-section";
 import { ContinueReadingStrip } from "@/components/home/continue-reading-strip";
 import { EditorPick } from "@/components/home/editor-pick";
 import { FeaturedCreators } from "@/components/home/featured-creators";
@@ -81,15 +80,14 @@ const HOME_SIDEBAR_SECTIONS = [
   { id: "home-top", label: "Home" },
   { id: "home-reels", label: "Reels" },
   { id: "home-live-news", label: "Live News" },
-  { id: "home-trending-searches", label: "Trending" },
   { id: "home-guides", label: "Guides" },
   { id: "about-contentverse-heading", label: "About" },
   { id: "continue-reading", label: "Continue" },
   { id: "home-articles", label: "Articles" },
   { id: "editor-picks", label: "Picks" },
-  { id: "home-latest", label: "Latest" },
   { id: "home-jobs", label: "Jobs" },
   { id: "home-sports", label: "Sports" },
+  { id: "home-trending-searches", label: "Trending" },
   { id: "home-finance", label: "Finance" },
   { id: "home-money", label: "Money" },
   { id: "home-gold", label: "Gold" },
@@ -227,7 +225,14 @@ export default async function HomePage() {
       {/* Hero + its own L/R rails — centered, no page-wide shift */}
       <div id="home-top" className="scroll-mt-0">
         <HomeHeroShell>
-          <Hero categories={data.categories} />
+          <Hero
+            categories={data.categories}
+            trendingKeywords={trendingSearches.slice(0, 10).map((t) => ({
+              title: t.title,
+              href: t.href,
+              traffic: t.traffic || undefined,
+            }))}
+          />
         </HomeHeroShell>
       </div>
 
@@ -238,8 +243,6 @@ export default async function HomePage() {
 
         <LiveNewsReturnScroll />
         <LiveNewsSection items={liveNews} />
-
-        <TrendingSearchesSection items={trendingSearches} />
 
         <Reveal>
           <HomeModuleSpotlight
@@ -290,10 +293,6 @@ export default async function HomePage() {
 
         <BandAd slotKey="hub" />
 
-        <Reveal>
-          <LatestSection blogs={data.latest} />
-        </Reveal>
-
         <HubAdSense />
 
         <Reveal>
@@ -301,6 +300,8 @@ export default async function HomePage() {
         </Reveal>
 
         <SportsTeaser data={sportsTeaser} />
+
+        <TrendingSearchesSection items={trendingSearches} />
 
         <BandAd slotKey="horizontal" />
 
