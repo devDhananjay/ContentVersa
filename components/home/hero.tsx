@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, BookOpen, Megaphone, Sparkles } from "lucide-react";
+import { ArrowUpRight, BookOpen, Flame, Megaphone, Sparkles, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { SiteVoiceSearch } from "@/components/search/site-voice-search";
@@ -86,6 +86,69 @@ export type HeroTrendKeyword = {
   traffic?: string;
 };
 
+/** Keyword links in the hero body line (SIP, Schemes, Jobs…). */
+const HERO_TOPIC_LINKS = [
+  { key: "heroKwSip", href: "/tools/sip-calculator" },
+  { key: "heroKwSchemes", href: "/guides/schemes" },
+  { key: "heroKwJobs", href: "/jobs" },
+  { key: "heroKwHuid", href: "/huid-verification" },
+  { key: "heroKwMoney", href: "/guides/money" },
+  { key: "heroKwAi", href: "/ai" },
+  { key: "heroKwMovies", href: "/cineverse" },
+  { key: "heroKwGold", href: "/goldverse" },
+] as const;
+
+const HERO_MODULE_LINKS = [
+  { key: "heroKwOcr", href: "/moneyverse/screenshot-scan" },
+  { key: "heroKwMoneyVerse", href: "/moneyverse" },
+  { key: "heroKwCineVerse", href: "/cineverse" },
+  { key: "heroKwGoldVerse", href: "/goldverse" },
+] as const;
+
+function heroLinkClass(cinematic: boolean) {
+  return cn(
+    "font-semibold text-foreground/90 underline decoration-primary/35 underline-offset-[3px] transition-colors",
+    "hover:text-primary hover:decoration-primary",
+    cinematic && "dark:text-white/90 dark:decoration-orange-300/40 dark:hover:text-orange-200"
+  );
+}
+
+function HeroBodyLinks({ cinematic }: { cinematic: boolean }) {
+  const { t } = useDictionary();
+  const linkClass = heroLinkClass(cinematic);
+
+  return (
+    <>
+      {HERO_TOPIC_LINKS.map((item, i) => (
+        <React.Fragment key={item.key}>
+          {i > 0 ? ", " : null}
+          <LocaleLink href={item.href} className={linkClass}>
+            {t(`home.${item.key}`)}
+          </LocaleLink>
+        </React.Fragment>
+      ))}
+      {", "}
+      <LocaleLink href="/tools" className={linkClass}>
+        {t("home.heroKwTools")}
+      </LocaleLink>
+      {t("home.heroBodyAmp")}
+      <LocaleLink href="/news" className={linkClass}>
+        {t("home.heroKwNews")}
+      </LocaleLink>
+      {t("home.heroBodyMid")}
+      {HERO_MODULE_LINKS.map((item, i) => (
+        <React.Fragment key={item.key}>
+          {i > 0 ? (i === HERO_MODULE_LINKS.length - 1 ? t("home.heroBodyAnd") : ", ") : null}
+          <LocaleLink href={item.href} className={linkClass}>
+            {t(`home.${item.key}`)}
+          </LocaleLink>
+        </React.Fragment>
+      ))}
+      {"."}
+    </>
+  );
+}
+
 interface Props {
   categories: CategoryWithCount[];
   /** Google Trends India keywords — shown under the search box */
@@ -97,7 +160,8 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
   const { t } = useDictionary();
   const cinematic = isHomeHeroVideoEnabled();
   const topics = categories.slice(0, 7);
-  const trendChips = trendingKeywords.slice(0, 10);
+  /** Same count as Live News home grid */
+  const trendChips = trendingKeywords.slice(0, 8);
   const rotatingWords = [
     t("home.rotateRead"),
     t("home.rotateCreate"),
@@ -123,7 +187,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="relative mx-auto w-full max-w-[96rem] px-2 pt-10 pb-14 sm:px-3 md:pt-14 md:pb-20">
+      <div className="relative mx-auto w-full max-w-[96rem] px-2 pt-5 pb-8 sm:px-3 md:pt-7 md:pb-10">
         {/* Ads sit at the outer corners; hero content stays centered */}
         <div className="flex w-full items-start">
           <div className="hidden w-[160px] shrink-0 justify-start pt-2 xl:flex 2xl:w-[180px]">
@@ -142,7 +206,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
           >
             {/* Advertise CTA — compact pill above the editorial eyebrow */}
             <motion.div
-              className="mb-3 flex justify-center"
+              className="mb-2 flex justify-center"
               initial={reduce ? false : { opacity: 0, y: 8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 0.02, duration: 0.45, ease: easeOut }}
@@ -277,7 +341,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             {/* Brand */}
             <h1
               className={cn(
-                "mt-5 font-display font-semibold tracking-[-0.03em] text-[clamp(2.1rem,5vw,3.4rem)] leading-[1.1]",
+                "mt-3 font-display font-semibold tracking-[-0.03em] text-[clamp(1.85rem,4.2vw,2.85rem)] leading-[1.1]",
                 cinematic && "dark:drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
               )}
             >
@@ -292,7 +356,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             </h1>
 
             <motion.div
-              className="mt-3.5 h-px w-10 origin-center bg-gradient-to-r from-transparent via-primary/55 to-transparent"
+              className="mt-2.5 h-px w-10 origin-center bg-gradient-to-r from-transparent via-primary/55 to-transparent"
               initial={reduce ? false : { scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ delay: 0.18, duration: 0.45 }}
@@ -300,7 +364,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
             <motion.p
               className={cn(
-                "mt-3.5 inline-flex max-w-full flex-wrap items-baseline justify-center gap-x-1.5 font-display text-[clamp(0.98rem,2.1vw,1.2rem)] font-medium leading-[1.45] tracking-[-0.012em]",
+                "mt-2.5 inline-flex max-w-full flex-wrap items-baseline justify-center gap-x-1.5 font-display text-[clamp(0.92rem,1.9vw,1.1rem)] font-medium leading-[1.4] tracking-[-0.012em]",
                 "text-foreground/80",
                 cinematic && "dark:text-white/85"
               )}
@@ -316,18 +380,18 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
             <motion.p
               className={cn(
-                "mt-3 max-w-md text-pretty text-[13px] leading-relaxed text-muted-foreground sm:text-sm",
+                "mt-2 max-w-lg text-pretty text-[12px] leading-snug text-muted-foreground sm:text-[13px]",
                 cinematic && "dark:text-white/65"
               )}
               initial={reduce ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.28, duration: 0.4 }}
             >
-              {t("home.heroBody")}
+              <HeroBodyLinks cinematic={cinematic} />
             </motion.p>
 
             <motion.div
-              className="mt-7 w-full"
+              className="mt-4 w-full"
               initial={reduce ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.36, duration: 0.45 }}
@@ -346,7 +410,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
             {trendChips.length > 0 ? (
               <motion.div
-                className="mt-3.5 flex w-full max-w-lg flex-wrap items-center justify-center gap-1.5"
+                className="mt-2.5 flex w-full max-w-xl flex-wrap items-center justify-center gap-1.5"
                 initial={reduce ? false : { opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.4 }}
@@ -358,6 +422,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                     cinematic && "shadow-[0_4px_14px_-6px_rgba(249,115,22,0.65)]"
                   )}
                 >
+                  <Flame className="h-3 w-3" aria-hidden />
                   {t("home.trendSearchesTitleLead", "Trending")}
                 </span>
                 {trendChips.map((kw) => (
@@ -365,21 +430,22 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                     key={kw.href}
                     href={kw.href}
                     className={cn(
-                      "inline-flex h-7 max-w-[11rem] items-center truncate rounded-full border border-border/60 bg-card/85 px-2.5 text-[11px] font-semibold text-foreground/80 shadow-sm backdrop-blur-sm transition-colors",
-                      "hover:border-orange-400/50 hover:bg-orange-500/10 hover:text-orange-700 dark:hover:text-orange-300",
+                      "inline-flex h-7 max-w-[12rem] items-center gap-1 truncate rounded-full border border-orange-500/25 bg-orange-500/10 px-2.5 text-[11px] font-semibold text-orange-700 shadow-sm backdrop-blur-sm transition-colors dark:text-orange-300",
+                      "hover:border-orange-400/50 hover:bg-orange-500/15",
                       cinematic &&
-                        "dark:border-white/15 dark:bg-white/10 dark:text-white/80 dark:hover:border-orange-400/40 dark:hover:bg-orange-500/20 dark:hover:text-orange-200"
+                        "dark:border-orange-400/30 dark:bg-orange-500/15 dark:text-orange-200 dark:hover:border-orange-400/45 dark:hover:bg-orange-500/25"
                     )}
                     title={kw.traffic ? `${kw.title} (~${kw.traffic})` : kw.title}
                   >
-                    {kw.title}
+                    <TrendingUp className="h-3 w-3 shrink-0 opacity-80" aria-hidden />
+                    <span className="truncate">{kw.title}</span>
                   </LocaleLink>
                 ))}
               </motion.div>
             ) : null}
 
             <motion.div
-              className="mt-5 flex items-center justify-center gap-2"
+              className="mt-3.5 flex items-center justify-center gap-2"
               initial={reduce ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.44, duration: 0.4 }}
@@ -415,7 +481,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             </motion.div>
 
             <motion.div
-              className="mt-8 flex w-full flex-col items-center gap-3.5 border-t border-border/40 pt-6"
+              className="mt-5 flex w-full flex-col items-center gap-2.5 border-t border-border/40 pt-4"
               initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.52, duration: 0.4 }}

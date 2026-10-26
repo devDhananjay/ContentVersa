@@ -227,7 +227,7 @@ export default async function HomePage() {
         <HomeHeroShell>
           <Hero
             categories={data.categories}
-            trendingKeywords={trendingSearches.slice(0, 10).map((t) => ({
+            trendingKeywords={trendingSearches.slice(0, 8).map((t) => ({
               title: t.title,
               href: t.href,
               traffic: t.traffic || undefined,
