@@ -1,41 +1,47 @@
-import Link from "next/link";
 import { ArrowRight, Medal } from "lucide-react";
 import { MrecAd } from "@/components/ads/mrec-ad";
 import { MatchCard } from "@/components/sports/match-card";
 import { CricketNewsCard } from "@/components/sports/cricket-news-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
 import type { SportsTeaserData } from "@/lib/sports/types";
 
 interface SportsTeaserProps {
   data: SportsTeaserData;
 }
 
-export function SportsTeaser({ data }: SportsTeaserProps) {
+export async function SportsTeaser({ data }: SportsTeaserProps) {
   if (!data.configured) return null;
 
   const featuredMatches = [...data.live, ...data.upcoming].slice(0, 2);
   if (!featuredMatches.length && !data.news.length) return null;
+
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
 
   return (
     <section className="container py-12 md:py-16" id="home-sports">
       <div className="flex items-end justify-between mb-8">
         <div>
           <Badge variant="neon" className="mb-2 gap-1">
-            <Medal className="h-3 w-3" /> Sports Hub
+            <Medal className="h-3 w-3" /> {t(dict, "home.sportsBadge")}
           </Badge>
           <h2 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
-            Live <span className="text-gradient">Cricket</span>
+            {t(dict, "home.sportsTitle")}{" "}
+            <span className="text-gradient">{t(dict, "home.sportsTitleAccent")}</span>
           </h2>
           <p className="text-sm text-muted-foreground mt-2">
-            Scores, fixtures and headlines — stay in the game
+            {t(dict, "home.sportsSub")}
           </p>
         </div>
-        <Link href="/sports" className="hidden md:block">
+        <LocaleLink href="/sports" className="hidden md:block">
           <Button variant="outline" className="gap-2">
-            Open Sports Hub <ArrowRight className="h-4 w-4" />
+            {t(dict, "home.sportsCta")} <ArrowRight className="h-4 w-4" />
           </Button>
-        </Link>
+        </LocaleLink>
       </div>
 
       {/* Score cards with two MRECs stacked underneath; news on the right */}
@@ -66,11 +72,11 @@ export function SportsTeaser({ data }: SportsTeaserProps) {
       </div>
 
       <div className="mt-6 md:hidden">
-        <Link href="/sports">
+        <LocaleLink href="/sports">
           <Button variant="gradient" className="w-full gap-2">
-            Open Sports Hub <ArrowRight className="h-4 w-4" />
+            {t(dict, "home.sportsCta")} <ArrowRight className="h-4 w-4" />
           </Button>
-        </Link>
+        </LocaleLink>
       </div>
     </section>
   );

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
@@ -20,6 +19,8 @@ import {
 } from "lucide-react";
 import { Reveal } from "@/components/home/motion";
 import { MrecAd } from "@/components/ads/mrec-ad";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import type { HomeModulePreviews } from "@/lib/home/module-previews";
 import { TOOL_REGISTRY } from "@/lib/tools/registry";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ type ModuleLink = {
 };
 
 type ModuleCard = {
+  id: string;
   name: string;
   href: string;
   tagline: string;
@@ -41,6 +43,10 @@ type ModuleCard = {
   badge?: string;
   previewKey?: keyof HomeModulePreviews;
   links?: ModuleLink[];
+  nameKey: string;
+  tagKey: string;
+  descKey: string;
+  badgeKey?: string;
 };
 
 const TOOLS_COUNT = TOOL_REGISTRY.length;
@@ -51,6 +57,7 @@ const textTone = (hex: string) =>
 
 const MODULES: ModuleCard[] = [
   {
+    id: "ai",
     name: "ContentVerse India AI",
     href: "/ai",
     tagline: "AI product",
@@ -61,6 +68,10 @@ const MODULES: ModuleCard[] = [
     color: "#a78bfa",
     glow: "rgba(167,139,250,0.35)",
     badge: "New product",
+    nameKey: "home.modAiName",
+    tagKey: "home.modAiTag",
+    descKey: "home.modAiDesc",
+    badgeKey: "home.modAiBadge",
     links: [
       { label: "Bank PDF", href: "/ai?mode=bank-statement" },
       { label: "Resume", href: "/ai?mode=resume" },
@@ -68,6 +79,7 @@ const MODULES: ModuleCard[] = [
     ],
   },
   {
+    id: "sports",
     name: "Sports",
     href: "/sports",
     tagline: "Live cricket",
@@ -78,8 +90,13 @@ const MODULES: ModuleCard[] = [
     glow: "rgba(34,211,238,0.28)",
     badge: "Live scores",
     previewKey: "sports",
+    nameKey: "home.modSportsName",
+    tagKey: "home.modSportsTag",
+    descKey: "home.modSportsDesc",
+    badgeKey: "home.modSportsBadge",
   },
   {
+    id: "finance",
     name: "Finance",
     href: "/finance",
     tagline: "Markets live",
@@ -90,8 +107,13 @@ const MODULES: ModuleCard[] = [
     glow: "rgba(59,130,246,0.28)",
     badge: "Markets open",
     previewKey: "finance",
+    nameKey: "home.modFinanceName",
+    tagKey: "home.modFinanceTag",
+    descKey: "home.modFinanceDesc",
+    badgeKey: "home.modFinanceBadge",
   },
   {
+    id: "jobs",
     name: "Jobs",
     href: "/jobs",
     tagline: "Careers India",
@@ -101,8 +123,13 @@ const MODULES: ModuleCard[] = [
     color: "#f59e0b",
     glow: "rgba(245,158,11,0.28)",
     badge: "New openings",
+    nameKey: "home.modJobsName",
+    tagKey: "home.modJobsTag",
+    descKey: "home.modJobsDesc",
+    badgeKey: "home.modJobsBadge",
   },
   {
+    id: "guides",
     name: "India Guides",
     href: "/guides",
     tagline: "Search formats",
@@ -112,6 +139,10 @@ const MODULES: ModuleCard[] = [
     color: "#a78bfa",
     glow: "rgba(167,139,250,0.28)",
     badge: "New hub",
+    nameKey: "home.modGuidesName",
+    tagKey: "home.modGuidesTag",
+    descKey: "home.modGuidesDesc",
+    badgeKey: "home.modGuidesBadge",
     links: [
       { label: "Govt Schemes", href: "/guides/schemes" },
       { label: "Trending", href: "/guides/trending" },
@@ -119,6 +150,7 @@ const MODULES: ModuleCard[] = [
     ],
   },
   {
+    id: "moneyverse",
     name: "MoneyVerse",
     href: "/moneyverse",
     tagline: "Expenses & budgets",
@@ -127,12 +159,16 @@ const MODULES: ModuleCard[] = [
     icon: Wallet,
     color: "#34d399",
     glow: "rgba(52,211,153,0.28)",
+    nameKey: "home.modMoneyverseName",
+    tagKey: "home.modMoneyverseTag",
+    descKey: "home.modMoneyverseDesc",
     links: [
       { label: "Screenshot Scan", href: "/moneyverse/screenshot-scan" },
       { label: "Bank Statement", href: "/moneyverse/bank-statement-analyzer" },
     ],
   },
   {
+    id: "goldverse",
     name: "GoldVerse",
     href: "/goldverse",
     tagline: "Gold rates",
@@ -142,9 +178,13 @@ const MODULES: ModuleCard[] = [
     color: "#fbbf24",
     glow: "rgba(251,191,36,0.28)",
     previewKey: "gold",
+    nameKey: "home.modGoldverseName",
+    tagKey: "home.modGoldverseTag",
+    descKey: "home.modGoldverseDesc",
     links: [{ label: "HUID Check", href: "/huid-verification" }],
   },
   {
+    id: "tools",
     name: "India Tools",
     href: "/tools",
     tagline: "Free utilities",
@@ -154,6 +194,10 @@ const MODULES: ModuleCard[] = [
     color: "#2dd4bf",
     glow: "rgba(45,212,191,0.28)",
     badge: `${TOOLS_COUNT} free tools`,
+    nameKey: "home.modToolsName",
+    tagKey: "home.modToolsTag",
+    descKey: "home.modToolsDesc",
+    badgeKey: "home.modToolsBadge",
     links: [
       { label: "IFSC", href: "/tools/ifsc-finder" },
       { label: "Weather", href: "/tools/weather" },
@@ -162,6 +206,7 @@ const MODULES: ModuleCard[] = [
     ],
   },
   {
+    id: "articles",
     name: "Articles",
     href: "/blogs",
     tagline: "Long-form stories",
@@ -170,8 +215,12 @@ const MODULES: ModuleCard[] = [
     icon: Compass,
     color: "#8b5cf6",
     glow: "rgba(139,92,246,0.28)",
+    nameKey: "home.modArticlesName",
+    tagKey: "home.modArticlesTag",
+    descKey: "home.modArticlesDesc",
   },
   {
+    id: "reels",
     name: "Reels",
     href: "/reels",
     tagline: "Short video",
@@ -180,8 +229,12 @@ const MODULES: ModuleCard[] = [
     icon: Film,
     color: "#ec4899",
     glow: "rgba(236,72,153,0.28)",
+    nameKey: "home.modReelsName",
+    tagKey: "home.modReelsTag",
+    descKey: "home.modReelsDesc",
   },
   {
+    id: "cineverse",
     name: "CineVerse",
     href: "/cineverse",
     tagline: "Movies & OTT",
@@ -190,6 +243,9 @@ const MODULES: ModuleCard[] = [
     icon: Clapperboard,
     color: "#818cf8",
     glow: "rgba(129,140,248,0.28)",
+    nameKey: "home.modCineName",
+    tagKey: "home.modCineTag",
+    descKey: "home.modCineDesc",
   },
 ];
 
@@ -197,15 +253,37 @@ const GROUPS: Array<{
   id: ModuleCard["group"];
   title: string;
   subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
 }> = [
-  { id: "live", title: "Live India", subtitle: "Scores, markets and careers" },
-  { id: "verse", title: "Money & gold", subtitle: "Personal finance and hallmark tools" },
+  {
+    id: "live",
+    title: "Live India",
+    subtitle: "Scores, markets and careers",
+    titleKey: "home.groupLive",
+    subtitleKey: "home.groupLiveSub",
+  },
+  {
+    id: "verse",
+    title: "Money & gold",
+    subtitle: "Personal finance and hallmark tools",
+    titleKey: "home.groupVerse",
+    subtitleKey: "home.groupVerseSub",
+  },
   {
     id: "tools",
     title: "Everyday tools",
     subtitle: "Free India utilities — browse without signup",
+    titleKey: "home.groupTools",
+    subtitleKey: "home.groupToolsSub",
   },
-  { id: "read", title: "Read & watch", subtitle: "Stories, reels and movies" },
+  {
+    id: "read",
+    title: "Read & watch",
+    subtitle: "Stories, reels and movies",
+    titleKey: "home.groupRead",
+    subtitleKey: "home.groupReadSub",
+  },
 ];
 
 function ModuleCardView({
@@ -213,14 +291,22 @@ function ModuleCardView({
   index,
   reduce,
   preview,
+  t,
 }: {
   module: ModuleCard;
   index: number;
   reduce: boolean | null;
   preview?: string | null;
+  t: (key: string, fallback?: string) => string;
 }) {
   const Icon = module.icon;
   const tone = textTone(module.color);
+  const name = t(module.nameKey, module.name);
+  const tagline = t(module.tagKey, module.tagline);
+  const description = t(module.descKey, module.description);
+  const badge = module.badgeKey
+    ? t(module.badgeKey, module.badge).replace("{n}", String(TOOLS_COUNT))
+    : module.badge;
 
   return (
     <motion.article
@@ -248,7 +334,7 @@ function ModuleCardView({
         style={{ background: module.color }}
       />
 
-      <Link href={module.href} className="relative flex flex-1 flex-col">
+      <LocaleLink href={module.href} className="relative flex flex-1 flex-col">
         <div className="flex items-start justify-between gap-3">
           <span
             className="flex h-12 w-12 items-center justify-center rounded-2xl ring-1 ring-border transition duration-300 group-hover:scale-105"
@@ -260,7 +346,7 @@ function ModuleCardView({
             <Icon className="h-5 w-5" />
           </span>
           <div className="flex flex-col items-end gap-1.5">
-            {module.badge ? (
+            {badge ? (
               <span
                 className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
                 style={{
@@ -273,7 +359,7 @@ function ModuleCardView({
                   className="h-1.5 w-1.5 animate-pulse rounded-full"
                   style={{ background: module.color }}
                 />
-                {module.badge}
+                {badge}
               </span>
             ) : (
               <span
@@ -284,17 +370,17 @@ function ModuleCardView({
                   background: `${module.color}14`,
                 }}
               >
-                {module.tagline}
+                {tagline}
               </span>
             )}
           </div>
         </div>
 
         <h3 className="mt-4 font-display text-xl font-bold tracking-tight md:text-2xl">
-          {module.name}
+          {name}
         </h3>
         <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
-          {module.description}
+          {description}
         </p>
 
         {preview ? (
@@ -314,10 +400,10 @@ function ModuleCardView({
           className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold"
           style={{ color: tone }}
         >
-          Open {module.name}
+          {name}
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </span>
-      </Link>
+      </LocaleLink>
 
       {module.links?.length ? (
         <div
@@ -327,13 +413,13 @@ function ModuleCardView({
           )}
         >
           {module.links.map((link) => (
-            <Link
+            <LocaleLink
               key={link.href}
               href={link.href}
               className="inline-flex items-center rounded-full border border-border bg-background/60 px-3 py-1.5 text-xs font-medium text-foreground/85 transition hover:border-primary/40 hover:bg-background hover:text-foreground"
             >
               {link.label}
-            </Link>
+            </LocaleLink>
           ))}
         </div>
       ) : null}
@@ -348,6 +434,7 @@ export function PlatformModulesStrip({
   previews?: HomeModulePreviews;
 }) {
   const reduce = useReducedMotion();
+  const { t } = useDictionary();
 
   return (
     <section
@@ -363,23 +450,24 @@ export function PlatformModulesStrip({
         <Reveal>
           <header className="mx-auto mb-8 max-w-2xl text-center md:mb-10">
             <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
-              All modules
+              {t("home.modulesEyebrow")}
             </p>
             <h2
               id="platform-modules-heading"
               className="font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl lg:text-5xl"
             >
-              Everything on <span className="text-gradient">ContentVerse India</span>
+              {t("home.modulesTitle")}{" "}
+              <span className="text-gradient">{t("home.modulesTitleBrand")}</span>
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
-              Sports, finance, jobs, verses and free India tools — pick a module and go.
+              {t("home.modulesSub")}
             </p>
           </header>
         </Reveal>
 
         <Reveal delay={0.04}>
           <nav
-            aria-label="Jump to a module group"
+            aria-label={t("home.modulesEyebrow")}
             className="mb-10 flex justify-start gap-2 overflow-x-auto pb-1 md:justify-center [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {GROUPS.map((group) => (
@@ -388,7 +476,7 @@ export function PlatformModulesStrip({
                 href={`#modules-${group.id}`}
                 className="inline-flex shrink-0 items-center rounded-full border border-border bg-card px-3.5 py-2 text-xs font-semibold shadow-sm transition hover:border-primary/40"
               >
-                {group.title}
+                {t(group.titleKey, group.title)}
               </a>
             ))}
           </nav>
@@ -404,8 +492,12 @@ export function PlatformModulesStrip({
               <div key={group.id} id={`modules-${group.id}`} className="scroll-mt-24">
                 <div className="mb-4 flex items-end justify-between gap-3">
                   <div>
-                    <h3 className="font-display text-lg font-bold md:text-xl">{group.title}</h3>
-                    <p className="text-sm text-muted-foreground">{group.subtitle}</p>
+                    <h3 className="font-display text-lg font-bold md:text-xl">
+                      {t(group.titleKey, group.title)}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {t(group.subtitleKey, group.subtitle)}
+                    </p>
                   </div>
                   <span className="hidden h-px flex-1 bg-gradient-to-r from-border to-transparent sm:block" />
                 </div>
@@ -417,6 +509,7 @@ export function PlatformModulesStrip({
                       index={index}
                       reduce={reduce}
                       preview={module.previewKey ? previews?.[module.previewKey] : null}
+                      t={t}
                     />
                   ))}
                   {emptyCells > 0 ? (
@@ -442,19 +535,19 @@ export function PlatformModulesStrip({
                 <PenLine className="h-5 w-5" />
               </span>
               <div>
-                <p className="font-display font-bold">Want to publish on ContentVerse India?</p>
+                <p className="font-display font-bold">{t("home.publishTitle")}</p>
                 <p className="text-sm text-muted-foreground">
-                  Write long-form blogs, schedule posts and grow with the community.
+                  {t("home.publishSub")}
                 </p>
               </div>
             </div>
-            <Link
+            <LocaleLink
               href="/dashboard/create"
               className="inline-flex items-center gap-2 v2-btn-primary rounded-full px-5 py-2.5 text-sm font-bold transition"
             >
-              Start writing
+              {t("home.publishCta")}
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </LocaleLink>
           </div>
         </Reveal>
       </div>

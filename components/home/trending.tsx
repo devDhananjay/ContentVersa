@@ -1,12 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Flame, ArrowRight } from "lucide-react";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/home/motion";
 import { MrecAd } from "@/components/ads/mrec-ad";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import type { Blog } from "@/lib/data/blogs";
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 export function TrendingSection({ blogs }: Props) {
   const [first, ...rest] = blogs;
   const reduce = useReducedMotion();
+  const { t } = useDictionary();
   // Keep room for the MREC column on large screens
   const gridCards = rest.slice(0, 4);
 
@@ -29,21 +31,21 @@ export function TrendingSection({ blogs }: Props) {
           <div>
             <p className="v2-eyebrow mb-2 inline-flex items-center gap-1.5">
               <Flame className="h-3.5 w-3.5" />
-              Trending Now
+              {t("home.trendingEyebrow")}
             </p>
             <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
-              Hot takes the internet
+              {t("home.trendingTitle")}
               <br />
-              <span className="text-gradient">can&apos;t stop reading.</span>
+              <span className="text-gradient">{t("home.trendingTitleAccent")}</span>
             </h2>
           </div>
-          <Link href="/blogs?sort=trending" className="hidden sm:block">
+          <LocaleLink href="/blogs?sort=trending" className="hidden sm:block">
             <motion.div whileHover={reduce ? undefined : { x: 4 }}>
               <Button variant="outline" className="gap-2 rounded-full">
-                View all <ArrowRight className="h-4 w-4" />
+                {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
               </Button>
             </motion.div>
-          </Link>
+          </LocaleLink>
         </div>
       </Reveal>
 
@@ -66,11 +68,11 @@ export function TrendingSection({ blogs }: Props) {
       </div>
 
       <div className="mt-6 sm:hidden">
-        <Link href="/blogs?sort=trending">
+        <LocaleLink href="/blogs?sort=trending">
           <Button variant="gradient" className="w-full gap-2">
-            View all <ArrowRight className="h-4 w-4" />
+            {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
           </Button>
-        </Link>
+        </LocaleLink>
       </div>
     </section>
   );

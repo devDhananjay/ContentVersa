@@ -1,7 +1,9 @@
-import Link from "next/link";
 import { ArrowRight, TrendingUp, Wallet, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
 import type { FinanceTickerData } from "@/lib/finance/types";
 import { TOOL_REGISTRY } from "@/lib/tools/registry";
 
@@ -47,31 +49,34 @@ function IndexTile({
   );
 }
 
-export function FinanceTeaser({ data }: FinanceTeaserProps) {
+export async function FinanceTeaser({ data }: FinanceTeaserProps) {
   if (!data) return null;
 
   const gainers = data.topGainers.slice(0, 3);
   const toolsCount = TOOL_REGISTRY.length;
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
 
   return (
     <section className="container py-12 md:py-16" id="home-finance">
       <div className="mb-8 flex items-end justify-between">
         <div>
           <Badge variant="neon" className="mb-2 gap-1">
-            <TrendingUp className="h-3 w-3" /> Finance & Money
+            <TrendingUp className="h-3 w-3" /> {t(dict, "home.financeBadge")}
           </Badge>
           <h2 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
-            Markets & <span className="text-gradient">Money tools</span>
+            {t(dict, "home.financeTitle")}{" "}
+            <span className="text-gradient">{t(dict, "home.financeTitleAccent")}</span>
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Live indices, movers, expense tools and free India utilities
+            {t(dict, "home.financeSub")}
           </p>
         </div>
-        <Link href="/finance" className="hidden md:block">
+        <LocaleLink href="/finance" className="hidden md:block">
           <Button variant="outline" className="gap-2">
-            Open Finance Hub <ArrowRight className="h-4 w-4" />
+            {t(dict, "home.financeCta")} <ArrowRight className="h-4 w-4" />
           </Button>
-        </Link>
+        </LocaleLink>
       </div>
 
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
@@ -90,7 +95,7 @@ export function FinanceTeaser({ data }: FinanceTeaserProps) {
             {gainers.length ? (
               <div className="rounded-2xl border border-border/60 bg-card/80 p-4 sm:col-span-2">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Top movers
+                  {t(dict, "home.topMovers")}
                 </p>
                 <ul className="grid gap-2 sm:grid-cols-3">
                   {gainers.map((stock) => (
@@ -114,7 +119,7 @@ export function FinanceTeaser({ data }: FinanceTeaserProps) {
           </div>
 
           <div className="grid gap-3">
-            <Link
+            <LocaleLink
               href="/moneyverse"
               className="flex items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-4 transition hover:bg-emerald-500/15"
             >
@@ -122,13 +127,15 @@ export function FinanceTeaser({ data }: FinanceTeaserProps) {
                 <Wallet className="h-5 w-5" />
               </span>
               <span>
-                <span className="block font-display font-bold">MoneyVerse</span>
+                <span className="block font-display font-bold">
+                  {t(dict, "home.modMoneyverseName")}
+                </span>
                 <span className="mt-0.5 block text-sm text-muted-foreground">
-                  Expenses, Screenshot Scan and bank statement analyzer
+                  {t(dict, "home.modMoneyverseDesc")}
                 </span>
               </span>
-            </Link>
-            <Link
+            </LocaleLink>
+            <LocaleLink
               href="/tools"
               className="flex items-start gap-3 rounded-2xl border border-teal-500/25 bg-teal-500/10 p-4 transition hover:bg-teal-500/15"
             >
@@ -136,23 +143,25 @@ export function FinanceTeaser({ data }: FinanceTeaserProps) {
                 <Wrench className="h-5 w-5" />
               </span>
               <span>
-                <span className="block font-display font-bold">India Tools</span>
+                <span className="block font-display font-bold">
+                  {t(dict, "home.modToolsName")}
+                </span>
                 <span className="mt-0.5 block text-sm text-muted-foreground">
-                  {toolsCount} free utilities — IFSC, weather, EMI, nearby places
+                  {t(dict, "home.modToolsBadge").replace("{n}", String(toolsCount))}
                 </span>
               </span>
-            </Link>
+            </LocaleLink>
           </div>
         </div>
 
       </div>
 
       <div className="mt-6 md:hidden">
-        <Link href="/finance">
+        <LocaleLink href="/finance">
           <Button variant="gradient" className="w-full gap-2">
-            Open Finance Hub <ArrowRight className="h-4 w-4" />
+            {t(dict, "home.financeCta")} <ArrowRight className="h-4 w-4" />
           </Button>
-        </Link>
+        </LocaleLink>
       </div>
     </section>
   );

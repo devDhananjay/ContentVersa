@@ -1,18 +1,18 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, BookOpen, Megaphone, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { SiteVoiceSearch } from "@/components/search/site-voice-search";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import type { CategoryWithCount } from "@/lib/data/home-data";
 import { categoryPageHref } from "@/lib/data/categories";
 import { isHomeHeroVideoEnabled } from "@/lib/site/home-hero-video";
 import { cn } from "@/lib/utils";
 
-const ROTATING_WORDS = ["Read", "Create", "Grow", "Earn", "Build"];
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
 /**
@@ -86,13 +86,21 @@ interface Props {
 
 export function Hero({ categories }: Props) {
   const reduce = useReducedMotion();
+  const { t } = useDictionary();
   const cinematic = isHomeHeroVideoEnabled();
   const topics = categories.slice(0, 7);
+  const rotatingWords = [
+    t("home.rotateRead"),
+    t("home.rotateCreate"),
+    t("home.rotateGrow"),
+    t("home.rotateEarn"),
+    t("home.rotateBuild"),
+  ];
 
   const hubs = [
-    { href: "/news", label: "Live News", live: true },
-    { href: "/tools", label: "Tools" },
-    { href: "/jobs", label: "Jobs" },
+    { href: "/news", label: t("home.hubLiveNews"), live: true },
+    { href: "/tools", label: t("home.hubTools") },
+    { href: "/jobs", label: t("home.hubJobs") },
   ] as const;
 
   const modules = [
@@ -130,7 +138,7 @@ export function Hero({ categories }: Props) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 0.02, duration: 0.45, ease: easeOut }}
             >
-              <Link
+              <LocaleLink
                 href="/advertise"
                 className={cn(
                   "group relative inline-flex items-center gap-2 overflow-hidden rounded-full py-1 pl-1 pr-2.5",
@@ -205,13 +213,13 @@ export function Hero({ categories }: Props) {
                   </motion.span>
                 </span>
 
-                <span className="relative z-[1] flex flex-col items-start gap-0.5 text-left leading-none">
+                  <span className="relative z-[1] flex flex-col items-start gap-0.5 text-left leading-none">
                   <span className="font-display text-[12px] font-bold tracking-tight text-gradient">
-                    Advertise with us
+                    {t("home.advertise")}
                   </span>
                   <span className="inline-flex items-center gap-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                     <span className="h-0.5 w-0.5 rounded-full bg-[hsl(var(--saffron))]" />
-                    Brands · hubs · sponsored
+                    {t("home.advertiseSub")}
                   </span>
                 </span>
 
@@ -229,7 +237,7 @@ export function Hero({ categories }: Props) {
                     )}
                   />
                 </span>
-              </Link>
+              </LocaleLink>
             </motion.div>
 
             {/* Badge */}
@@ -253,7 +261,7 @@ export function Hero({ categories }: Props) {
                 >
                   <Sparkles className="h-3 w-3 text-accent" />
                 </motion.span>
-                India&apos;s original guides, explainers and stories
+                {t("home.badge")}
               </Badge>
             </motion.div>
 
@@ -291,9 +299,9 @@ export function Hero({ categories }: Props) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.22, duration: 0.5 }}
             >
-              <TypewriterWord words={ROTATING_WORDS} reduce={reduce} />
+              <TypewriterWord words={rotatingWords} reduce={reduce} />
               <span className="text-muted-foreground/85">
-                Original Indian Guides &amp; Stories
+                {t("home.taglineRest")}
               </span>
             </motion.p>
 
@@ -306,9 +314,7 @@ export function Hero({ categories }: Props) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.28, duration: 0.4 }}
             >
-              SIP, Schemes, Jobs, HUID, Money, AI, Movies, Gold, Tools &amp; News —
-              Clear Explainers With Human Review. Plus OCR, MoneyVerse, CineVerse
-              And GoldVerse.
+              {t("home.heroBody")}
             </motion.p>
 
             <motion.div
@@ -321,7 +327,7 @@ export function Hero({ categories }: Props) {
                 size="hero"
                 searchPath="/search"
                 className="mx-auto max-w-md"
-                placeholder="SIP, CIBIL, HUID… or Speak"
+                placeholder={t("home.searchPlaceholder")}
                 inputClassName={cn(
                   cinematic &&
                     "dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder:text-white/45"
@@ -336,7 +342,7 @@ export function Hero({ categories }: Props) {
               transition={{ delay: 0.44, duration: 0.4 }}
             >
               <motion.div whileHover={reduce ? undefined : { y: -1 }} whileTap={{ scale: 0.98 }}>
-                <Link
+                <LocaleLink
                   href="/guides"
                   className={cn(
                     "group inline-flex h-9 items-center gap-1.5 rounded-full bg-foreground px-4 text-[13px] font-medium text-background transition-colors",
@@ -345,12 +351,12 @@ export function Hero({ categories }: Props) {
                   )}
                 >
                   <BookOpen className="h-3.5 w-3.5 opacity-80" />
-                  India Guides
+                  {t("home.ctaGuides")}
                   <ArrowUpRight className="h-3.5 w-3.5 opacity-55 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
+                </LocaleLink>
               </motion.div>
               <motion.div whileHover={reduce ? undefined : { y: -1 }} whileTap={{ scale: 0.98 }}>
-                <Link
+                <LocaleLink
                   href="/blogs"
                   className={cn(
                     "group inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card/80 px-4 text-[13px] font-medium text-foreground/80 shadow-sm backdrop-blur-sm transition-colors",
@@ -359,9 +365,9 @@ export function Hero({ categories }: Props) {
                       "dark:border-white/20 dark:bg-white/5 dark:text-white/80 dark:hover:border-white/35 dark:hover:bg-white/10 dark:hover:text-white"
                   )}
                 >
-                  Articles
+                  {t("home.ctaArticles")}
                   <ArrowUpRight className="h-3.5 w-3.5 opacity-45 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
+                </LocaleLink>
               </motion.div>
             </motion.div>
 
@@ -374,7 +380,7 @@ export function Hero({ categories }: Props) {
               {topics.length > 0 ? (
                 <div className="flex flex-wrap items-center justify-center gap-1.5">
                   {topics.map((cat) => (
-                    <Link
+                    <LocaleLink
                       key={cat.slug}
                       href={categoryPageHref(cat.slug)}
                       className={cn(
@@ -385,7 +391,7 @@ export function Hero({ categories }: Props) {
                       )}
                     >
                       {cat.name}
-                    </Link>
+                    </LocaleLink>
                   ))}
                 </div>
               ) : null}
@@ -403,7 +409,7 @@ export function Hero({ categories }: Props) {
                         ·
                       </span>
                     ) : null}
-                    <Link
+                    <LocaleLink
                       href={item.href}
                       className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
                     >
@@ -414,7 +420,7 @@ export function Hero({ categories }: Props) {
                         </span>
                       ) : null}
                       {item.label}
-                    </Link>
+                    </LocaleLink>
                   </React.Fragment>
                 ))}
               </p>
@@ -433,12 +439,12 @@ export function Hero({ categories }: Props) {
                         ·
                       </span>
                     ) : null}
-                    <Link
+                    <LocaleLink
                       href={item.href}
                       className="transition-colors hover:text-foreground"
                     >
                       {item.label}
-                    </Link>
+                    </LocaleLink>
                   </React.Fragment>
                 ))}
               </p>

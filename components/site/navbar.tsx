@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { PenSquare, Menu, X, LayoutDashboard } from "lucide-react";
@@ -23,15 +22,8 @@ import {
   NAV_TOP_LINKS,
   isNavActive,
 } from "@/lib/site/nav-config";
+import { NAV_ITEM_I18N, NAV_TOP_I18N } from "@/lib/i18n/nav-labels";
 import { cn } from "@/lib/utils";
-
-const NAV_LABEL_KEYS: Record<string, string> = {
-  "/guides": "nav.guides",
-  "/news": "nav.news",
-  "/blogs": "nav.articles",
-  "/jobs": "nav.jobs",
-  "/results": "nav.results",
-};
 
 export function Navbar({
   embedded = false,
@@ -84,8 +76,8 @@ export function Navbar({
           {NAV_TOP_LINKS.map((link) => {
             const active = isNavActive(pathname, link.href);
             const Icon = link.icon;
-            const label = NAV_LABEL_KEYS[link.href]
-              ? t(NAV_LABEL_KEYS[link.href], link.label)
+            const label = NAV_TOP_I18N[link.href]
+              ? t(NAV_TOP_I18N[link.href], link.label)
               : link.label;
             return (
               <LocaleLink key={link.href} href={link.href} className={linkClass(active)}>
@@ -230,8 +222,14 @@ export function Navbar({
             <div className="container max-h-[min(70vh,520px)] space-y-1 overflow-y-auto py-4">
               {NAV_MOBILE_LINKS.map((link) => {
                 const Icon = link.icon;
+                const keys = NAV_ITEM_I18N[link.href] ?? {
+                  label: NAV_TOP_I18N[link.href],
+                };
+                const label = keys?.label
+                  ? t(keys.label, link.label)
+                  : link.label;
                 return (
-                  <Link
+                  <LocaleLink
                     key={`${link.href}-${link.label}`}
                     href={link.href}
                     className={cn(
@@ -256,18 +254,18 @@ export function Navbar({
                           : undefined
                       }
                     >
-                      {link.label}
+                      {label}
                     </span>
-                  </Link>
+                  </LocaleLink>
                 );
               })}
-              <Link
+              <LocaleLink
                 href="/dashboard"
                 className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm hover:bg-muted"
               >
                 <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </Link>
+                {t("nav.dashboard")}
+              </LocaleLink>
               <AdminViewButton fullWidth variant="gradient" className="mt-2 w-full" />
               <div className="sticky bottom-0 flex gap-2 bg-background/95 pb-1 pt-3">
                 <MobileUserNav />

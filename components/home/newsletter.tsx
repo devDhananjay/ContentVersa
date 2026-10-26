@@ -5,9 +5,11 @@ import { motion, useReducedMotion } from "framer-motion";
 import { BookOpen, CheckCircle2, Loader2, Mail, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 export function Newsletter() {
   const reduce = useReducedMotion();
+  const { t } = useDictionary();
   const [email, setEmail] = React.useState("");
   const [submitted, setSubmitted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -55,9 +57,9 @@ export function Newsletter() {
           className="v2-surface flex flex-col justify-between p-7 md:p-8"
         >
           <div>
-            <p className="v2-eyebrow">What you get</p>
+            <p className="v2-eyebrow">{t("home.newsletterEyebrow")}</p>
             <h2 className="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">
-              One card. One explainer. Every Friday.
+              {t("home.newsletterTitle")}
             </h2>
             <ul className="mt-6 space-y-4 text-sm text-muted-foreground">
               {[
@@ -96,17 +98,16 @@ export function Newsletter() {
               <Mail className="h-3.5 w-3.5" /> Newsletter
             </p>
             <h2 className="mt-3 font-display text-3xl font-bold tracking-tight md:text-4xl">
-              One useful India explainer,{" "}
-              <span className="v2-gradient-text italic">every week.</span>
+              {t("home.newsletterCta")}
             </h2>
             <p className="mt-3 text-sm text-muted-foreground md:text-base">
-              No spam. Unsubscribe anytime.
+              {t("home.newsletterTitle")}
             </p>
 
             {submitted ? (
               <div className="mt-8 flex items-center gap-2 text-[hsl(var(--positive))]">
                 <CheckCircle2 className="h-5 w-5" />
-                <span className="font-medium">You&apos;re in. See you Friday.</span>
+                <span className="font-medium">{t("home.newsletterThanks")}</span>
               </div>
             ) : (
               <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -115,7 +116,7 @@ export function Newsletter() {
                   <Input
                     type="email"
                     required
-                    placeholder="you@email.com"
+                    placeholder={t("home.newsletterPlaceholder")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="h-12 rounded-xl bg-background pl-10"
@@ -130,10 +131,10 @@ export function Newsletter() {
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Subscribing…
+                      {t("common.loading")}
                     </>
                   ) : (
-                    "Subscribe"
+                    t("home.newsletterSubscribe")
                   )}
                 </button>
               </form>

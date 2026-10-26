@@ -1,25 +1,37 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Radio } from "lucide-react";
 import type { LiveNewsCard } from "@/lib/data/live-news";
 import { markReturnToLiveNews } from "@/components/home/live-news-return-scroll";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import { cn } from "@/lib/utils";
 
-function formatRelative(iso: string): string {
-  const t = Date.parse(iso);
-  if (!Number.isFinite(t)) return "Just now";
-  const mins = Math.max(0, Math.round((Date.now() - t) / 60_000));
-  if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins}m ago`;
+function formatRelative(
+  iso: string,
+  t: (key: string, fallback?: string) => string
+): string {
+  const ms = Date.parse(iso);
+  if (!Number.isFinite(ms)) return t("common.justNow");
+  const mins = Math.max(0, Math.round((Date.now() - ms) / 60_000));
+  if (mins < 1) return t("common.justNow");
+  if (mins < 60) return t("common.minsAgo").replace("{n}", String(mins));
   const hrs = Math.round(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.round(hrs / 24)}d ago`;
+  if (hrs < 24) return t("common.hoursAgo").replace("{n}", String(hrs));
+  return t("common.daysAgo").replace("{n}", String(Math.round(hrs / 24)));
 }
 
-function LiveNewsHeading({ reduce }: { reduce: boolean | null }) {
+function LiveNewsHeading({
+  reduce,
+  title,
+}: {
+  reduce: boolean | null;
+  title: string;
+}) {
+  const [first, ...rest] = title.split(/\s+/);
+  const second = rest.join(" ") || "";
   return (
     <h2 className="font-display flex flex-nowrap items-center gap-2.5 text-3xl font-bold tracking-tight md:text-4xl">
       <span
@@ -36,9 +48,14 @@ function LiveNewsHeading({ reduce }: { reduce: boolean | null }) {
             !reduce && "live-news-title-blink"
           )}
         >
-          Live
-        </span>{" "}
-        <span className="text-foreground">News</span>
+          {first}
+        </span>
+        {second ? (
+          <>
+            {" "}
+            <span className="text-foreground">{second}</span>
+          </>
+        ) : null}
       </span>
     </h2>
   );
@@ -48,10 +65,12 @@ function NewsBox({
   card,
   index,
   reduce,
+  t,
 }: {
   card: LiveNewsCard;
   index: number;
   reduce: boolean | null;
+  t: (key: string, fallback?: string) => string;
 }) {
   return (
     <motion.div
@@ -61,7 +80,7 @@ function NewsBox({
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.35, delay: Math.min(index, 6) * 0.04 }}
     >
-      <Link
+      <LocaleLink
         href={card.hasBriefing ? card.href : "/news"}
         onClick={() => {
           if (card.hasBriefing) markReturnToLiveNews();
@@ -81,10 +100,10 @@ function NewsBox({
                 !reduce && "animate-pulse"
               )}
             />
-            Live
+            {t("news.title").split(/\s+/)[0] || "Live"}
           </span>
           <span className="text-[11px] tabular-nums text-muted-foreground">
-            {formatRelative(card.publishedAt)}
+            {formatRelative(card.publishedAt, t)}
           </span>
         </div>
 
@@ -129,11 +148,11 @@ function NewsBox({
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-xs font-medium">
           <span className="text-muted-foreground">
-            {card.hasBriefing ? "Read briefing" : "Open News desk"}
+            {card.hasBriefing ? t("news.readBriefing") : t("news.openDesk")}
           </span>
           <ArrowRight className="h-3.5 w-3.5 text-red-500/80 transition-transform group-hover:translate-x-0.5" />
         </div>
-      </Link>
+      </LocaleLink>
     </motion.div>
   );
 }
@@ -145,38 +164,38 @@ interface Props {
 /** Home Live News — TOI headlines + ContentVerse briefings, under Reels. */
 export function LiveNewsSection({ items }: Props) {
   const reduce = useReducedMotion();
+  const { t } = useDictionary();
   if (!items.length) return null;
 
   return (
     <section
       id="home-live-news"
       className="scroll-mt-[calc(var(--site-header-offset)+1rem)] border-b border-border/50 bg-gradient-to-b from-red-500/[0.04] via-transparent to-transparent"
-      aria-label="Live News"
+      aria-label={t("news.title")}
     >
       <div className="container py-10 md:py-14">
         <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="v2-eyebrow mb-2 inline-flex items-center gap-1.5 text-red-600/90 dark:text-red-400/90">
               <Radio className="h-3.5 w-3.5" />
-              Updating from India desk
+              {t("news.updating")}
             </p>
-            <LiveNewsHeading reduce={reduce} />
+            <LiveNewsHeading reduce={reduce} title={t("news.title")} />
             <p className="mt-2 max-w-xl text-sm text-muted-foreground md:text-base">
-              Fresh headlines every few minutes — open a box for our original
-              ContentVerse briefing.
+              {t("news.homeIntro")}
             </p>
           </div>
-          <Link
+          <LocaleLink
             href="/news"
             className="hidden shrink-0 sm:inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            All news <ArrowRight className="h-4 w-4" />
-          </Link>
+            {t("news.allNews")} <ArrowRight className="h-4 w-4" />
+          </LocaleLink>
         </div>
 
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
           {items.slice(0, 8).map((card, i) => (
-            <NewsBox key={card.id} card={card} index={i} reduce={reduce} />
+            <NewsBox key={card.id} card={card} index={i} reduce={reduce} t={t} />
           ))}
         </div>
       </div>
