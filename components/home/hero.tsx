@@ -160,8 +160,8 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
   const { t } = useDictionary();
   const cinematic = isHomeHeroVideoEnabled();
   const topics = categories.slice(0, 7);
-  /** Same count as Live News home grid */
-  const trendChips = trendingKeywords.slice(0, 8);
+  /** Compact first viewport — fewer chips than the full Trending section */
+  const trendChips = trendingKeywords.slice(0, 6);
   const rotatingWords = [
     t("home.rotateRead"),
     t("home.rotateCreate"),
@@ -187,7 +187,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="relative mx-auto w-full max-w-[96rem] px-2 pt-2 pb-10 sm:px-3 md:pt-3 md:pb-12">
+      <div className="relative mx-auto w-full max-w-[96rem] px-2 pt-1.5 pb-7 sm:px-3 md:pt-2 md:pb-9">
         {/* Ads sit at the outer corners; hero content stays centered */}
         <div className="flex w-full items-start">
           <div className="hidden w-[160px] shrink-0 justify-start pt-1 xl:flex 2xl:w-[180px]">
@@ -206,7 +206,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
           >
             {/* Advertise CTA — compact pill above the editorial eyebrow */}
             <motion.div
-              className="mb-2 flex justify-center"
+              className="mb-1.5 flex justify-center"
               initial={reduce ? false : { opacity: 0, y: 8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 0.02, duration: 0.45, ease: easeOut }}
@@ -214,7 +214,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
               <LocaleLink
                 href="/advertise"
                 className={cn(
-                  "group relative inline-flex items-center gap-2 overflow-hidden rounded-full py-1 pl-1 pr-2.5",
+                  "group relative inline-flex items-center gap-1.5 overflow-hidden rounded-full py-0.5 pl-0.5 pr-2",
                   "border border-transparent bg-card/80 shadow-[0_8px_28px_-14px_hsl(var(--primary)/0.5)] backdrop-blur-md",
                   "transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5",
                   "hover:shadow-[0_12px_32px_-12px_hsl(var(--saffron)/0.45)]",
@@ -245,7 +245,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                   />
                 ) : null}
 
-                <span className="relative z-[1] flex h-7 w-7 shrink-0 items-center justify-center">
+                <span className="relative z-[1] flex h-6 w-6 shrink-0 items-center justify-center">
                   {!reduce ? (
                     <>
                       <motion.span
@@ -262,7 +262,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                   ) : null}
                   <motion.span
                     className={cn(
-                      "relative flex h-7 w-7 items-center justify-center rounded-full",
+                      "relative flex h-6 w-6 items-center justify-center rounded-full",
                       "bg-gradient-to-br from-primary via-primary/85 to-[hsl(var(--saffron))]",
                       "shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.65)]"
                     )}
@@ -286,11 +286,11 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                   </motion.span>
                 </span>
 
-                  <span className="relative z-[1] flex flex-col items-start gap-0.5 text-left leading-none">
-                  <span className="font-display text-[12px] font-bold tracking-tight text-gradient">
+                  <span className="relative z-[1] flex flex-col items-start gap-0 text-left leading-none">
+                  <span className="font-display text-[11px] font-bold tracking-tight text-gradient">
                     {t("home.advertise")}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 text-[7px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                     <span className="h-0.5 w-0.5 rounded-full bg-[hsl(var(--saffron))]" />
                     {t("home.advertiseSub")}
                   </span>
@@ -298,7 +298,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
                 <span
                   className={cn(
-                    "relative z-[1] flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
+                    "relative z-[1] flex h-4 w-4 shrink-0 items-center justify-center rounded-full",
                     "bg-muted/70 text-foreground transition-colors duration-300",
                     "group-hover:bg-primary group-hover:text-primary-foreground"
                   )}
@@ -323,7 +323,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
               <Badge
                 variant="neon"
                 className={cn(
-                  "gap-1.5 border-border/80 bg-card/85 px-3.5 py-1 text-[11px] font-medium tracking-wide text-muted-foreground shadow-sm backdrop-blur-md",
+                  "gap-1 border-border/80 bg-card/85 px-3 py-0.5 text-[10px] font-medium tracking-wide text-muted-foreground shadow-sm backdrop-blur-md",
                   cinematic && "dark:border-white/20 dark:bg-white/10 dark:text-white"
                 )}
               >
@@ -332,7 +332,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                   className="inline-flex shrink-0"
                 >
-                  <Sparkles className="h-3 w-3 text-accent" />
+                  <Sparkles className="h-2.5 w-2.5 text-accent" />
                 </motion.span>
                 {t("home.badge")}
               </Badge>
@@ -341,7 +341,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             {/* Brand */}
             <h1
               className={cn(
-                "mt-4 font-display font-semibold tracking-[-0.03em] text-[clamp(2rem,4.6vw,3.1rem)] leading-[1.1]",
+                "mt-2.5 font-display font-semibold tracking-[-0.03em] text-[clamp(1.75rem,4vw,2.65rem)] leading-[1.08]",
                 cinematic && "dark:drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
               )}
             >
@@ -356,7 +356,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             </h1>
 
             <motion.div
-              className="mt-3 h-px w-10 origin-center bg-gradient-to-r from-transparent via-primary/55 to-transparent"
+              className="mt-2 h-px w-8 origin-center bg-gradient-to-r from-transparent via-primary/55 to-transparent"
               initial={reduce ? false : { scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ delay: 0.18, duration: 0.45 }}
@@ -364,7 +364,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
             <motion.p
               className={cn(
-                "mt-3 inline-flex max-w-full flex-wrap items-baseline justify-center gap-x-1.5 font-display text-[clamp(0.95rem,2vw,1.15rem)] font-medium leading-[1.45] tracking-[-0.012em]",
+                "mt-2 inline-flex max-w-full flex-wrap items-baseline justify-center gap-x-1.5 font-display text-[clamp(0.88rem,1.8vw,1.05rem)] font-medium leading-[1.35] tracking-[-0.012em]",
                 "text-foreground/80",
                 cinematic && "dark:text-white/85"
               )}
@@ -380,7 +380,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
             <motion.p
               className={cn(
-                "mt-3 max-w-lg text-pretty text-[13px] leading-relaxed text-muted-foreground sm:text-sm",
+                "mt-2 max-w-lg text-pretty text-[12px] leading-snug text-muted-foreground sm:text-[13px]",
                 cinematic && "dark:text-white/65"
               )}
               initial={reduce ? false : { opacity: 0, y: 6 }}
@@ -391,7 +391,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             </motion.p>
 
             <motion.div
-              className="mt-5 w-full"
+              className="mt-3.5 w-full"
               initial={reduce ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.36, duration: 0.45 }}
@@ -402,6 +402,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                 className="mx-auto max-w-md"
                 placeholder={t("home.searchPlaceholder")}
                 inputClassName={cn(
+                  "!h-10 sm:!h-11",
                   cinematic &&
                     "dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder:text-white/45"
                 )}
@@ -410,7 +411,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
             {trendChips.length > 0 ? (
               <motion.div
-                className="mt-3.5 flex w-full max-w-xl flex-wrap items-center justify-center gap-2"
+                className="mt-2.5 flex w-full max-w-xl flex-wrap items-center justify-center gap-1.5"
                 initial={reduce ? false : { opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.4 }}
@@ -418,11 +419,11 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
               >
                 <span
                   className={cn(
-                    "inline-flex h-7 shrink-0 items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground",
+                    "inline-flex h-6 shrink-0 items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground",
                     cinematic && "dark:text-white/55"
                   )}
                 >
-                  <TrendingUp className="h-3.5 w-3.5 text-red-500" aria-hidden />
+                  <TrendingUp className="h-3 w-3 text-red-500" aria-hidden />
                   {t("home.trendSearchesTitleLead", "Trending")}
                 </span>
                 {trendChips.map((kw) => (
@@ -430,14 +431,14 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                     key={kw.href}
                     href={kw.href}
                     className={cn(
-                      "inline-flex h-7 max-w-[12rem] items-center gap-1 truncate rounded-full border border-border/70 bg-card px-2.5 text-[11px] font-medium text-foreground shadow-sm backdrop-blur-sm transition-colors",
+                      "inline-flex h-6 max-w-[9.5rem] items-center gap-1 truncate rounded-full border border-border/70 bg-card px-2 text-[10px] font-medium text-foreground shadow-sm backdrop-blur-sm transition-colors",
                       "hover:border-red-500/35 hover:bg-muted/60",
                       cinematic &&
                         "dark:border-white/15 dark:bg-white/10 dark:text-white/85 dark:hover:border-red-400/40 dark:hover:bg-white/15"
                     )}
                     title={kw.traffic ? `${kw.title} (~${kw.traffic})` : kw.title}
                   >
-                    <TrendingUp className="h-3 w-3 shrink-0 text-red-500" aria-hidden />
+                    <TrendingUp className="h-2.5 w-2.5 shrink-0 text-red-500" aria-hidden />
                     <span className="truncate">{kw.title}</span>
                   </LocaleLink>
                 ))}
@@ -445,7 +446,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             ) : null}
 
             <motion.div
-              className="mt-5 flex items-center justify-center gap-2.5"
+              className="mt-3.5 flex items-center justify-center gap-2"
               initial={reduce ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.44, duration: 0.4 }}
@@ -454,7 +455,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                 <LocaleLink
                   href="/guides"
                   className={cn(
-                    "group inline-flex h-9 items-center gap-1.5 rounded-full bg-foreground px-4 text-[13px] font-medium text-background transition-colors",
+                    "group inline-flex h-8 items-center gap-1.5 rounded-full bg-foreground px-3.5 text-[12px] font-medium text-background transition-colors",
                     "hover:bg-foreground/90 hover:shadow-[0_10px_28px_-14px_hsl(var(--foreground)/0.55)]",
                     cinematic && "dark:bg-white dark:text-black dark:hover:bg-white/90"
                   )}
@@ -468,7 +469,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
                 <LocaleLink
                   href="/blogs"
                   className={cn(
-                    "group inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card/80 px-4 text-[13px] font-medium text-foreground/80 shadow-sm backdrop-blur-sm transition-colors",
+                    "group inline-flex h-8 items-center gap-1 rounded-full border border-border bg-card/80 px-3.5 text-[12px] font-medium text-foreground/80 shadow-sm backdrop-blur-sm transition-colors",
                     "hover:border-foreground/20 hover:bg-card hover:text-foreground",
                     cinematic &&
                       "dark:border-white/20 dark:bg-white/5 dark:text-white/80 dark:hover:border-white/35 dark:hover:bg-white/10 dark:hover:text-white"
@@ -481,19 +482,19 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
             </motion.div>
 
             <motion.div
-              className="mt-7 flex w-full flex-col items-center gap-3 border-t border-border/40 pt-5"
+              className="mt-4 flex w-full flex-col items-center gap-2 border-t border-border/40 pt-3.5"
               initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.52, duration: 0.4 }}
             >
               {topics.length > 0 ? (
-                <div className="flex flex-wrap items-center justify-center gap-1.5">
+                <div className="flex flex-wrap items-center justify-center gap-1">
                   {topics.map((cat) => (
                     <LocaleLink
                       key={cat.slug}
                       href={categoryPageHref(cat.slug)}
                       className={cn(
-                        "inline-flex h-7 items-center rounded-full border border-border/50 bg-background/70 px-2.5 text-[11px] font-medium text-muted-foreground transition-all",
+                        "inline-flex h-6 items-center rounded-full border border-border/50 bg-background/70 px-2 text-[10px] font-medium text-muted-foreground transition-all",
                         "hover:-translate-y-px hover:border-border hover:bg-card hover:text-foreground hover:shadow-sm",
                         cinematic &&
                           "dark:border-white/10 dark:bg-white/[0.04] dark:text-white/55 dark:hover:border-white/20 dark:hover:bg-white/10 dark:hover:text-white"
@@ -507,7 +508,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
               <p
                 className={cn(
-                  "flex flex-wrap items-center justify-center gap-x-2.5 text-[11px] text-muted-foreground/70",
+                  "flex flex-wrap items-center justify-center gap-x-2 text-[10px] text-muted-foreground/70",
                   cinematic && "dark:text-white/40"
                 )}
               >
@@ -537,7 +538,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
               {/* Product modules */}
               <p
                 className={cn(
-                  "flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground/65",
+                  "flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-[10px] text-muted-foreground/65",
                   cinematic && "dark:text-white/40"
                 )}
               >

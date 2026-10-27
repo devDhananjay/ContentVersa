@@ -3,17 +3,17 @@
   "functions": {
     "/api/auth/firebase": {},
     "/api/auth/google/login": {},
-    "/api/cron/toi-news": {
-      "maxDuration": 300
-    },
     "/api/cron/sports-sync": {
       "maxDuration": 300
     },
-    "/api/moneyverse/bank-statement/analyze": {},
+    "/api/cron/toi-news": {
+      "maxDuration": 300
+    },
+    "/api/auth/google/callback": {},
     "/api/moneyverse/bank-statement/quota": {},
+    "/api/moneyverse/bank-statement/analyze": {},
     "/api/reels/upload": {},
     "/api/upload": {},
-    "/api/auth/google/callback": {},
     "/uploads/[filename]": {}
   }
 }
