@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { getCricketNewsDetail } from "@/lib/sports/data";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 import { timeAgo } from "@/lib/utils";
 import { BandAd } from "@/components/ads/band-ad";
 import { MrecAd } from "@/components/ads/mrec-ad";
@@ -46,6 +48,8 @@ export default async function CricketNewsPage({
   if (!article) redirect("/sports");
 
   const mid = Math.max(1, Math.floor(article.content.length / 2));
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
 
   return (
     <div className="container py-8 md:py-12">
@@ -58,7 +62,11 @@ export default async function CricketNewsPage({
         />
 
         <article className="min-w-0 w-full max-w-3xl">
-          <PageBack href="/sports" label="Sports Hub" className="mb-6" />
+          <PageBack
+            href="/sports"
+            label={t(dict, "hubs.sportsTitle")}
+            className="mb-6"
+          />
 
           {article.context && (
             <Badge variant="neon" className="mb-3">

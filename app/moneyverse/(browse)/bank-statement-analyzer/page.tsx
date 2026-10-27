@@ -13,28 +13,37 @@ import {
   BANK_STATEMENT_KEYWORDS,
   MONEYVERSE_BANK_STATEMENT_PATH,
 } from "@/lib/moneyverse/bank-statement-seo";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Free Bank Statement Analyzer India — AI Expense & Cash Flow",
-  description:
-    "Understand how to review Indian bank statement PDFs safely, then analyse credits, debits, recurring payments and CSV export with MoneyVerse. Educational tool — not a bank product.",
-  path: MONEYVERSE_BANK_STATEMENT_PATH,
-  keywords: [...BANK_STATEMENT_KEYWORDS],
-  // Keep noindex through AdSense review; flip after crawl quality settles.
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: MONEYVERSE_BANK_STATEMENT_PATH,
+    titleEn: "Free Bank Statement Analyzer India — AI Expense & Cash Flow",
+    titleHi: "Free Bank Statement Analyzer India — AI Expense & Cash Flow",
+    descriptionEn:
+      "Understand how to review Indian bank statement PDFs safely, then analyse credits, debits, recurring payments and CSV export with MoneyVerse. Educational tool — not a bank product.",
+    descriptionHi:
+      "Understand how to review Indian bank statement PDFs safely, then analyse credits, debits, recurring payments and CSV export with MoneyVerse. Educational tool — not a bank product.",
+    keywords: [...BANK_STATEMENT_KEYWORDS],
+    noIndex: true,
+    bilingualIndex: false,
+  });
+}
 
-export default function BankStatementAnalyzerPage() {
+export default async function BankStatementAnalyzerPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const { lead, paragraphs } = BANK_STATEMENT_EDITORIAL;
 
   return (
     <div className="space-y-10">
       <MoneyverseBankStatementJsonLd />
 
-      <PageBack href="/moneyverse" label="MoneyVerse" />
+      <PageBack href="/moneyverse" label={t(dict, "nav.moneyverse")} />
 
       <header className="max-w-3xl space-y-4">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">

@@ -10,6 +10,7 @@ import { buildMetadata } from "@/lib/seo";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t, tf } from "@/lib/i18n/get-dictionary";
 import { withLocalePrefix } from "@/lib/i18n/config";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
@@ -18,6 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${t(dict, "hubs.bookmarksTitle")} | ContentVerse India`,
     description: t(dict, "hubs.bookmarksEmpty"),
     path: withLocalePrefix("/bookmarks", locale),
+    alternates: buildHreflangAlternates("/bookmarks"),
     noIndex: true,
   });
 }

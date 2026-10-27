@@ -5,6 +5,8 @@ import { VisualSitemap } from "@/components/site/visual-sitemap";
 import { buildMetadata } from "@/lib/seo";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { withLocalePrefix } from "@/lib/i18n/config";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
@@ -12,7 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: t(dict, "hubs.siteMapTitle"),
     description: t(dict, "hubs.siteMapSub"),
-    path: "/site-map",
+    path: withLocalePrefix("/site-map", locale),
+    alternates: buildHreflangAlternates("/site-map"),
   });
 }
 

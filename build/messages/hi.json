@@ -5,8 +5,8 @@
     "articles": "लेख",
     "jobs": "नौकरियाँ",
     "results": "परिणाम",
-    "explore": "खोजें",
-    "more": "और",
+    "explore": "डिस्कवर",
+    "more": "टूल्स",
     "write": "लिखें",
     "dashboard": "डैशबोर्ड",
     "signIn": "साइन इन",
@@ -41,11 +41,13 @@
     "cineverse": "CineVerse",
     "cineverseDesc": "फ़िल्में, OTT और वॉचलिस्ट",
     "goldverse": "GoldVerse",
-    "goldverseDesc": "सोने के रेट और हॉलमार्क टिप्स",
+    "goldverseDesc": "सोने के भाव, HUID और हॉलमार्क टिप्स",
     "moneyverse": "MoneyVerse",
-    "moneyverseDesc": "भारत खर्च ट्रैकर",
+    "moneyverseDesc": "खर्च ट्रैकर, स्क्रीनशॉट OCR, बैंक PDF",
     "indiaTools": "भारत टूल्स",
-    "indiaToolsDesc": "गाइड्स के साथ कैलकुलेटर"
+    "indiaToolsDesc": "SIP, EMI, टैक्स, IFSC, PNR और 30+ मुफ़्त टूल्स",
+    "aiNav": "ContentVerse AI",
+    "aiNavDesc": "पूछें, सारांश, रिज़्यूमे, OCR और फ़ाइनेंस"
   },
   "mobile": {
     "home": "होम",

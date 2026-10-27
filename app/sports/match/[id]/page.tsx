@@ -17,6 +17,8 @@ import {
 } from "@/lib/sports/data";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -56,10 +58,16 @@ export default async function MatchDetailPage({
   const scores = getMatchScoreSummary(match);
   const team1Img = cricbuzzImageUrl(match.team1.imageId, "80x80");
   const team2Img = cricbuzzImageUrl(match.team2.imageId, "80x80");
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
 
   return (
     <div className="container py-8 md:py-12">
-      <PageBack href="/sports" label="Sports Hub" className="mb-6" />
+      <PageBack
+        href="/sports"
+        label={t(dict, "hubs.sportsTitle")}
+        className="mb-6"
+      />
 
       <div className="rounded-3xl border bg-card overflow-hidden">
         <div className="p-6 md:p-8 border-b bg-gradient-to-br from-lime-500/10 to-green-500/5">

@@ -15,6 +15,8 @@ import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PageBack } from "@/components/site/page-back";
 import { buildMetadata } from "@/lib/seo";
 import { isIndexableProfile } from "@/lib/seo/crawl-policy";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +46,8 @@ export default async function ProfilePage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const fromDb = await getBlogsForProfile(username);
 
   let user: Author;
@@ -73,7 +77,7 @@ export default async function ProfilePage({
         <div className="absolute inset-0 grid-noise opacity-30" />
       </div>
       <div className="container -mt-20 relative">
-        <PageBack href="/blogs" label="Blogs" className="mb-4" />
+        <PageBack href="/blogs" label={t(dict, "footer.blogs")} className="mb-4" />
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div className="flex items-end gap-5">
             <div className="relative">

@@ -14,6 +14,8 @@ import { GOVT_JOBS_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { withLocalePrefix } from "@/lib/i18n/config";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,7 @@ type PageProps = {
 };
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const locale = await getRequestLocale();
   const { cat } = await searchParams;
   const category = parseGovtCategory(cat);
   const meta = GOVT_CATEGORIES.find((item) => item.id === category);
@@ -31,7 +34,8 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     description:
       meta?.description ??
       "Latest government job notifications, sarkari results and exam updates India.",
-    path: "/jobs/govt",
+    path: withLocalePrefix("/jobs/govt", locale),
+    alternates: buildHreflangAlternates("/jobs/govt"),
     keywords: [
       "sarkari naukri",
       "government jobs India",

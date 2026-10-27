@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PlayerSearch } from "@/components/sports/player-search";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Find Player",
-  description: "Search cricket players and view profiles, career stats and more.",
-  path: "/sports/players",
-  // Search-only utility — noindex for AdSense / crawl quality.
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/sports/players",
+    titleEn: "Find Player",
+    titleHi: "Find Player",
+    descriptionEn: "Search cricket players and view profiles, career stats and more.",
+    descriptionHi: "Search cricket players and view profiles, career stats and more.",
+    noIndex: true,
+    bilingualIndex: false,
+  });
+}
 
 export default async function PlayersSearchPage({
   searchParams,

@@ -14,6 +14,8 @@ import {
 } from "@/lib/sports/data";
 import { cricbuzzImageUrl } from "@/lib/sports/transformers";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -52,10 +54,16 @@ export default async function TeamPage({
   if (!team) redirect("/sports/teams");
 
   const img = cricbuzzImageUrl(team.imageId, "120x120");
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
 
   return (
     <div className="container py-8 md:py-12">
-      <PageBack href="/sports/teams" label="All Teams" className="mb-6" />
+      <PageBack
+        href="/sports/teams"
+        label={t(dict, "hubs.sportsNavTeams")}
+        className="mb-6"
+      />
 
       <SportsNav />
 

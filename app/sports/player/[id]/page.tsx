@@ -15,6 +15,8 @@ import {
 } from "@/lib/sports/data";
 import { playerFaceImageUrl } from "@/lib/sports/transformers";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -53,12 +55,19 @@ export default async function PlayerPage({
 
   if (!profile) redirect("/sports/players");
 
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   const img =
     profile.imageUrl ?? playerFaceImageUrl(playerId);
 
   return (
     <div className="container py-8 md:py-12 max-w-4xl">
-      <PageBack href="/sports/players" label="Players" className="mb-6" />
+      <PageBack
+        href="/sports/players"
+        label={t(dict, "hubs.sportsNavPlayers")}
+        className="mb-6"
+      />
 
       <div className="rounded-3xl border bg-card overflow-hidden mb-8">
         <div className="p-6 md:p-8 flex flex-col sm:flex-row gap-6 items-start bg-gradient-to-br from-neon-purple/10 to-neon-cyan/5">

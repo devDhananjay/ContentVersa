@@ -22,6 +22,7 @@ export const NAV_ITEM_I18N: Record<
   "/goldverse": { label: "nav.goldverse", description: "nav.goldverseDesc" },
   "/moneyverse": { label: "nav.moneyverse", description: "nav.moneyverseDesc" },
   "/tools": { label: "nav.indiaTools", description: "nav.indiaToolsDesc" },
+  "/ai": { label: "nav.aiNav", description: "nav.aiNavDesc" },
   "/jobs": { label: "nav.jobs" },
 };
 

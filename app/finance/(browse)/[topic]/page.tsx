@@ -6,6 +6,7 @@ import {
   MONEY_TOPIC_SLUGS,
   moneyTopicPath,
 } from "@/lib/finance/money-topics";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { buildMetadata } from "@/lib/seo";
 import { isNoindexFinanceTopic } from "@/lib/seo/content-redirects";
 
@@ -24,13 +25,16 @@ export async function generateMetadata({
   const topic = getMoneyTopic(slug);
   if (!topic) return buildMetadata({ title: "Not found", noIndex: true });
 
-  return buildMetadata({
-    title: topic.title,
-    description: topic.description,
+  return buildLocaleHubMetadata({
     path: moneyTopicPath(topic.slug),
+    titleEn: topic.title,
+    titleHi: topic.title,
+    descriptionEn: topic.description,
+    descriptionHi: topic.description,
     keywords: topic.keywords,
     image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1600",
     noIndex: isNoindexFinanceTopic(topic.slug),
+    bilingualIndex: false,
   });
 }
 

@@ -8,6 +8,8 @@ import { SportsNav } from "@/components/sports/sports-nav";
 import { SeriesDetailTabs } from "@/components/sports/series-detail-tabs";
 import { getSeriesDetailData } from "@/lib/sports/data";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -39,9 +41,16 @@ export default async function SeriesPage({
   const series = await getSeriesDetailData(seriesId);
   if (!series) redirect("/sports");
 
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   return (
     <div className="container py-8 md:py-12">
-      <PageBack href="/sports" label="Sports Hub" className="mb-6" />
+      <PageBack
+        href="/sports"
+        label={t(dict, "hubs.sportsTitle")}
+        className="mb-6"
+      />
 
       <SportsNav />
 

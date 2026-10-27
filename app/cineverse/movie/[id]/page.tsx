@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { fetchMovieDetail } from "@/lib/cineverse/tmdb-extras";
 import { buildMetadata } from "@/lib/seo";
 import { MovieDetailView } from "@/components/cineverse/movie-detail-view";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -54,5 +56,10 @@ export default async function CineverseMoviePage({
   const movie = await fetchMovieDetail(id);
   if (!movie) notFound();
 
-  return <MovieDetailView movie={movie} />;
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
+  return (
+    <MovieDetailView movie={movie} backLabel={t(dict, "nav.cineverse")} />
+  );
 }

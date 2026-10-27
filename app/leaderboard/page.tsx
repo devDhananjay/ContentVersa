@@ -8,6 +8,8 @@ import { getLeaderboardCached } from "@/lib/data/leaderboard";
 import { buildMetadata } from "@/lib/seo";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { withLocalePrefix } from "@/lib/i18n/config";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
@@ -15,7 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: t(dict, "footer.leaderboard", "Leaderboard"),
     description: t(dict, "hubs.leaderboardSub"),
-    path: "/leaderboard",
+    path: withLocalePrefix("/leaderboard", locale),
+    alternates: buildHreflangAlternates("/leaderboard"),
     noIndex: true,
   });
 }

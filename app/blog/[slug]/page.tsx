@@ -58,6 +58,7 @@ import { getBlogSeriesMeta } from "@/lib/data/series";
 import { PageBack } from "@/components/site/page-back";
 import { dedupeBriefingParagraphs } from "@/lib/seo/toi-news-rewrite";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 import { resolveLocalizedBlog } from "@/lib/i18n/blog-translations";
 import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
 import { withLocalePrefix } from "@/lib/i18n/config";
@@ -162,6 +163,7 @@ export default async function BlogPage({
 }) {
   const { slug } = await params;
   const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const session = await getCurrentUser();
   const userId = session ? await resolveUserId(session) : null;
   const blog = await getBlogBySlugForViewer(slug, userId);
@@ -261,7 +263,13 @@ export default async function BlogPage({
       <article className="container max-w-5xl py-8 md:py-12">
         <PageBack
           href={isToiBriefing ? "/news" : category ? `/category/${category.slug}` : "/blogs"}
-          label={isToiBriefing ? "Live News" : (category?.name ?? "Blogs")}
+          label={
+            isToiBriefing
+              ? t(dict, "nav.liveNews")
+              : category
+                ? t(dict, `categories.${category.slug}`, category.name)
+                : t(dict, "footer.blogs")
+          }
           className="mb-6"
         />
         {!isPublic ? (

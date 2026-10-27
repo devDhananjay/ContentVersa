@@ -2,17 +2,23 @@ import type { Metadata } from "next";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { TeamsGrid } from "@/components/sports/teams-grid";
 import { getInternationalTeams } from "@/lib/sports/data";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Cricket Teams",
-  description: "Browse international cricket teams, squads, schedules and results.",
-  path: "/sports/teams",
-  // Thin directory hub — keep out of Google index until original team explainers exist.
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/sports/teams",
+    titleEn: "Cricket Teams",
+    titleHi: "Cricket Teams",
+    descriptionEn:
+      "Browse international cricket teams, squads, schedules and results.",
+    descriptionHi:
+      "Browse international cricket teams, squads, schedules and results.",
+    noIndex: true,
+    bilingualIndex: false,
+  });
+}
 
 export default async function TeamsPage() {
   const teams = await getInternationalTeams();

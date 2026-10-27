@@ -9,6 +9,8 @@ import { displaySymbol } from "@/lib/finance/transformers";
 import { buildMetadata } from "@/lib/seo";
 import { Badge } from "@/components/ui/badge";
 import { LiveStockQuote } from "@/components/finance/live-stock-quote";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 interface PageProps {
   params: Promise<{ symbol: string }>;
@@ -29,6 +31,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function StockDetailPage({ params }: PageProps) {
   const { symbol } = await params;
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const data = await getStockDetailCached(symbol);
 
   if (!data) notFound();
@@ -37,7 +41,11 @@ export default async function StockDetailPage({ params }: PageProps) {
 
   return (
     <div className="container py-8 max-w-4xl">
-      <PageBack href="/finance" label="Finance Hub" className="mb-6" />
+      <PageBack
+        href="/finance"
+        label={t(dict, "hubs.financeTitle")}
+        className="mb-6"
+      />
 
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>

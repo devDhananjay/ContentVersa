@@ -17,20 +17,24 @@ import { CricketAlertSubscribe } from "@/components/sports/cricket-alert-subscri
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getSportsHubDataCached } from "@/lib/sports/data";
 import { hubSeoJsonLdBlocks, SPORTS_HUB_SEO } from "@/lib/seo/hub-seo";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Sports — Live Cricket Scores, Fixtures & News India",
-  description:
-    "Live cricket score India today, IPL fixtures, match results, Team India updates, T20 scorecards and original sports blogs on ContentVerse India.",
-  path: "/sports",
-  // Live score widgets are thin for AdSense indexing — keep crawlable, not indexed.
-  noIndex: true,
-  keywords: [
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/sports",
+    titleEn: "Sports — Live Cricket Scores, Fixtures & News India",
+    titleHi: "Sports — Live Cricket Scores, Fixtures & News India",
+    descriptionEn:
+      "Live cricket score India today, IPL fixtures, match results, Team India updates, T20 scorecards and original sports blogs on ContentVerse India.",
+    descriptionHi:
+      "Live cricket score India today, IPL fixtures, match results, Team India updates, T20 scorecards and original sports blogs on ContentVerse India.",
+    noIndex: true,
+    bilingualIndex: false,
+    keywords: [
     "live cricket score India",
     "IPL live score",
     "cricket match today",
@@ -46,7 +50,8 @@ export const metadata: Metadata = buildMetadata({
   ],
   image:
     "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1600",
-});
+  });
+}
 
 export default async function SportsHubPage() {
   const locale = await getRequestLocale();

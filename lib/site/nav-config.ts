@@ -44,7 +44,7 @@ export const NAV_TOP_LINKS: NavLinkItem[] = [
 export const NAV_DROPDOWNS: NavDropdown[] = [
   {
     id: "explore",
-    label: "Explore",
+    label: "Discover",
     icon: Compass,
     items: [
       {
@@ -72,20 +72,51 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
   },
   {
     id: "verse",
-    label: "More",
-    icon: Gem,
+    label: "Tools",
+    icon: Wrench,
     items: [
+      {
+        href: "/tools",
+        label: "India Tools",
+        description: "SIP, EMI, tax, IFSC, PNR & 30+ free tools",
+        icon: Wrench,
+      },
+      {
+        href: "/ai",
+        label: "ContentVerse AI",
+        description: "Ask, summarise, resume, OCR & finance",
+        icon: Flame,
+      },
+      {
+        href: "/moneyverse",
+        label: "MoneyVerse",
+        description: "Expense tracker, screenshot OCR, bank PDF",
+        icon: Wallet,
+      },
+      {
+        href: "/goldverse",
+        label: "GoldVerse",
+        description: "Gold rates, HUID & hallmark tips",
+        icon: Gem,
+      },
+      {
+        href: "/cineverse",
+        label: "CineVerse",
+        description: "Movies, OTT & watchlist",
+        icon: Clapperboard,
+      },
       {
         href: "/guides/money",
         label: "Money Guides",
         description: "SIP, CIBIL, 80C, EMI & tax",
         icon: TrendingUp,
       },
-      { href: "/guides/schemes", label: "Scheme Guides", description: "Eligibility & how to apply", icon: BookOpen },
-      { href: "/cineverse", label: "CineVerse", description: "Movies, OTT & watchlist", icon: Clapperboard },
-      { href: "/goldverse", label: "GoldVerse", description: "Gold rates & hallmark tips", icon: Gem },
-      { href: "/moneyverse", label: "MoneyVerse", description: "Expense tracker India", icon: Wallet },
-      { href: "/tools", label: "India Tools", description: "Calculators that support guides", icon: Wrench },
+      {
+        href: "/guides/schemes",
+        label: "Scheme Guides",
+        description: "Eligibility & how to apply",
+        icon: BookOpen,
+      },
     ],
   },
 ];

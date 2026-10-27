@@ -50,7 +50,13 @@ function Section({
   );
 }
 
-export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
+export function MovieDetailView({
+  movie,
+  backLabel = "CineVerse",
+}: {
+  movie: CineMovieDetail;
+  backLabel?: string;
+}) {
   const release = formatDate(movie.theatricalReleaseDate ?? movie.releaseDate);
   const ott = formatDate(movie.ottReleaseDate);
   const streamNames = movie.providers
@@ -85,7 +91,7 @@ export function MovieDetailView({ movie }: { movie: CineMovieDetail }) {
       </div>
 
       <div className="container relative -mt-24 max-w-7xl pb-16">
-        <PageBack href="/cineverse" label="CineVerse" className="mb-6" />
+        <PageBack href="/cineverse" label={backLabel} className="mb-6" />
 
         {/* Hero stays ad-free (watchlist / trailer CTAs). */}
         <div className="mx-auto flex max-w-4xl flex-col gap-6 md:flex-row">

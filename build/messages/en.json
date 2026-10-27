@@ -5,8 +5,8 @@
     "articles": "Articles",
     "jobs": "Jobs",
     "results": "Results",
-    "explore": "Explore",
-    "more": "More",
+    "explore": "Discover",
+    "more": "Tools",
     "write": "Write",
     "dashboard": "Dashboard",
     "signIn": "Sign in",
@@ -41,11 +41,13 @@
     "cineverse": "CineVerse",
     "cineverseDesc": "Movies, OTT & watchlist",
     "goldverse": "GoldVerse",
-    "goldverseDesc": "Gold rates & hallmark tips",
+    "goldverseDesc": "Gold rates, HUID & hallmark tips",
     "moneyverse": "MoneyVerse",
-    "moneyverseDesc": "Expense tracker India",
+    "moneyverseDesc": "Expense tracker, screenshot OCR, bank PDF",
     "indiaTools": "India Tools",
-    "indiaToolsDesc": "Calculators that support guides"
+    "indiaToolsDesc": "SIP, EMI, tax, IFSC, PNR & 30+ free tools",
+    "aiNav": "ContentVerse AI",
+    "aiNavDesc": "Ask, summarise, resume, OCR & finance"
   },
   "mobile": {
     "home": "Home",

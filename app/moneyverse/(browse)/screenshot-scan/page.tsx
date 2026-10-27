@@ -13,29 +13,38 @@ import {
   SCREENSHOT_SCAN_EDITORIAL,
   SCREENSHOT_SCAN_OCR_KEYWORDS,
 } from "@/lib/moneyverse/screenshot-scan-seo";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Screenshot Scan (OCR) — UPI Payment to Expense | MoneyVerse",
-  description:
-    "Learn when to use UPI screenshot OCR vs manual entry, then upload PhonePe, GPay or Paytm success screens to draft expenses in MoneyVerse. Free on ContentVerse India — review before you save.",
-  path: MONEYVERSE_SCREENSHOT_SCAN_PATH,
-  keywords: [...SCREENSHOT_SCAN_OCR_KEYWORDS],
-  image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1600",
-  // Keep noindex through AdSense review; flip after crawl quality settles.
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: MONEYVERSE_SCREENSHOT_SCAN_PATH,
+    titleEn: "Screenshot Scan (OCR) — UPI Payment to Expense | MoneyVerse",
+    titleHi: "Screenshot Scan (OCR) — UPI Payment to Expense | MoneyVerse",
+    descriptionEn:
+      "Learn when to use UPI screenshot OCR vs manual entry, then upload PhonePe, GPay or Paytm success screens to draft expenses in MoneyVerse. Free on ContentVerse India — review before you save.",
+    descriptionHi:
+      "Learn when to use UPI screenshot OCR vs manual entry, then upload PhonePe, GPay or Paytm success screens to draft expenses in MoneyVerse. Free on ContentVerse India — review before you save.",
+    keywords: [...SCREENSHOT_SCAN_OCR_KEYWORDS],
+    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1600",
+    noIndex: true,
+    bilingualIndex: false,
+  });
+}
 
-export default function ScreenshotScanOcrPage() {
+export default async function ScreenshotScanOcrPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const { lead, paragraphs } = SCREENSHOT_SCAN_EDITORIAL;
 
   return (
     <div className="space-y-10">
       <MoneyverseScreenshotScanJsonLd />
 
-      <PageBack href="/moneyverse" label="MoneyVerse" />
+      <PageBack href="/moneyverse" label={t(dict, "nav.moneyverse")} />
 
       <header className="max-w-3xl space-y-4">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-violet-300">
