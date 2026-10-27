@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 export function ContactForm() {
+  const { t } = useDictionary();
   const [busy, setBusy] = React.useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,10 +31,10 @@ export function ContactForm() {
       });
       const json = (await res.json()) as { error?: string; ok?: boolean };
       if (!res.ok) {
-        toast.error(json.error || "Could not send message");
+        toast.error(json.error || t("forms.error"));
         return;
       }
-      toast.success("Message sent! We'll reply to your email soon.");
+      toast.success(t("forms.success"));
       form.reset();
     } finally {
       setBusy(false);
@@ -41,14 +43,14 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="rounded-2xl border bg-card p-6 md:p-8 space-y-5">
-      <h2 className="font-display text-xl font-bold">Send a message</h2>
+      <h2 className="font-display text-xl font-bold">{t("forms.sendMessage")}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name">{t("forms.name")}</Label>
           <Input id="name" name="name" required placeholder="Your name" />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("forms.email")}</Label>
           <Input
             id="email"
             name="email"
@@ -59,7 +61,7 @@ export function ContactForm() {
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="subject">Subject</Label>
+        <Label htmlFor="subject">{t("forms.subject")}</Label>
         <Input
           id="subject"
           name="subject"
@@ -68,7 +70,7 @@ export function ContactForm() {
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="message">Message</Label>
+        <Label htmlFor="message">{t("forms.message")}</Label>
         <Textarea
           id="message"
           name="message"
@@ -83,7 +85,7 @@ export function ContactForm() {
         ) : (
           <Send className="h-4 w-4" />
         )}
-        Send message
+        {busy ? t("forms.sending") : t("forms.submit")}
       </Button>
     </form>
   );

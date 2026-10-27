@@ -15,6 +15,8 @@ import { PRIVATE_JOBS } from "@/lib/jobs/private-jobs";
 import { hubSeoJsonLdBlocks, JOBS_HUB_SEO } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -41,17 +43,18 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function JobsHubPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const govtPreview = await getGovtJobsCached("jobs");
   const showWarning = !govtPreview.configured || Boolean(govtPreview.error);
 
   return (
     <div className="space-y-10">
       <HubJsonLd blocks={hubSeoJsonLdBlocks(JOBS_HUB_SEO)} />
-      <HubEditorialIntro title="Sarkari naukri, admit cards & private careers">
+      <HubEditorialIntro title={t(dict, "hubs.jobsEditorialTitle")}>
+        <p>{t(dict, "hubs.jobsEditorialBody")}</p>
         <p>
-          The Jobs Hub aggregates government (sarkari) notifications and curated private-sector
-          openings for Indian readers. Listings link to official sources — ContentVerse India does not
-          charge applicants. For exam and board results, use our{" "}
+          For exam and board results, use our{" "}
           <Link href="/results" className="text-primary hover:underline">
             Exam Results hub
           </Link>
@@ -106,9 +109,9 @@ export default async function JobsHubPage() {
       <section>
         <div className="flex items-end justify-between gap-4 mb-5">
           <JobsSectionHeader
-            eyebrow="Sarkari"
-            title="Latest"
-            highlight="Govt Jobs"
+            eyebrow={t(dict, "hubs.jobsSectionSarkari")}
+            title={t(dict, "hubs.jobsSectionLatest")}
+            highlight={t(dict, "hubs.jobsNavGovt")}
             description={
               SHOW_THIRD_PARTY_CREDITS
                 ? "Fresh notifications from Sarkari Result — tap any card for official details."
@@ -118,7 +121,7 @@ export default async function JobsHubPage() {
           />
           <Button asChild variant="outline" size="sm" className="shrink-0 hidden sm:inline-flex gap-1.5">
             <Link href="/jobs/govt">
-              View all
+              {t(dict, "common.viewAll")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -132,7 +135,7 @@ export default async function JobsHubPage() {
           </div>
         ) : (
           <div className="rounded-2xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
-            No government listings available right now.
+            {t(dict, "hubs.jobsEmptyGovt")}
           </div>
         )}
 
@@ -147,7 +150,7 @@ export default async function JobsHubPage() {
       <section>
         <div className="flex items-end justify-between gap-4 mb-5">
           <JobsSectionHeader
-            eyebrow="Private sector"
+            eyebrow={t(dict, "hubs.jobsSectionPrivate")}
             title="Featured"
             highlight="Openings"
             description="Curated roles from Indian startups and enterprises."

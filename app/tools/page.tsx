@@ -62,7 +62,7 @@ export default async function ToolsHubPage() {
       <HubEditorialIntro title={t(dict, "hubs.toolsEditorialTitle")}>
         <p>{t(dict, "hubs.toolsEditorialBody")}</p>
         <p>
-          Popular starts:{" "}
+          {t(dict, "hubs.toolsPopularStarts")}{" "}
           <Link href="/tools/salary-tax-calculator" className="text-primary hover:underline">
             salary tax calculator
           </Link>
@@ -103,14 +103,17 @@ export default async function ToolsHubPage() {
           </div>
 
           <TopicClustersHubStrip
-            title="Topic clusters"
-            subtitle="EMI, SIP, tax, IFSC, FASTag and more — pillar pages with related tools and guides."
+            title={t(dict, "hubs.topicClusters")}
+            subtitle={t(dict, "hubs.toolsTopicClustersSub")}
           />
 
           <HubAdSense />
 
           <section className="max-w-3xl rounded-xl border border-border/60 bg-muted/20 p-5 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">Official government portals</p>
+            <p className="font-medium text-foreground">
+              {t(dict, "hubs.toolsOfficialPortalsTitle")}
+            </p>
+            <p className="mt-2">{t(dict, "hubs.toolsOfficialPortalsBody")}</p>
             <p className="mt-2">
               For live vehicle RC, challan, or DL records use official MoRTH services:{" "}
               <a

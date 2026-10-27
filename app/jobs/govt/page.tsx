@@ -12,6 +12,8 @@ import { getGovtJobsCached, parseGovtCategory } from "@/lib/jobs/data";
 import { buildMetadata } from "@/lib/seo";
 import { GOVT_JOBS_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +50,8 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 }
 
 export default async function GovtJobsPage({ searchParams }: PageProps) {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const { cat } = await searchParams;
   const category = parseGovtCategory(cat);
   const data = await getGovtJobsCached(category);
@@ -57,12 +61,8 @@ export default async function GovtJobsPage({ searchParams }: PageProps) {
   return (
     <div className="space-y-6">
       <HubJsonLd blocks={hubSeoJsonLdBlocks(GOVT_JOBS_SEO)} />
-      <HubEditorialIntro title="Sarkari naukri checklist before you apply">
-        <p>
-          Browse live government job notifications, admit-card updates and results links below.
-          Always finish registration and fees on the official commission URL in the PDF — ContentVerse
-          India never charges applicants.
-        </p>
+      <HubEditorialIntro title={t(dict, "hubs.jobsGovtEditorialTitle")}>
+        <p>{t(dict, "hubs.jobsGovtEditorialBody")}</p>
         <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
           <li>Confirm post name, vacancy count, age limit and last date (IST).</li>
           <li>Match education and category certificates to the exact notification wording.</li>

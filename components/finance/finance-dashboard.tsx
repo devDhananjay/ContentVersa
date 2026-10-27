@@ -7,20 +7,25 @@ import { WatchlistPanel } from "./watchlist-panel";
 import { Badge } from "@/components/ui/badge";
 import { Activity } from "lucide-react";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 interface FinanceDashboardProps {
   data: FinanceHubData;
 }
 
 export function FinanceDashboard({ data }: FinanceDashboardProps) {
+  const { t } = useDictionary();
+
   return (
     <section className="rounded-2xl border border-border/50 bg-gradient-to-b from-muted/20 to-transparent overflow-hidden">
       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border/40 bg-muted/10">
         <div className="flex items-center gap-2">
           <Activity className="h-3.5 w-3.5 text-emerald-500" />
-          <h2 className="font-display font-semibold text-sm">Markets Dashboard</h2>
+          <h2 className="font-display font-semibold text-sm">
+            {t("hubs.financeMarketsDashboard")}
+          </h2>
           <Badge variant="outline" className="text-[9px] h-4 px-1.5">
-            Live
+            {t("hubs.financeLive")}
           </Badge>
         </div>
         <p className="text-[9px] text-muted-foreground hidden sm:block">
@@ -42,19 +47,19 @@ export function FinanceDashboard({ data }: FinanceDashboardProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          <Panel title="Top Gainers" accent="emerald">
+          <Panel title={t("hubs.financeTopGainers")} accent="emerald">
             <StockTable stocks={data.topGainers} compact />
           </Panel>
-          <Panel title="Top Losers" accent="red">
+          <Panel title={t("hubs.financeTopLosers")} accent="red">
             <StockTable stocks={data.topLosers} compact />
           </Panel>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          <Panel title="Top 10 Stocks">
+          <Panel title={t("hubs.financeTopStocks")}>
             <StockTable stocks={data.top10} compact />
           </Panel>
-          <Panel title="My Watchlist">
+          <Panel title={t("hubs.financeWatchlist")}>
             <WatchlistPanel defaultQuotes={data.top10.slice(0, 4)} />
           </Panel>
         </div>

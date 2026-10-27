@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAdvertisePreview } from "@/components/site/advertise-preview-context";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 const AD_TYPES = [
   { value: "display-banner", label: "Display banner (horizontal / MREC)" },
@@ -32,6 +33,7 @@ const selectClass =
   "flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function AdvertiseForm() {
+  const { t } = useDictionary();
   const [busy, setBusy] = React.useState(false);
   const { brand, website, adType, placements, setPreview } =
     useAdvertisePreview();
@@ -59,10 +61,10 @@ export function AdvertiseForm() {
       });
       const json = (await res.json()) as { error?: string; ok?: boolean };
       if (!res.ok) {
-        toast.error(json.error || "Could not send request");
+        toast.error(json.error || t("forms.error"));
         return;
       }
-      toast.success("Request sent! Our ads team will reply on email.");
+      toast.success(t("forms.success"));
       form.reset();
       setPreview({ brand: "", website: "", adType: "", placements: "" });
     } finally {
@@ -102,11 +104,11 @@ export function AdvertiseForm() {
       <div className="space-y-5 px-6 pb-6 md:px-8 md:pb-8">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="adv-name">Your name</Label>
+            <Label htmlFor="adv-name">{t("forms.fullName")}</Label>
             <Input id="adv-name" name="name" required placeholder="Full name" />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="adv-email">Work email</Label>
+            <Label htmlFor="adv-email">{t("forms.email")}</Label>
             <Input
               id="adv-email"
               name="email"
@@ -119,7 +121,7 @@ export function AdvertiseForm() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="adv-company">Company / brand</Label>
+            <Label htmlFor="adv-company">{t("forms.company")}</Label>
             <Input
               id="adv-company"
               name="company"
@@ -174,7 +176,7 @@ export function AdvertiseForm() {
             </select>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="adv-budget">Approx. budget</Label>
+            <Label htmlFor="adv-budget">{t("forms.budget")}</Label>
             <select
               id="adv-budget"
               name="budget"
@@ -202,13 +204,13 @@ export function AdvertiseForm() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="adv-message">Campaign brief</Label>
+          <Label htmlFor="adv-message">{t("forms.goals")}</Label>
           <Textarea
             id="adv-message"
             name="message"
             required
             rows={6}
-            placeholder="Goals, target audience in India, dates, creative links, or any questions…"
+            placeholder={t("forms.goalsPlaceholder")}
             className="min-h-[140px] resize-y"
           />
         </div>
@@ -228,7 +230,7 @@ export function AdvertiseForm() {
             ) : (
               <Send className="h-4 w-4" />
             )}
-            Submit request
+            {busy ? t("forms.sending") : t("forms.submit")}
           </Button>
         </div>
       </div>

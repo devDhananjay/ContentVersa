@@ -20,6 +20,8 @@ import { AdvertisePreviewProvider } from "@/components/site/advertise-preview-co
 import { PageBack } from "@/components/site/page-back";
 import { buildMetadata } from "@/lib/seo";
 import { CONTACT_EMAIL } from "@/lib/site-contact";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const metadata: Metadata = buildMetadata({
   title: "Advertise on ContentVerse India",
@@ -62,7 +64,10 @@ const STEPS = [
   { n: "03", title: "Go live", body: "Launch with clear sponsorship labels." },
 ] as const;
 
-export default function AdvertisePage() {
+export default async function AdvertisePage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   return (
     <AdvertisePreviewProvider>
     <div className="relative overflow-hidden">
@@ -78,7 +83,7 @@ export default function AdvertisePage() {
       />
 
       <div className="container relative max-w-5xl py-10 md:py-14">
-        <PageBack href="/" label="Home" className="mb-8" />
+        <PageBack href="/" label={t(dict, "common.home")} className="mb-8" />
 
         {/* Hero */}
         <section className="relative mb-14">
@@ -91,13 +96,10 @@ export default function AdvertisePage() {
                 ContentVerse India · Advertise
               </p>
               <h1 className="font-display text-4xl font-extrabold tracking-tight text-balance sm:text-5xl">
-                Reach India&apos;s{" "}
-                <span className="text-gradient">curious readers</span>
+                {t(dict, "hubs.advertiseTitle")}
               </h1>
               <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-lg">
-                Display, native stories, and hub sponsorships across guides,
-                tools, sports, finance and jobs. Send a short brief — we reply
-                with formats and pricing.
+                {t(dict, "hubs.advertiseSub")}
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <a

@@ -1,26 +1,39 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Bookmark } from "lucide-react";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Button } from "@/components/ui/button";
+import { LocaleLink } from "@/components/i18n/locale-link";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboardDataCached } from "@/lib/data/dashboard-data";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t, tf } from "@/lib/i18n/get-dictionary";
+import { withLocalePrefix } from "@/lib/i18n/config";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Bookmarks",
-  description: "Saved articles to read later.",
-  path: "/bookmarks",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  return buildMetadata({
+    title: `${t(dict, "hubs.bookmarksTitle")} | ContentVerse India`,
+    description: t(dict, "hubs.bookmarksEmpty"),
+    path: withLocalePrefix("/bookmarks", locale),
+    noIndex: true,
+  });
+}
 
 export default async function BookmarksPage() {
   const session = await getCurrentUser();
   if (!session) redirect("/auth/sign-in?next=/bookmarks");
 
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const data = await getDashboardDataCached(session);
   const saved = data?.bookmarks ?? [];
+  const savedLabel =
+    saved.length === 1
+      ? t(dict, "hubs.bookmarksSavedOne")
+      : tf(dict, "hubs.bookmarksSaved", { n: saved.length });
 
   return (
     <div className="container py-12 max-w-6xl">
@@ -30,11 +43,9 @@ export default async function BookmarksPage() {
         </div>
         <div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
-            Bookmarks
+            {t(dict, "hubs.bookmarksTitle")}
           </h1>
-          <p className="text-muted-foreground">
-            {saved.length} {saved.length === 1 ? "article" : "articles"} saved to read later.
-          </p>
+          <p className="text-muted-foreground">{savedLabel}</p>
         </div>
       </div>
 
@@ -46,10 +57,10 @@ export default async function BookmarksPage() {
         </div>
       ) : (
         <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
-          <p>No bookmarks yet.</p>
-          <Link href="/blogs" className="mt-4 inline-block">
-            <Button variant="gradient">Browse articles</Button>
-          </Link>
+          <p>{t(dict, "hubs.bookmarksEmpty")}</p>
+          <LocaleLink href="/blogs" className="mt-4 inline-block">
+            <Button variant="gradient">{t(dict, "hubs.bookmarksCta")}</Button>
+          </LocaleLink>
         </div>
       )}
     </div>

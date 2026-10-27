@@ -102,19 +102,8 @@ export default async function GuidesHubPage() {
 
       <YmylDisclaimer kind="schemes" />
 
-      <HubEditorialIntro title="Why these guide formats?">
-        <p>
-          Indian readers keep asking the same practical questions: why a topic
-          is spiking, who qualifies for a scheme, when a job closes, what
-          happened in a match, how to use an AI tool, and where to watch a film.
-          ContentVerse India Guides answers those with finished explainers —
-          one strong page per topic.
-        </p>
-        <p>
-          Scheme and job pages are educational only. Always verify fees,
-          eligibility, and forms on official government websites before you
-          apply or pay anyone.
-        </p>
+      <HubEditorialIntro title={t(dict, "hubs.guidesEditorialTitle")}>
+        <p>{t(dict, "hubs.guidesEditorialBody")}</p>
       </HubEditorialIntro>
 
       <HubAdSense />

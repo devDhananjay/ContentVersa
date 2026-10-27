@@ -16,6 +16,7 @@ import {
   isRememberMeEnabled,
   setRememberedCredentials,
 } from "@/lib/auth/remembered-login";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   missing_code: "Google did not return an authorization code.",
@@ -27,6 +28,7 @@ const OAUTH_ERROR_MESSAGES: Record<string, string> = {
 };
 
 export function SignInForm() {
+  const { t } = useDictionary();
   const router = useRouter();
   const search = useSearchParams();
   const oauthError = search.get("error");
@@ -38,7 +40,9 @@ export function SignInForm() {
   const [show, setShow] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(
-    oauthError ? OAUTH_ERROR_MESSAGES[oauthError] || "Sign-in failed." : null
+    oauthError
+      ? OAUTH_ERROR_MESSAGES[oauthError] || t("auth.oauthFailed")
+      : null
   );
 
   React.useEffect(() => {
@@ -99,7 +103,7 @@ export function SignInForm() {
       transition={{ duration: 0.3 }}
     >
       <h1 className="font-display text-3xl font-extrabold tracking-tight">
-        Welcome back.
+        {t("auth.welcomeBack")}
       </h1>
       <p className="text-muted-foreground mt-1.5">
         Sign in to continue building on ContentVerse India.
@@ -111,13 +115,13 @@ export function SignInForm() {
 
       <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
         <div className="flex-1 h-px bg-border" />
-        or with email
+        {t("auth.orWithEmail")}
         <div className="flex-1 h-px bg-border" />
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email or username</Label>
+          <Label htmlFor="email">{t("auth.email")}</Label>
           <Input
             id="email"
             name="email"
@@ -139,7 +143,7 @@ export function SignInForm() {
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("auth.password")}</Label>
             <Link
               href="/auth/forgot-password"
               className="text-xs text-muted-foreground hover:text-foreground"
@@ -175,7 +179,7 @@ export function SignInForm() {
             onChange={(e) => setRememberMe(e.target.checked)}
             className="h-4 w-4 rounded border-border text-neon-purple focus:ring-neon-purple/40"
           />
-          <span className="text-sm text-muted-foreground">Remember me</span>
+          <span className="text-sm text-muted-foreground">{t("auth.rememberMe")}</span>
         </label>
 
         {error && (
@@ -192,14 +196,14 @@ export function SignInForm() {
           disabled={loading}
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-          Sign in
+          {loading ? t("auth.signingIn") : t("auth.signIn")}
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         New here?{" "}
         <Link href="/auth/sign-up" className="font-medium text-foreground hover:underline">
-          Create an account
+          {t("auth.createAccount")}
         </Link>
       </p>
     </motion.div>

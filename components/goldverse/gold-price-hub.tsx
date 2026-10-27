@@ -23,12 +23,14 @@ import {
 import type { GoldPriceSnapshot, GoldRateRow } from "@/lib/goldverse/types";
 import { cn } from "@/lib/utils";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 function formatInr(n: number) {
   return n.toLocaleString("en-IN");
 }
 
 export function GoldPriceHub({ initial }: { initial: GoldPriceSnapshot }) {
+  const { t } = useDictionary();
   const [data, setData] = React.useState(initial);
   const [loading, setLoading] = React.useState(false);
   const [cityQuery, setCityQuery] = React.useState("");
@@ -174,7 +176,7 @@ export function GoldPriceHub({ initial }: { initial: GoldPriceSnapshot }) {
           <Input
             value={cityQuery}
             onChange={(e) => setCityQuery(e.target.value)}
-            placeholder="Search city — Mumbai, Delhi, Jaipur…"
+            placeholder={t("hubs.goldCitySearch")}
             className="h-11 pl-9"
             list="gold-cities-list"
           />

@@ -11,6 +11,8 @@ import {
   CONTACT_PHONE,
   CONTACT_PHONE_DISPLAY,
 } from "@/lib/site-contact";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const metadata: Metadata = buildMetadata({
   title: "Contact us",
@@ -19,21 +21,23 @@ export const metadata: Metadata = buildMetadata({
   path: "/contact",
 });
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   return (
     <div className="container py-12 md:py-16 max-w-5xl">
       <DisableAutoAds />
-      <PageBack href="/" label="Home" className="mb-6" />
+      <PageBack href="/" label={t(dict, "common.home")} className="mb-6" />
       <div className="max-w-2xl mb-12">
         <p className="text-sm font-semibold uppercase tracking-widest text-neon-purple mb-2">
-          Contact
+          {t(dict, "hubs.contactEyebrow")}
         </p>
         <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight">
-          We&apos;d love to hear from you
+          {t(dict, "hubs.contactHeading")}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Whether you&apos;re a writer, reader, brand, or partner — reach out and our team will
-          get back within 1–2 business days.
+          {t(dict, "hubs.contactBody")}
         </p>
       </div>
 
@@ -42,7 +46,9 @@ export default function ContactPage() {
 
         <aside className="space-y-6">
           <div className="rounded-2xl border bg-card p-6 space-y-4">
-            <h2 className="font-display text-lg font-bold">Get in touch</h2>
+            <h2 className="font-display text-lg font-bold">
+              {t(dict, "hubs.contactGetInTouch")}
+            </h2>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="flex items-center gap-3 text-sm hover:text-neon-purple transition-colors"
@@ -67,13 +73,13 @@ export default function ContactPage() {
             <div className="flex items-start gap-3">
               <Megaphone className="h-5 w-5 text-neon-purple shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-foreground">Want to run ads?</p>
+                <p className="font-medium text-foreground">{t(dict, "hubs.contactAdsCta")}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Brands and agencies can request display, sponsored stories, or hub sponsorships.
                 </p>
                 <Link href="/advertise" className="mt-3 inline-block">
                   <Button size="sm" variant="gradient">
-                    Advertising form
+                    {t(dict, "hubs.contactAdsLink")}
                   </Button>
                 </Link>
               </div>

@@ -10,6 +10,8 @@ import { HubPushCta } from "@/components/engagement/hub-push-cta";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { FINANCE_HUB_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -39,19 +41,15 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function FinanceHubPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const blogs = await getBlogsByCategoryHybrid("finance");
 
   return (
     <>
       <HubJsonLd blocks={hubSeoJsonLdBlocks(FINANCE_HUB_SEO)} />
-      <HubEditorialIntro title="Indian markets, gold rates & money guides">
-        <p>
-          The Finance Hub shows live Indian market indices, top movers, and stock charts for
-          quick reference. These data widgets are not standalone articles — they support readers
-          who follow our finance writers. ContentVerse India publishes original explainers on investing,
-          personal finance, markets, and the Indian economy, written by creators and reviewed
-          against our content policy.
-        </p>
+      <HubEditorialIntro title={t(dict, "hubs.financeEditorialTitle")}>
+        <p>{t(dict, "hubs.financeEditorialBody")}</p>
         <p>
           Start with high-intent guides:{" "}
           <Link href="/goldverse" className="text-primary hover:underline">
@@ -83,8 +81,8 @@ export default async function FinanceHubPage() {
       <HubAdSense />
       <MoneyTopicsGrid />
       <HubPushCta
-        title="Market open & close alerts"
-        description="Push when your watchlist stocks move at open and close (IST)."
+        title={t(dict, "hubs.financePushTitle")}
+        description={t(dict, "hubs.financePushDesc")}
       />
       <FinanceBlogSection blogs={blogs} />
       <RelatedHubs current="finance" contained />

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Calendar } from "lucide-react";
 import type {
@@ -11,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { IccRankings } from "@/components/sports/icc-rankings";
 import { TrendingPlayers } from "@/components/sports/trending-players";
 import { PointsTable } from "@/components/sports/points-table";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 interface SportsSidebarProps {
   upcoming: SportMatch[];
@@ -27,6 +30,7 @@ export function SportsSidebar({
   pointsTable,
   pointsTableSeriesName,
 }: SportsSidebarProps) {
+  const { t } = useDictionary();
   const miniUpcoming = upcoming.slice(0, 5);
 
   return (
@@ -60,7 +64,7 @@ export function SportsSidebar({
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-muted-foreground">No fixtures scheduled.</p>
+          <p className="text-sm text-muted-foreground">{t("hubs.sportsNoFixtures")}</p>
         )}
       </div>
 

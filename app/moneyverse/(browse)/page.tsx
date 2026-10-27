@@ -8,6 +8,8 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
 import { hubSeoJsonLdBlocks, MONEYVERSE_HUB_SEO } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -33,16 +35,15 @@ export const metadata: Metadata = buildMetadata({
   image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1600",
 });
 
-export default function MoneyVersePage() {
+export default async function MoneyVersePage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   return (
     <div className="space-y-8">
       <HubJsonLd blocks={hubSeoJsonLdBlocks(MONEYVERSE_HUB_SEO)} />
-      <HubEditorialIntro title="Track spends, budgets & UPI screenshots">
-        <p>
-          MoneyVerse is your personal finance hub for everyday Indian spending — log UPI,
-          cash and card expenses, set category budgets, and see where your money goes each
-          month.
-        </p>
+      <HubEditorialIntro title={t(dict, "hubs.moneyEditorialTitle")}>
+        <p>{t(dict, "hubs.moneyEditorialBody")}</p>
         <p>
           Use{" "}
           <Link href="/moneyverse/screenshot-scan" className="text-emerald-300 hover:underline">
@@ -67,7 +68,7 @@ export default function MoneyVersePage() {
         </p>
       </HubEditorialIntro>
       <MoneyVerseHub />
-      <MoneyTopicsGrid title="Strengthen your money knowledge" />
+      <MoneyTopicsGrid title={t(dict, "hubs.moneyStrengthenTitle")} />
       {/* After money guides grid — not inside expense/OCR tool UI */}
       <HubAdSense />
       <RelatedHubs current="moneyverse" contained />

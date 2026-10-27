@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   ArrowRight,
@@ -23,6 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { TrendThumb } from "@/components/trending/trend-thumb";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
+import { useDictionary } from "@/components/i18n/use-dictionary";
+import { tf } from "@/lib/i18n/get-dictionary";
 
 const LANE_ICONS: Record<string, LucideIcon> = {
   cricket: Medal,
@@ -36,10 +40,12 @@ function SpikeCard({
   trend,
   rank,
   featured = false,
+  searchesUnit,
 }: {
   trend: TrendItem;
   rank: number;
   featured?: boolean;
+  searchesUnit: (traffic: string) => string;
 }) {
   const blurb = shortTrendBlurb(trend);
   const extraNews = trend.newsItems.slice(1, featured ? 3 : 2);
@@ -57,7 +63,7 @@ function SpikeCard({
           </span>
           {trend.traffic ? (
             <span className="absolute bottom-3 left-3 rounded-full bg-black/70 px-2.5 py-0.5 text-[11px] font-medium text-orange-200 backdrop-blur">
-              ~{trend.traffic} searches
+              {searchesUnit(trend.traffic)}
             </span>
           ) : null}
         </div>
@@ -110,7 +116,7 @@ function SpikeCard({
           </p>
           {trend.traffic ? (
             <p className="text-[11px] font-medium text-orange-400/90">
-              ~{trend.traffic} searches
+              {searchesUnit(trend.traffic)}
             </p>
           ) : null}
           <p className="text-sm leading-relaxed text-muted-foreground line-clamp-2">
@@ -152,7 +158,13 @@ function NewsCard({ item }: { item: HubNewsItem }) {
   );
 }
 
-function YouTubeCard({ item }: { item: HubYouTubeItem }) {
+function YouTubeCard({
+  item,
+  watchLabel,
+}: {
+  item: HubYouTubeItem;
+  watchLabel: string;
+}) {
   return (
     <a
       href={item.href}
@@ -179,7 +191,7 @@ function YouTubeCard({ item }: { item: HubYouTubeItem }) {
         <div className="mt-auto flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
           {item.channel ? <span className="truncate">{item.channel}</span> : null}
           <span className="inline-flex items-center gap-0.5 text-red-300/90">
-            Watch
+            {watchLabel}
             <ExternalLink className="h-3 w-3" />
           </span>
         </div>
@@ -216,6 +228,14 @@ export function TrendingHub({
   lanes: HubTopicLane[];
   youtube: HubYouTubeItem[];
 }) {
+  const { dict, t } = useDictionary();
+  const searchesUnit = (traffic: string) =>
+    tf(dict, "hubs.trendingSearchesUnit", { n: traffic });
+  const navGoogle = SHOW_THIRD_PARTY_CREDITS
+    ? t("hubs.trendingNavGoogle")
+    : "Search Trends";
+  const navWatch = t("hubs.trendingNavWatch");
+
   const hero = spikes.slice(0, 3);
   const rest = spikes.slice(3);
   const filledLanes = lanes.filter((l) => l.items.length > 0);
@@ -232,19 +252,13 @@ export function TrendingHub({
         className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
         aria-label="Trending sections"
       >
-        <SectionJump
-          id="google-trends"
-          label={SHOW_THIRD_PARTY_CREDITS ? "Google Trends" : "Search Trends"}
-        />
-        <SectionJump id="trending-news" label="Trending News" />
+        <SectionJump id="google-trends" label={navGoogle} />
+        <SectionJump id="trending-news" label={t("hubs.trendingNavNews")} />
         {filledLanes.map((l) => (
           <SectionJump key={l.id} id={l.id} label={l.title} />
         ))}
         {youtube.length > 0 ? (
-          <SectionJump
-            id="youtube-india"
-            label={SHOW_THIRD_PARTY_CREDITS ? "YouTube" : "Videos"}
-          />
+          <SectionJump id="youtube-india" label={navWatch} />
         ) : null}
       </nav>
 
@@ -252,7 +266,7 @@ export function TrendingHub({
         <div className="flex items-center gap-2">
           <Search className="h-4 w-4 text-orange-400" />
           <h2 className="font-display text-xl font-bold tracking-tight">
-            {SHOW_THIRD_PARTY_CREDITS ? "Google Trends" : "Search Trends"}
+            {navGoogle}
           </h2>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -262,16 +276,26 @@ export function TrendingHub({
         </p>
         {hero.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-3">
-            {hero.map((t, i) => (
-              <SpikeCard key={t.slug} trend={t} rank={i + 1} featured />
+            {hero.map((trend, i) => (
+              <SpikeCard
+                key={trend.slug}
+                trend={trend}
+                rank={i + 1}
+                featured
+                searchesUnit={searchesUnit}
+              />
             ))}
           </div>
         ) : null}
         {rest.length > 0 ? (
           <ol className="grid gap-4 sm:grid-cols-2">
-            {rest.map((t, i) => (
-              <li key={t.slug}>
-                <SpikeCard trend={t} rank={i + 4} />
+            {rest.map((trend, i) => (
+              <li key={trend.slug}>
+                <SpikeCard
+                  trend={trend}
+                  rank={i + 4}
+                  searchesUnit={searchesUnit}
+                />
               </li>
             ))}
           </ol>
@@ -289,7 +313,7 @@ export function TrendingHub({
         <div className="flex items-center gap-2">
           <Newspaper className="h-4 w-4 text-sky-400" />
           <h2 className="font-display text-xl font-bold tracking-tight">
-            Trending News
+            {t("hubs.trendingNavNews")}
           </h2>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -350,7 +374,7 @@ export function TrendingHub({
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {youtube.map((item) => (
               <li key={item.id}>
-                <YouTubeCard item={item} />
+                <YouTubeCard item={item} watchLabel={t("hubs.trendingNavWatch")} />
               </li>
             ))}
           </ul>

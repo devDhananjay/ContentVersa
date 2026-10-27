@@ -10,28 +10,36 @@ import { parseBlogPageSize } from "@/lib/blogs/list-params";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PageBack } from "@/components/site/page-back";
 import { buildMetadata, SITE } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
+import { withLocalePrefix } from "@/lib/i18n/config";
 
 const CATEGORY_SLUGS = new Set(CATEGORIES.map((c) => c.slug));
 const CATEGORY_BY_NAME = new Map(
   CATEGORIES.map((c) => [c.name.toLowerCase(), c.slug])
 );
 
-export const metadata: Metadata = buildMetadata({
-  title: "Explore articles",
-  description:
-    "Browse every article on ContentVerse India. Filter by category, search, and sort — stories, guides, and India topics.",
-  path: "/blogs",
-  keywords: [
-    "ContentVerse India articles",
-    "Indian blogs to read",
-    "finance blogs India",
-    "cricket blogs India",
-    "career articles India",
-    "technology blogs India",
-    "creator stories India",
-    "explore blogs India",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  return buildMetadata({
+    title: `${t(dict, "hubs.blogsTitle")} | ContentVerse India`,
+    description: t(dict, "hubs.blogsSub"),
+    path: withLocalePrefix("/blogs", locale),
+    keywords: [
+      "ContentVerse India articles",
+      "Indian blogs to read",
+      "finance blogs India",
+      "cricket blogs India",
+      "career articles India",
+      "technology blogs India",
+      "creator stories India",
+      "explore blogs India",
+    ],
+    alternates: buildHreflangAlternates("/blogs"),
+  });
+}
 
 function resolveCategorySlug(raw?: string): string | undefined {
   if (!raw?.trim()) return undefined;
@@ -127,6 +135,8 @@ export default async function BlogsPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const spRaw = await searchParams;
   const categorySlug = resolveCategorySlug(spRaw.category);
   const sp: Record<string, string | undefined> = {
@@ -150,10 +160,9 @@ export default async function BlogsPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Explore articles · ContentVerse India",
-    url: `${SITE.url}/blogs`,
-    description:
-      "Browse articles on ContentVerse India — filter by category, search, and sort.",
+    name: `${t(dict, "hubs.blogsTitle")} · ContentVerse India`,
+    url: `${SITE.url}${withLocalePrefix("/blogs", locale)}`,
+    description: t(dict, "hubs.blogsSub"),
     numberOfItems: list.length,
     isPartOf: { "@type": "WebSite", name: SITE.name, url: SITE.url },
   };
@@ -164,7 +173,7 @@ export default async function BlogsPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PageBack href="/" label="Home" className="mb-6" />
+      <PageBack href="/" label={t(dict, "common.home")} className="mb-6" />
       <Suspense fallback={<div className="h-20 rounded-2xl bg-muted/40 animate-pulse mb-6" />}>
         <BlogFilters
           defaultQuery={sp.q}
@@ -175,9 +184,11 @@ export default async function BlogsPage({
 
       {list.length === 0 ? (
         <div className="rounded-3xl border bg-card p-16 text-center">
-          <p className="text-2xl font-display font-bold mb-2">No matches yet</p>
+          <p className="text-2xl font-display font-bold mb-2">
+            {t(dict, "common.emptySearch")}
+          </p>
           <p className="text-muted-foreground">
-            Try a different keyword, category, or clear filters.
+            {t(dict, "common.tryDifferent")}
           </p>
         </div>
       ) : (

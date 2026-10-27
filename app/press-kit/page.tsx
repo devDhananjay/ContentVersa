@@ -8,6 +8,8 @@ import { PageBack } from "@/components/site/page-back";
 import { getSiteLogoUrl } from "@/lib/branding/site-logo";
 import { CONTACT_EMAIL } from "@/lib/site-contact";
 import { buildMetadata, SITE, SITE_LOGO_URL } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +38,8 @@ const CITE_URLS = [
 ] as const;
 
 export default async function PressKitPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const logoUrl = await getSiteLogoUrl();
   const absoluteLogo = logoUrl.startsWith("http")
     ? logoUrl
@@ -47,16 +51,16 @@ export default async function PressKitPage() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-neon-purple/10 via-neon-blue/5 to-transparent" />
 
       <div className="container relative max-w-3xl space-y-10 py-12 md:py-16">
-        <PageBack href="/" label="Home" />
+        <PageBack href="/" label={t(dict, "common.home")} />
         <header className="space-y-3">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neon-purple">
-            Press kit
+            {t(dict, "hubs.pressKitEyebrow")}
           </p>
           <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">
-            Media assets for ContentVerse India
+            {t(dict, "hubs.pressKitHeading")}
           </h1>
           <p className="text-muted-foreground leading-relaxed">
-            Use these assets when writing about ContentVerse India. Prefer linking to{" "}
+            {t(dict, "hubs.pressKitBody")} Prefer linking to{" "}
             <a
               href={SITE.url}
               className="font-medium text-foreground underline-offset-4 hover:underline"

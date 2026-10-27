@@ -37,7 +37,7 @@ export async function CineverseBrowseShell({
             <Clapperboard className="h-2.5 w-2.5" /> {t(dict, "hubs.cineBadge")}
           </Badge>
           <h1 className="font-display text-2xl font-bold tracking-tight md:text-4xl">
-            CineVerse
+            {t(dict, "hubs.cineTitle")}
           </h1>
           <p className="mt-1 max-w-xl text-xs text-muted-foreground md:text-sm">
             {t(dict, "hubs.cineSub")}

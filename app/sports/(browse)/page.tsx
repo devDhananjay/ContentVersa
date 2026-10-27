@@ -18,6 +18,8 @@ import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { getSportsHubDataCached } from "@/lib/sports/data";
 import { hubSeoJsonLdBlocks, SPORTS_HUB_SEO } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +49,8 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function SportsHubPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const [hub, blogs] = await Promise.all([
     getSportsHubDataCached(),
     getBlogsByCategoryHybrid("sports"),
@@ -55,13 +59,8 @@ export default async function SportsHubPage() {
   return (
     <div className="space-y-8">
       <HubJsonLd blocks={hubSeoJsonLdBlocks(SPORTS_HUB_SEO)} />
-      <HubEditorialIntro title="Live cricket scores & sports writing for India" className="container">
-        <p>
-          ContentVerse India Sports Hub combines live cricket scores, fixtures, and headlines with
-          original sports writing from our community. Match pages and player stats are real-time
-          utilities for fans — our primary value for readers and search engines is editorial:
-          match previews, analysis, and long-form stories published by verified creators.
-        </p>
+      <HubEditorialIntro title={t(dict, "hubs.sportsEditorialTitle")} className="container">
+        <p>{t(dict, "hubs.sportsEditorialBody")}</p>
         <p>
           Live score widgets stay useful for fans but are not our SEO bet. For indexable depth, read{" "}
           <Link href="/guides/cricket/how-to-read-a-cricket-match-preview" className="text-primary hover:underline">
@@ -87,9 +86,8 @@ export default async function SportsHubPage() {
 
       <section>
         <SportsSectionHeader
-          eyebrow="Matches"
-          title="Live &"
-          highlight="Fixtures"
+          eyebrow={t(dict, "hubs.sportsMatches")}
+          title={t(dict, "hubs.sportsLiveFixtures")}
         />
         <MatchesSection
           initialLive={hub.live}
@@ -105,9 +103,8 @@ export default async function SportsHubPage() {
       {hub.news.length > 0 && (
         <section>
           <SportsSectionHeader
-            eyebrow="Cricket news"
-            title="Latest"
-            highlight="Headlines"
+            eyebrow={t(dict, "hubs.sportsCricketNews")}
+            title={t(dict, "hubs.sportsLatestHeadlines")}
           />
           <CricketNewsStrip items={hub.news.slice(0, 10)} />
         </section>

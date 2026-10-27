@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Cloud, CloudRain, CloudSun, Loader2, MapPin, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 /** Weather snapshot — short TTL (hourly refresh like AccuWeather / weather.com). */
 const WEATHER_KEY = "cv-nav-weather-v5";
@@ -186,6 +187,7 @@ export function NavWeatherChip({
   immersive?: boolean;
   className?: string;
 }) {
+  const { t } = useDictionary();
   const [data, setData] = React.useState<WeatherCache | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [needsOptIn, setNeedsOptIn] = React.useState(false);
@@ -406,7 +408,7 @@ export function NavWeatherChip({
             : "border-border/50 bg-muted/40 text-muted-foreground",
           className
         )}
-        aria-label="Loading weather"
+        aria-label={t("nav.weatherLoading")}
       >
         <Loader2 className="h-3 w-3 animate-spin" />
         <span>…</span>
@@ -419,8 +421,8 @@ export function NavWeatherChip({
       <button
         type="button"
         onClick={() => requestLocation(true)}
-        title="Show local weather (asks location once)"
-        aria-label="Enable local weather"
+        title={t("nav.weatherEnable")}
+        aria-label={t("nav.weatherEnable")}
         className={cn(
           "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
           immersive
@@ -430,7 +432,7 @@ export function NavWeatherChip({
         )}
       >
         <MapPin className="h-3.5 w-3.5 shrink-0" />
-        <span>Weather</span>
+        <span>{t("nav.weather")}</span>
       </button>
     );
   }

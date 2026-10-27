@@ -54,10 +54,10 @@ export function MoneyVerseBrowseShell({ children }: { children: React.ReactNode 
             variant="outline"
             className="mb-2 h-5 w-fit gap-1 border-emerald-500/40 text-[10px] text-emerald-200"
           >
-            <Wallet className="h-2.5 w-2.5" /> UPI · India
+            <Wallet className="h-2.5 w-2.5" /> {t("hubs.moneyBadgeShort")}
           </Badge>
           <h1 className="font-display text-2xl font-bold tracking-tight md:text-4xl">
-            Money<span className="text-emerald-400">Verse</span>
+            {t("hubs.moneyTitle")}
           </h1>
           <p className="mt-1 max-w-xl text-xs text-muted-foreground md:text-sm">
             {t("hubs.moneySub")}

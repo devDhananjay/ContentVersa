@@ -21,11 +21,12 @@ import { useSignOut } from "@/components/auth/sign-out-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "@/components/auth/use-session";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import { cn, getInitials } from "@/lib/utils";
 
 interface NavItem {
   href: string;
-  label: string;
+  labelKey: string;
   icon: typeof LayoutDashboard;
   exact?: boolean;
   primary?: boolean;
@@ -41,27 +42,28 @@ export function DashboardSidebar({
   unreadNotifications = 0,
   adminPendingCount = 0,
 }: SidebarProps) {
+  const { t } = useDictionary();
   const NAV: NavItem[] = [
-    { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-    { href: "/dashboard/blogs", label: "My Blogs", icon: FileText },
-    { href: "/dashboard/reels", label: "My Reels", icon: Film },
-    { href: "/dashboard/create", label: "Create", icon: PenSquare, primary: true },
-    { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
-    { href: "/dashboard/earnings", label: "Earnings", icon: Wallet },
+    { href: "/dashboard", labelKey: "dashboard.overview", icon: LayoutDashboard, exact: true },
+    { href: "/dashboard/blogs", labelKey: "dashboard.myBlogs", icon: FileText },
+    { href: "/dashboard/reels", labelKey: "dashboard.myReels", icon: Film },
+    { href: "/dashboard/create", labelKey: "dashboard.create", icon: PenSquare, primary: true },
+    { href: "/dashboard/analytics", labelKey: "dashboard.analytics", icon: BarChart3 },
+    { href: "/dashboard/earnings", labelKey: "dashboard.earnings", icon: Wallet },
     {
       href: "/dashboard/notifications",
-      label: "Notifications",
+      labelKey: "dashboard.notifications",
       icon: Bell,
       badge: unreadNotifications > 0 ? unreadNotifications : undefined,
     },
-    { href: "/dashboard/bookmarks", label: "Bookmarks", icon: Bookmark },
-    { href: "/dashboard/achievements", label: "Achievements", icon: Trophy },
-    { href: "/dashboard/settings", label: "Settings", icon: Settings },
+    { href: "/dashboard/bookmarks", labelKey: "dashboard.bookmarks", icon: Bookmark },
+    { href: "/dashboard/achievements", labelKey: "dashboard.achievements", icon: Trophy },
+    { href: "/dashboard/settings", labelKey: "auth.settings", icon: Settings },
   ];
   const pathname = usePathname();
   const { user } = useSession();
   const { signOut, loading: signingOut } = useSignOut();
-  const displayName = user?.name || user?.username || "Account";
+  const displayName = user?.name || user?.username || t("dashboard.account");
   const displayUsername = user?.username ? `@${user.username}` : "";
   const displayEmail = user?.email || "";
   const displayImage = user?.image;
@@ -75,7 +77,7 @@ export function DashboardSidebar({
             className="mb-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-md hover:brightness-110 transition-all"
           >
             <Shield className="h-4 w-4" />
-            <span className="flex-1">Admin View</span>
+            <span className="flex-1">{t("auth.adminView")}</span>
             {adminPendingCount > 0 && (
               <Badge variant="secondary" className="h-5 min-w-5 rounded-full px-1.5 py-0 text-[10px] bg-white/20">
                 {adminPendingCount}
@@ -99,7 +101,7 @@ export function DashboardSidebar({
               )}
             >
               <item.icon className="h-4 w-4" />
-              <span className="flex-1">{item.label}</span>
+              <span className="flex-1">{t(item.labelKey)}</span>
               {item.badge && (
                 <Badge variant="pink" className="h-5 min-w-5 rounded-full px-1.5 py-0 text-[10px]">
                   {item.badge}
@@ -134,7 +136,7 @@ export function DashboardSidebar({
           className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
         >
           <LogOut className="h-4 w-4" />
-          Log out
+          {t("auth.signOut")}
         </button>
       </div>
     </aside>

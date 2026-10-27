@@ -19,6 +19,8 @@ import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { CINEVERSE_HUB_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
 import { buildMetadata } from "@/lib/seo";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +49,8 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function CineverseHubPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const [hub, blogs] = await Promise.all([
     getCineverseHubDataCached(),
     getBlogsByCategoryHybrid("movies"),
@@ -55,15 +59,8 @@ export default async function CineverseHubPage() {
   return (
     <div className="space-y-10">
       <HubJsonLd blocks={hubSeoJsonLdBlocks(CINEVERSE_HUB_SEO)} />
-      <HubEditorialIntro title="Movies, OTT dates & where to watch in India">
-        <p>
-          CineVerse is ContentVerse India&apos;s movie search companion for India — every film page
-          covers release date, cast, trailer, story, ratings, OTT release date, where to watch,
-          and reviews
-          {SHOW_THIRD_PARTY_CREDITS
-            ? ". Metadata is powered by TMDB; editorial reviews and lists live in the Movies category."
-            : ". Editorial reviews and lists live in the Movies category."}
-        </p>
+      <HubEditorialIntro title={t(dict, "hubs.cineEditorialTitle")}>
+        <p>{t(dict, "hubs.cineEditorialBody")}</p>
         <p>
           Search intents like &quot;Movie Name OTT Release Date&quot; or where to watch. Also see{" "}
           <Link href="/guides/movies" className="text-primary hover:underline">
@@ -92,7 +89,7 @@ export default async function CineverseHubPage() {
       {hub.nowPlaying.length > 0 ? (
         <section>
           <h2 className="mb-4 font-display text-xl font-bold md:text-2xl">
-            Now <span className="text-gradient">Playing</span> in India
+            {t(dict, "hubs.cineNowPlaying")}
           </h2>
           <MovieGrid movies={hub.nowPlaying} />
         </section>

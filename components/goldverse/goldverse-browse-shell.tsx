@@ -60,13 +60,13 @@ export async function GoldVerseBrowseShell({
         <div className="space-y-3">
           <div className="flex items-end justify-between gap-3">
             <h2 className="font-display text-xl font-bold tracking-tight">
-              Silver rate today
+              {t(dict, "hubs.goldSilverRate")}
             </h2>
             <Link
               href="/tools/silver-rate"
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              Full tool →
+              {t(dict, "hubs.goldFullTool")}
             </Link>
           </div>
           <SilverRateTool initial={silver} />

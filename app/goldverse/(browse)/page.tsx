@@ -12,6 +12,8 @@ import { RelatedHubs } from "@/components/seo/related-hubs";
 import { GOLDVERSE_HUB_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
 import { HUID_SEO_KEYWORDS, HUID_VERIFICATION_PATH } from "@/lib/goldverse/huid-seo";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
@@ -39,16 +41,15 @@ export const metadata: Metadata = buildMetadata({
     "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600",
 });
 
-export default function GoldVersePage() {
+export default async function GoldVersePage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   return (
     <div className="space-y-10">
       <HubJsonLd blocks={hubSeoJsonLdBlocks(GOLDVERSE_HUB_SEO)} />
-      <HubEditorialIntro title="Gold rates, HUID verify & hallmark tools">
-        <p>
-          ContentVerse India GoldVerse helps buyers and jewellers verify gold hallmark
-          authenticity using the official BIS HUID database, track gold price context across
-          India, and access hallmark education and complaint tools.
-        </p>
+      <HubEditorialIntro title={t(dict, "hubs.goldEditorialTitle")}>
+        <p>{t(dict, "hubs.goldEditorialBody")}</p>
         <p>
           Use{" "}
           <Link href={HUID_VERIFICATION_PATH} className="font-medium text-amber-400 hover:underline">

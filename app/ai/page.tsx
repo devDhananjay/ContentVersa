@@ -18,21 +18,27 @@ import {
   cvAiWebPageJsonLd,
 } from "@/lib/ai/cv-ai-seo";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "ContentVerse India AI — Ask, Summarise, Resume, Bank PDF & Screenshot OCR",
-  description:
-    "ContentVerse India AI for India: ask anything, summarise articles, explain simply, compare options, generate job resumes, calculate finance, analyse PDF text, bank statements and UPI screenshots.",
-  path: CV_AI_PATH,
-  keywords: [...CV_AI_KEYWORDS],
-  image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1600",
-  // Form-heavy chatbot surface — keep out of Google index until AdSense is approved.
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  return buildMetadata({
+    title: `${t(dict, "hubs.aiTitle")} — Ask, Summarise, Resume, Bank PDF & Screenshot OCR`,
+    description: t(dict, "hubs.aiSub"),
+    path: CV_AI_PATH,
+    keywords: [...CV_AI_KEYWORDS],
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1600",
+    noIndex: true,
+  });
+}
 
-export default function ContentVerseAiPage() {
+export default async function ContentVerseAiPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const blocks = [cvAiWebPageJsonLd(), cvAiFaqJsonLd(), cvAiBreadcrumbJsonLd()];
 
   return (
@@ -45,20 +51,18 @@ export default function ContentVerseAiPage() {
         />
       ))}
 
-      <PageBack href="/" label="Home" />
+      <PageBack href="/" label={t(dict, "common.home")} />
 
       <header className="space-y-3">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-violet-300">
           <Sparkles className="h-3.5 w-3.5" />
-          ContentVerse India AI
+          {t(dict, "hubs.aiTitle")}
         </p>
         <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-5xl">
-          Your AI product for India — not just a chatbot
+          {t(dict, "hubs.aiHeading")}
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground md:text-base">
-          Ask anything, summarise articles, explain topics simply, compare choices, draft
-          resumes, calculate finance, analyse PDFs, bank statements and payment screenshots —
-          wired into MoneyVerse and India Tools.
+          {t(dict, "hubs.aiBody")}
         </p>
       </header>
 

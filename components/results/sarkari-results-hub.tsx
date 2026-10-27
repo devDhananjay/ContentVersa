@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import { ExternalLink, Search } from "lucide-react";
 import {
   RESULT_BOARDS,
@@ -13,8 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 export function SarkariResultsHub() {
+  const { t } = useDictionary();
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
   const boards = filterBoards(category, query);
@@ -27,7 +29,7 @@ export function SarkariResultsHub() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search SSC, CBSE, IBPS, NEET…"
+            placeholder={t("hubs.resultsSearchPlaceholder")}
             className="pl-9"
           />
         </div>
@@ -49,35 +51,33 @@ export function SarkariResultsHub() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         {boards.map((b) => (
-          <BoardCard key={b.id} board={b} />
+          <BoardCard key={b.id} board={b} openLabel={t("common.open")} />
         ))}
       </div>
 
       {!boards.length ? (
         <p className="text-sm text-muted-foreground">
-          No boards match your search. Try SSC, CBSE, or IBPS.
+          {t("hubs.resultsNoMatch")}
         </p>
       ) : null}
 
       <Card className="border-amber-500/30 bg-amber-500/5">
         <CardHeader>
-          <CardTitle className="text-base">Important</CardTitle>
+          <CardTitle className="text-base">
+            {t("hubs.resultsImportantTitle")}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
+          <p>{t("hubs.resultsImportantBody")}</p>
           <p>
-            ContentVerse India links only to <strong className="text-foreground">official</strong>{" "}
-            result portals. We never publish fake roll numbers, marks, or paid
-            “leaked” results.
-          </p>
-          <p>
-            Looking for vacancies too? See{" "}
-            <Link href="/jobs/govt" className="text-primary hover:underline">
-              Sarkari Jobs
-            </Link>
+            {t("common.exploreMore")}:{" "}
+            <LocaleLink href="/jobs/govt" className="text-primary hover:underline">
+              {t("nav.jobs")}
+            </LocaleLink>
             .
           </p>
           <p className="text-xs">
-            Showing {RESULT_BOARDS.length} curated boards on this hub.
+            {RESULT_BOARDS.length} curated boards
           </p>
         </CardContent>
       </Card>
@@ -85,7 +85,13 @@ export function SarkariResultsHub() {
   );
 }
 
-function BoardCard({ board }: { board: ResultBoard }) {
+function BoardCard({
+  board,
+  openLabel,
+}: {
+  board: ResultBoard;
+  openLabel: string;
+}) {
   const href = board.resultUrl || board.officialUrl;
   return (
     <Card className="border-border/50 bg-card/60 transition hover:border-primary/40">
@@ -103,7 +109,7 @@ function BoardCard({ board }: { board: ResultBoard }) {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
         >
-          Open official results
+          {openLabel}
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
       </CardContent>

@@ -1,22 +1,29 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { MONEY_TOPICS, moneyTopicPath } from "@/lib/finance/money-topics";
 import { resolvedPublicHref } from "@/lib/seo/content-redirects";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 export function MoneyTopicsGrid({
-  title = "MoneyVerse guides",
-  subtitle = "Gold, silver, SIP, mutual funds, stocks, IPO, FD, RD, loans, cards, credit score & tax",
+  title,
+  subtitle,
 }: {
   title?: string;
   subtitle?: string;
 }) {
+  const { t } = useDictionary();
+  const resolvedTitle = title ?? t("hubs.financeMoneyGuidesTitle");
+  const resolvedSubtitle = subtitle ?? t("hubs.financeMoneyGuidesSub");
+
   return (
     <section id="money-guides" className="space-y-4">
       <div>
         <h2 className="font-display text-xl font-bold tracking-tight md:text-2xl">
-          {title}
+          {resolvedTitle}
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{resolvedSubtitle}</p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {MONEY_TOPICS.map((topic) => (
@@ -35,7 +42,7 @@ export function MoneyTopicsGrid({
               {topic.description}
             </p>
             <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-emerald-300">
-              Open guide
+              {t("hubs.openGuide")}
               <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
             </span>
           </Link>

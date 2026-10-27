@@ -6,34 +6,47 @@ import { LeaderboardView } from "@/components/leaderboard/leaderboard-view";
 import { PageBack } from "@/components/site/page-back";
 import { getLeaderboardCached } from "@/lib/data/leaderboard";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Leaderboard",
-  description: "Top ContentVerse India creators ranked by reach, engagement and growth.",
-  path: "/leaderboard",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  return buildMetadata({
+    title: t(dict, "footer.leaderboard", "Leaderboard"),
+    description: t(dict, "hubs.leaderboardSub"),
+    path: "/leaderboard",
+    noIndex: true,
+  });
+}
 
 export const dynamic = "force-dynamic";
 
 export default async function LeaderboardPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const creators = await getLeaderboardCached();
 
   return (
     <div className="container py-12 max-w-4xl">
-      <PageBack href="/" label="Home" className="mb-6" />
+      <PageBack href="/" label={t(dict, "common.home")} className="mb-6" />
       <div className="text-center mb-10">
         <div className="flex items-center justify-center gap-2 text-neon-orange mb-2">
           <Trophy className="h-5 w-5" />
           <span className="text-sm font-semibold uppercase tracking-widest">
-            Top creators
+            {t(dict, "hubs.leaderboardEyebrow")}
           </span>
         </div>
         <h1 className="font-display text-4xl md:text-6xl font-extrabold tracking-tight">
-          The <span className="text-gradient">leaderboard</span>
+          {t(dict, "hubs.leaderboardTitleBefore") ? (
+            <>
+              {t(dict, "hubs.leaderboardTitleBefore")}{" "}
+            </>
+          ) : null}
+          <span className="text-gradient">{t(dict, "hubs.leaderboardTitleAccent")}</span>
         </h1>
         <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-          Live ranking by views, likes, followers and published posts — refreshed from the database.
+          {t(dict, "hubs.leaderboardSub")}
         </p>
       </div>
 

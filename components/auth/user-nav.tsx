@@ -23,8 +23,10 @@ import {
 import { useSession } from "@/components/auth/use-session";
 import { useSignOut } from "@/components/auth/sign-out-button";
 import { cn, getInitials } from "@/lib/utils";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 export function UserNav({ immersive = false }: { immersive?: boolean }) {
+  const { t } = useDictionary();
   const { user, loading } = useSession();
   const { signOut, loading: signingOut } = useSignOut();
 
@@ -46,7 +48,7 @@ export function UserNav({ immersive = false }: { immersive?: boolean }) {
           className="h-9 gap-1.5 rounded-full px-3"
         >
           <LogIn className="h-4 w-4" />
-          <span className="hidden sm:inline">Sign in</span>
+          <span className="hidden sm:inline">{t("auth.signIn")}</span>
         </Button>
       </Link>
     );
@@ -142,6 +144,7 @@ export function UserNav({ immersive = false }: { immersive?: boolean }) {
 }
 
 export function MobileUserNav() {
+  const { t } = useDictionary();
   const { user, loading } = useSession();
   const { signOut, loading: signingOut } = useSignOut();
 
@@ -156,7 +159,7 @@ export function MobileUserNav() {
       <Link href="/auth/sign-in" className="flex-1">
         <Button variant="outline" className="w-full gap-2">
           <LogIn className="h-4 w-4" />
-          Sign in
+          {t("auth.signIn")}
         </Button>
       </Link>
     );

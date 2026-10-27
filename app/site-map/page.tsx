@@ -3,27 +3,35 @@ import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PageBack } from "@/components/site/page-back";
 import { VisualSitemap } from "@/components/site/visual-sitemap";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Site Map",
-  description:
-    "Explore every module and feature on ContentVerse India — blogs, reels, sports, finance, jobs, creator tools and more.",
-  path: "/site-map",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  return buildMetadata({
+    title: t(dict, "hubs.siteMapTitle"),
+    description: t(dict, "hubs.siteMapSub"),
+    path: "/site-map",
+  });
+}
 
-export default function SiteMapPage() {
+export default async function SiteMapPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   return (
     <div className="container py-12 md:py-16 max-w-7xl">
-      <PageBack href="/" label="Home" className="mb-6" />
+      <PageBack href="/" label={t(dict, "common.home")} className="mb-6" />
       <header className="mb-10">
         <p className="text-sm font-semibold uppercase tracking-widest text-neon-purple mb-2">
-          Navigation
+          {t(dict, "hubs.siteMapEyebrow")}
         </p>
         <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight">
-          Site Map
+          {t(dict, "hubs.siteMapTitle")}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Everything on ContentVerse India — modules, pages, and functionality at a glance.
+          {t(dict, "hubs.siteMapSub")}
         </p>
       </header>
       <VisualSitemap />
