@@ -1,56 +1,67 @@
+"use client";
+
 import Link from "next/link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
+import { tf } from "@/lib/i18n/get-dictionary";
 
 export type YmylKind = "finance" | "health" | "tax" | "schemes" | "general";
 
-const COPY: Record<
-  YmylKind,
-  { title: string; body: string; sourcesLabel?: string; sources?: { href: string; label: string }[] }
+const SOURCE_LINKS: Record<
+  Exclude<YmylKind, "general">,
+  { href: string; label: string }[]
 > = {
-  finance: {
-    title: "Educational only — not investment advice",
-    body: "ContentVerse India publishes general financial education. Nothing here is a buy/sell recommendation, portfolio advice, or a substitute for a SEBI-registered adviser. Markets involve risk; verify figures with your broker, bank, or official filings.",
-    sourcesLabel: "Useful official sources",
-    sources: [
-      { href: "https://www.sebi.gov.in/", label: "SEBI" },
-      { href: "https://www.rbi.org.in/", label: "RBI" },
-      { href: "https://www.irdai.gov.in/", label: "IRDAI" },
-      { href: "https://www.nseindia.com/", label: "NSE" },
-    ],
-  },
-  tax: {
-    title: "Tax estimates only — verify before filing",
-    body: "Calculators and articles here are educational planning aids. Tax rules, slabs, and rebates change. Confirm liability on the Income Tax Department portal or with a qualified CA before you file or choose a regime.",
-    sourcesLabel: "Official sources",
-    sources: [
-      { href: "https://www.incometax.gov.in/", label: "Income Tax portal" },
-      { href: "https://www.gst.gov.in/", label: "GST portal" },
-    ],
-  },
-  health: {
-    title: "Not medical advice",
-    body: "Health-related content on ContentVerse India is for general awareness only. It is not diagnosis, treatment, a policy quote, or a substitute for a licensed clinician. For symptoms or medication decisions, consult a qualified doctor; for insurance, read IRDAI-regulated disclosures.",
-    sourcesLabel: "Trusted references",
-    sources: [
-      { href: "https://www.mohfw.gov.in/", label: "MoHFW" },
-      { href: "https://www.irdai.gov.in/", label: "IRDAI" },
-      { href: "https://www.who.int/", label: "WHO" },
-    ],
-  },
-  schemes: {
-    title: "Scheme explainers — check the official portal",
-    body: "Eligibility, documents, and steps can change. Always confirm on the government scheme’s official website or helpline before you apply or pay any fee. ContentVerse India does not collect application fees for govt schemes.",
-    sourcesLabel: "Starting points",
-    sources: [
-      { href: "https://www.india.gov.in/", label: "India.gov.in" },
-      { href: "https://www.ibps.in/", label: "IBPS" },
-      { href: "https://ssc.gov.in/", label: "SSC" },
-    ],
-  },
-  general: {
-    title: "Educational content",
-    body: "Information on ContentVerse India is for learning and convenience. Double-check critical decisions (money, health, legal, government filings) with official sources or qualified professionals.",
-  },
+  finance: [
+    { href: "https://www.sebi.gov.in/", label: "SEBI" },
+    { href: "https://www.rbi.org.in/", label: "RBI" },
+    { href: "https://www.irdai.gov.in/", label: "IRDAI" },
+    { href: "https://www.nseindia.com/", label: "NSE" },
+  ],
+  tax: [
+    { href: "https://www.incometax.gov.in/", label: "Income Tax portal" },
+    { href: "https://www.gst.gov.in/", label: "GST portal" },
+  ],
+  health: [
+    { href: "https://www.mohfw.gov.in/", label: "MoHFW" },
+    { href: "https://www.irdai.gov.in/", label: "IRDAI" },
+    { href: "https://www.who.int/", label: "WHO" },
+  ],
+  schemes: [
+    { href: "https://www.india.gov.in/", label: "India.gov.in" },
+    { href: "https://www.ibps.in/", label: "IBPS" },
+    { href: "https://ssc.gov.in/", label: "SSC" },
+  ],
 };
+
+function ymylKeys(kind: YmylKind): { title: string; body: string; sources?: string } {
+  switch (kind) {
+    case "finance":
+      return {
+        title: "ymyl.financeTitle",
+        body: "ymyl.financeBody",
+        sources: "ymyl.financeSources",
+      };
+    case "tax":
+      return {
+        title: "ymyl.taxTitle",
+        body: "ymyl.taxBody",
+        sources: "ymyl.taxSources",
+      };
+    case "health":
+      return {
+        title: "ymyl.healthTitle",
+        body: "ymyl.healthBody",
+        sources: "ymyl.healthSources",
+      };
+    case "schemes":
+      return {
+        title: "ymyl.schemesTitle",
+        body: "ymyl.schemesBody",
+        sources: "ymyl.schemesSources",
+      };
+    default:
+      return { title: "ymyl.generalTitle", body: "ymyl.generalBody" };
+  }
+}
 
 /** Compact YMYL / AdSense-friendly disclaimer with optional official source links. */
 export function YmylDisclaimer({
@@ -63,7 +74,11 @@ export function YmylDisclaimer({
   /** Shown as “Last reviewed: …” — pass article.updatedLabel on money pages */
   reviewedLabel?: string;
 }) {
-  const copy = COPY[kind];
+  const { dict, t } = useDictionary();
+  const keys = ymylKeys(kind);
+  const sources =
+    kind !== "general" ? SOURCE_LINKS[kind as Exclude<YmylKind, "general">] : undefined;
+
   return (
     <aside
       className={
@@ -72,15 +87,15 @@ export function YmylDisclaimer({
       }
       role="note"
     >
-      <p className="font-medium text-foreground">{copy.title}</p>
-      <p className="mt-1.5 leading-relaxed">{copy.body}</p>
+      <p className="font-medium text-foreground">{t(keys.title)}</p>
+      <p className="mt-1.5 leading-relaxed">{t(keys.body)}</p>
       <p className="mt-2 text-xs">
-        Last reviewed: {reviewedLabel}. Confirm live rules on official portals.
+        {tf(dict, "ymyl.reviewed", { date: reviewedLabel })}
       </p>
-      {copy.sources?.length ? (
+      {sources?.length && keys.sources ? (
         <p className="mt-2 text-xs">
-          {copy.sourcesLabel}:{" "}
-          {copy.sources.map((s, i) => (
+          {t(keys.sources)}:{" "}
+          {sources.map((s, i) => (
             <span key={s.href}>
               {i > 0 ? " · " : null}
               <Link

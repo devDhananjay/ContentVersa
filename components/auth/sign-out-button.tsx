@@ -4,6 +4,7 @@ import * as React from "react";
 import { LogOut, Loader2 } from "lucide-react";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 export function useSignOut() {
   const [loading, setLoading] = React.useState(false);
@@ -33,13 +34,15 @@ interface SignOutButtonProps extends ButtonProps {
 
 export function SignOutButton({
   showIcon = true,
-  label = "Log out",
+  label,
   className,
   variant = "ghost",
   size = "default",
   ...props
 }: SignOutButtonProps) {
+  const { t } = useDictionary();
   const { signOut, loading } = useSignOut();
+  const displayLabel = label ?? t("auth.signOut");
 
   return (
     <Button
@@ -59,7 +62,7 @@ export function SignOutButton({
       ) : showIcon ? (
         <LogOut className="h-4 w-4" />
       ) : null}
-      {label}
+      {displayLabel}
     </Button>
   );
 }

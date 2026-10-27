@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSession } from "@/components/auth/use-session";
 import { isAdminRole } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 type AdminViewButtonProps = {
   className?: string;
@@ -26,6 +27,7 @@ export function AdminViewButton({
   fullWidth,
   compact,
 }: AdminViewButtonProps) {
+  const { t } = useDictionary();
   const { user } = useSession();
 
   // Don't hide while session refreshes — only hide when role is known to be non-admin
@@ -44,10 +46,10 @@ export function AdminViewButton({
           variant === "outline" &&
             "border-orange-500/40 text-orange-600 dark:text-orange-400 hover:bg-orange-500/10"
         )}
-        aria-label="Admin View"
+        aria-label={t("auth.adminView")}
       >
         <Shield className="h-4 w-4 shrink-0" />
-        {!compact && "Admin View"}
+        {!compact && t("auth.adminView")}
         {showBadge !== undefined && showBadge > 0 && (
           <Badge variant="orange" className="ml-0.5 h-5 min-w-5 rounded-full px-1.5 py-0 text-[10px]">
             {showBadge}

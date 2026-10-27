@@ -5,8 +5,12 @@ import { ViewsBarChart } from "@/components/dashboard/views-chart";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboardDataCached } from "@/lib/data/dashboard-data";
 import { formatNumber } from "@/lib/utils";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export default async function AnalyticsPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const session = await getCurrentUser();
   if (!session) redirect("/auth/sign-in?next=/dashboard/analytics");
 
@@ -17,11 +21,9 @@ export default async function AnalyticsPage() {
     <div className="container py-8 max-w-6xl">
       <div className="mb-8">
         <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
-          Analytics
+          {t(dict, "dashboard.analytics")}
         </h1>
-        <p className="text-muted-foreground mt-1">
-          Stats for your posts only — not other creators.
-        </p>
+        <p className="text-muted-foreground mt-1">{t(dict, "dashPages.analyticsSub")}</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">

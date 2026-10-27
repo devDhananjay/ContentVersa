@@ -93,7 +93,7 @@ export default async function AdvertisePage() {
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-primary to-[hsl(var(--saffron))] text-white shadow-[0_8px_20px_-10px_hsl(var(--primary)/0.8)]">
                   <Megaphone className="h-3 w-3" />
                 </span>
-                ContentVerse India · Advertise
+                ContentVerse India · {t(dict, "pages.advertise")}
               </p>
               <h1 className="font-display text-4xl font-extrabold tracking-tight text-balance sm:text-5xl">
                 {t(dict, "hubs.advertiseTitle")}

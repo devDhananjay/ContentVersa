@@ -151,7 +151,12 @@
     "confirmPassword": "Confirm password",
     "createAccountCta": "Create account",
     "signingIn": "Signing in…",
-    "oauthFailed": "Sign-in failed. Try again."
+    "oauthFailed": "Sign-in failed. Try again.",
+    "forgotPassword": "Forgot password?",
+    "newHere": "New here?",
+    "subtitleSignIn": "Sign in to write, bookmark and sync reading.",
+    "subtitleSignUp": "Join ContentVerse India to publish and grow with the community.",
+    "signInFailed": "Sign in failed"
   },
   "dashboard": {
     "overview": "Overview",
@@ -673,6 +678,72 @@
     "terms": "Terms",
     "cookies": "Cookies",
     "contact": "Contact"
+  },
+  "tools": {
+    "indiaTools": "India Tools",
+    "partOf": "Part of",
+    "partOfSuffix": "— free daily-use checkers for Indian users.",
+    "howToUse": "How to use {name}",
+    "workedExamples": "Worked examples",
+    "relatedToolsHubs": "Related tools & hubs",
+    "faq": "Frequently asked questions"
+  },
+  "guidesUi": {
+    "openSection": "Open section",
+    "minRead": "{n} min read",
+    "updated": "Updated {date}",
+    "topGuides": "Featured guides",
+    "relatedHub": "Related hub"
+  },
+  "ymyl": {
+    "reviewed": "Editorial review: {date}",
+    "financeTitle": "Educational only — not investment advice",
+    "financeBody": "ContentVerse India publishes general financial education. Nothing here is a buy/sell recommendation, portfolio advice, or a substitute for a SEBI-registered adviser. Markets involve risk; verify figures with your broker, bank, or official filings.",
+    "financeSources": "Useful official sources",
+    "taxTitle": "Tax estimates only — verify before filing",
+    "taxBody": "Calculators and articles here are educational planning aids. Tax rules, slabs, and rebates change. Confirm liability on the Income Tax Department portal or with a qualified CA before you file or choose a regime.",
+    "taxSources": "Official sources",
+    "healthTitle": "Not medical advice",
+    "healthBody": "Health-related content on ContentVerse India is for general awareness only. It is not diagnosis, treatment, a policy quote, or a substitute for a licensed clinician. For symptoms or medication decisions, consult a qualified doctor; for insurance, read IRDAI-regulated disclosures.",
+    "healthSources": "Trusted references",
+    "schemesTitle": "Scheme explainers — check the official portal",
+    "schemesBody": "Eligibility, documents, and steps can change. Always confirm on the government scheme’s official website or helpline before you apply or pay any fee. ContentVerse India does not collect application fees for govt schemes.",
+    "schemesSources": "Starting points",
+    "generalTitle": "Educational content",
+    "generalBody": "Information on ContentVerse India is for learning and convenience. Double-check critical decisions (money, health, legal, government filings) with official sources or qualified professionals."
+  },
+  "moneyverseUi": {
+    "noExpenses": "No expenses this month yet.",
+    "noReminders": "No reminders yet.",
+    "addExpense": "Add expense",
+    "merchantPlaceholder": "Swiggy, petrol, rent…",
+    "amount": "Amount (₹)",
+    "category": "Category",
+    "note": "Note",
+    "save": "Save",
+    "scanCta": "Scan screenshot",
+    "signInToSave": "Sign in to save expenses"
+  },
+  "social": {
+    "continueGoogle": "Continue with Google"
+  },
+  "dashPages": {
+    "overviewSub": "Your publishing snapshot on ContentVerse India.",
+    "blogsSub": "Drafts, published posts and performance.",
+    "newBlog": "New Blog",
+    "analyticsSub": "Views, likes and reach across your articles.",
+    "earningsSub": "Tips, ads share and payouts in ₹.",
+    "notificationsSub": "Updates about your posts and account.",
+    "bookmarksSub": "Articles you saved to read later.",
+    "achievementsSub": "Badges and milestones you’ve unlocked.",
+    "reelsSub": "Short videos you’ve published.",
+    "settingsSub": "Profile, notifications and account security.",
+    "createTitle": "Create article",
+    "editTitle": "Edit article"
+  },
+  "topicUi": {
+    "inThisTopic": "In this topic",
+    "openPillar": "Open pillar"
   },
   "categories": {
     "technology": "Technology",

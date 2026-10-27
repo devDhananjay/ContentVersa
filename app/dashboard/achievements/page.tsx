@@ -3,8 +3,12 @@ import { Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboardDataCached } from "@/lib/data/dashboard-data";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export default async function AchievementsPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const session = await getCurrentUser();
   if (!session) redirect("/auth/sign-in?next=/dashboard/achievements");
 
@@ -16,11 +20,9 @@ export default async function AchievementsPage() {
       <div className="mb-8">
         <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight flex items-center gap-3">
           <Trophy className="h-8 w-8 text-neon-orange" />
-          Achievements
+          {t(dict, "dashboard.achievements")}
         </h1>
-        <p className="text-muted-foreground mt-1">
-          Badges earned on your creator journey.
-        </p>
+        <p className="text-muted-foreground mt-1">{t(dict, "dashPages.achievementsSub")}</p>
       </div>
 
       {earned.length > 0 ? (

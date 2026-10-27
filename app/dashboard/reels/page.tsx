@@ -8,8 +8,12 @@ import { MyReelsClient } from "@/components/reels/my-reels-client";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/utils";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export default async function DashboardReelsPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const session = await getCurrentUser();
   if (!session) redirect("/auth/sign-in?next=/dashboard/reels");
 
@@ -24,11 +28,9 @@ export default async function DashboardReelsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-3xl font-extrabold tracking-tight">
-            My <span className="text-gradient">Reels</span>
+            {t(dict, "dashboard.myReels")}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Short videos and images — views update like Instagram.
-          </p>
+          <p className="text-sm text-muted-foreground mt-1">{t(dict, "dashPages.reelsSub")}</p>
         </div>
         <Link href="/dashboard/reels/create">
           <Button variant="gradient" className="gap-2">

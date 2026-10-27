@@ -75,7 +75,7 @@ export function SignInForm() {
         body: JSON.stringify({ email, password }),
       });
       const data = (await res.json()) as { error?: string; role?: string };
-      if (!res.ok) throw new Error(data.error || "Sign in failed");
+      if (!res.ok) throw new Error(data.error || t("auth.signInFailed"));
 
       if (rememberMe) {
         setRememberedCredentials(email.trim(), password);
@@ -90,7 +90,7 @@ export function SignInForm() {
           : next;
       window.location.href = dest;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign in failed");
+      setError(err instanceof Error ? err.message : t("auth.signInFailed"));
     } finally {
       setLoading(false);
     }
@@ -105,9 +105,7 @@ export function SignInForm() {
       <h1 className="font-display text-3xl font-extrabold tracking-tight">
         {t("auth.welcomeBack")}
       </h1>
-      <p className="text-muted-foreground mt-1.5">
-        Sign in to continue building on ContentVerse India.
-      </p>
+      <p className="text-muted-foreground mt-1.5">{t("auth.subtitleSignIn")}</p>
 
       <div className="mt-6">
         <SocialButtons next={next} />
@@ -148,7 +146,7 @@ export function SignInForm() {
               href="/auth/forgot-password"
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              Forgot?
+              {t("auth.forgotPassword")}
             </Link>
           </div>
           <div className="relative">
@@ -201,7 +199,7 @@ export function SignInForm() {
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        New here?{" "}
+        {t("auth.newHere")}{" "}
         <Link href="/auth/sign-up" className="font-medium text-foreground hover:underline">
           {t("auth.createAccount")}
         </Link>

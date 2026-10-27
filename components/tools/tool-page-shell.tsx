@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import type { ToolSlug } from "@/lib/tools/registry";
 import { getToolBySlugOrThrow, toolFaq } from "@/lib/tools/tools-seo";
@@ -12,6 +14,8 @@ import { MrecAd } from "@/components/ads/mrec-ad";
 import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PageBack } from "@/components/site/page-back";
+import { useDictionary } from "@/components/i18n/use-dictionary";
+import { tf } from "@/lib/i18n/get-dictionary";
 import { ToolIcon } from "./tool-icon";
 
 /**
@@ -25,6 +29,7 @@ export function ToolPageShell({
   slug: ToolSlug;
   children: React.ReactNode;
 }) {
+  const { dict, t } = useDictionary();
   const tool = getToolBySlugOrThrow(slug);
   const faq = toolFaq(tool);
   const guide = getToolGuide(slug);
@@ -33,12 +38,12 @@ export function ToolPageShell({
 
   return (
     <div className="container space-y-10 py-8 md:py-10">
-      <PageBack href="/tools" label="India Tools" />
+      <PageBack href="/tools" label={t("tools.indiaTools")} />
 
       <header className="max-w-3xl space-y-3">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
           <ToolIcon slug={slug} className="h-3.5 w-3.5" />
-          India Tools
+          {t("tools.indiaTools")}
           {tool.badge ? (
             <Badge variant="secondary" className="ml-1 text-[10px]">
               {tool.badge}
@@ -52,11 +57,11 @@ export function ToolPageShell({
           {tool.description}
         </p>
         <p className="text-xs text-muted-foreground">
-          Part of{" "}
+          {t("tools.partOf")}{" "}
           <Link href="/tools" className="text-primary hover:underline">
-            ContentVerse India Tools
+            ContentVerse {t("tools.indiaTools")}
           </Link>{" "}
-          — free daily-use checkers for Indian users.
+          {t("tools.partOfSuffix")}
         </p>
       </header>
 
@@ -75,7 +80,7 @@ export function ToolPageShell({
             <section className="max-w-3xl space-y-6">
               <div className="space-y-3">
                 <h2 className="font-display text-xl font-semibold">
-                  How to use {tool.shortTitle}
+                  {tf(dict, "tools.howToUse", { name: tool.shortTitle })}
                 </h2>
                 <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
                   {guide.intro}
@@ -118,7 +123,9 @@ export function ToolPageShell({
 
           {guide?.examples?.length ? (
             <section className="max-w-3xl space-y-4">
-              <h2 className="font-display text-xl font-semibold">Worked examples</h2>
+              <h2 className="font-display text-xl font-semibold">
+                {t("tools.workedExamples")}
+              </h2>
               <div className="space-y-3">
                 {guide.examples.map((ex) => (
                   <Card key={ex.title}>
@@ -139,7 +146,9 @@ export function ToolPageShell({
 
           {guide?.relatedLinks?.length ? (
             <section className="max-w-3xl space-y-3">
-              <h2 className="font-display text-xl font-semibold">Related tools & hubs</h2>
+              <h2 className="font-display text-xl font-semibold">
+                {t("tools.relatedToolsHubs")}
+              </h2>
               <ul className="flex flex-wrap gap-2">
                 {guide.relatedLinks.map((link) => (
                   <li key={link.href}>
@@ -161,7 +170,7 @@ export function ToolPageShell({
 
           <section className="max-w-3xl space-y-4">
             <h2 className="font-display text-xl font-semibold">
-              Frequently asked questions
+              {t("tools.faq")}
             </h2>
             <div className="space-y-3">
               {faq.map((item) => (

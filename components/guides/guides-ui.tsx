@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import {
@@ -18,6 +20,8 @@ const FEATURED_GUIDE_PATHS = [
 ];
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useDictionary } from "@/components/i18n/use-dictionary";
+import { tf } from "@/lib/i18n/get-dictionary";
 
 export function GuidesSectionGrid() {
   return (
@@ -30,6 +34,7 @@ export function GuidesSectionGrid() {
 }
 
 export function GuideSectionCard({ section }: { section: GuideSection }) {
+  const { t } = useDictionary();
   const guides = getGuidesBySection(section.slug).slice(0, 2);
   return (
     <Link
@@ -56,13 +61,14 @@ export function GuideSectionCard({ section }: { section: GuideSection }) {
         ))}
       </ul>
       <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-        Open section <ArrowRight className="h-3.5 w-3.5" />
+        {t("guidesUi.openSection")} <ArrowRight className="h-3.5 w-3.5" />
       </span>
     </Link>
   );
 }
 
 export function GuideArticleList({ section }: { section: GuideSection }) {
+  const { dict } = useDictionary();
   const guides = getGuidesBySection(section.slug);
   return (
     <div className="grid gap-3">
@@ -73,9 +79,11 @@ export function GuideArticleList({ section }: { section: GuideSection }) {
           className="rounded-2xl border border-border/60 bg-card/70 p-5 transition hover:border-foreground/20 hover:bg-card"
         >
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{guide.readingMinutes} min read</Badge>
+            <Badge variant="secondary">
+              {tf(dict, "guidesUi.minRead", { n: guide.readingMinutes })}
+            </Badge>
             <span className="text-xs text-muted-foreground">
-              Updated {guide.updatedLabel}
+              {tf(dict, "guidesUi.updated", { date: guide.updatedLabel })}
             </span>
           </div>
           <h3 className="mt-2 font-display text-lg font-bold tracking-tight">
@@ -91,11 +99,12 @@ export function GuideArticleList({ section }: { section: GuideSection }) {
 }
 
 export function TopThirtyGuidesGrid() {
+  const { t } = useDictionary();
   return (
     <section className="space-y-4">
       <div className="space-y-1">
         <h2 className="font-display text-xl font-bold tracking-tight">
-          High-intent India topics
+          {t("guidesUi.topGuides")}
         </h2>
         <p className="text-sm text-muted-foreground max-w-2xl">
           Pillar pages built for how people search — FASTag, EMI, SIP, tax, scams,
@@ -128,11 +137,12 @@ export function TopThirtyGuidesGrid() {
 }
 
 export function GuideRelatedHub({ section }: { section: GuideSection }) {
+  const { t } = useDictionary();
   if (!section.relatedHub) return null;
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4">
       <div>
-        <p className="text-sm font-semibold">Related live hub</p>
+        <p className="text-sm font-semibold">{t("guidesUi.relatedHub")}</p>
         <p className="text-sm text-muted-foreground">
           Jump to fresh listings and tools for this topic.
         </p>

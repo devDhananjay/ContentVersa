@@ -47,7 +47,7 @@ export function ContactForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label htmlFor="name">{t("forms.name")}</Label>
-          <Input id="name" name="name" required placeholder="Your name" />
+          <Input id="name" name="name" required placeholder={t("forms.name")} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="email">{t("forms.email")}</Label>
@@ -56,7 +56,7 @@ export function ContactForm() {
             name="email"
             type="email"
             required
-            placeholder="you@example.com"
+            placeholder={t("forms.email")}
           />
         </div>
       </div>
@@ -66,7 +66,7 @@ export function ContactForm() {
           id="subject"
           name="subject"
           required
-          placeholder="How can we help?"
+          placeholder={t("forms.subject")}
         />
       </div>
       <div className="space-y-1.5">
@@ -76,7 +76,7 @@ export function ContactForm() {
           name="message"
           required
           rows={6}
-          placeholder="Tell us a bit more…"
+          placeholder={t("forms.message")}
         />
       </div>
       <Button type="submit" variant="gradient" className="gap-2" disabled={busy}>

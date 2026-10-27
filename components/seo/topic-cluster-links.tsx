@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import {
   TOPIC_CLUSTERS,
   getTopicClusterLinks,
@@ -10,12 +13,14 @@ import {
 export function TopicClusterLinks({
   cluster,
   currentHref,
-  heading = "In this topic",
+  heading,
 }: {
   cluster: TopicCluster;
   currentHref?: string;
   heading?: string;
 }) {
+  const { t } = useDictionary();
+  const headingText = heading ?? t("topicUi.inThisTopic");
   const links = getTopicClusterLinks(cluster, currentHref);
   if (!links.length) return null;
 
@@ -23,7 +28,7 @@ export function TopicClusterLinks({
     <section className="max-w-3xl space-y-3 rounded-2xl border bg-card/40 p-5">
       <div className="space-y-1">
         <h2 className="font-display text-lg font-semibold tracking-tight">
-          {heading}: {cluster.title}
+          {headingText}: {cluster.title}
         </h2>
         <p className="text-sm text-muted-foreground">{cluster.description}</p>
       </div>
@@ -60,6 +65,8 @@ export function TopicClustersHubStrip({
   title?: string;
   subtitle?: string;
 }) {
+  const { t } = useDictionary();
+
   return (
     <section className="space-y-4">
       <div className="space-y-1">
@@ -78,7 +85,7 @@ export function TopicClustersHubStrip({
               {c.description}
             </p>
             <p className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
-              Open pillar <ArrowRight className="h-3 w-3" />
+              {t("topicUi.openPillar")} <ArrowRight className="h-3 w-3" />
             </p>
           </Link>
         ))}

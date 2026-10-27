@@ -6,6 +6,8 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboardDataCached } from "@/lib/data/dashboard-data";
 import { formatINR } from "@/lib/utils";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 const ICONS = {
   ads: Megaphone,
@@ -22,6 +24,8 @@ const COLORS: Record<string, string> = {
 };
 
 export default async function EarningsPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const session = await getCurrentUser();
   if (!session) redirect("/auth/sign-in?next=/dashboard/earnings");
 
@@ -35,11 +39,9 @@ export default async function EarningsPage() {
       <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
-            Earnings
+            {t(dict, "dashboard.earnings")}
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Your wallet and revenue — mapped to your account only.
-          </p>
+          <p className="text-muted-foreground mt-1">{t(dict, "dashPages.earningsSub")}</p>
         </div>
         <WithdrawButton balanceInr={s?.walletBalanceRaw ?? 0} />
       </div>

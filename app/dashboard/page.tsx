@@ -28,10 +28,14 @@ import {
 } from "@/lib/engagement/streak";
 import { StreakShareCard } from "@/components/engagement/streak-share-card";
 import { ReadingChallengeCard } from "@/components/engagement/reading-challenge-card";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
 
 export default async function DashboardOverview() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const session = await getCurrentUser();
   if (!session) redirect("/auth/sign-in?next=/dashboard");
 
@@ -57,18 +61,19 @@ export default async function DashboardOverview() {
         <div>
           <p className="text-sm text-muted-foreground">Welcome back, {firstName}.</p>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight mt-1">
-            Your <span className="text-gradient">studio</span> overview
+            {t(dict, "dashboard.overview")}
           </h1>
+          <p className="text-muted-foreground mt-1">{t(dict, "dashPages.overviewSub")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/dashboard/analytics">
             <Button variant="outline" className="gap-2">
-              <BarChart3 className="h-4 w-4" /> Analytics
+              <BarChart3 className="h-4 w-4" /> {t(dict, "dashboard.analytics")}
             </Button>
           </Link>
           <Link href="/dashboard/create">
             <Button variant="gradient" className="gap-2">
-              <PenSquare className="h-4 w-4" /> New blog
+              <PenSquare className="h-4 w-4" /> {t(dict, "dashPages.newBlog")}
             </Button>
           </Link>
         </div>

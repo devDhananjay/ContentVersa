@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "@/components/auth/use-session";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ReferralCard } from "@/components/engagement/referral-card";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 type MeUser = {
   name?: string;
@@ -55,6 +56,7 @@ function loadNotifPrefs(): Record<NotifKey, boolean> {
 }
 
 export default function SettingsPage() {
+  const { t } = useDictionary();
   const { user, loading: sessionLoading, applyUser, refresh } = useSession();
 
   const [name, setName] = React.useState("");
@@ -232,11 +234,9 @@ export default function SettingsPage() {
   return (
     <div className="container py-8 max-w-3xl">
       <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
-        Settings
+        {t("auth.settings")}
       </h1>
-      <p className="text-muted-foreground mt-1">
-        Manage your profile, payouts and platform preferences.
-      </p>
+      <p className="text-muted-foreground mt-1">{t("dashPages.settingsSub")}</p>
 
       <div className="mt-8 space-y-6">
         <section className="rounded-2xl border bg-card p-6">

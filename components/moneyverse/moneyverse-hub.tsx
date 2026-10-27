@@ -32,6 +32,7 @@ import type { MoneyExpenseCategory, MoneyPaymentMethod } from "@prisma/client";
 import { cn } from "@/lib/utils";
 import { ExpenseScreenshotScan } from "@/components/moneyverse/expense-screenshot-scan";
 import type { ScreenshotScanResult } from "@/lib/moneyverse/screenshot-scan";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 function formatInr(n: number) {
   return n.toLocaleString("en-IN");
@@ -46,6 +47,7 @@ function shiftMonth(key: string, delta: number) {
 }
 
 export function MoneyVerseHub() {
+  const { t } = useDictionary();
   const { isSignedIn, loading: sessionLoading } = useSession();
   const [month, setMonth] = React.useState(monthKey());
   const [summary, setSummary] = React.useState<MoneyMonthSummary | null>(null);
@@ -238,7 +240,7 @@ export function MoneyVerseHub() {
           </p>
           <Link href={`/auth/sign-in?next=/moneyverse`}>
             <Button className="mt-4 bg-emerald-500 text-black hover:bg-emerald-400">
-              Sign in to MoneyVerse
+              {t("moneyverseUi.signInToSave")}
             </Button>
           </Link>
         </div>
@@ -313,11 +315,11 @@ export function MoneyVerseHub() {
       <section className="rounded-2xl border border-emerald-500/20 bg-card/50 p-5 md:p-6">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
           <Plus className="h-3.5 w-3.5" />
-          Add expense
+          {t("moneyverseUi.addExpense")}
         </p>
         <form onSubmit={addExpense} className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Label htmlFor="mv-amount">Amount (₹)</Label>
+            <Label htmlFor="mv-amount">{t("moneyverseUi.amount")}</Label>
             <Input
               id="mv-amount"
               type="number"
@@ -330,7 +332,7 @@ export function MoneyVerseHub() {
             />
           </div>
           <div>
-            <Label htmlFor="mv-cat">Category</Label>
+            <Label htmlFor="mv-cat">{t("moneyverseUi.category")}</Label>
             <select
               id="mv-cat"
               value={category}
@@ -362,12 +364,12 @@ export function MoneyVerseHub() {
             </select>
           </div>
           <div>
-            <Label htmlFor="mv-note">Note (optional)</Label>
+            <Label htmlFor="mv-note">{t("moneyverseUi.note")}</Label>
             <Input
               id="mv-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Swiggy, petrol…"
+              placeholder={t("moneyverseUi.merchantPlaceholder")}
               className="mt-1"
               disabled={!loggedIn || saving}
             />
@@ -379,7 +381,7 @@ export function MoneyVerseHub() {
               className="bg-emerald-500 text-black hover:bg-emerald-400"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <IndianRupee className="h-4 w-4" />}
-              Save expense
+              {t("moneyverseUi.save")}
             </Button>
           </div>
         </form>
@@ -411,7 +413,9 @@ export function MoneyVerseHub() {
               ))}
             </ul>
           ) : (
-            <p className="mt-4 text-sm text-muted-foreground">No expenses this month yet.</p>
+            <p className="mt-4 text-sm text-muted-foreground">
+              {t("moneyverseUi.noExpenses")}
+            </p>
           )}
         </section>
 
@@ -538,7 +542,7 @@ export function MoneyVerseHub() {
             </li>
           ))}
           {!summary?.reminders.length ? (
-            <p className="text-sm text-muted-foreground">No reminders — add credit card or SIP due dates.</p>
+            <p className="text-sm text-muted-foreground">{t("moneyverseUi.noReminders")}</p>
           ) : null}
         </ul>
       </section>

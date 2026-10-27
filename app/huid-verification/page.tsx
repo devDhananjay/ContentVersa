@@ -10,6 +10,8 @@ import { RelatedHubs } from "@/components/seo/related-hubs";
 import { PageBack } from "@/components/site/page-back";
 import { HUID_SEO_KEYWORDS, HUID_VERIFICATION_PATH } from "@/lib/goldverse/huid-seo";
 import { buildMetadata } from "@/lib/seo";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-static";
 
@@ -23,27 +25,26 @@ export const metadata: Metadata = buildMetadata({
     "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600",
 });
 
-export default function HuidVerificationPage() {
+export default async function HuidVerificationPage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   return (
     <div className="container space-y-10 py-8 md:py-10">
       <HuidVerificationJsonLd />
 
-      <PageBack href="/goldverse" label="GoldVerse" />
+      <PageBack href="/" label={t(dict, "common.home")} />
 
       <header className="max-w-3xl space-y-3">
         <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-400">
           <ShieldCheck className="h-3.5 w-3.5" />
-          BIS Hallmark · India
+          {t(dict, "hubs.huidBadge")}
         </p>
         <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-          HUID Verification Online
+          {t(dict, "hubs.huidTitle")}
         </h1>
         <p className="text-sm text-muted-foreground md:text-base leading-relaxed">
-          Verify your gold jewellery&apos;s{" "}
-          <strong className="text-foreground">Hallmark Unique ID (HUID)</strong> against
-          the official BIS database. Enter the 6-character code laser-marked on your
-          ornament to confirm purity, jeweller details and hallmark authenticity before
-          you buy or sell gold in India.
+          {t(dict, "hubs.huidSub")}
         </p>
         <p className="text-xs text-muted-foreground">
           Part of{" "}

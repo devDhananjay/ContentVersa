@@ -4,8 +4,12 @@ import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboardDataCached } from "@/lib/data/dashboard-data";
 import { MyBlogsClient } from "@/components/dashboard/my-blogs-client";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export default async function MyBlogs() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const session = await getCurrentUser();
   if (!session) redirect("/auth/sign-in?next=/dashboard/blogs");
 
@@ -17,15 +21,12 @@ export default async function MyBlogs() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
-            My Blogs
+            {t(dict, "dashboard.myBlogs")}
           </h1>
-          <p className="text-muted-foreground mt-1">
-            {rows.length} {rows.length === 1 ? "post" : "posts"} total — click eye or title to
-            preview drafts (only you can see them).
-          </p>
+          <p className="text-muted-foreground mt-1">{t(dict, "dashPages.blogsSub")}</p>
         </div>
         <Link href="/dashboard/create">
-          <Button variant="gradient">New Blog</Button>
+          <Button variant="gradient">{t(dict, "dashPages.newBlog")}</Button>
         </Link>
       </div>
 

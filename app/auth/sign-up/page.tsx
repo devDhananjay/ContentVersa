@@ -52,9 +52,7 @@ export default function SignUpPage() {
       <h1 className="font-display text-3xl font-extrabold tracking-tight">
         {t("auth.createYourSpace")}
       </h1>
-      <p className="text-muted-foreground mt-1.5">
-        Publish on ContentVerse India and earn in rupees.
-      </p>
+      <p className="text-muted-foreground mt-1.5">{t("auth.subtitleSignUp")}</p>
 
       <div className="mt-6">
         <SocialButtons />
