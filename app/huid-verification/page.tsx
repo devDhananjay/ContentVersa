@@ -9,21 +9,28 @@ import { HuidVerificationJsonLd } from "@/components/seo/huid-verification-json-
 import { RelatedHubs } from "@/components/seo/related-hubs";
 import { PageBack } from "@/components/site/page-back";
 import { HUID_SEO_KEYWORDS, HUID_VERIFICATION_PATH } from "@/lib/goldverse/huid-seo";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-static";
 
-export const metadata: Metadata = buildMetadata({
-  title: "HUID Verification Online — Verify BIS Gold Hallmark India",
-  description:
-    "Free online HUID verification for gold jewellery in India. Check BIS Hallmark Unique ID — verify purity, jeweller, weight and marking date. 3 free checks per account.",
-  path: HUID_VERIFICATION_PATH,
-  keywords: [...HUID_SEO_KEYWORDS],
-  image:
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: HUID_VERIFICATION_PATH,
+    titleKey: "seo.huidTitle",
+    titleEn: "HUID Verification Online — Verify BIS Gold Hallmark India",
+    titleHi: "HUID Verification Online — Verify BIS Gold Hallmark India",
+    descriptionKey: "seo.huidDesc",
+    descriptionEn:
+      "Free online HUID verification for gold jewellery in India. Check BIS Hallmark Unique ID — verify purity, jeweller, weight and marking date. 3 free checks per account.",
+    descriptionHi:
+      "Free online HUID verification for gold jewellery in India. Check BIS Hallmark Unique ID — verify purity, jeweller, weight and marking date. 3 free checks per account.",
+    keywords: [...HUID_SEO_KEYWORDS],
+    image:
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600",
+  });
+}
 
 export default async function HuidVerificationPage() {
   const locale = await getRequestLocale();

@@ -5,7 +5,7 @@ import { DisableAutoAds } from "@/components/ads/disable-auto-ads";
 import { ContactForm } from "@/components/site/contact-form";
 import { PageBack } from "@/components/site/page-back";
 import { Button } from "@/components/ui/button";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import {
   CONTACT_EMAIL,
   CONTACT_PHONE,
@@ -14,12 +14,19 @@ import {
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Contact us",
-  description:
-    "Get in touch with the ContentVerse India team — partnerships, support, and creator enquiries.",
-  path: "/contact",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/contact",
+    titleKey: "seo.contactTitle",
+    titleEn: "Contact us",
+    titleHi: "Contact us",
+    descriptionKey: "seo.contactDesc",
+    descriptionEn:
+      "Get in touch with the ContentVerse India team — partnerships, support, and creator enquiries.",
+    descriptionHi:
+      "Get in touch with the ContentVerse India team — partnerships, support, and creator enquiries.",
+  });
+}
 
 export default async function ContactPage() {
   const locale = await getRequestLocale();

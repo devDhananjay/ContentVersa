@@ -75,7 +75,9 @@ export default async function CategoriesIndex() {
               />
               <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
                 <h2 className="font-display text-2xl font-extrabold">{name}</h2>
-                <p className="text-sm text-white/80 line-clamp-2 mt-1">{cat.description}</p>
+                <p className="text-sm text-white/80 line-clamp-2 mt-1">
+                  {t(dict, `catDesc.${cat.slug}`, cat.description)}
+                </p>
                 <div className="mt-3 flex items-center gap-3 text-xs text-white/70">
                   <span>
                     {count} {t(dict, "hubs.categoriesPosts")}

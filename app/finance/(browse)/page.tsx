@@ -9,36 +9,42 @@ import { HubAdSense } from "@/components/ads/hub-adsense";
 import { HubPushCta } from "@/components/engagement/hub-push-cta";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { FINANCE_HUB_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Finance — Nifty, Sensex, Gold, SIP & MoneyVerse India",
-  description: FINANCE_HUB_SEO.description,
-  path: "/finance",
-  keywords: [
-    "finance India",
-    "Nifty 50 live",
-    "Sensex today",
-    "gold price today",
-    "silver price today",
-    "SIP calculator",
-    "mutual funds India",
-    "FD interest rates India",
-    "home loan EMI",
-    "IPO apply India",
-    "credit score India",
-    "income tax India",
-    "personal finance India",
-    "MoneyVerse",
-    "share market today",
-  ],
-  image:
-    "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1600",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/finance",
+    titleKey: "seo.financeTitle",
+    titleEn: "Finance — Nifty, Sensex, Gold, SIP & MoneyVerse India",
+    titleHi: "Finance — Nifty, Sensex, Gold, SIP & MoneyVerse India",
+    descriptionKey: "seo.financeDesc",
+    descriptionEn: FINANCE_HUB_SEO.description,
+    descriptionHi: FINANCE_HUB_SEO.description,
+    keywords: [
+      "finance India",
+      "Nifty 50 live",
+      "Sensex today",
+      "gold price today",
+      "silver price today",
+      "SIP calculator",
+      "mutual funds India",
+      "FD interest rates India",
+      "home loan EMI",
+      "IPO apply India",
+      "credit score India",
+      "income tax India",
+      "personal finance India",
+      "MoneyVerse",
+      "share market today",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1600",
+  });
+}
 
 export default async function FinanceHubPage() {
   const locale = await getRequestLocale();

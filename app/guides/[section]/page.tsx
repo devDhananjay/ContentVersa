@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { buildMetadata } from "@/lib/seo";
+import { getDictionary, tf } from "@/lib/i18n/get-dictionary";
 import {
   GUIDE_SECTIONS,
   GUIDES_HUB_PATH,
@@ -28,10 +30,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { section: slug } = await params;
   const section = getGuideSection(slug);
   if (!section) return buildMetadata({ title: "Guide", noIndex: true });
-  return buildMetadata({
-    title: section.title,
-    description: section.description,
+  const enDict = getDictionary("en");
+  const hiDict = getDictionary("hi");
+  return buildLocaleHubMetadata({
     path: `${GUIDES_HUB_PATH}/${section.slug}`,
+    titleEn: tf(enDict, "seo.guidesSectionTitle", { name: section.title }),
+    titleHi: tf(hiDict, "seo.guidesSectionTitle", { name: section.title }),
+    descriptionEn: section.description,
+    descriptionHi: section.description,
     keywords: section.keywords,
   });
 }

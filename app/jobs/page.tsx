@@ -13,34 +13,41 @@ import { Button } from "@/components/ui/button";
 import { getGovtJobsCached } from "@/lib/jobs/data";
 import { PRIVATE_JOBS } from "@/lib/jobs/private-jobs";
 import { hubSeoJsonLdBlocks, JOBS_HUB_SEO } from "@/lib/seo/hub-seo";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Jobs — Sarkari Naukri & Private Careers India",
-  description:
-    "Latest sarkari naukri, government job notifications, admit card updates, vacancy alerts and private-sector openings for India — plus resume help via ContentVerse India AI.",
-  path: "/jobs",
-  keywords: [
-    "sarkari naukri",
-    "government jobs India",
-    "latest sarkari jobs",
-    "SSC jobs",
-    "railway jobs",
-    "bank jobs India",
-    "admit card download",
-    "sarkari vacancy",
-    "private jobs India",
-    "fresher jobs India",
-    "UPSC jobs notification",
-    "ContentVerse India jobs",
-  ],
-  image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1600",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/jobs",
+    titleKey: "seo.jobsTitle",
+    titleEn: "Jobs — Sarkari Naukri & Private Careers India",
+    titleHi: "Jobs — Sarkari Naukri & Private Careers India",
+    descriptionKey: "seo.jobsDesc",
+    descriptionEn:
+      "Latest sarkari naukri, government job notifications, admit card updates, vacancy alerts and private-sector openings for India — plus resume help via ContentVerse India AI.",
+    descriptionHi:
+      "Latest sarkari naukri, government job notifications, admit card updates, vacancy alerts and private-sector openings for India — plus resume help via ContentVerse India AI.",
+    keywords: [
+      "sarkari naukri",
+      "government jobs India",
+      "latest sarkari jobs",
+      "SSC jobs",
+      "railway jobs",
+      "bank jobs India",
+      "admit card download",
+      "sarkari vacancy",
+      "private jobs India",
+      "fresher jobs India",
+      "UPSC jobs notification",
+      "ContentVerse India jobs",
+    ],
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1600",
+  });
+}
 
 export default async function JobsHubPage() {
   const locale = await getRequestLocale();

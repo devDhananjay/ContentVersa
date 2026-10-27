@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { buildMetadata } from "@/lib/seo";
 import {
   GUIDE_ARTICLES,
@@ -36,13 +37,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { section, slug } = await params;
   const article = getGuideArticle(section, slug);
   if (!article) return buildMetadata({ title: "Guide", noIndex: true });
-  return buildMetadata({
-    title: article.title,
-    description: article.description,
+  return buildLocaleHubMetadata({
     path: `${GUIDES_HUB_PATH}/${article.section}/${article.slug}`,
+    titleEn: article.title,
+    titleHi: article.title,
+    descriptionEn: article.description,
+    descriptionHi: article.description,
     keywords: article.keywords,
     type: "article",
     modifiedTime: article.updatedLabel,
+    bilingualIndex: false,
   });
 }
 

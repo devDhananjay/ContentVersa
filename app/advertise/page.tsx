@@ -18,24 +18,31 @@ import { AdvertiseForm } from "@/components/site/advertise-form";
 import { AdvertiseLiveInventory } from "@/components/site/advertise-live-inventory";
 import { AdvertisePreviewProvider } from "@/components/site/advertise-preview-context";
 import { PageBack } from "@/components/site/page-back";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { CONTACT_EMAIL } from "@/lib/site-contact";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Advertise on ContentVerse India",
-  description:
-    "Run display ads, sponsored articles, or hub sponsorships on ContentVerse India. Request a media kit and campaign quote — India audience across Guides, Tools, Sports, Finance and more.",
-  path: "/advertise",
-  keywords: [
-    "advertise on ContentVerse India",
-    "ContentVerse India advertising",
-    "sponsored content India",
-    "display ads India publishers",
-    "media kit ContentVerse",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/advertise",
+    titleKey: "seo.advertiseTitle",
+    titleEn: "Advertise on ContentVerse India",
+    titleHi: "Advertise on ContentVerse India",
+    descriptionKey: "seo.advertiseDesc",
+    descriptionEn:
+      "Run display ads, sponsored articles, or hub sponsorships on ContentVerse India. Request a media kit and campaign quote — India audience across Guides, Tools, Sports, Finance and more.",
+    descriptionHi:
+      "Run display ads, sponsored articles, or hub sponsorships on ContentVerse India. Request a media kit and campaign quote — India audience across Guides, Tools, Sports, Finance and more.",
+    keywords: [
+      "advertise on ContentVerse India",
+      "ContentVerse India advertising",
+      "sponsored content India",
+      "display ads India publishers",
+      "media kit ContentVerse",
+    ],
+  });
+}
 
 const PLACEMENTS = [
   {

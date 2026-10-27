@@ -7,24 +7,32 @@ import { RelatedHubs } from "@/components/seo/related-hubs";
 import { PageBack } from "@/components/site/page-back";
 import { getSiteLogoUrl } from "@/lib/branding/site-logo";
 import { CONTACT_EMAIL } from "@/lib/site-contact";
-import { buildMetadata, SITE, SITE_LOGO_URL } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
+import { SITE, SITE_LOGO_URL } from "@/lib/seo";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Press Kit — Logo, Boilerplate & Citation Links",
-  description:
-    "Official ContentVerse India press kit: brand name, logo downloads, short/long boilerplate, and preferred citation URLs for journalists and partners.",
-  path: "/press-kit",
-  keywords: [
-    "ContentVerse India press kit",
-    "ContentVerse India media kit",
-    "ContentVerse India logo",
-    "ContentVerse India boilerplate",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/press-kit",
+    titleKey: "seo.pressKitTitle",
+    titleEn: "Press Kit — Logo, Boilerplate & Citation Links",
+    titleHi: "Press Kit — Logo, Boilerplate & Citation Links",
+    descriptionKey: "seo.pressKitDesc",
+    descriptionEn:
+      "Official ContentVerse India press kit: brand name, logo downloads, short/long boilerplate, and preferred citation URLs for journalists and partners.",
+    descriptionHi:
+      "Official ContentVerse India press kit: brand name, logo downloads, short/long boilerplate, and preferred citation URLs for journalists and partners.",
+    keywords: [
+      "ContentVerse India press kit",
+      "ContentVerse India media kit",
+      "ContentVerse India logo",
+      "ContentVerse India boilerplate",
+    ],
+  });
+}
 
 const CITE_URLS = [
   { label: "Homepage", href: "/" },

@@ -11,35 +11,42 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
 import { GOLDVERSE_HUB_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
 import { HUID_SEO_KEYWORDS, HUID_VERIFICATION_PATH } from "@/lib/goldverse/huid-seo";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "GoldVerse — HUID Verification, Gold Price & BIS Hallmark India",
-  description:
-    "Verify BIS HUID on gold jewellery online, check gold rate context for India, spot fake gold risks and learn BIS hallmark rules on ContentVerse India GoldVerse.",
-  path: "/goldverse",
-  keywords: [
-    "gold price today India",
-    "gold rate today",
-    "22k gold rate",
-    "24k gold price",
-    "BIS hallmark India",
-    "HUID verification",
-    "verify HUID online",
-    "hallmark unique ID",
-    "fake gold checklist",
-    "gold jewellery India",
-    "BIS HUID check",
-    "GoldVerse",
-    ...HUID_SEO_KEYWORDS.slice(0, 4),
-  ],
-  image:
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/goldverse",
+    titleKey: "seo.goldverseTitle",
+    titleEn: "GoldVerse — HUID Verification, Gold Price & BIS Hallmark India",
+    titleHi: "GoldVerse — HUID Verification, Gold Price & BIS Hallmark India",
+    descriptionKey: "seo.goldverseDesc",
+    descriptionEn:
+      "Verify BIS HUID on gold jewellery online, check gold rate context for India, spot fake gold risks and learn BIS hallmark rules on ContentVerse India GoldVerse.",
+    descriptionHi:
+      "Verify BIS HUID on gold jewellery online, check gold rate context for India, spot fake gold risks and learn BIS hallmark rules on ContentVerse India GoldVerse.",
+    keywords: [
+      "gold price today India",
+      "gold rate today",
+      "22k gold rate",
+      "24k gold price",
+      "BIS hallmark India",
+      "HUID verification",
+      "verify HUID online",
+      "hallmark unique ID",
+      "fake gold checklist",
+      "gold jewellery India",
+      "BIS HUID check",
+      "GoldVerse",
+      ...HUID_SEO_KEYWORDS.slice(0, 4),
+    ],
+    image:
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600",
+  });
+}
 
 export default async function GoldVersePage() {
   const locale = await getRequestLocale();

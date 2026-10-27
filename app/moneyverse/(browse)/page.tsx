@@ -7,33 +7,39 @@ import { HubEditorialIntro } from "@/components/seo/hub-editorial-intro";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RelatedHubs } from "@/components/seo/related-hubs";
 import { hubSeoJsonLdBlocks, MONEYVERSE_HUB_SEO } from "@/lib/seo/hub-seo";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "MoneyVerse — Expense Tracker, Budget Planner & Screenshot OCR India",
-  description: MONEYVERSE_HUB_SEO.description,
-  path: "/moneyverse",
-  keywords: [
-    "expense tracker India",
-    "UPI expense manager",
-    "budget planner India",
-    "monthly expense report",
-    "credit card reminder",
-    "SIP reminder",
-    "UPI screenshot OCR",
-    "payment screenshot scan",
-    "bank statement analyzer",
-    "PhonePe expense tracker",
-    "GPay screenshot OCR",
-    "MoneyVerse",
-    "personal finance app India",
-  ],
-  image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1600",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/moneyverse",
+    titleKey: "seo.moneyverseTitle",
+    titleEn: "MoneyVerse — Expense Tracker, Budget Planner & Screenshot OCR India",
+    titleHi: "MoneyVerse — Expense Tracker, Budget Planner & Screenshot OCR India",
+    descriptionKey: "seo.moneyverseDesc",
+    descriptionEn: MONEYVERSE_HUB_SEO.description,
+    descriptionHi: MONEYVERSE_HUB_SEO.description,
+    keywords: [
+      "expense tracker India",
+      "UPI expense manager",
+      "budget planner India",
+      "monthly expense report",
+      "credit card reminder",
+      "SIP reminder",
+      "UPI screenshot OCR",
+      "payment screenshot scan",
+      "bank statement analyzer",
+      "PhonePe expense tracker",
+      "GPay screenshot OCR",
+      "MoneyVerse",
+      "personal finance app India",
+    ],
+    image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1600",
+  });
+}
 
 export default async function MoneyVersePage() {
   const locale = await getRequestLocale();

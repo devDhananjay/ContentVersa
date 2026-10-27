@@ -17,19 +17,23 @@ import {
   cvAiFaqJsonLd,
   cvAiWebPageJsonLd,
 } from "@/lib/ai/cv-ai-seo";
-import { buildMetadata } from "@/lib/seo";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getRequestLocale();
-  const dict = getDictionary(locale);
-  return buildMetadata({
-    title: `${t(dict, "hubs.aiTitle")} — Ask, Summarise, Resume, Bank PDF & Screenshot OCR`,
-    description: t(dict, "hubs.aiSub"),
+  return buildLocaleHubMetadata({
     path: CV_AI_PATH,
+    titleKey: "hubs.aiTitle",
+    titleEn: "ContentVerse India AI",
+    titleHi: "ContentVerse India AI",
+    descriptionKey: "hubs.aiSub",
+    descriptionEn:
+      "Ask, summarise, explain, compare, resume, finance and OCR tools.",
+    descriptionHi:
+      "Ask, summarise, explain, compare, resume, finance and OCR tools.",
     keywords: [...CV_AI_KEYWORDS],
     image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1600",
     noIndex: true,

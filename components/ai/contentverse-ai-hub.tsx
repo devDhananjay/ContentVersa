@@ -16,9 +16,35 @@ import {
   CV_AI_FAQS,
   CV_AI_MODES,
   getCvAiMode,
+  type CvAiMode,
   type CvAiModeId,
 } from "@/lib/ai/cv-ai-modes";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import { cn } from "@/lib/utils";
+
+const AI_MODE_I18N_PREFIX: Record<CvAiModeId, string> = {
+  ask: "ask",
+  summarize: "summarize",
+  explain: "explain",
+  compare: "compare",
+  resume: "resume",
+  finance: "finance",
+  pdf: "pdf",
+  "bank-statement": "bank",
+  screenshot: "ocr",
+};
+
+function localizedMode(
+  mode: CvAiMode,
+  t: (path: string, fallback?: string) => string
+) {
+  const p = AI_MODE_I18N_PREFIX[mode.id];
+  return {
+    title: t(`aiModes.${p}Title`, mode.title),
+    description: t(`aiModes.${p}Desc`, mode.description),
+    placeholder: t(`aiModes.${p}Placeholder`, mode.placeholder),
+  };
+}
 
 type ChatMessage = {
   id: string;
@@ -42,11 +68,13 @@ function renderInline(text: string) {
 }
 
 export function ContentVerseAiHub() {
+  const { t } = useDictionary();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const modeId = (searchParams.get("mode") || "ask") as CvAiModeId;
   const mode = getCvAiMode(modeId);
+  const modeUi = localizedMode(mode, t);
 
   const [input, setInput] = React.useState("");
   const [busy, setBusy] = React.useState(false);
@@ -127,6 +155,7 @@ export function ContentVerseAiHub() {
         {CV_AI_MODES.map((m) => {
           const Icon = m.icon;
           const active = m.id === mode.id;
+          const card = localizedMode(m, t);
           return (
             <button
               key={m.id}
@@ -144,10 +173,10 @@ export function ContentVerseAiHub() {
                 {m.shortTitle}
               </span>
               <p className="mt-1.5 font-display text-base font-semibold tracking-tight">
-                {m.title}
+                {card.title}
               </p>
               <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                {m.description}
+                {card.description}
               </p>
             </button>
           );
@@ -159,10 +188,10 @@ export function ContentVerseAiHub() {
           <div>
             <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-violet-300">
               <Sparkles className="h-3.5 w-3.5" />
-              ContentVerse India AI · {mode.title}
+              ContentVerse India AI · {modeUi.title}
             </p>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-              {mode.description}
+              {modeUi.description}
             </p>
           </div>
           {mode.toolHref ? (
@@ -201,7 +230,7 @@ export function ContentVerseAiHub() {
             <div ref={listRef} className="max-h-[420px] space-y-3 overflow-y-auto px-5 py-4">
               {messages.length === 0 ? (
                 <div className="space-y-3 py-4">
-                  <p className="text-sm text-muted-foreground">Try an example:</p>
+                  <p className="text-sm text-muted-foreground">{t("aiModes.tryExample")}:</p>
                   <div className="flex flex-wrap gap-2">
                     {mode.examples.map((ex) => (
                       <button
@@ -246,7 +275,7 @@ export function ContentVerseAiHub() {
               {busy ? (
                 <p className="inline-flex items-center gap-2 text-xs text-muted-foreground">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ContentVerse India AI is thinking…
+                  {t("aiModes.thinking")}
                 </p>
               ) : null}
             </div>
@@ -261,7 +290,7 @@ export function ContentVerseAiHub() {
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={mode.placeholder}
+                placeholder={modeUi.placeholder}
                 rows={3}
                 className="min-h-[76px] flex-1 resize-y rounded-2xl border border-border/60 bg-background/80 px-3.5 py-2.5 text-sm outline-none ring-violet-500/30 placeholder:text-muted-foreground focus:ring-2"
               />
@@ -272,7 +301,7 @@ export function ContentVerseAiHub() {
                 className="h-auto self-end gap-1.5 px-4"
               >
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                Run
+                {t("aiModes.send")}
               </Button>
             </form>
           </>

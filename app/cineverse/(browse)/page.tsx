@@ -17,36 +17,43 @@ import { RelatedHubs } from "@/components/seo/related-hubs";
 import { getCineverseHubDataCached } from "@/lib/cineverse/data";
 import { getBlogsByCategoryHybrid } from "@/lib/data/blog-db";
 import { CINEVERSE_HUB_SEO, hubSeoJsonLdBlocks } from "@/lib/seo/hub-seo";
-import { buildMetadata } from "@/lib/seo";
+import { buildLocaleHubMetadata } from "@/lib/i18n/locale-metadata";
 import { SHOW_THIRD_PARTY_CREDITS } from "@/lib/site/third-party-credits";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
 import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata({
-  title: "CineVerse — Movies, OTT Release Dates, Cast & Where to Watch India",
-  description:
-    "Search movies for India: OTT release date, cast, trailer, story, ratings, where to watch and reviews. Trending films and personal watchlist on ContentVerse India CineVerse.",
-  path: "/cineverse",
-  keywords: [
-    "OTT release date India",
-    "where to watch movie India",
-    "Bollywood movies",
-    "Netflix India movies",
-    "Prime Video India",
-    "JioCinema release date",
-    "movie cast",
-    "movie trailer India",
-    "movie watchlist India",
-    "web series where to watch",
-    "Hollywood movies OTT India",
-    "movie reviews India",
-    "CineVerse",
-  ],
-  image:
-    "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1600",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildLocaleHubMetadata({
+    path: "/cineverse",
+    titleKey: "seo.cineverseTitle",
+    titleEn: "CineVerse — Movies, OTT Release Dates, Cast & Where to Watch India",
+    titleHi: "CineVerse — Movies, OTT Release Dates, Cast & Where to Watch India",
+    descriptionKey: "seo.cineverseDesc",
+    descriptionEn:
+      "Search movies for India: OTT release date, cast, trailer, story, ratings, where to watch and reviews. Trending films and personal watchlist on ContentVerse India CineVerse.",
+    descriptionHi:
+      "Search movies for India: OTT release date, cast, trailer, story, ratings, where to watch and reviews. Trending films and personal watchlist on ContentVerse India CineVerse.",
+    keywords: [
+      "OTT release date India",
+      "where to watch movie India",
+      "Bollywood movies",
+      "Netflix India movies",
+      "Prime Video India",
+      "JioCinema release date",
+      "movie cast",
+      "movie trailer India",
+      "movie watchlist India",
+      "web series where to watch",
+      "Hollywood movies OTT India",
+      "movie reviews India",
+      "CineVerse",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1600",
+  });
+}
 
 export default async function CineverseHubPage() {
   const locale = await getRequestLocale();

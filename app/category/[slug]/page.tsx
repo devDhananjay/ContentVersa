@@ -15,6 +15,11 @@ import { CategorySubscribeButton } from "@/components/category/category-subscrib
 import { GoogleAdSense } from "@/components/ads/google-adsense";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { PageBack } from "@/components/site/page-back";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { withLocalePrefix } from "@/lib/i18n/config";
+import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
 import { buildMetadata, SITE } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -32,20 +37,27 @@ export async function generateMetadata({
   const cat = getCategoryBySlug(slug);
   if (!cat) return buildMetadata({ title: "Category", noIndex: true });
 
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  const name = t(dict, `categories.${cat.slug}`, cat.name);
+  const description = t(dict, `catDesc.${cat.slug}`, cat.description);
+
   const [blogs, feed] = await Promise.all([
     getBlogsByCategoryHybrid(slug),
     getCategoryFeed(slug),
   ]);
   const feedCount = feed?.items?.length ?? 0;
   const thin = blogs.length === 0 && feedCount === 0;
+  const path = `/category/${cat.slug}`;
 
   return buildMetadata({
-    title: cat.name,
-    description: cat.description,
-    path: `/category/${cat.slug}`,
+    title: name,
+    description,
+    path: withLocalePrefix(path, locale),
     image: cat.banner,
     // Empty category hubs look like soft 404s to Google.
     noIndex: thin,
+    alternates: thin ? undefined : buildHreflangAlternates(path),
   });
 }
 
@@ -58,6 +70,12 @@ export default async function CategoryPage({
   if (slug === "finance") redirect("/finance");
   const cat = getCategoryBySlug(slug);
   if (!cat) return notFound();
+
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+  const name = t(dict, `categories.${cat.slug}`, cat.name);
+  const description = t(dict, `catDesc.${cat.slug}`, cat.description);
+
   const [blogs, topWriters, feed] = await Promise.all([
     getBlogsByCategoryHybrid(slug),
     getTopWritersForCategoryCached(slug, 5),
@@ -67,8 +85,8 @@ export default async function CategoryPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `${cat.name} · ContentVerse India`,
-    description: cat.description,
+    name: `${name} · ContentVerse India`,
+    description,
     url: `${SITE.url}/category/${cat.slug}`,
     numberOfItems: blogs.length,
     isPartOf: {
@@ -87,7 +105,7 @@ export default async function CategoryPage({
       <section className="relative h-[min(380px,42vh)] sm:h-[min(420px,48vh)] overflow-hidden">
         <Image
           src={cat.banner}
-          alt={cat.name}
+          alt={name}
           fill
           priority
           sizes="100vw"
@@ -96,20 +114,25 @@ export default async function CategoryPage({
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/40" />
         <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/20 via-neon-purple/20 to-neon-pink/20 mix-blend-overlay" />
         <div className="container relative h-full flex flex-col justify-end pb-10 sm:pb-12">
-          <PageBack href="/blogs" label="Blogs" tone="onDark" className="mb-3" />
+          <PageBack
+            href="/blogs"
+            label={t(dict, "footer.blogs")}
+            tone="onDark"
+            className="mb-3"
+          />
           <Badge variant="gradient" className="w-fit mb-3">
-            Category
+            {t(dict, "nav.categories")}
           </Badge>
           <h1 className="font-display text-5xl md:text-7xl font-extrabold tracking-tight">
-            {cat.name}
+            {name}
           </h1>
           <p className="mt-3 text-lg text-foreground/80 max-w-2xl">
-            {cat.description}
+            {description}
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <CategorySubscribeButton
               categorySlug={cat.slug}
-              categoryName={cat.name}
+              categoryName={name}
             />
             {cat.subcategories.map((s) => (
               <Badge key={s} variant="outline" className="bg-background/50 backdrop-blur">
@@ -126,13 +149,13 @@ export default async function CategoryPage({
 
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-display text-2xl font-bold">
-              Trending in {cat.name}
+              Trending in {name}
             </h2>
-            <Link href={`/blogs?category=${cat.slug}`}>
+            <LocaleLink href={`/blogs?category=${cat.slug}`}>
               <Button variant="outline" size="sm">
-                View all
+                {t(dict, "common.viewAll")}
               </Button>
-            </Link>
+            </LocaleLink>
           </div>
           {blogs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -142,12 +165,15 @@ export default async function CategoryPage({
             </div>
           ) : (
             <div className="rounded-2xl border bg-card p-10 text-center">
-              <p className="text-muted-foreground">
-                No posts in this category yet. Be the first to publish.
+              <h2 className="font-display text-lg font-semibold">
+                {t(dict, "common.emptySearch")}
+              </h2>
+              <p className="mt-2 text-muted-foreground">
+                {t(dict, "common.tryDifferent")}
               </p>
-              <Link href="/dashboard/create" className="inline-block mt-4">
-                <Button variant="gradient">Write the first one</Button>
-              </Link>
+              <LocaleLink href="/dashboard/create" className="inline-block mt-4">
+                <Button variant="gradient">{t(dict, "nav.write")}</Button>
+              </LocaleLink>
             </div>
           )}
 
