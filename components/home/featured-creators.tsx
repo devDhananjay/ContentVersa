@@ -8,12 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { FollowButton } from "@/components/profile/follow-button";
 import type { Author } from "@/lib/data/blogs";
 import { formatNumber, getInitials } from "@/lib/utils";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 interface Props {
   creators: Author[];
 }
 
-function CreatorCard({ c }: { c: Author }) {
+function CreatorCard({ c, postsLabel, folLabel }: { c: Author; postsLabel: string; folLabel: string }) {
   return (
     <div
       className="v2-raised v2-lift group relative shrink-0 p-2.5 sm:p-3"
@@ -38,8 +39,8 @@ function CreatorCard({ c }: { c: Author }) {
         <div className="mt-1.5 flex items-center justify-center">
           <Badge variant="secondary" className="px-1.5 py-0 text-[9px]">
             {c.blogs > 0
-              ? `${c.blogs} ${c.blogs === 1 ? "post" : "posts"}`
-              : `${formatNumber(c.followers)} fol.`}
+              ? `${c.blogs} ${postsLabel}`
+              : `${formatNumber(c.followers)} ${folLabel}`}
           </Badge>
         </div>
       </Link>
@@ -55,8 +56,11 @@ function CreatorCard({ c }: { c: Author }) {
 
 /** ~3 compact cards visible; remaining creators auto-scroll in a loop. */
 export function FeaturedCreators({ creators }: Props) {
+  const { t } = useDictionary();
   if (!creators.length) return null;
 
+  const postsLabel = t("home.creatorsPosts");
+  const folLabel = t("home.creatorsFol");
   const loop = [...creators, ...creators];
 
   return (
@@ -69,16 +73,15 @@ export function FeaturedCreators({ creators }: Props) {
           <div>
             <p className="v2-eyebrow inline-flex items-center gap-1.5">
               <Users className="h-3.5 w-3.5" />
-              Featured Creators
+              {t("home.creatorsEyebrow")}
             </p>
             <h2 className="mt-1.5 font-display text-2xl font-bold tracking-tight md:text-3xl">
-              The writers{" "}
-              <span className="text-gradient italic">building this space.</span>
+              {t("home.creatorsTitle")}
             </h2>
           </div>
           <Link href="/leaderboard" className="hidden sm:block">
             <Button variant="outline" size="sm" className="gap-2 rounded-full">
-              All creators <ArrowRight className="h-3.5 w-3.5" />
+              {t("home.creatorsAll")} <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </Link>
         </div>
@@ -92,7 +95,12 @@ export function FeaturedCreators({ creators }: Props) {
 
           <div className="flex w-max gap-3 animate-marquee-creators hover:[animation-play-state:paused] motion-reduce:animate-none">
             {loop.map((c, i) => (
-              <CreatorCard key={`${c.id}-${i}`} c={c} />
+              <CreatorCard
+                key={`${c.id}-${i}`}
+                c={c}
+                postsLabel={postsLabel}
+                folLabel={folLabel}
+              />
             ))}
           </div>
         </div>
@@ -100,7 +108,7 @@ export function FeaturedCreators({ creators }: Props) {
         <div className="mt-5 sm:hidden">
           <Link href="/leaderboard">
             <Button variant="gradient" size="sm" className="w-full gap-2">
-              All creators <ArrowRight className="h-3.5 w-3.5" />
+              {t("home.creatorsAll")} <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </Link>
         </div>

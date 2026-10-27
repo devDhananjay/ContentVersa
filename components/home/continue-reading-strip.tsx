@@ -7,6 +7,8 @@ import { resolveUserId } from "@/lib/auth/resolve-user-id";
 import { getContinueReading } from "@/lib/data/reading-history";
 import { getPublishedBlogsLiteHybrid } from "@/lib/data/blog-db";
 import { shouldSkipImageOptimization } from "@/lib/upload";
+import { getDictionary, t, tf } from "@/lib/i18n/get-dictionary";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
 
 type ContinueItem = {
   blogId: string;
@@ -20,6 +22,9 @@ type ContinueItem = {
 
 /** Unfinished articles when history exists; otherwise latest stories so the strip always shows. */
 export async function ContinueReadingStrip() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   let userId: string | null = null;
   let visitorKey: string | null = null;
 
@@ -107,13 +112,13 @@ export async function ContinueReadingStrip() {
           <div>
             <p className="v2-eyebrow inline-flex items-center gap-1.5">
               <BookOpen className="h-3.5 w-3.5" />
-              Pick up where you left off
+              {t(dict, "home.continueEyebrow")}
             </p>
             <h2
               id="continue-reading-heading"
               className="mt-1.5 font-display text-2xl font-bold tracking-tight md:text-3xl"
             >
-              Continue reading
+              {t(dict, "home.continueTitle")}
             </h2>
           </div>
           {userId ? (
@@ -121,14 +126,14 @@ export async function ContinueReadingStrip() {
               href="/dashboard/bookmarks"
               className="hidden items-center gap-1 text-sm font-semibold text-muted-foreground transition hover:text-foreground sm:inline-flex"
             >
-              Your library <ArrowRight className="h-3.5 w-3.5" />
+              {t(dict, "home.continueLibrary")} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           ) : (
             <Link
               href="/auth/sign-in?next=/"
               className="hidden items-center gap-1 text-sm font-semibold text-muted-foreground transition hover:text-foreground sm:inline-flex"
             >
-              Sign in to sync <ArrowRight className="h-3.5 w-3.5" />
+              {t(dict, "home.continueSignIn")} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           )}
         </div>
@@ -152,7 +157,7 @@ export async function ContinueReadingStrip() {
                   />
                 ) : (
                   <div className="v2-aurora flex h-full items-center justify-center text-xs text-muted-foreground">
-                    Article
+                    {t(dict, "home.continueArticle")}
                   </div>
                 )}
                 <div className="absolute inset-x-0 bottom-0 h-1 bg-black/35">
@@ -170,8 +175,8 @@ export async function ContinueReadingStrip() {
                 </h3>
                 <p className="mt-1.5 text-[11px] text-muted-foreground">
                   {item.progress > 0
-                    ? `${item.progress}% · resume`
-                    : "Start reading"}
+                    ? tf(dict, "home.continueResume", { n: item.progress })
+                    : t(dict, "home.continueStart")}
                 </p>
               </div>
             </Link>
@@ -183,7 +188,7 @@ export async function ContinueReadingStrip() {
             href={userId ? "/dashboard/bookmarks" : "/blogs"}
             className="v2-btn-primary inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold"
           >
-            {userId ? "Your library" : "Browse articles"}
+            {userId ? t(dict, "home.continueLibrary") : t(dict, "home.continueBrowse")}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

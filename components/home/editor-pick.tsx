@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import type { Blog } from "@/lib/data/blogs";
 import { resolveBlogCoverImage } from "@/lib/upload";
 import { formatNumber, getInitials, timeAgo } from "@/lib/utils";
+import { useDictionary } from "@/components/i18n/use-dictionary";
+import { tf } from "@/lib/i18n/get-dictionary";
 
 type PickCard = {
   id: string;
@@ -86,6 +88,7 @@ interface Props {
 }
 
 export function EditorPick({ blogs }: Props) {
+  const { t, dict } = useDictionary();
   const picks = blogs.length > 0 ? toCards(blogs) : DEMO_PICKS;
 
   return (
@@ -97,16 +100,16 @@ export function EditorPick({ blogs }: Props) {
         <div>
           <p className="v2-eyebrow inline-flex items-center gap-1.5">
             <Crown className="h-3.5 w-3.5" />
-            Editor&apos;s Pick
+            {t("home.editorEyebrow")}
           </p>
           <h2 className="mt-1.5 font-display text-3xl font-bold tracking-tight md:text-4xl">
-            Curated by humans{" "}
-            <span className="text-gradient italic">who actually read.</span>
+            {t("home.editorTitleBefore")}{" "}
+            <span className="text-gradient italic">{t("home.editorTitleAccent")}</span>
           </h2>
         </div>
         <Link href={blogs.length ? "/blogs?sort=editor" : "/guides"} className="hidden sm:block">
           <Button variant="outline" className="gap-2 rounded-full">
-            See all <ArrowRight className="h-4 w-4" />
+            {t("home.editorSeeAll")} <ArrowRight className="h-4 w-4" />
           </Button>
         </Link>
       </div>
@@ -137,7 +140,7 @@ export function EditorPick({ blogs }: Props) {
                 variant="orange"
                 className="absolute left-3 top-3 shadow-sm"
               >
-                <Crown className="mr-1 h-3 w-3" /> Pick
+                <Crown className="mr-1 h-3 w-3" /> {t("home.editorPickBadge")}
               </Badge>
             </Link>
             <div className="flex flex-1 flex-col p-5">
@@ -165,7 +168,7 @@ export function EditorPick({ blogs }: Props) {
                   </div>
                 </div>
                 <span className="shrink-0 text-xs text-muted-foreground">
-                  {formatNumber(b.views)} reads
+                  {tf(dict, "home.editorReads", { n: formatNumber(b.views) })}
                 </span>
               </div>
             </div>
@@ -176,7 +179,7 @@ export function EditorPick({ blogs }: Props) {
       <div className="mt-6 sm:hidden">
         <Link href={blogs.length ? "/blogs?sort=editor" : "/guides"}>
           <Button variant="gradient" className="w-full gap-2">
-            See all picks <ArrowRight className="h-4 w-4" />
+            {t("home.editorSeeAllPicks")} <ArrowRight className="h-4 w-4" />
           </Button>
         </Link>
       </div>

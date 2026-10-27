@@ -177,12 +177,12 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
   ] as const;
 
   const modules = [
-    { href: "/moneyverse/screenshot-scan", label: "OCR" },
-    { href: "/ai", label: "AI" },
-    { href: "/moneyverse", label: "MoneyVerse" },
-    { href: "/cineverse", label: "CineVerse" },
-    { href: "/goldverse", label: "GoldVerse" },
-    { href: "/huid-verification", label: "HUID" },
+    { href: "/moneyverse/screenshot-scan", label: t("home.heroKwOcr", "OCR") },
+    { href: "/ai", label: t("home.heroKwAi", "AI") },
+    { href: "/moneyverse", label: t("home.heroKwMoneyVerse", "MoneyVerse") },
+    { href: "/cineverse", label: t("home.heroKwCineVerse", "CineVerse") },
+    { href: "/goldverse", label: t("home.heroKwGoldVerse", "GoldVerse") },
+    { href: "/huid-verification", label: t("home.heroKwHuid", "HUID") },
   ] as const;
 
   return (

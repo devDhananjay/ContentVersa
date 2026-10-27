@@ -35,9 +35,9 @@ export function Newsletter() {
       }
       setSubmitted(true);
       if (data.emailSent) {
-        toast.success("Check your inbox — welcome email sent!");
+        toast.success(t("home.newsletterToastCheck"));
       } else {
-        toast.success("You're subscribed! (Email delivery pending server setup)");
+        toast.success(t("home.newsletterToastDone"));
       }
     } catch {
       toast.error("Network error. Please try again.");

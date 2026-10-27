@@ -5,7 +5,7 @@ import { NewsDeskClient } from "@/components/news/news-desk-client";
 import { getNewsDesk } from "@/lib/data/live-news";
 import { buildMetadata, SITE } from "@/lib/seo";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
-import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { getDictionary, t, tf } from "@/lib/i18n/get-dictionary";
 import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
 import { withLocalePrefix } from "@/lib/i18n/config";
 
@@ -105,8 +105,18 @@ export default async function NewsHubPage() {
               </h1>
             </div>
             <p className="text-sm text-muted-foreground">
-              {desk.total} stor{desk.total === 1 ? "y" : "ies"} · last 30 days ·
-              every 30 min
+              {tf(
+                dict,
+                "news.statsLine",
+                {
+                  n: desk.total,
+                  stories:
+                    desk.total === 1
+                      ? t(dict, "news.story")
+                      : t(dict, "news.stories"),
+                },
+                `${desk.total} stories · last 30 days · every 30 min`
+              )}
             </p>
           </div>
 

@@ -2,26 +2,32 @@
 
 import * as React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight, Loader2, TrendingUp, X } from "lucide-react";
 import { BandAd } from "@/components/ads/band-ad";
 import { HubAdSense } from "@/components/ads/hub-adsense";
 import { MrecAd } from "@/components/ads/mrec-ad";
+import { LocaleLink } from "@/components/i18n/locale-link";
+import { useDictionary } from "@/components/i18n/use-dictionary";
 import { SiteVoiceSearch } from "@/components/search/site-voice-search";
 import type { LiveNewsCard, NewsDeskPayload } from "@/lib/data/live-news";
+import { tf, type Dictionary } from "@/lib/i18n/get-dictionary";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 24;
 
-function formatRelative(iso: string): string {
+function formatRelative(
+  iso: string,
+  dict: Dictionary
+): string {
   const t = Date.parse(iso);
-  if (!Number.isFinite(t)) return "Just now";
+  if (!Number.isFinite(t)) return tf(dict, "common.justNow", {}, "Just now");
   const mins = Math.max(0, Math.round((Date.now() - t) / 60_000));
-  if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return tf(dict, "common.justNow", {}, "Just now");
+  if (mins < 60) return tf(dict, "common.minsAgo", { n: mins }, `${mins}m ago`);
   const hrs = Math.round(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.round(hrs / 24)}d ago`;
+  if (hrs < 24) return tf(dict, "common.hoursAgo", { n: hrs }, `${hrs}h ago`);
+  const days = Math.round(hrs / 24);
+  return tf(dict, "common.daysAgo", { n: days }, `${days}d ago`);
 }
 
 function chunkItems<T>(items: T[], size: number): T[][] {
@@ -33,6 +39,7 @@ function chunkItems<T>(items: T[], size: number): T[][] {
 }
 
 export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
+  const { t, dict } = useDictionary();
   const { items, trendingKeywords, filters } = desk;
   const [q, setQ] = React.useState("");
   const [filter, setFilter] = React.useState("all");
@@ -100,7 +107,7 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
       <div className="mb-3">
         <SiteVoiceSearch
           size="bar"
-          placeholder="Search news… or tap the mic"
+          placeholder={t("news.searchPlaceholder", "Search news… or tap the mic")}
           searchPath="/news"
           navigateOnSubmit={false}
           navigateOnVoice={false}
@@ -113,7 +120,7 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             <TrendingUp className="h-3.5 w-3.5 text-red-500" aria-hidden />
-            Trending
+            {t("news.trendingLabel", "Trending")}
           </span>
           {trendingKeywords.map((kw) => {
             const active = q.trim().toLowerCase() === kw.toLowerCase();
@@ -143,7 +150,7 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
               className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
             >
               <X className="h-3 w-3" aria-hidden />
-              Clear
+              {t("news.clearTrending", "Clear")}
             </button>
           ) : null}
         </div>
@@ -153,7 +160,7 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
         <div className="mb-3 flex flex-wrap items-center gap-2">
           {q.trim() ? (
             <span className="text-xs text-muted-foreground">
-              Search: “{q.trim()}”
+              {tf(dict, "news.searchActive", { q: q.trim() }, `Search: “${q.trim()}”`)}
             </span>
           ) : null}
           <button
@@ -165,7 +172,7 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
             className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
           >
             <X className="h-3 w-3" aria-hidden />
-            Clear filters
+            {t("news.clearFilters", "Clear filters")}
           </button>
         </div>
       ) : null}
@@ -198,20 +205,39 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
 
       {items.length === 0 ? (
         <p className="mt-6 rounded-2xl border border-border/60 bg-muted/30 p-8 text-center text-muted-foreground">
-          News desk is warming up — check back in a few minutes.
+          {t(
+            "news.deskWarming",
+            "News desk is warming up — check back in a few minutes."
+          )}
         </p>
       ) : filtered.length === 0 ? (
         <p className="mt-6 rounded-2xl border border-border/60 bg-muted/30 p-8 text-center text-muted-foreground">
-          No stories match
-          {q.trim() ? ` “${q.trim()}”` : ""}
-          {filter !== "all" ? ` in this filter` : ""}. Try another word or clear
-          filters.
+          {tf(
+            dict,
+            "news.noMatches",
+            {
+              query: q.trim() ? ` “${q.trim()}”` : "",
+              filter:
+                filter !== "all"
+                  ? t("news.inThisFilter", " in this filter")
+                  : "",
+            },
+            "No stories match. Try another word or clear filters."
+          )}
         </p>
       ) : (
         <>
           <p className="mt-4 text-xs text-muted-foreground">
-            Showing {shown.length} of {filtered.length}
-            {filter !== "all" || q.trim() ? " (filtered)" : ""} · last 30 days
+            {tf(
+              dict,
+              "news.showingCount",
+              { shown: shown.length, total: filtered.length },
+              `Showing ${shown.length} of ${filtered.length}`
+            )}
+            {filter !== "all" || q.trim()
+              ? ` ${t("news.filtered", "(filtered)")}`
+              : ""}{" "}
+            · {t("news.last30Days", "last 30 days")}
           </p>
 
           {chunks.map((chunk, chunkIndex) => (
@@ -223,11 +249,10 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
                 )}
               >
                 {chunk.map((card) => (
-                  <NewsCard key={card.id} card={card} />
+                  <NewsCard key={card.id} card={card} dict={dict} t={t} />
                 ))}
               </div>
 
-              {/* Ad after every loaded batch (incl. infinite-scroll pages) */}
               <div className="my-8 flex justify-center">
                 <MrecAd slotKey="inArticle" />
               </div>
@@ -241,15 +266,15 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
               {loadingMore ? (
                 <>
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  Loading more…
+                  {t("news.loadingMore", "Loading more…")}
                 </>
               ) : (
-                "Scroll for more"
+                t("news.scrollForMore", "Scroll for more")
               )}
             </p>
           ) : (
             <p className="mt-4 text-center text-xs text-muted-foreground">
-              You’re all caught up for this view.
+              {t("news.caughtUp", "You’re all caught up for this view.")}
             </p>
           )}
         </>
@@ -261,17 +286,27 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
 
       {pending.length > 0 && briefings.length > 0 ? (
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Some live headlines are still being rewritten into ContentVerse
-          briefings — they appear here as soon as they publish.
+          {t(
+            "news.briefingsPendingNote",
+            "Some live headlines are still being rewritten into ContentVerse briefings — they appear here as soon as they publish."
+          )}
         </p>
       ) : null}
     </>
   );
 }
 
-function NewsCard({ card }: { card: LiveNewsCard }) {
+function NewsCard({
+  card,
+  dict,
+  t,
+}: {
+  card: LiveNewsCard;
+  dict: Dictionary;
+  t: (path: string, fallback?: string) => string;
+}) {
   return (
-    <Link
+    <LocaleLink
       href={card.hasBriefing ? card.href : "/news"}
       className={cn(
         "group flex gap-3 rounded-2xl border border-border/70 bg-background p-3.5 shadow-[var(--v2-shadow-sm)]",
@@ -298,10 +333,12 @@ function NewsCard({ card }: { card: LiveNewsCard }) {
         <div className="mb-1 flex items-center justify-between gap-2">
           <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />
-            {card.hasBriefing ? "Briefing" : "Live"}
+            {card.hasBriefing
+              ? t("news.badgeBriefing", "Briefing")
+              : t("news.badgeLive", "Live")}
           </span>
           <span className="text-[11px] text-muted-foreground">
-            {formatRelative(card.publishedAt)}
+            {formatRelative(card.publishedAt, dict)}
           </span>
         </div>
         <h2 className="font-display text-base font-bold leading-snug group-hover:text-red-600 dark:group-hover:text-red-400">
@@ -313,10 +350,12 @@ function NewsCard({ card }: { card: LiveNewsCard }) {
           </p>
         ) : null}
         <p className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
-          {card.hasBriefing ? "Read briefing" : "Updating soon"}
+          {card.hasBriefing
+            ? t("news.readBriefing", "Read briefing")
+            : t("news.updatingSoon", "Updating soon")}
           <ArrowRight className="h-3 w-3" />
         </p>
       </div>
-    </Link>
+    </LocaleLink>
   );
 }

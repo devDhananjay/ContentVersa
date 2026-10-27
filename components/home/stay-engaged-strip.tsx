@@ -4,36 +4,39 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Bookmark, Mail, PenSquare, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const CARDS = [
-  {
-    icon: Bookmark,
-    title: "Bookmarks",
-    desc: "Save guides and articles to finish later",
-    href: "/dashboard/bookmarks",
-  },
-  {
-    icon: Trophy,
-    title: "Leaderboard",
-    desc: "See top readers and creators this week",
-    href: "/leaderboard",
-  },
-  {
-    icon: PenSquare,
-    title: "Write",
-    desc: "Publish an explainer on ContentVerse India",
-    href: "/dashboard/create",
-  },
-  {
-    icon: Mail,
-    title: "Newsletter",
-    desc: "One useful India explainer every Friday",
-    href: "/#newsletter",
-  },
-] as const;
+import { useDictionary } from "@/components/i18n/use-dictionary";
 
 /** Light engagement row — bookmarks, leaderboard, write, newsletter. */
 export function StayEngagedStrip() {
+  const { t } = useDictionary();
+
+  const cards = [
+    {
+      icon: Bookmark,
+      title: t("home.stayBookmarksTitle"),
+      desc: t("home.stayBookmarksDesc"),
+      href: "/dashboard/bookmarks",
+    },
+    {
+      icon: Trophy,
+      title: t("home.stayLeaderboardTitle"),
+      desc: t("home.stayLeaderboardDesc"),
+      href: "/leaderboard",
+    },
+    {
+      icon: PenSquare,
+      title: t("home.stayWriteTitle"),
+      desc: t("home.stayWriteDesc"),
+      href: "/dashboard/create",
+    },
+    {
+      icon: Mail,
+      title: t("home.stayNewsletterTitle"),
+      desc: t("home.stayNewsletterDesc"),
+      href: "/#newsletter",
+    },
+  ] as const;
+
   return (
     <section
       id="stay-engaged"
@@ -41,20 +44,20 @@ export function StayEngagedStrip() {
     >
       <div className="container py-10 md:py-12">
         <div className="mb-6">
-          <p className="v2-eyebrow">Keep exploring</p>
+          <p className="v2-eyebrow">{t("home.stayEyebrow")}</p>
           <h2 className="mt-1.5 font-display text-2xl font-bold tracking-tight md:text-3xl">
-            Stay on ContentVerse India
+            {t("home.stayTitle")}
           </h2>
           <p className="mt-1.5 max-w-xl text-sm text-muted-foreground">
-            Save what you read, climb the board, or publish your own guide.
+            {t("home.stayDesc")}
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {CARDS.map((card, i) => {
+          {cards.map((card, i) => {
             const Icon = card.icon;
             return (
-              <Link key={card.title} href={card.href} className="block h-full">
+              <Link key={card.href} href={card.href} className="block h-full">
                 <motion.div
                   initial={{ opacity: 0, y: 14 }}
                   whileInView={{ opacity: 1, y: 0 }}

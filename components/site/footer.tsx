@@ -23,12 +23,12 @@ const TELEGRAM_URL =
   process.env.NEXT_PUBLIC_TELEGRAM_URL?.trim() || SITE.telegram;
 
 const TOOLS = [
-  { label: "All India Tools", href: "/tools" },
-  { label: "Salary Tax Calculator", href: "/tools/salary-tax-calculator" },
-  { label: "Merge PDF", href: "/tools/merge-pdf" },
-  { label: "Weather", href: "/tools/weather" },
-  { label: "IFSC Finder", href: "/tools/ifsc-finder" },
-  { label: "HUID Verify", href: "/huid-verification" },
+  { key: "footer.allIndiaTools", href: "/tools" },
+  { key: "footer.salaryTaxCalc", href: "/tools/salary-tax-calculator" },
+  { key: "footer.mergePdf", href: "/tools/merge-pdf" },
+  { key: "footer.weather", href: "/tools/weather" },
+  { key: "footer.ifscFinder", href: "/tools/ifsc-finder" },
+  { key: "footer.huidVerify", href: "/huid-verification" },
 ] as const;
 
 function FooterLink({ href, label }: { href: string; label: string }) {
@@ -81,17 +81,17 @@ export async function Footer() {
     L("footer.blogs", "/blogs"),
     L("footer.govtSchemes", "/guides/schemes"),
     L("footer.indiaTools", "/tools"),
-    { label: "ContentVerse India AI", href: withLocalePrefix("/ai", locale) },
+    L("footer.aiProduct", "/ai"),
     L("footer.trending", "/trending"),
     L("footer.sports", "/sports"),
     L("footer.finance", "/finance"),
-    { label: "CineVerse", href: withLocalePrefix("/cineverse", locale) },
-    { label: "GoldVerse", href: withLocalePrefix("/goldverse", locale) },
-    { label: "MoneyVerse", href: withLocalePrefix("/moneyverse", locale) },
+    L("nav.cineverse", "/cineverse"),
+    L("nav.goldverse", "/goldverse"),
+    L("nav.moneyverse", "/moneyverse"),
     L("nav.jobs", "/jobs"),
     L("nav.results", "/results"),
-    { label: "Reels", href: withLocalePrefix("/reels", locale) },
-    { label: "Categories", href: withLocalePrefix("/categories", locale) },
+    L("footer.reels", "/reels"),
+    L("nav.categories", "/categories"),
   ];
   const creators = [
     L("footer.write", "/dashboard/create"),
@@ -104,7 +104,7 @@ export async function Footer() {
     L("footer.about", "/about"),
     L("footer.careers", "/careers"),
     L("footer.press", "/press"),
-    { label: "Press Kit", href: withLocalePrefix("/press-kit", locale) },
+    L("footer.pressKit", "/press-kit"),
     L("footer.advertise", "/advertise"),
     L("footer.contact", "/contact"),
   ];
@@ -114,10 +114,10 @@ export async function Footer() {
     L("footer.cookies", "/cookies"),
     L("footer.contentPolicy", "/policy"),
     L("footer.siteMap", "/site-map"),
-    { label: "Sitemap", href: "/sitemap.xml" },
+    { label: t(dict, "footer.sitemapXml"), href: "/sitemap.xml" },
   ];
   const tools = TOOLS.map((x) => ({
-    ...x,
+    label: t(dict, x.key),
     href: withLocalePrefix(x.href, locale),
   }));
 

@@ -9,48 +9,53 @@ import {
   Sparkles,
 } from "lucide-react";
 import { StickyRailAd } from "@/components/ads/sticky-rail-ad";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
 
 const POLICY_LINKS = [
   {
     href: "/policy",
-    label: "Content Policy",
+    labelKey: "footer.contentPolicy",
     detail: "What we publish and what we remove",
     icon: FileText,
   },
   {
     href: "/privacy",
-    label: "Privacy Policy",
+    labelKey: "footer.privacy",
     detail: "DPDP Act & how we handle your data",
     icon: Shield,
   },
   {
     href: "/terms",
-    label: "Terms of Service",
+    labelKey: "footer.terms",
     detail: "Account rules and your rights",
     icon: Scale,
   },
   {
     href: "/cookies",
-    label: "Cookie Policy",
+    labelKey: "footer.cookies",
     detail: "Essential, analytics & ad cookies",
     icon: Cookie,
   },
   {
     href: "/creator-program",
-    label: "Creator Program",
+    labelKey: "footer.creatorProgram",
     detail: "Quality bar, tips & featuring",
     icon: Users,
   },
   {
     href: "/about",
-    label: "About us",
+    labelKey: "footer.about",
     detail: "Mission and how ContentVerse India works",
     icon: BookOpen,
   },
 ] as const;
 
 /** Server-rendered editorial copy on the homepage for crawlers and quality review. */
-export function HomeEditorialSection() {
+export async function HomeEditorialSection() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
   return (
     <section
       className="border-y border-border/60 bg-muted/40"
@@ -71,91 +76,73 @@ export function HomeEditorialSection() {
                 <Sparkles className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="v2-eyebrow mb-1">About the platform</p>
+                <p className="v2-eyebrow mb-1">{t(dict, "home.aboutEyebrow")}</p>
                 <h2
                   id="about-contentverse-heading"
                   className="font-display text-2xl font-bold tracking-tight md:text-4xl"
                 >
-                  What is ContentVerse India?
+                  {t(dict, "home.aboutTitle")}
                 </h2>
               </div>
             </div>
 
             <div className="v2-raised space-y-4 p-6 leading-relaxed text-muted-foreground md:p-8">
-              <p>
-                ContentVerse India is an India-first publishing platform where writers, journalists, and
-                creators publish long-form articles, tutorials, and opinion pieces in English and Hindi.
-                Unlike short-form feeds built only for scrolling, we focus on depth: thoughtful essays,
-                explainers, and reporting that readers bookmark and share.
-              </p>
+              <p>{t(dict, "home.aboutP1")}</p>
               <details className="group space-y-4 [&_summary::-webkit-details-marker]:hidden">
                 <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
-                  <span className="group-open:hidden">Read more about how we work</span>
-                  <span className="hidden group-open:inline">Show less</span>
+                  <span className="group-open:hidden">{t(dict, "home.aboutReadMore")}</span>
+                  <span className="hidden group-open:inline">{t(dict, "home.aboutShowLess")}</span>
                 </summary>
                 <p>
-                  Start with our{" "}
+                  {t(dict, "home.aboutP2Before")}{" "}
                   <Link
                     href="/guides"
                     className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
                   >
-                    India Guides
+                    {t(dict, "home.aboutP2Guides")}
                   </Link>{" "}
-                  on money, government schemes, jobs, and everyday how-tos — then read{" "}
+                  {t(dict, "home.aboutP2Mid")}{" "}
                   <Link
                     href="/blogs"
                     className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
                   >
-                    original articles
+                    {t(dict, "home.aboutP2Articles")}
                   </Link>{" "}
-                  from the community. Live scores, market strips, and calculators exist to support that
-                  reading; they are not the product we ask advertisers or search engines to judge us by.
+                  {t(dict, "home.aboutP2After")}
                 </p>
                 <p>
-                  Our editorial team and community moderators review submissions before they go live. We
-                  remove plagiarism, spam, and low-effort AI dumps. Creators who meet our quality bar can
-                  join the{" "}
+                  {t(dict, "home.aboutP3Before")}{" "}
                   <Link
                     href="/creator-program"
                     className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
                   >
-                    Creator Program
+                    {t(dict, "home.aboutP3Creator")}
                   </Link>{" "}
-                  and earn through tips, featured placement, and transparent analytics — always in Indian
-                  Rupees (₹), with applicable taxes and payout rules disclosed in our{" "}
+                  {t(dict, "home.aboutP3Mid")}{" "}
                   <Link
                     href="/terms"
                     className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
                   >
-                    Terms of Service
+                    {t(dict, "home.aboutP3Terms")}
                   </Link>
-                  .
+                  {t(dict, "home.aboutP3After")}
                 </p>
                 <p>
-                  Our{" "}
+                  {t(dict, "home.aboutP4Before")}{" "}
                   <Link
                     href="/policy"
                     className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
                   >
-                    Content Policy
+                    {t(dict, "home.aboutP4Policy")}
                   </Link>{" "}
-                  explains what we publish and what we do not, in line with Indian law and Google AdSense
-                  publisher standards. We process personal data under India&apos;s Digital Personal Data
-                  Protection Act, 2023 (DPDP Act). Read our{" "}
+                  {t(dict, "home.aboutP4Mid")}{" "}
                   <Link
                     href="/privacy"
                     className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
                   >
-                    Privacy Policy
+                    {t(dict, "home.aboutP4Privacy")}
                   </Link>{" "}
-                  and{" "}
-                  <Link
-                    href="/cookies"
-                    className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
-                  >
-                    Cookie Policy
-                  </Link>{" "}
-                  for advertising cookies (including Google AdSense), your rights, and how to contact us.
+                  {t(dict, "home.aboutP4After")}
                 </p>
               </details>
             </div>
@@ -176,7 +163,7 @@ export function HomeEditorialSection() {
                   />
                   <span>
                     <span className="block text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
-                      {item.label}
+                      {t(dict, item.labelKey)}
                     </span>
                     <span className="mt-0.5 block text-xs text-muted-foreground">
                       {item.detail}

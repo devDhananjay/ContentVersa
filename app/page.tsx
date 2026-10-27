@@ -44,6 +44,7 @@ import { HubAdSense } from "@/components/ads/hub-adsense";
 import { BandAd } from "@/components/ads/band-ad";
 import { buildMetadata } from "@/lib/seo";
 import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { getDictionary, t } from "@/lib/i18n/get-dictionary";
 import { withLocalePrefix } from "@/lib/i18n/config";
 import { buildHreflangAlternates } from "@/lib/i18n/hreflang";
 
@@ -75,31 +76,33 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-/** Editorial-first order for AdSense / quality review. */
-const HOME_SIDEBAR_SECTIONS = [
-  { id: "home-top", label: "Home" },
-  { id: "home-reels", label: "Reels" },
-  { id: "home-live-news", label: "Live News" },
-  { id: "home-guides", label: "Guides" },
-  { id: "about-contentverse-heading", label: "About" },
-  { id: "continue-reading", label: "Continue" },
-  { id: "home-articles", label: "Articles" },
-  { id: "editor-picks", label: "Picks" },
-  { id: "home-jobs", label: "Jobs" },
-  { id: "home-sports", label: "Sports" },
-  { id: "home-trending-searches", label: "Trending" },
-  { id: "home-finance", label: "Finance" },
-  { id: "home-money", label: "Money" },
-  { id: "home-gold", label: "Gold" },
-  { id: "home-tools", label: "Tools" },
-  { id: "home-cine", label: "Cine" },
-  { id: "explore-modules", label: "More" },
-  { id: "featured-creators", label: "Creators" },
-  { id: "stay-engaged", label: "Engage" },
-  { id: "newsletter", label: "Newsletter" },
-];
-
 export default async function HomePage() {
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
+
+  const homeSidebarSections = [
+    { id: "home-top", label: t(dict, "home.sidebarHome") },
+    { id: "home-reels", label: t(dict, "home.sidebarReels") },
+    { id: "home-live-news", label: t(dict, "home.sidebarLiveNews") },
+    { id: "home-guides", label: t(dict, "home.sidebarGuides") },
+    { id: "about-contentverse-heading", label: t(dict, "home.sidebarAbout") },
+    { id: "continue-reading", label: t(dict, "home.sidebarContinue") },
+    { id: "home-articles", label: t(dict, "home.sidebarArticles") },
+    { id: "editor-picks", label: t(dict, "home.sidebarPicks") },
+    { id: "home-jobs", label: t(dict, "home.sidebarJobs") },
+    { id: "home-sports", label: t(dict, "home.sidebarSports") },
+    { id: "home-trending-searches", label: t(dict, "home.sidebarTrending") },
+    { id: "home-finance", label: t(dict, "home.sidebarFinance") },
+    { id: "home-money", label: t(dict, "home.sidebarMoney") },
+    { id: "home-gold", label: t(dict, "home.sidebarGold") },
+    { id: "home-tools", label: t(dict, "home.sidebarTools") },
+    { id: "home-cine", label: t(dict, "home.sidebarCine") },
+    { id: "explore-modules", label: t(dict, "home.sidebarMore") },
+    { id: "featured-creators", label: t(dict, "home.sidebarCreators") },
+    { id: "stay-engaged", label: t(dict, "home.sidebarEngage") },
+    { id: "newsletter", label: t(dict, "home.sidebarNewsletter") },
+  ];
+
   const [
     data,
     sportsTeaser,
@@ -127,9 +130,9 @@ export default async function HomePage() {
     jobCards.push({
       title: job.title,
       href: job.link || "/jobs",
-      meta: job.last_date ? `Last date · ${job.last_date}` : "Latest notification",
+      meta: job.last_date ? `Last date · ${job.last_date}` : t(dict, "home.jobsMetaLatest"),
       kind: "job",
-      kicker: "Sarkari",
+      kicker: t(dict, "home.jobsHubSarkari"),
     });
   }
   for (const row of results?.listings?.slice(0, 2) ?? []) {
@@ -220,7 +223,7 @@ export default async function HomePage() {
     <>
       <SiteJsonLd />
       <ScrollProgress />
-      <HomeStickySidebar sections={HOME_SIDEBAR_SECTIONS} />
+      <HomeStickySidebar sections={homeSidebarSections} />
 
       {/* Hero + its own L/R rails — centered, no page-wide shift */}
       <div id="home-top" className="scroll-mt-0">
@@ -247,16 +250,16 @@ export default async function HomePage() {
         <Reveal>
           <HomeModuleSpotlight
             id="home-guides"
-            eyebrow="India Guides"
+            eyebrow={t(dict, "home.spotlightGuidesEyebrow")}
             title={
               <>
-                Original explainers for{" "}
-                <span className="text-gradient">Indian readers</span>
+                {t(dict, "home.spotlightGuidesTitleBefore")}{" "}
+                <span className="text-gradient">{t(dict, "home.spotlightGuidesTitleAccent")}</span>
               </>
             }
-            description="Schemes, money, jobs, and how-tos — one strong page per topic, written for people who need clear steps."
+            description={t(dict, "home.spotlightGuidesDesc")}
             href="/guides"
-            cta="Open Guides"
+            cta={t(dict, "home.spotlightGuidesCta")}
             icon={BookOpen}
             accentClassName="text-violet-300"
             items={GUIDE_SECTIONS.slice(0, 4).map((s) => ({
@@ -310,38 +313,38 @@ export default async function HomePage() {
         <Reveal>
           <HomeModuleSpotlight
             id="home-money"
-            eyebrow="Money Guides"
+            eyebrow={t(dict, "home.spotlightMoneyEyebrow")}
             title={
               <>
-                SIP, tax, credit &{" "}
-                <span className="text-gradient">everyday money</span>
+                {t(dict, "home.spotlightMoneyTitleBefore")}{" "}
+                <span className="text-gradient">{t(dict, "home.spotlightMoneyTitleAccent")}</span>
               </>
             }
-            description="Plain-language India money explainers. Calculators and trackers sit underneath the guides."
+            description={t(dict, "home.spotlightMoneyDesc")}
             href="/guides/money"
-            cta="Open Money Guides"
+            cta={t(dict, "home.spotlightMoneyCta")}
             icon={Wallet}
             accentClassName="text-emerald-300"
             items={[
               {
-                title: "SIP for beginners",
+                title: t(dict, "home.spotlightMoneyItem1"),
                 href: "/guides/money/sip-calculator-india-beginners-guide",
-                meta: "Systematic investing",
+                meta: t(dict, "home.spotlightMoneyMeta1"),
               },
               {
-                title: "CIBIL / credit score",
+                title: t(dict, "home.spotlightMoneyItem2"),
                 href: "/guides/money/credit-score-cibil-india-guide",
-                meta: "What actually moves it",
+                meta: t(dict, "home.spotlightMoneyMeta2"),
               },
               {
-                title: "Salary tax regimes",
+                title: t(dict, "home.spotlightMoneyItem3"),
                 href: "/guides/money/salary-tax-calculator-india-guide",
-                meta: "New vs old",
+                meta: t(dict, "home.spotlightMoneyMeta3"),
               },
               {
-                title: "UPI fraud checklist",
+                title: t(dict, "home.spotlightMoneyItem4"),
                 href: "/guides/schemes/upi-fraud-otp-scam-india",
-                meta: "OTP scams & freeze steps",
+                meta: t(dict, "home.spotlightMoneyMeta4"),
               },
             ]}
           />
@@ -351,16 +354,16 @@ export default async function HomePage() {
           <HomeModuleSpotlight
             id="home-gold"
             tint
-            eyebrow="Gold & hallmark"
+            eyebrow={t(dict, "home.spotlightGoldEyebrow")}
             title={
               <>
-                Rates plus{" "}
-                <span className="text-gradient">how to buy safely</span>
+                {t(dict, "home.spotlightGoldTitleBefore")}{" "}
+                <span className="text-gradient">{t(dict, "home.spotlightGoldTitleAccent")}</span>
               </>
             }
-            description="Live city rates with guides on HUID, hallmark, and invoices — not just a ticker."
+            description={t(dict, "home.spotlightGoldDesc")}
             href="/goldverse"
-            cta="Open GoldVerse"
+            cta={t(dict, "home.spotlightGoldCta")}
             icon={Gem}
             accentClassName="text-amber-300"
             items={goldItems}
@@ -370,16 +373,16 @@ export default async function HomePage() {
         <Reveal>
           <HomeModuleSpotlight
             id="home-tools"
-            eyebrow="Supporting tools"
+            eyebrow={t(dict, "home.spotlightToolsEyebrow")}
             title={
               <>
-                Calculators that{" "}
-                <span className="text-gradient">back the guides</span>
+                {t(dict, "home.spotlightToolsTitleBefore")}{" "}
+                <span className="text-gradient">{t(dict, "home.spotlightToolsTitleAccent")}</span>
               </>
             }
-            description="EMI, IFSC, tax estimates and more — utilities for readers who finished an explainer."
+            description={t(dict, "home.spotlightToolsDesc")}
             href="/tools"
-            cta="Open Tools"
+            cta={t(dict, "home.spotlightToolsCta")}
             icon={Wrench}
             accentClassName="text-teal-300"
             items={toolItems}
@@ -390,23 +393,39 @@ export default async function HomePage() {
           <HomeModuleSpotlight
             id="home-cine"
             tint
-            eyebrow="CineVerse"
+            eyebrow={t(dict, "home.spotlightCineEyebrow")}
             title={
               <>
-                Movies, OTT &{" "}
-                <span className="text-gradient">watch guides</span>
+                {t(dict, "home.spotlightCineTitleBefore")}{" "}
+                <span className="text-gradient">{t(dict, "home.spotlightCineTitleAccent")}</span>
               </>
             }
-            description="Where to watch and what to know — paired with our movie guides."
+            description={t(dict, "home.spotlightCineDesc")}
             href="/cineverse"
-            cta="Open CineVerse"
+            cta={t(dict, "home.spotlightCineCta")}
             icon={Clapperboard}
             accentClassName="text-indigo-300"
             items={[
-              { title: "OTT India guide", href: "/guides/movies/where-to-watch-ott-india", meta: "Where to watch" },
-              { title: "Browse movies", href: "/cineverse", meta: "Search by title" },
-              { title: "Watchlist", href: "/cineverse", meta: "Save for later" },
-              { title: "Movie checklist", href: "/guides/movies/movie-release-cast-watch-checklist", meta: "Release & cast" },
+              {
+                title: t(dict, "home.spotlightCineItem1"),
+                href: "/guides/movies/where-to-watch-ott-india",
+                meta: t(dict, "home.spotlightCineMeta1"),
+              },
+              {
+                title: t(dict, "home.spotlightCineItem2"),
+                href: "/cineverse",
+                meta: t(dict, "home.spotlightCineMeta2"),
+              },
+              {
+                title: t(dict, "home.spotlightCineItem3"),
+                href: "/cineverse",
+                meta: t(dict, "home.spotlightCineMeta3"),
+              },
+              {
+                title: t(dict, "home.spotlightCineItem4"),
+                href: "/guides/movies/movie-release-cast-watch-checklist",
+                meta: t(dict, "home.spotlightCineMeta4"),
+              },
             ]}
           />
         </Reveal>
