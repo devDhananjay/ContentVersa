@@ -187,10 +187,10 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="relative mx-auto w-full max-w-[96rem] px-2 pt-7 pb-11 sm:px-3 md:pt-10 md:pb-14">
+      <div className="relative mx-auto w-full max-w-[96rem] px-2 pt-2 pb-10 sm:px-3 md:pt-3 md:pb-12">
         {/* Ads sit at the outer corners; hero content stays centered */}
         <div className="flex w-full items-start">
-          <div className="hidden w-[160px] shrink-0 justify-start pt-2 xl:flex 2xl:w-[180px]">
+          <div className="hidden w-[160px] shrink-0 justify-start pt-1 xl:flex 2xl:w-[180px]">
             <StickyRailAd
               slotKey="sidebar"
               sticky={false}
@@ -206,7 +206,7 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
           >
             {/* Advertise CTA — compact pill above the editorial eyebrow */}
             <motion.div
-              className="mb-3 flex justify-center"
+              className="mb-2 flex justify-center"
               initial={reduce ? false : { opacity: 0, y: 8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 0.02, duration: 0.45, ease: easeOut }}
