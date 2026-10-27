@@ -88,35 +88,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/robots.txt": {
-      "initialHeaders": {
-        "cache-control": "public, max-age=0, must-revalidate",
-        "content-type": "text/plain",
-        "x-next-cache-tags": "_N_T_/layout,_N_T_/robots.txt/layout,_N_T_/robots.txt/route,_N_T_/robots.txt"
-      },
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/robots.txt",
-      "dataRoute": null,
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/manifest.webmanifest": {
       "initialHeaders": {
         "cache-control": "public, max-age=0, must-revalidate",
@@ -136,6 +107,35 @@
       ],
       "initialRevalidateSeconds": false,
       "srcRoute": "/manifest.webmanifest",
+      "dataRoute": null,
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/robots.txt": {
+      "initialHeaders": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "text/plain",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/robots.txt/layout,_N_T_/robots.txt/route,_N_T_/robots.txt"
+      },
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/robots.txt",
       "dataRoute": null,
       "allowHeader": [
         "host",
@@ -488,8 +488,8 @@
   },
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "205095cc5318eca4528d201e6ee17806",
-    "previewModeSigningKey": "4daad5a4d16ccad313fa525ea260fcd61aa79558cce78eee07ac5641513bed31",
-    "previewModeEncryptionKey": "e6f59aa11eeb4ef3e5a2f3427eb70f495083da88cb193dc81a9983a83b02f12d"
+    "previewModeId": "266e76d2cec4b221d12c16d2bf7a31c2",
+    "previewModeSigningKey": "99d10e4bcd3c6089cea65e5e32de2a2a08670bd95eda955b04dcc82f76465893",
+    "previewModeEncryptionKey": "f7a7d0ed08294b3bed51b806376d8cfadcba1072775466a301044d3e1abd17d0"
   }
 }

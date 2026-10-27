@@ -20,6 +20,8 @@ import { VignetteChromePolish } from "@/components/ads/vignette-chrome-polish";
 import { AdSenseAnchorSuppress } from "@/components/ads/adsense-anchor-suppress";
 import { GoogleAdsTag } from "@/components/ads/google-ads-tag";
 import { HtmlLangSync } from "@/components/i18n/html-lang";
+import { getRequestLocale } from "@/lib/i18n/locale-server";
+import { htmlLang } from "@/lib/i18n/config";
 
 /** Body / UI — Fontshare Satoshi (self-hosted). */
 const satoshi = localFont({
@@ -63,11 +65,12 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getRequestLocale();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={htmlLang(locale)} suppressHydrationWarning>
       <head>
         <BrandingHead />
         <GoogleAdsTag />
