@@ -49,10 +49,8 @@ import { GoogleAdSense } from "@/components/ads/google-adsense";
 import { MobileTopAd } from "@/components/ads/mobile-top-ad";
 import { StackedRailAd } from "@/components/ads/stacked-rail-ad";
 import { StickyWhatsAppShare } from "@/components/blog/sticky-whatsapp-share";
-import {
-  YmylDisclaimer,
-  ymylKindForBlogCategory,
-} from "@/components/seo/ymyl-disclaimer";
+import { YmylDisclaimer } from "@/components/seo/ymyl-disclaimer";
+import { ymylKindForBlogCategory } from "@/lib/seo/ymyl";
 import { blogAdSlots, getAdDensity } from "@/lib/ads/density";
 import { getBlogSeriesMeta } from "@/lib/data/series";
 import { PageBack } from "@/components/site/page-back";

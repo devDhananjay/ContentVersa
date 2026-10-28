@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useDictionary } from "@/components/i18n/use-dictionary";
 import { tf } from "@/lib/i18n/get-dictionary";
+import type { YmylKind } from "@/lib/seo/ymyl";
 
-export type YmylKind = "finance" | "health" | "tax" | "schemes" | "general";
+export type { YmylKind };
 
 const SOURCE_LINKS: Record<
   Exclude<YmylKind, "general">,
@@ -114,10 +115,3 @@ export function YmylDisclaimer({
   );
 }
 
-export function ymylKindForBlogCategory(categorySlug: string): YmylKind | null {
-  const c = categorySlug.toLowerCase();
-  if (c === "finance" || c === "money" || c === "investing") return "finance";
-  if (c === "health" || c === "wellness" || c === "medical") return "health";
-  if (c === "tax" || c === "gst") return "tax";
-  return null;
-}
