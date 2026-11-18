@@ -460,6 +460,34 @@ export async function getLiveNewsForHome(limit = 8): Promise<LiveNewsCard[]> {
 const NEWS_DESK_MONTH_HOURS = 24 * 30;
 
 /**
+ * Same trending chips as /news — derived from briefing titles (not Google Trends).
+ * Cached so the home hero can reuse them without re-scanning the desk.
+ */
+export async function getNewsTrendingKeywords(topN = 5): Promise<string[]> {
+  const cached = unstable_cache(
+    async () => {
+      const items = await fetchLiveNewsUncached(600, {
+        briefLimit: 600,
+        sinceHours: NEWS_DESK_MONTH_HOURS,
+        maxRss: 24,
+      });
+      return extractTrendingKeywords(
+        items.filter((i) => i.hasBriefing).map((i) => i.title),
+        topN
+      );
+    },
+    [`news-trending-keywords-v1-${topN}`],
+    { revalidate: 300, tags: ["live-news"] }
+  );
+  try {
+    return await cached();
+  } catch (err) {
+    console.warn("[live-news] trending keywords failed", err);
+    return [];
+  }
+}
+
+/**
  * Full news desk for /news — last ~30 days of TOI briefings + live RSS,
  * with trending keywords and category filter counts for the UI.
  */

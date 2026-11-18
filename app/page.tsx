@@ -28,7 +28,10 @@ import { LiveNewsSection } from "@/components/home/live-news-section";
 import { LiveNewsReturnScroll } from "@/components/home/live-news-return-scroll";
 import { TrendingSearchesSection } from "@/components/home/trending-searches-section";
 import { getHomePageData } from "@/lib/data/home-data";
-import { getLiveNewsForHome } from "@/lib/data/live-news";
+import {
+  getLiveNewsForHome,
+  getNewsTrendingKeywords,
+} from "@/lib/data/live-news";
 import { fetchIndiaTrends } from "@/lib/trending/google-trends";
 import { getSportsTeaserData } from "@/lib/sports/data";
 import { getFinanceTickerDataCached } from "@/lib/finance/data";
@@ -113,6 +116,7 @@ export default async function HomePage() {
     gold,
     liveNews,
     trendingSearches,
+    newsTrendingKeywords,
   ] = await Promise.all([
       getHomePageData(),
       getSportsTeaserData(),
@@ -123,7 +127,44 @@ export default async function HomePage() {
       getGoldPriceSnapshot().catch(() => null),
       getLiveNewsForHome(8).catch(() => []),
       fetchIndiaTrends().catch(() => []),
+      getNewsTrendingKeywords(5).catch(() => []),
     ]);
+
+  /** Hero chips: news-desk keywords first (more relevant), then a few Google Trends. */
+  const heroTrendSeen = new Set<string>();
+  const heroTrendingKeywords: {
+    title: string;
+    href: string;
+    traffic?: string;
+  }[] = [];
+  for (const kw of newsTrendingKeywords) {
+    const key = kw.toLowerCase();
+    if (heroTrendSeen.has(key)) continue;
+    heroTrendSeen.add(key);
+    heroTrendingKeywords.push({
+      title: kw,
+      href: `/news?q=${encodeURIComponent(kw)}`,
+    });
+  }
+  for (const trend of trendingSearches) {
+    if (heroTrendingKeywords.length >= 7) break;
+    const key = trend.title.toLowerCase();
+    if (heroTrendSeen.has(key)) continue;
+    // Skip if a news keyword already covers the same phrase
+    if (
+      [...heroTrendSeen].some(
+        (n) => n.includes(key) || key.includes(n)
+      )
+    ) {
+      continue;
+    }
+    heroTrendSeen.add(key);
+    heroTrendingKeywords.push({
+      title: trend.title,
+      href: trend.href,
+      traffic: trend.traffic || undefined,
+    });
+  }
 
   const jobCards: JobsResultCard[] = [];
   for (const job of jobs?.listings?.slice(0, 3) ?? []) {
@@ -230,11 +271,7 @@ export default async function HomePage() {
         <HomeHeroShell>
           <Hero
             categories={data.categories}
-            trendingKeywords={trendingSearches.slice(0, 6).map((t) => ({
-              title: t.title,
-              href: t.href,
-              traffic: t.traffic || undefined,
-            }))}
+            trendingKeywords={heroTrendingKeywords}
           />
         </HomeHeroShell>
       </div>

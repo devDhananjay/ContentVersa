@@ -47,6 +47,16 @@ export function NewsDeskClient({ desk }: { desk: NewsDeskPayload }) {
   const [loadingMore, setLoadingMore] = React.useState(false);
   const sentinelRef = React.useRef<HTMLDivElement | null>(null);
 
+  // Home hero chips link here with ?q= — apply after mount to avoid hydration mismatch
+  React.useEffect(() => {
+    try {
+      const fromUrl = new URLSearchParams(window.location.search).get("q")?.trim();
+      if (fromUrl) setQ(fromUrl);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const filtered = React.useMemo(() => {
     const needle = q.trim().toLowerCase();
     return items.filter((card) => {

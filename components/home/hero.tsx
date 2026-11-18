@@ -151,7 +151,7 @@ function HeroBodyLinks({ cinematic }: { cinematic: boolean }) {
 
 interface Props {
   categories: CategoryWithCount[];
-  /** Google Trends India keywords — shown under the search box */
+  /** News-desk keywords + a few Google Trends — shown under the search box */
   trendingKeywords?: HeroTrendKeyword[];
 }
 
@@ -160,8 +160,8 @@ export function Hero({ categories, trendingKeywords = [] }: Props) {
   const { t } = useDictionary();
   const cinematic = isHomeHeroVideoEnabled();
   const topics = categories.slice(0, 7);
-  /** Compact first viewport — fewer chips than the full Trending section */
-  const trendChips = trendingKeywords.slice(0, 6);
+  /** Compact first viewport — news keywords first, then a couple of Google Trends */
+  const trendChips = trendingKeywords.slice(0, 7);
   const rotatingWords = [
     t("home.rotateRead"),
     t("home.rotateCreate"),
