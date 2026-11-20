@@ -10,6 +10,15 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
+        // AdSense crawler must never be blocked (ads.txt + ad eligibility).
+        userAgent: "Mediapartners-Google",
+        allow: "/",
+      },
+      {
+        userAgent: "AdsBot-Google",
+        allow: "/",
+      },
+      {
         userAgent: "*",
         allow: "/",
         disallow: [
