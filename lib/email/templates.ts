@@ -407,6 +407,37 @@ export function notificationEmail(opts: {
   return { subject: opts.title, html };
 }
 
+/** Paid sponsored-content pitch — sent from admin moderation “Send Proposal”. */
+export function sponsoredProposalEmail(opts: {
+  name?: string | null;
+  blogTitle?: string | null;
+  advertiseUrl: string;
+  contactEmail: string;
+}) {
+  const first = (opts.name || "").trim().split(/\s+/)[0] || "there";
+  const titleLine = opts.blogTitle?.trim()
+    ? `<p style="margin:0 0 16px;line-height:1.65;color:#a1a1aa;font-size:14px;">Regarding your submission: <span style="color:#e4e4e7;">“${escapeHtml(opts.blogTitle.trim())}”</span></p>`
+    : "";
+
+  const html = layout(
+    `<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Sponsored publishing on ContentVerse</h1>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">Dear ${escapeHtml(first)},</p>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">Thank you for your interest in publishing on ContentVerse.</p>
+    ${titleLine}
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">We offer paid promotional publishing for businesses and brands looking to grow online visibility and strengthen their digital presence.</p>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">Please note that we do not offer free promotional placements. We would be happy to share a suitable <strong style="color:#fff;">Sponsored Article / Brand Promotion</strong> package based on your requirements.</p>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">If you would like to proceed with a paid collaboration, reply to this email and we will share pricing and publishing options.</p>
+    <p style="margin:0;line-height:1.65;color:#d4d4d8;">We look forward to working with you.</p>
+    ${btn(opts.advertiseUrl, "View advertising options")}
+    <p style="margin:20px 0 0;line-height:1.65;color:#a1a1aa;font-size:14px;">Best regards,<br/>Business Team<br/>ContentVerse<br/><a href="mailto:${escapeHtml(opts.contactEmail)}" style="color:#c4b5fd;">${escapeHtml(opts.contactEmail)}</a></p>`
+  );
+
+  return {
+    subject: "Sponsored Content Publishing Opportunity – ContentVerse",
+    html,
+  };
+}
+
 export function accountInactiveEmail(opts: {
   name?: string | null;
   reason?: string | null;

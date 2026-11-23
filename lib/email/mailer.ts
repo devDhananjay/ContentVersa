@@ -44,6 +44,10 @@ export type SendEmailInput = {
   html: string;
   text?: string;
   replyTo?: string;
+  /** Override From address (e.g. support@vidyora.co.in). Defaults to EMAIL_FROM / SMTP_USER. */
+  from?: string;
+  /** Display name in From header. Defaults to "ContentVerse India". */
+  fromName?: string;
 };
 
 export async function sendEmail(input: SendEmailInput): Promise<boolean> {
@@ -54,9 +58,13 @@ export async function sendEmail(input: SendEmailInput): Promise<boolean> {
     return false;
   }
 
-  const from = process.env.EMAIL_FROM?.trim() || process.env.SMTP_USER!.trim();
+  const fromAddr =
+    input.from?.trim() ||
+    process.env.EMAIL_FROM?.trim() ||
+    process.env.SMTP_USER!.trim();
+  const fromName = input.fromName?.trim() || "ContentVerse India";
   const mail = {
-    from: `ContentVerse India <${from}>`,
+    from: `${fromName} <${fromAddr}>`,
     to: input.to,
     subject: input.subject,
     html: input.html,

@@ -1,4 +1,4 @@
-"use strict";exports.id=4068,exports.ids=[4068],exports.modules={16248:(a,b,c)=>{c.d(b,{ZM:()=>e,tQ:()=>f});var d=c(52731);async function e(a){if(!(process.env.SMTP_HOST?.trim()&&process.env.SMTP_USER?.trim()&&process.env.SMTP_PASSWORD?.trim()))return!1;let b=process.env.EMAIL_FROM?.trim()||process.env.SMTP_USER.trim(),c={from:`ContentVerse India <${b}>`,to:a.to,subject:a.subject,html:a.html,text:a.text||a.html.replace(/<br\s*\/?>/gi,"\n").replace(/<\/p>/gi,"\n\n").replace(/<[^>]+>/g,"").replace(/\n{3,}/g,"\n\n").trim(),replyTo:a.replyTo};for(let b of function(){let a=Number(process.env.SMTP_PORT||"465");return[...new Set([a,465===a?587:465].filter(a=>a>0))]}()){let e=function(a){let b=process.env.SMTP_HOST.trim(),c={host:b,port:a,secure:465===a,requireTLS:587===a,auth:{user:process.env.SMTP_USER.trim(),pass:process.env.SMTP_PASSWORD.trim()},connectionTimeout:2e4,greetingTimeout:2e4,socketTimeout:3e4,tls:{minVersion:"TLSv1.2",servername:b}};return d.createTransport(c)}(b);try{return await e.sendMail(c),!0}catch(c){console.error(`[email] send failed on port ${b}`,a.to,c)}finally{e.close()}}return!1}async function f(a,b){let c=[...new Set(a.map(a=>a.trim().toLowerCase()).filter(Boolean))],d=0;for(let a of c)await e(b(a))&&d++;return d}},24057:(a,b,c)=>{c.d(b,{$y:()=>p,Or:()=>h,VU:()=>q,Zp:()=>s,bD:()=>j,ej:()=>l,k5:()=>i,mh:()=>r,ml:()=>g,ug:()=>o,xx:()=>k,yS:()=>n});var d=c(59406);function e(a,b){let c=(0,d.X)();return`<!DOCTYPE html>
+"use strict";exports.id=4068,exports.ids=[4068],exports.modules={16248:(a,b,c)=>{c.d(b,{ZM:()=>e,tQ:()=>f});var d=c(52731);async function e(a){if(!(process.env.SMTP_HOST?.trim()&&process.env.SMTP_USER?.trim()&&process.env.SMTP_PASSWORD?.trim()))return!1;let b=a.from?.trim()||process.env.EMAIL_FROM?.trim()||process.env.SMTP_USER.trim(),c=a.fromName?.trim()||"ContentVerse India",e={from:`${c} <${b}>`,to:a.to,subject:a.subject,html:a.html,text:a.text||a.html.replace(/<br\s*\/?>/gi,"\n").replace(/<\/p>/gi,"\n\n").replace(/<[^>]+>/g,"").replace(/\n{3,}/g,"\n\n").trim(),replyTo:a.replyTo};for(let b of function(){let a=Number(process.env.SMTP_PORT||"465");return[...new Set([a,465===a?587:465].filter(a=>a>0))]}()){let c=function(a){let b=process.env.SMTP_HOST.trim(),c={host:b,port:a,secure:465===a,requireTLS:587===a,auth:{user:process.env.SMTP_USER.trim(),pass:process.env.SMTP_PASSWORD.trim()},connectionTimeout:2e4,greetingTimeout:2e4,socketTimeout:3e4,tls:{minVersion:"TLSv1.2",servername:b}};return d.createTransport(c)}(b);try{return await c.sendMail(e),!0}catch(c){console.error(`[email] send failed on port ${b}`,a.to,c)}finally{c.close()}}return!1}async function f(a,b){let c=[...new Set(a.map(a=>a.trim().toLowerCase()).filter(Boolean))],d=0;for(let a of c)await e(b(a))&&d++;return d}},24057:(a,b,c)=>{c.d(b,{$y:()=>p,Or:()=>h,VU:()=>q,Wr:()=>s,Zp:()=>t,bD:()=>j,ej:()=>l,k5:()=>i,mh:()=>r,ml:()=>g,ug:()=>o,xx:()=>k,yS:()=>n});var d=c(59406);function e(a,b){let c=(0,d.X)();return`<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
 <body style="margin:0;padding:0;background:#0a0a0f;font-family:system-ui,-apple-system,sans-serif;color:#e4e4e7;">
@@ -22,15 +22,15 @@
     <p style="margin:0;line-height:1.65;color:#a1a1aa;font-size:14px;">Meanwhile, explore the latest stories on the site.</p>
     ${f(b+"/blogs","Browse articles")}`,`<p><a href="${a}" style="color:#71717a;">Unsubscribe</a></p>`)}}function h(a){let b=(0,d.X)(),c=a.articles.map(a=>{var c;return`<li style="margin-bottom:16px;">
           <span style="display:block;font-size:11px;color:#a855f7;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${"followed"===(c=a.reason)?"From a category you follow":"unread"===c?"Unread pick for you":"Trending this week"}</span>
-          <a href="${b}/blog/${a.slug}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${t(a.title)}</a>
-          ${a.excerpt?`<p style="margin:6px 0 0;color:#a1a1aa;font-size:14px;line-height:1.5;">${t(a.excerpt.slice(0,120))}${a.excerpt.length>120?"…":""}</p>`:""}
+          <a href="${b}/blog/${a.slug}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${u(a.title)}</a>
+          ${a.excerpt?`<p style="margin:6px 0 0;color:#a1a1aa;font-size:14px;line-height:1.5;">${u(a.excerpt.slice(0,120))}${a.excerpt.length>120?"…":""}</p>`:""}
         </li>`}).join("");return{subject:"Your weekly ContentVerse India digest",html:e(`<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">Your weekly digest</h1>
     <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Trending + unread from categories you follow</p>
     <ul style="margin:0;padding:0;list-style:none;">${c}</ul>
-    ${f(b+"/blogs","See all articles")}`,`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`)}}function i(a){let b=(0,d.X)(),c=a.name?`Hey ${t(a.name.split(" ")[0])}`:"Hey creator",g=a.topComment?`<div style="margin-top:20px;padding:16px;background:#09090b;border-radius:12px;border:1px solid #27272a;">
+    ${f(b+"/blogs","See all articles")}`,`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`)}}function i(a){let b=(0,d.X)(),c=a.name?`Hey ${u(a.name.split(" ")[0])}`:"Hey creator",g=a.topComment?`<div style="margin-top:20px;padding:16px;background:#09090b;border-radius:12px;border:1px solid #27272a;">
         <p style="margin:0 0 6px;font-size:11px;color:#a855f7;text-transform:uppercase;letter-spacing:0.06em;">Top comment this week</p>
-        <p style="margin:0 0 8px;color:#e4e4e7;font-size:15px;line-height:1.5;">“${t(a.topComment.content.slice(0,180))}${a.topComment.content.length>180?"…":""}”</p>
-        <a href="${b}/blog/${a.topComment.blogSlug}" style="color:#a1a1aa;font-size:13px;text-decoration:none;">on ${t(a.topComment.blogTitle)}</a>
+        <p style="margin:0 0 8px;color:#e4e4e7;font-size:15px;line-height:1.5;">“${u(a.topComment.content.slice(0,180))}${a.topComment.content.length>180?"…":""}”</p>
+        <a href="${b}/blog/${a.topComment.blogSlug}" style="color:#a1a1aa;font-size:13px;text-decoration:none;">on ${u(a.topComment.blogTitle)}</a>
       </div>`:`<p style="margin:16px 0 0;color:#71717a;font-size:13px;">No new comments this week — share your latest post to spark a conversation.</p>`;return{subject:"Your ContentVerse India creator report",html:e(`<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">${c}, your week in numbers</h1>
     <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Creator digest \xb7 last 7 days</p>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 8px;">
@@ -47,32 +47,32 @@
     </table>
     ${g}
     ${f(b+"/dashboard","Open dashboard")}`)}}function j(a){let b=(0,d.X)(),c=a.items.map(a=>`<li style="margin-bottom:14px;">
-          <span style="display:block;font-size:11px;color:#22d3ee;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${t(a.hub)}</span>
-          <a href="${b}/blog/${a.slug}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${t(a.title)}</a>
+          <span style="display:block;font-size:11px;color:#22d3ee;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${u(a.hub)}</span>
+          <a href="${b}/blog/${a.slug}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${u(a.title)}</a>
         </li>`).join("");return{subject:"ContentVerse India morning briefing",html:e(`<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">Your morning briefing</h1>
     <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Sports \xb7 Finance \xb7 Jobs picks for today</p>
     <ul style="margin:0;padding:0;list-style:none;">${c}</ul>
     ${f(b+"/blogs","Open ContentVerse India")}`,`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`)}}function k(a){let b=(0,d.X)(),c=a.movies.map(a=>`<li style="margin-bottom:14px;">
-          <a href="${b}${a.href}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${t(a.title)}</a>
-          ${a.releaseDate?`<span style="display:block;font-size:12px;color:#a1a1aa;margin-top:4px;">Release: ${t(a.releaseDate)}</span>`:""}
+          <a href="${b}${a.href}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${u(a.title)}</a>
+          ${a.releaseDate?`<span style="display:block;font-size:12px;color:#a1a1aa;margin-top:4px;">Release: ${u(a.releaseDate)}</span>`:""}
         </li>`).join("");return{subject:"CineVerse — this week on OTT & theatres",html:e(`<h1 style="margin:0 0 8px;font-size:22px;color:#fff;">🎬 CineVerse \xb7 OTT picks</h1>
     <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">Trending & upcoming in India this week</p>
     <ul style="margin:0;padding:0;list-style:none;">${c}</ul>
     ${f(b+"/cineverse","Open CineVerse")}`,`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`)}}function l(a){let b=(0,d.X)(),c=e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">🔥 Trending today</h1>
-    <p style="margin:0 0 8px;font-size:18px;font-weight:600;color:#fff;">${t(a.title)}</p>
-    ${a.excerpt?`<p style="margin:0 0 16px;color:#a1a1aa;line-height:1.6;">${t(a.excerpt.slice(0,200))}</p>`:""}
+    <p style="margin:0 0 8px;font-size:18px;font-weight:600;color:#fff;">${u(a.title)}</p>
+    ${a.excerpt?`<p style="margin:0 0 16px;color:#a1a1aa;line-height:1.6;">${u(a.excerpt.slice(0,200))}</p>`:""}
     ${f(`${b}/blog/${a.slug}`,"Read article")}`,`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`);return{subject:`Trending: ${a.title.slice(0,60)}`,html:c}}function m(a,b,c){if(!b.length)return'<p style="margin:0;color:#71717a;font-size:14px;">No data available right now.</p>';let d="gain"===c?"#4ade80":"#f87171";return`<ul style="margin:0;padding:0;list-style:none;">
     ${b.map(b=>{let c=`${a}/finance/stock/${encodeURIComponent(b.symbol)}`,e=b.price.toLocaleString("en-IN",{maximumFractionDigits:2});return`<li style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #27272a;">
-          <a href="${c}" style="color:#fff;font-weight:600;text-decoration:none;font-size:15px;">${t(b.symbol)}</a>
-          <span style="display:block;margin-top:4px;color:#a1a1aa;font-size:13px;">${t(b.name)}</span>
+          <a href="${c}" style="color:#fff;font-weight:600;text-decoration:none;font-size:15px;">${u(b.symbol)}</a>
+          <span style="display:block;margin-top:4px;color:#a1a1aa;font-size:13px;">${u(b.name)}</span>
           <span style="display:block;margin-top:6px;font-size:14px;">
             <span style="color:#d4d4d8;">₹${e}</span>
             <span style="color:${d};font-weight:600;margin-left:8px;">${function(a){let b=a>=0?"+":"";return`${b}${a.toFixed(2)}%`}(b.changePercent)}</span>
           </span>
         </li>`}).join("")}
   </ul>`}function n(a){let b=(0,d.X)(),c="open"===a.phase?"Market open — your watchlist":"Market close — your watchlist",g="open"===a.phase?"Your watchlist: market open update":"Your watchlist: market close update",h=a.items.map(a=>{let c=a.link?.startsWith("http")?a.link:a.link?`${b}${a.link}`:`${b}/finance`;return`<li style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #27272a;">
-          <a href="${c}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${t(a.title)}</a>
-          <p style="margin:6px 0 0;color:#a1a1aa;font-size:14px;line-height:1.5;">${t(a.message)}</p>
+          <a href="${c}" style="color:#fff;font-weight:600;text-decoration:none;font-size:16px;">${u(a.title)}</a>
+          <p style="margin:6px 0 0;color:#a1a1aa;font-size:14px;line-height:1.5;">${u(a.message)}</p>
         </li>`}).join(""),i=a.topGainers?.length||a.topLosers?.length?`<div style="margin-top:28px;padding-top:24px;border-top:1px solid #27272a;">
           <h2 style="margin:0 0 6px;font-size:18px;color:#fff;">Nifty 50 movers</h2>
           <p style="margin:0 0 18px;color:#a1a1aa;font-size:13px;">Top gainers and losers today</p>
@@ -88,7 +88,7 @@
     <p style="margin:0 0 20px;color:#a1a1aa;font-size:14px;">${a.items.length} stock${1===a.items.length?"":"s"} on your watchlist</p>
     <ul style="margin:0;padding:0;list-style:none;">${h}</ul>
     ${i}
-    ${f(`${b}/finance`,"View watchlist")}`,a.unsubscribeUrl?`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe from emails</a></p>`:"")}}function o(a){let b=(0,d.X)(),c=(a.name||"").trim().split(/\s+/)[0]||"there";return{subject:"Welcome to ContentVerse India — you’re in ✨",html:e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Welcome to ContentVerse India, ${t(c)} 👋</h1>
+    ${f(`${b}/finance`,"View watchlist")}`,a.unsubscribeUrl?`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe from emails</a></p>`:"")}}function o(a){let b=(0,d.X)(),c=(a.name||"").trim().split(/\s+/)[0]||"there";return{subject:"Welcome to ContentVerse India — you’re in ✨",html:e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Welcome to ContentVerse India, ${u(c)} 👋</h1>
     <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">You’re in. ContentVerse India is where Indian creators read, publish, and grow — blogs, movies, money tools, and more in one place.</p>
     <p style="margin:0 0 8px;font-weight:600;color:#fff;">Start in 60 seconds</p>
     <ul style="margin:0 0 20px;padding-left:18px;color:#a1a1aa;line-height:1.7;font-size:14px;">
@@ -98,25 +98,34 @@
       <li><a href="${b}/moneyverse" style="color:#c4b5fd;">Try MoneyVerse</a> — track expenses &amp; screenshot scan</li>
     </ul>
     ${f(`${b}/dashboard`,"Go to your dashboard")}
-    <p style="margin:20px 0 0;font-size:13px;color:#71717a;line-height:1.6;">Tip: enable browser / app alerts in Dashboard → Notifications so you never miss replies and tips.</p>`,a.unsubscribeUrl?`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`:"")}}function p(a){let b=(0,d.X)(),c=(a.name||"").trim().split(/\s+/)[0]||"there",g="write"===a.focus?{title:`${c}, your first post is waiting`,body:"Creators who publish in their first week grow the fastest. Draft something short today — even 300 words counts.",cta:"Start writing",href:`${b}/dashboard/create`}:"notify"===a.focus?{title:"Turn on alerts so you don’t miss replies",body:"Tips, comments, and trending picks land in your notification centre — enable push so nothing slips by.",cta:"Open notifications",href:`${b}/dashboard/notifications`}:{title:"Come back — here’s what’s live",body:"Fresh blogs, CineVerse picks, and MoneyVerse tools are waiting. Pick one hub and explore for 5 minutes.",cta:"Explore ContentVerse India",href:`${b}/blogs`},h=e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">${t(g.title)}</h1>
-    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">${t(g.body)}</p>
+    <p style="margin:20px 0 0;font-size:13px;color:#71717a;line-height:1.6;">Tip: enable browser / app alerts in Dashboard → Notifications so you never miss replies and tips.</p>`,a.unsubscribeUrl?`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`:"")}}function p(a){let b=(0,d.X)(),c=(a.name||"").trim().split(/\s+/)[0]||"there",g="write"===a.focus?{title:`${c}, your first post is waiting`,body:"Creators who publish in their first week grow the fastest. Draft something short today — even 300 words counts.",cta:"Start writing",href:`${b}/dashboard/create`}:"notify"===a.focus?{title:"Turn on alerts so you don’t miss replies",body:"Tips, comments, and trending picks land in your notification centre — enable push so nothing slips by.",cta:"Open notifications",href:`${b}/dashboard/notifications`}:{title:"Come back — here’s what’s live",body:"Fresh blogs, CineVerse picks, and MoneyVerse tools are waiting. Pick one hub and explore for 5 minutes.",cta:"Explore ContentVerse India",href:`${b}/blogs`},h=e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">${u(g.title)}</h1>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">${u(g.body)}</p>
     ${f(g.href,g.cta)}
     <p style="margin:16px 0 0;text-align:center;font-size:13px;">
       <a href="${b}/cineverse" style="color:#a855f7;margin:0 8px;">CineVerse</a>
       <a href="${b}/moneyverse" style="color:#a855f7;margin:0 8px;">MoneyVerse</a>
       <a href="${b}/goldverse" style="color:#a855f7;margin:0 8px;">GoldVerse</a>
-    </p>`,a.unsubscribeUrl?`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`:"");return{subject:g.title.slice(0,70),html:h}}function q(a){let b=(0,d.X)(),c=`${b}/admin/blogs/${a.blogId}`,g=a.authorEmail?`${t(a.authorName)} (${t(a.authorEmail)})`:t(a.authorName),h=e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">New blog awaiting approval</h1>
+    </p>`,a.unsubscribeUrl?`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe</a></p>`:"");return{subject:g.title.slice(0,70),html:h}}function q(a){let b=(0,d.X)(),c=`${b}/admin/blogs/${a.blogId}`,g=a.authorEmail?`${u(a.authorName)} (${u(a.authorEmail)})`:u(a.authorName),h=e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">New blog awaiting approval</h1>
     <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">A creator submitted a post for review on ContentVerse India.</p>
-    <p style="margin:0 0 8px;font-size:18px;font-weight:600;color:#fff;">${t(a.title)}</p>
+    <p style="margin:0 0 8px;font-size:18px;font-weight:600;color:#fff;">${u(a.title)}</p>
     <p style="margin:0 0 6px;color:#a1a1aa;font-size:14px;">By ${g}</p>
-    ${a.categoryName?`<p style="margin:0 0 12px;color:#a855f7;font-size:13px;">Category: ${t(a.categoryName)}</p>`:""}
-    ${a.excerpt?`<p style="margin:0 0 16px;color:#a1a1aa;line-height:1.6;font-size:14px;">${t(a.excerpt.slice(0,200))}${a.excerpt.length>200?"…":""}</p>`:""}
+    ${a.categoryName?`<p style="margin:0 0 12px;color:#a855f7;font-size:13px;">Category: ${u(a.categoryName)}</p>`:""}
+    ${a.excerpt?`<p style="margin:0 0 16px;color:#a1a1aa;line-height:1.6;font-size:14px;">${u(a.excerpt.slice(0,200))}${a.excerpt.length>200?"…":""}</p>`:""}
     ${f(c,"Review in admin")}
     <p style="margin:16px 0 0;text-align:center;">
       <a href="${b}/admin/moderation" style="color:#a855f7;font-size:13px;">Open moderation queue</a>
-    </p>`);return{subject:`Review needed: ${a.title.slice(0,60)}`,html:h}}function r(a){let b=(0,d.X)(),c=a.link?.startsWith("http")?a.link:a.link?`${b}${a.link}`:b,g=e(`<h1 style="margin:0 0 12px;font-size:20px;color:#fff;">${t(a.title)}</h1>
-    <p style="margin:0;line-height:1.65;color:#d4d4d8;">${t(a.message)}</p>
-    ${a.link?f(c,"Open in ContentVerse India"):""}`,a.unsubscribeUrl?`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe from emails</a></p>`:"");return{subject:a.title,html:g}}function s(a){let b=(a.name||"").trim().split(/\s+/)[0]||"there",c=a.reason?.trim(),d=c?`<p style="margin:16px 0 0;padding:14px 16px;background:#09090b;border-radius:12px;border:1px solid #27272a;color:#d4d4d8;font-size:14px;line-height:1.55;"><span style="display:block;font-size:11px;color:#f87171;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Reason</span>${t(c)}</p>`:"";return{subject:"Your ContentVerse India account is inactive",html:e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Your account is inactive</h1>
-    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">Hi ${t(b)}, your ContentVerse India account has been deactivated by our team. You will not be able to sign in until it is reactivated.</p>
+    </p>`);return{subject:`Review needed: ${a.title.slice(0,60)}`,html:h}}function r(a){let b=(0,d.X)(),c=a.link?.startsWith("http")?a.link:a.link?`${b}${a.link}`:b,g=e(`<h1 style="margin:0 0 12px;font-size:20px;color:#fff;">${u(a.title)}</h1>
+    <p style="margin:0;line-height:1.65;color:#d4d4d8;">${u(a.message)}</p>
+    ${a.link?f(c,"Open in ContentVerse India"):""}`,a.unsubscribeUrl?`<p><a href="${a.unsubscribeUrl}" style="color:#71717a;">Unsubscribe from emails</a></p>`:"");return{subject:a.title,html:g}}function s(a){let b=(a.name||"").trim().split(/\s+/)[0]||"there",c=a.blogTitle?.trim()?`<p style="margin:0 0 16px;line-height:1.65;color:#a1a1aa;font-size:14px;">Regarding your submission: <span style="color:#e4e4e7;">“${u(a.blogTitle.trim())}”</span></p>`:"";return{subject:"Sponsored Content Publishing Opportunity – ContentVerse",html:e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Sponsored publishing on ContentVerse</h1>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">Dear ${u(b)},</p>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">Thank you for your interest in publishing on ContentVerse.</p>
+    ${c}
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">We offer paid promotional publishing for businesses and brands looking to grow online visibility and strengthen their digital presence.</p>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">Please note that we do not offer free promotional placements. We would be happy to share a suitable <strong style="color:#fff;">Sponsored Article / Brand Promotion</strong> package based on your requirements.</p>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">If you would like to proceed with a paid collaboration, reply to this email and we will share pricing and publishing options.</p>
+    <p style="margin:0;line-height:1.65;color:#d4d4d8;">We look forward to working with you.</p>
+    ${f(a.advertiseUrl,"View advertising options")}
+    <p style="margin:20px 0 0;line-height:1.65;color:#a1a1aa;font-size:14px;">Best regards,<br/>Business Team<br/>ContentVerse<br/><a href="mailto:${u(a.contactEmail)}" style="color:#c4b5fd;">${u(a.contactEmail)}</a></p>`)}}function t(a){let b=(a.name||"").trim().split(/\s+/)[0]||"there",c=a.reason?.trim(),d=c?`<p style="margin:16px 0 0;padding:14px 16px;background:#09090b;border-radius:12px;border:1px solid #27272a;color:#d4d4d8;font-size:14px;line-height:1.55;"><span style="display:block;font-size:11px;color:#f87171;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Reason</span>${u(c)}</p>`:"";return{subject:"Your ContentVerse India account is inactive",html:e(`<h1 style="margin:0 0 12px;font-size:22px;color:#fff;">Your account is inactive</h1>
+    <p style="margin:0 0 16px;line-height:1.65;color:#d4d4d8;">Hi ${u(b)}, your ContentVerse India account has been deactivated by our team. You will not be able to sign in until it is reactivated.</p>
     ${d}
-    <p style="margin:20px 0 0;line-height:1.65;color:#a1a1aa;font-size:14px;">If you believe this was a mistake or need help, reply to this email or write to <a href="mailto:${t(a.contactEmail)}" style="color:#c4b5fd;">${t(a.contactEmail)}</a>.</p>`)}}function t(a){return a.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}}};
+    <p style="margin:20px 0 0;line-height:1.65;color:#a1a1aa;font-size:14px;">If you believe this was a mistake or need help, reply to this email or write to <a href="mailto:${u(a.contactEmail)}" style="color:#c4b5fd;">${u(a.contactEmail)}</a>.</p>`)}}function u(a){return a.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}}};

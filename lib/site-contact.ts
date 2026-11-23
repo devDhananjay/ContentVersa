@@ -1,5 +1,8 @@
 export const CONTACT_EMAIL = "writewith@contentverses.in";
 
+/** Official business / proposals mailbox (Vidyora). */
+export const BUSINESS_EMAIL = "support@vidyora.co.in";
+
 /** Legacy typo stored in older DB site-page rows. */
 export const LEGACY_CONTACT_EMAIL = "writewith@contentveres.in";
 

@@ -4,7 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, X, Eye, MessageSquare, Loader2 } from "lucide-react";
+import { Check, X, Eye, MessageSquare, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,11 +48,42 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
   const [adEligible, setAdEligible] = React.useState(
     () => blog.creatorQuality?.trusted ?? false
   );
-  const [loading, setLoading] = React.useState<"approve" | "reject" | "changes" | null>(null);
+  const [loading, setLoading] = React.useState<
+    "approve" | "reject" | "changes" | "proposal" | null
+  >(null);
 
   React.useEffect(() => {
     setAdEligible(blog.creatorQuality?.trusted ?? false);
   }, [blog.blogId, blog.creatorQuality?.trusted]);
+
+  const sendProposal = async () => {
+    if (
+      !window.confirm(
+        `Send sponsored-content proposal email to ${blog.author.name}? This does not approve or reject the post.`
+      )
+    ) {
+      return;
+    }
+    setLoading("proposal");
+    try {
+      const res = await fetch("/api/admin/send-proposal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId: blog.blogId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to send proposal");
+      toast.success(
+        data.to
+          ? `Proposal sent to ${data.authorName || "author"} <${data.to}> from support@vidyora.co.in`
+          : "Proposal email sent"
+      );
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to send proposal");
+    } finally {
+      setLoading(null);
+    }
+  };
 
   const decide = async (decision: "APPROVED" | "REJECTED" | "REQUEST_CHANGES") => {
     setLoading(
@@ -199,6 +230,19 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
           </label>
 
           <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+            <Button
+              variant="outline"
+              className="gap-1.5"
+              disabled={!!loading}
+              onClick={sendProposal}
+            >
+              {loading === "proposal" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              {loading === "proposal" ? "Sending…" : "Send Proposal"}
+            </Button>
             <Button
               variant="destructive"
               className="gap-1.5"

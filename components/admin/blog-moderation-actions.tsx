@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, X, Loader2, Pencil } from "lucide-react";
+import { Check, X, Loader2, Pencil, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,22 +14,54 @@ export function BlogModerationActions({
   blogId,
   status,
   adEligible: initialAdEligible = false,
+  authorName,
 }: {
   blogId: string;
   status: string;
   adEligible?: boolean;
+  authorName?: string;
 }) {
   const router = useRouter();
   const [feedback, setFeedback] = React.useState("");
   const [adEligibleOnApprove, setAdEligibleOnApprove] = React.useState(true);
   const [adEligible, setAdEligible] = React.useState(initialAdEligible);
-  const [loading, setLoading] = React.useState<"approve" | "reject" | "publish" | "ads" | null>(
-    null
-  );
+  const [loading, setLoading] = React.useState<
+    "approve" | "reject" | "publish" | "ads" | "proposal" | null
+  >(null);
 
   React.useEffect(() => {
     setAdEligible(initialAdEligible);
   }, [initialAdEligible]);
+
+  const sendProposal = async () => {
+    const who = authorName?.trim() || "the author";
+    if (
+      !window.confirm(
+        `Send sponsored-content proposal email to ${who}? This does not approve or reject the post.`
+      )
+    ) {
+      return;
+    }
+    setLoading("proposal");
+    try {
+      const res = await fetch("/api/admin/send-proposal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to send proposal");
+      toast.success(
+        data.to
+          ? `Proposal sent to ${data.authorName || "author"} <${data.to}> from support@vidyora.co.in`
+          : "Proposal email sent"
+      );
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to send proposal");
+    } finally {
+      setLoading(null);
+    }
+  };
 
   const decide = async (decision: "APPROVED" | "REJECTED") => {
     setLoading(decision === "APPROVED" ? "approve" : "reject");
@@ -249,6 +281,19 @@ export function BlogModerationActions({
             <Pencil className="h-4 w-4" /> Edit
           </Button>
         </Link>
+        <Button
+          variant="outline"
+          className="gap-1.5"
+          disabled={!!loading}
+          onClick={sendProposal}
+        >
+          {loading === "proposal" ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
+          {loading === "proposal" ? "Sending…" : "Send Proposal"}
+        </Button>
         <Button
           variant="destructive"
           className="gap-1.5"
