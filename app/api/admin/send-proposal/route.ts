@@ -30,7 +30,6 @@ export async function POST(req: Request) {
       to: result.to,
       authorName: result.authorName,
       from: result.from,
-      replyTo: "support@vidyora.co.in",
     });
   } catch (err) {
     if (err instanceof z.ZodError) {
