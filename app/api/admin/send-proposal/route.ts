@@ -29,7 +29,8 @@ export async function POST(req: Request) {
       emailed: true,
       to: result.to,
       authorName: result.authorName,
-      from: "support@vidyora.co.in",
+      from: result.from,
+      replyTo: "support@vidyora.co.in",
     });
   } catch (err) {
     if (err instanceof z.ZodError) {

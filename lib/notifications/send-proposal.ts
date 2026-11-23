@@ -2,7 +2,7 @@ import { NotificationType } from "@prisma/client";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email/mailer";
 import { sponsoredProposalEmail } from "@/lib/email/templates";
-import { BUSINESS_EMAIL } from "@/lib/site-contact";
+import { BUSINESS_EMAIL, CONTACT_EMAIL } from "@/lib/site-contact";
 import { getAppUrl } from "@/lib/app-url";
 import { createUserNotification } from "@/lib/notifications/create";
 
@@ -15,19 +15,21 @@ function isRealEmail(email: string | null | undefined): email is string {
 
 /**
  * Email the blog author (who submitted/published the post) a paid sponsored-content proposal.
- * From / Reply-To: support@vidyora.co.in (official business mailbox).
+ *
+ * SMTP is authenticated as contentverses.in (writewith@…), so From must stay on that domain.
+ * Reply-To + body contact use support@vidyora.co.in so replies land in the business inbox.
  */
 export async function sendSponsoredProposal(blogId: string): Promise<{
   ok: boolean;
   to?: string;
   authorName?: string | null;
+  from?: string;
   error?: string;
 }> {
   if (!isDatabaseConfigured()) {
     return { ok: false, error: "Database not configured" };
   }
 
-  // Always resolve the blog's authorId → that user is the publisher/submitter.
   const blog = await prisma.blog.findUnique({
     where: { id: blogId },
     select: {
@@ -49,6 +51,12 @@ export async function sendSponsoredProposal(blogId: string): Promise<{
     return { ok: false, error: "Author has no valid email on file" };
   }
 
+  // Must match authenticated SMTP domain (contentverses.in) — GoDaddy rejects cross-domain From.
+  const fromAddr =
+    process.env.EMAIL_FROM?.trim() ||
+    process.env.SMTP_USER?.trim() ||
+    CONTACT_EMAIL;
+
   const site = getAppUrl();
   const { subject, html } = sponsoredProposalEmail({
     name: author.name,
@@ -58,10 +66,10 @@ export async function sendSponsoredProposal(blogId: string): Promise<{
   });
 
   const emailed = await sendEmail({
-    to: author.email, // only the publisher/submitter
+    to: author.email,
     subject,
     html,
-    from: BUSINESS_EMAIL,
+    from: fromAddr,
     fromName: "ContentVerse Business",
     replyTo: BUSINESS_EMAIL,
   });
@@ -74,7 +82,8 @@ export async function sendSponsoredProposal(blogId: string): Promise<{
     blogId: blog.id,
     authorId: author.id,
     to: author.email,
-    from: BUSINESS_EMAIL,
+    from: fromAddr,
+    replyTo: BUSINESS_EMAIL,
   });
 
   await createUserNotification({
@@ -88,5 +97,5 @@ export async function sendSponsoredProposal(blogId: string): Promise<{
     console.error("[send-proposal] notification failed", err);
   });
 
-  return { ok: true, to: author.email, authorName: author.name };
+  return { ok: true, to: author.email, authorName: author.name, from: fromAddr };
 }

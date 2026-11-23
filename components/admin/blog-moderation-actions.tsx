@@ -53,7 +53,7 @@ export function BlogModerationActions({
       if (!res.ok) throw new Error(data.error || "Failed to send proposal");
       toast.success(
         data.to
-          ? `Proposal sent to ${data.authorName || "author"} <${data.to}> from support@vidyora.co.in`
+          ? `Proposal sent to ${data.authorName || "author"} <${data.to}> (reply → support@vidyora.co.in)`
           : "Proposal email sent"
       );
     } catch (err) {
