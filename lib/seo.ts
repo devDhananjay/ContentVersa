@@ -89,7 +89,7 @@ export const SITE = {
   ] as string[],
   /** Telegram tips channel (footer + JSON-LD). */
   telegram: "https://t.me/+TPRn45-lJA44N2U1",
-  ogImage: "/og-default.png",
+  ogImage: "/og-default.jpg",
   logo: SITE_LOGO_URL,
   logoIcon: "/logo-mark.svg",
   icons: {
