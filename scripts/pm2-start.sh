@@ -20,4 +20,7 @@ if [[ -z "${DATABASE_URL:-}" ]]; then
   echo "WARNING: DATABASE_URL not set — blogs will not load from Postgres." >&2
 fi
 
+# Cap V8 heap on 1GB EC2 — unbounded growth was OOM-killing the site.
+export NODE_OPTIONS="${NODE_OPTIONS:-} --max-old-space-size=384"
+
 exec node server.js

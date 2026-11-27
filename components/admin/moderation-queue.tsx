@@ -14,6 +14,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials, timeAgo } from "@/lib/utils";
 import { AdminListFilters, useAdminFilters } from "@/components/admin/admin-list-filters";
 import { inDateRange, matchesSearch } from "@/lib/admin/list-filters";
+import { SendProposalDialog } from "@/components/admin/send-proposal-dialog";
+import { ProposalsSentPanel } from "@/components/admin/proposals-sent-panel";
 import type { Blog } from "@/lib/data/blogs";
 import type { CreatorQualityResult } from "@/lib/seo/creator-quality";
 
@@ -42,48 +44,26 @@ function filterModerationItems(items: QueueItem[], f: typeof MOD_FILTER_DEFAULTS
   });
 }
 
-function ReviewCard({ blog }: { blog: QueueItem }) {
+function ReviewCard({
+  blog,
+  onProposalSent,
+}: {
+  blog: QueueItem;
+  onProposalSent?: () => void;
+}) {
   const router = useRouter();
   const [feedback, setFeedback] = React.useState("");
   const [adEligible, setAdEligible] = React.useState(
     () => blog.creatorQuality?.trusted ?? false
   );
-  const [loading, setLoading] = React.useState<
-    "approve" | "reject" | "changes" | "proposal" | null
-  >(null);
+  const [loading, setLoading] = React.useState<"approve" | "reject" | "changes" | null>(
+    null
+  );
+  const [proposalOpen, setProposalOpen] = React.useState(false);
 
   React.useEffect(() => {
     setAdEligible(blog.creatorQuality?.trusted ?? false);
   }, [blog.blogId, blog.creatorQuality?.trusted]);
-
-  const sendProposal = async () => {
-    if (
-      !window.confirm(
-        `Send sponsored-content proposal email to ${blog.author.name}? This does not approve or reject the post.`
-      )
-    ) {
-      return;
-    }
-    setLoading("proposal");
-    try {
-      const res = await fetch("/api/admin/send-proposal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blogId: blog.blogId }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || "Failed to send proposal");
-      toast.success(
-        data.to
-          ? `Proposal sent to ${data.authorName || "author"} <${data.to}> from ${data.from || "writewith@contentverses.in"}`
-          : "Proposal email sent"
-      );
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to send proposal");
-    } finally {
-      setLoading(null);
-    }
-  };
 
   const decide = async (decision: "APPROVED" | "REJECTED" | "REQUEST_CHANGES") => {
     setLoading(
@@ -234,14 +214,10 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
               variant="outline"
               className="gap-1.5"
               disabled={!!loading}
-              onClick={sendProposal}
+              onClick={() => setProposalOpen(true)}
             >
-              {loading === "proposal" ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-              {loading === "proposal" ? "Sending…" : "Send Proposal"}
+              <Send className="h-4 w-4" />
+              Send Proposal
             </Button>
             <Button
               variant="destructive"
@@ -272,6 +248,16 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
           </div>
         </div>
       </div>
+
+      <SendProposalDialog
+        open={proposalOpen}
+        onOpenChange={setProposalOpen}
+        blogId={blog.blogId}
+        blogTitle={blog.title}
+        authorName={blog.author.name}
+        authorUsername={blog.author.username}
+        onSent={() => onProposalSent?.()}
+      />
     </div>
   );
 }
@@ -279,11 +265,19 @@ function ReviewCard({ blog }: { blog: QueueItem }) {
 export function ModerationQueue({
   pending,
   rejected,
+  initialTab = "pending",
 }: {
   pending: QueueItem[];
   rejected: QueueItem[];
+  initialTab?: "pending" | "rejected" | "proposals";
 }) {
+  const [tab, setTab] = React.useState(initialTab);
+  const [proposalsKey, setProposalsKey] = React.useState(0);
   const { filters, set, clear, hasActive } = useAdminFilters(MOD_FILTER_DEFAULTS);
+
+  React.useEffect(() => {
+    setTab(initialTab);
+  }, [initialTab]);
 
   const categories = React.useMemo(() => {
     const set = new Set<string>();
@@ -296,59 +290,86 @@ export function ModerationQueue({
 
   return (
     <div className="space-y-4">
-      <AdminListFilters
-        search={{
-          value: filters.q,
-          onChange: (v) => set("q", v),
-          placeholder: "Search title, author, excerpt…",
-        }}
-        dateFrom={{ value: filters.dateFrom, onChange: (v) => set("dateFrom", v) }}
-        dateTo={{ value: filters.dateTo, onChange: (v) => set("dateTo", v) }}
-        selects={[
-          {
-            id: "category",
-            value: filters.category,
-            onChange: (v) => set("category", v),
-            placeholder: "Category",
-            options: [
-              { value: "all", label: "All categories" },
-              ...categories.map((c) => ({ value: c, label: c })),
-            ],
-          },
-        ]}
-        resultCount={filteredPending.length + filteredRejected.length}
-        showClear={hasActive}
-        onClear={clear}
-      />
+      {tab !== "proposals" ? (
+        <AdminListFilters
+          search={{
+            value: filters.q,
+            onChange: (v) => set("q", v),
+            placeholder: "Search title, author, excerpt…",
+          }}
+          dateFrom={{ value: filters.dateFrom, onChange: (v) => set("dateFrom", v) }}
+          dateTo={{ value: filters.dateTo, onChange: (v) => set("dateTo", v) }}
+          selects={[
+            {
+              id: "category",
+              value: filters.category,
+              onChange: (v) => set("category", v),
+              placeholder: "Category",
+              options: [
+                { value: "all", label: "All categories" },
+                ...categories.map((c) => ({ value: c, label: c })),
+              ],
+            },
+          ]}
+          resultCount={filteredPending.length + filteredRejected.length}
+          showClear={hasActive}
+          onClear={clear}
+        />
+      ) : null}
 
-    <Tabs defaultValue="pending">
-      <TabsList>
-        <TabsTrigger value="pending">Pending ({filteredPending.length})</TabsTrigger>
-        <TabsTrigger value="rejected">Rejected ({filteredRejected.length})</TabsTrigger>
-      </TabsList>
-      <TabsContent value="pending" className="space-y-4">
-        {filteredPending.length === 0 ? (
-          <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
-            {pending.length === 0
-              ? "No posts waiting for review."
-              : "No pending posts match your filters."}
-          </div>
-        ) : (
-          filteredPending.map((b) => <ReviewCard key={b.blogId} blog={b} />)
-        )}
-      </TabsContent>
-      <TabsContent value="rejected" className="space-y-4">
-        {filteredRejected.length === 0 ? (
-          <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
-            {rejected.length === 0
-              ? "No rejected submissions."
-              : "No rejected posts match your filters."}
-          </div>
-        ) : (
-          filteredRejected.map((b) => <ReviewCard key={b.blogId} blog={b} />)
-        )}
-      </TabsContent>
-    </Tabs>
+      <Tabs
+        value={tab}
+        onValueChange={(v) => setTab(v as typeof tab)}
+      >
+        <TabsList>
+          <TabsTrigger value="pending">Pending ({filteredPending.length})</TabsTrigger>
+          <TabsTrigger value="rejected">Rejected ({filteredRejected.length})</TabsTrigger>
+          <TabsTrigger value="proposals">Proposals sent</TabsTrigger>
+        </TabsList>
+        <TabsContent value="pending" className="space-y-4">
+          {filteredPending.length === 0 ? (
+            <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
+              {pending.length === 0
+                ? "No posts waiting for review."
+                : "No pending posts match your filters."}
+            </div>
+          ) : (
+            filteredPending.map((b) => (
+              <ReviewCard
+                key={b.blogId}
+                blog={b}
+                onProposalSent={() => {
+                  setProposalsKey((k) => k + 1);
+                  setTab("proposals");
+                }}
+              />
+            ))
+          )}
+        </TabsContent>
+        <TabsContent value="rejected" className="space-y-4">
+          {filteredRejected.length === 0 ? (
+            <div className="rounded-2xl border bg-card p-10 text-center text-muted-foreground">
+              {rejected.length === 0
+                ? "No rejected submissions."
+                : "No rejected posts match your filters."}
+            </div>
+          ) : (
+            filteredRejected.map((b) => (
+              <ReviewCard
+                key={b.blogId}
+                blog={b}
+                onProposalSent={() => {
+                  setProposalsKey((k) => k + 1);
+                  setTab("proposals");
+                }}
+              />
+            ))
+          )}
+        </TabsContent>
+        <TabsContent value="proposals" className="space-y-4">
+          <ProposalsSentPanel key={proposalsKey} active={tab === "proposals"} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

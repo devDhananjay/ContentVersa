@@ -219,6 +219,8 @@ model User {
   jobPilotUsage        JobPilotUsage[]
   cricketAlertSub      CricketAlertSubscription?
   pageVisits           UserPageVisit[]
+  proposalsReceived    ProposalSend[] @relation("ProposalRecipient")
+  proposalsSent        ProposalSend[] @relation("ProposalSender")
 
   @@index([role])
   @@index([createdAt])
@@ -397,6 +399,7 @@ model Blog {
   relatedReels Reel[]
   reposts     BlogRepost[]
   translations BlogTranslation[]
+  proposalSends ProposalSend[]
 
   @@index([authorId])
   @@index([status])
@@ -1262,4 +1265,27 @@ model UserPageVisit {
   @@index([userId, visitedAt])
   @@index([sessionId])
   @@index([visitedAt])
+}
+
+/// Admin-sent sponsored publishing proposal emails (history for moderation).
+model ProposalSend {
+  id           String   @id @default(cuid())
+  blogId       String
+  recipientId  String
+  sentById     String
+  toEmail      String
+  fromEmail    String
+  subject      String
+  blogTitle    String?
+  recipientName String?
+  createdAt    DateTime @default(now())
+
+  blog      Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  recipient User @relation("ProposalRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  sentBy    User @relation("ProposalSender", fields: [sentById], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([blogId])
+  @@index([recipientId])
+  @@index([sentById])
 }

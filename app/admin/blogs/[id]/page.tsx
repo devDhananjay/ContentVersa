@@ -166,6 +166,9 @@ export default async function AdminBlogDetailPage({
         status={blog.status}
         adEligible={blog.adEligible}
         authorName={blog.author.name}
+        blogTitle={blog.title}
+        authorUsername={blog.author.username}
+        authorEmail={blog.author.email}
       />
 
       <div className="mt-8 flex flex-wrap gap-2">
